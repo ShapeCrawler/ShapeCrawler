@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="NUnit" Version="4.1.0" />
@@ -25,13 +26,197 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="3.2.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ShapeCrawler\ShapeCrawler.csproj" />
-    <ProjectReference Include="..\..\test\ShapeCrawler.Tests.Unit.xUnit\ShapeCrawler.Tests.Unit.xUnit.csproj" />
+    <ProjectReference Include="..\ShapeCrawler.Tests.Shared\ShapeCrawler.Tests.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\audio\audio-case001.pptx" />
+    <EmbeddedResource Include="Assets\audio\audio-case001.pptx" />
+    <None Remove="Assets\autoshape\001.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\001.pptx" />
+    <None Remove="Assets\autoshape\009_table.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\009_table.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case001.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case001.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case002.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case002.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case003.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case003.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case004_subtitle.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case004_subtitle.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case005_text-frame.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case005_text-frame.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case006_field.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case006_field.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case007.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case007.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case008_text-frame.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case008_text-frame.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case009.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case009.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case010.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case010.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case011_save-as-png.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case011_save-as-png.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case012.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case012.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case013.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case013.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case014.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case014.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case016.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case016.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case017_slide-number.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case017_slide-number.pptx" />
+    <None Remove="Assets\autoshape\autoshape-case018_rotation.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-case018_rotation.pptx" />
+    <None Remove="Assets\autoshape\autoshape-grouping.pptx" />
+    <EmbeddedResource Include="Assets\autoshape\autoshape-grouping.pptx" />
+    <None Remove="Assets\charts\charts-case001.pptx" />
+    <EmbeddedResource Include="Assets\charts\charts-case001.pptx" />
+    <None Remove="Assets\charts\charts-case002.pptx" />
+    <EmbeddedResource Include="Assets\charts\charts-case002.pptx" />
+    <None Remove="Assets\charts\charts-case003.pptx" />
+    <EmbeddedResource Include="Assets\charts\charts-case003.pptx" />
+    <None Remove="Assets\charts\charts-case004_bars.pptx" />
+    <EmbeddedResource Include="Assets\charts\charts-case004_bars.pptx" />
+    <None Remove="Assets\charts\charts_bar-chart.pptx" />
+    <EmbeddedResource Include="Assets\charts\charts_bar-chart.pptx" />
+    <None Remove="Assets\pictures\pictures-case001.pptx" />
+    <EmbeddedResource Include="Assets\pictures\pictures-case001.pptx" />
+    <None Remove="Assets\pictures\pictures-case002.pptx" />
+    <EmbeddedResource Include="Assets\pictures\pictures-case002.pptx" />
+    <None Remove="Assets\pictures\pictures-case004.pptx" />
+    <EmbeddedResource Include="Assets\pictures\pictures-case004.pptx" />
+    <None Remove="Assets\tables\009_table.pptx" />
+    <EmbeddedResource Include="Assets\tables\009_table.pptx" />
+    <None Remove="Assets\tables\table-case001.pptx" />
+    <EmbeddedResource Include="Assets\tables\table-case001.pptx" />
+    <None Remove="Assets\video\test-video.avi" />
+    <EmbeddedResource Include="Assets\video\test-video.avi" />
+    <None Remove="Assets\video\test-video.mp4" />
+    <EmbeddedResource Include="Assets\video\test-video.mp4" />
+    <None Remove="Assets\video\video-01.mp4" />
+    <EmbeddedResource Include="Assets\video\video-01.mp4" />
+    <None Remove="Assets\video\video-case001.pptx" />
+    <EmbeddedResource Include="Assets\video\video-case001.pptx" />
+    <None Remove="Assets\1x1.svg" />
+    <EmbeddedResource Include="Assets\1x1.svg" />
+    <None Remove="Assets\002.pptx" />
+    <EmbeddedResource Include="Assets\002.pptx" />
+    <None Remove="Assets\003.pptx" />
+    <EmbeddedResource Include="Assets\003.pptx" />
+    <None Remove="Assets\004.pptx" />
+    <EmbeddedResource Include="Assets\004.pptx" />
+    <None Remove="Assets\005.pptx" />
+    <EmbeddedResource Include="Assets\005.pptx" />
+    <None Remove="Assets\006_1 slides.pptx" />
+    <EmbeddedResource Include="Assets\006_1 slides.pptx" />
+    <None Remove="Assets\007_2 slides.pptx" />
+    <EmbeddedResource Include="Assets\007_2 slides.pptx" />
+    <None Remove="Assets\008.pptx" />
+    <EmbeddedResource Include="Assets\008.pptx" />
+    <None Remove="Assets\010.pptx" />
+    <EmbeddedResource Include="Assets\010.pptx" />
+    <None Remove="Assets\011_dt.pptx" />
+    <EmbeddedResource Include="Assets\011_dt.pptx" />
+    <None Remove="Assets\012_title-placeholder.pptx" />
+    <EmbeddedResource Include="Assets\012_title-placeholder.pptx" />
+    <None Remove="Assets\013.pptx" />
+    <EmbeddedResource Include="Assets\013.pptx" />
+    <None Remove="Assets\014.pptx" />
+    <EmbeddedResource Include="Assets\014.pptx" />
+    <None Remove="Assets\015.pptx" />
+    <EmbeddedResource Include="Assets\015.pptx" />
+    <None Remove="Assets\016.pptx" />
+    <EmbeddedResource Include="Assets\016.pptx" />
+    <None Remove="Assets\017.pptx" />
+    <EmbeddedResource Include="Assets\017.pptx" />
+    <None Remove="Assets\018.pptx" />
+    <EmbeddedResource Include="Assets\018.pptx" />
+    <None Remove="Assets\019.pptx" />
+    <EmbeddedResource Include="Assets\019.pptx" />
+    <None Remove="Assets\020.pptx" />
+    <EmbeddedResource Include="Assets\020.pptx" />
+    <None Remove="Assets\021.pptx" />
+    <EmbeddedResource Include="Assets\021.pptx" />
+    <None Remove="Assets\022.pptx" />
+    <EmbeddedResource Include="Assets\022.pptx" />
+    <None Remove="Assets\023.pptx" />
+    <EmbeddedResource Include="Assets\023.pptx" />
+    <None Remove="Assets\024_chart.pptx" />
+    <EmbeddedResource Include="Assets\024_chart.pptx" />
+    <None Remove="Assets\025_chart.pptx" />
+    <EmbeddedResource Include="Assets\025_chart.pptx" />
+    <None Remove="Assets\026.pptx" />
+    <EmbeddedResource Include="Assets\026.pptx" />
+    <None Remove="Assets\028.pptx" />
+    <EmbeddedResource Include="Assets\028.pptx" />
+    <None Remove="Assets\029.pptx" />
+    <EmbeddedResource Include="Assets\029.pptx" />
+    <None Remove="Assets\031.pptx" />
+    <EmbeddedResource Include="Assets\031.pptx" />
+    <None Remove="Assets\032.pptx" />
+    <EmbeddedResource Include="Assets\032.pptx" />
+    <None Remove="Assets\033.pptx" />
+    <EmbeddedResource Include="Assets\033.pptx" />
+    <None Remove="Assets\034.pptx" />
+    <EmbeddedResource Include="Assets\034.pptx" />
+    <None Remove="Assets\035.pptx" />
+    <EmbeddedResource Include="Assets\035.pptx" />
+    <None Remove="Assets\036.pptx" />
+    <EmbeddedResource Include="Assets\036.pptx" />
+    <None Remove="Assets\037.pptx" />
+    <EmbeddedResource Include="Assets\037.pptx" />
+    <None Remove="Assets\038.pptx" />
+    <EmbeddedResource Include="Assets\038.pptx" />
+    <None Remove="Assets\039.pptx" />
+    <EmbeddedResource Include="Assets\039.pptx" />
+    <None Remove="Assets\050_title-placeholder.pptx" />
+    <EmbeddedResource Include="Assets\050_title-placeholder.pptx" />
+    <None Remove="Assets\051_title-placeholder.pptx" />
+    <EmbeddedResource Include="Assets\051_title-placeholder.pptx" />
+    <None Remove="Assets\052_slide-to-html.pptx" />
+    <EmbeddedResource Include="Assets\052_slide-to-html.pptx" />
+    <None Remove="Assets\053_add_shapes.pptx" />
+    <EmbeddedResource Include="Assets\053_add_shapes.pptx" />
+    <None Remove="Assets\054_get_shape_xpath.pptx" />
+    <EmbeddedResource Include="Assets\054_get_shape_xpath.pptx" />
+    <None Remove="Assets\055_svg_with_text.pptx" />
+    <EmbeddedResource Include="Assets\055_svg_with_text.pptx" />
+    <None Remove="Assets\056_slide-notes.pptx" />
+    <EmbeddedResource Include="Assets\056_slide-notes.pptx" />
+    <None Remove="Assets\tables-case001.pptx" />
+    <EmbeddedResource Include="Assets\tables-case001.pptx" />
+    <None Remove="Assets\test-image-1.png" />
+    <EmbeddedResource Include="Assets\test-image-1.png" />
+    <None Remove="Assets\test-image-2.png" />
+    <EmbeddedResource Include="Assets\test-image-2.png" />
+    <None Remove="Assets\test-image-large.png" />
+    <EmbeddedResource Include="Assets\test-image-large.png" />
+    <None Remove="Assets\test-mp3.mp3" />
+    <EmbeddedResource Include="Assets\test-mp3.mp3" />
+    <None Remove="Assets\test-vector-image-1.svg" />
+    <EmbeddedResource Include="Assets\test-vector-image-1.svg" />
+    <None Remove="Assets\test-vector-image-large.svg" />
+    <EmbeddedResource Include="Assets\test-vector-image-large.svg" />
+    <None Remove="Assets\test-vector-image-no-dimensions.svg" />
+    <EmbeddedResource Include="Assets\test-vector-image-no-dimensions.svg" />
+    <None Remove="Assets\test-vector-image-wide.svg" />
+    <EmbeddedResource Include="Assets\test-vector-image-wide.svg" />
+    <None Remove="Assets\test-wav.wav" />
+    <EmbeddedResource Include="Assets\test-wav.wav" />
+    <None Remove="Assets\040_video.pptx" />
+    <EmbeddedResource Include="Assets\040_video.pptx" />
   </ItemGroup>
 
 </Project>

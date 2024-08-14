@@ -1,14 +1,7 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using ClosedXML;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Assert = Xunit.Assert;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
@@ -163,7 +156,10 @@ public class PictureTests : SCTest
         // Arrange
         var pre = new Presentation(StreamOf("019.pptx"));
 
-        // Act - Assert
-        Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));
+        // Act
+        Action act = () => pre.Slides[1].Shapes.Single(x => x.Id == 47);
+        
+        // Assert
+        act.Should().Throw<Exception>();
     }
 }

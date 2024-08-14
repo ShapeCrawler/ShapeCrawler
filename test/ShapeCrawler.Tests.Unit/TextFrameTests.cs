@@ -113,7 +113,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().BeApproximately(51.48m,0.01m);
+            shape.Height.Should().BeApproximately(51.48m, 0.01m);
             shape.Y.Should().Be(149m);
             pres.Validate();
         }
@@ -147,7 +147,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Width.Should().BeApproximately(107.90m,0.01m);
+            shape.Width.Should().BeApproximately(107.90m, 0.01m);
             pres.Validate();
         }
 
@@ -298,9 +298,9 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text = "Some sentence. Some sentence";
 
             // Assert
-            shape.Height.Should().BeApproximately(93.48m,0.01m);
+            shape.Height.Should().BeApproximately(93.48m, 0.01m);
         }
-        
+
         [Test]
         [SlideShape("009_table.pptx", 4, 2, "Title text")]
         [SlideShape("001.pptx", 1, 5, " id5-Text1")]
@@ -365,7 +365,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text.Should().BeEquivalentTo("Test");
             textFrame.Paragraphs.Should().HaveCount(1);
         }
-        
+
         [Test]
         [SlideShape("autoshape-case012.pptx", 1, "Shape 1")]
         public void Text_Setter(IShape shape)
@@ -377,7 +377,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Act
             var text = textFrame.Text;
             textFrame.Text = "some text";
-            
+
             // Assert
             textFrame.Text.Should().BeEquivalentTo("some text");
         }
@@ -386,7 +386,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 6", false)]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", true)]
         [SlideShape("autoshape-case013.pptx", 1, "AutoShape 1", true)]
-        public void TextWrapped_Getter_returns_value_indicating_whether_text_is_wrapped_in_shape(IShape shape, bool isTextWrapped)
+        public void TextWrapped_Getter_returns_value_indicating_whether_text_is_wrapped_in_shape(IShape shape,
+            bool isTextWrapped)
         {
             // Arrange
             var autoShape = (IShape)shape;
@@ -403,7 +404,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         [SlideShape("009_table.pptx", 3, 2, 1)]
         [SlideShape("020.pptx", 3, 8, 2)]
         [SlideShape("001.pptx", 2, 2, 1)]
-        public void Paragraphs_Count_returns_number_of_paragraphs_in_the_text_box(IShape shape, int expectedParagraphsCount)
+        public void Paragraphs_Count_returns_number_of_paragraphs_in_the_text_box(IShape shape,
+            int expectedParagraphsCount)
         {
             // Arrange
             var textFrame = ((IShape)shape).TextFrame;
@@ -414,7 +416,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             paragraphsCount.Should().Be(expectedParagraphsCount);
         }
-        
+
         [Test]
         public void Paragraphs_Count_returns_number_of_paragraphs_in_the_table_cell_text_box()
         {
@@ -428,23 +430,24 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             paragraphsCount.Should().Be(2);
         }
-        
+
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 0.30)]
-        public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape,
+            double expectedMargin)
         {
             // Arrange
             var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
-            
+
             // Act
             var leftMargin = textFrame.LeftMargin;
-            
+
             // Assert
             leftMargin.Should().Be((decimal)expectedMargin);
         }
-        
+
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2")]
         public void LeftMargin_setter_sets_left_margin_of_text_frame_in_centimeters(IShape shape)
@@ -452,58 +455,77 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Arrange
             var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
-            
+
             // Act
             textFrame.LeftMargin = 0.5m;
-            
+
             // Assert
             textFrame.LeftMargin.Should().Be(0.5m);
         }
-        
+
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
-        public void RightMargin_getter_returns_right_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        public void RightMargin_getter_returns_right_margin_of_text_frame_in_centimeters(IShape shape,
+            double expectedMargin)
         {
             // Arrange
             var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
-            
+
             // Act
             var rightMargin = textFrame.RightMargin;
-            
+
             // Assert
             rightMargin.Should().Be((decimal)expectedMargin);
         }
-        
+
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.13)]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 0.14)]
-        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape,
+            double expectedMargin)
         {
             // Arrange
             var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
-            
+
             // Act
             var topMargin = textFrame.TopMargin;
-            
+
             // Assert
             topMargin.Should().Be((decimal)expectedMargin);
         }
-        
+
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.13)]
-        public void BottomMargin_getter_returns_bottom_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        public void BottomMargin_getter_returns_bottom_margin_of_text_frame_in_centimeters(IShape shape,
+            double expectedMargin)
         {
             // Arrange
             var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
-            
+
             // Act
             var bottomMargin = textFrame.BottomMargin;
-            
+
             // Assert
             bottomMargin.Should().Be((decimal)expectedMargin);
+        }
+
+        [Test]
+        [TestCase("054_get_shape_xpath.pptx", 1, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
+        [TestCase("054_get_shape_xpath.pptx", 2, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
+        public void SDKXPath_returns_xpath_of_undelying_txBody_element(string presentationName, int slideNumber, string expectedXPath)
+        {
+            // Arrange
+            var pres = new Presentation(StreamOf(presentationName));
+            var textFrame = pres.Slides[slideNumber - 1].TextFrames().First();
+
+            // Act
+            var sdkXPath = textFrame.SDKXPath;
+
+            // Assert
+            sdkXPath.Should().Be(expectedXPath);
         }
     }
 }

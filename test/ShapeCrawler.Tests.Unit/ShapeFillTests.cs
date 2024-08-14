@@ -279,4 +279,15 @@ public class ShapeFillTests : SCTest
         // Assert
         fillType.Should().Be(expectedFill);
     }
+    
+    [Test]
+    public void Type_returns_Gradient_fill_type()
+    {
+        // Act
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var shapeFill = pres.Slides[1].Shapes.GetByName<IShape>("AutoShape 1").Fill;
+
+        // Act-Assert
+        shapeFill.Type.Should().Be(FillType.Gradient);
+    }
 }

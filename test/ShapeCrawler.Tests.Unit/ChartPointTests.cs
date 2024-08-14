@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
 using Assert = NUnit.Framework.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes

@@ -2,7 +2,6 @@
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 
 namespace ShapeCrawler.Tests.Unit;
 

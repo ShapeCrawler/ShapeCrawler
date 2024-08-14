@@ -1,21 +1,18 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 
 namespace ShapeCrawler.Tests.Unit;
 
 public class ShapeOutlineTests : SCTest
 {
-    [Xunit.Theory]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 4", 0)]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 6", 0.25)]
-    [SlideShapeData("020.pptx", 1, "Shape 1", 0)]
-    public void Weight_Getter_returns_outline_weight_in_points(IShape shape, decimal expectedWeight)
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 4", 0)]
+    [SlideShape("020.pptx", 1, "Shape 1", 0)]
+    public void Weight_Getter_returns_outline_weight_in_points(IShape shape, int expectedWeight)
     {
         // Arrange
-        var autoShape = (IShape)shape;
+        var autoShape = shape;
         
         // Act
         var outlineWeight = autoShape.Outline.Weight;
@@ -23,7 +20,21 @@ public class ShapeOutlineTests : SCTest
         // Assert
         outlineWeight.Should().Be(expectedWeight);
     }
-
+    
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 6", 0.25)]
+    public void Weight_Getter_returns_outline_weight_in_decimal_points(IShape shape, double expectedWeight)
+    {
+        // Arrange
+        var autoShape = shape;
+        
+        // Act
+        var outlineWeight = autoShape.Outline.Weight;
+        
+        // Assert
+        outlineWeight.Should().Be((decimal)expectedWeight);
+    }
+    
     [Test]
     [TestCase("autoshape-grouping.pptx", 1, "TextBox 4")]
     [TestCase("020.pptx", 1, "Shape 1")]
@@ -43,8 +54,8 @@ public class ShapeOutlineTests : SCTest
         pres.Validate();
     }
 
-    [Xunit.Theory]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 6", "000000")]
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 6", "000000")]
     public void Color_Getter_returns_outline_color_in_hex_format(IShape shape, string expectedColor)
     {
         // Arrange

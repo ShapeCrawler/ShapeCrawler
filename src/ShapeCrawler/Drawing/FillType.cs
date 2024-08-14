@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler;
+﻿// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Fill type.

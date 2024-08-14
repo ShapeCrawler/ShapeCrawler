@@ -1,14 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using ClosedXML.Excel;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
-using Assert = Xunit.Assert;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
@@ -53,8 +47,8 @@ public class ChartTests : SCTest
         var chart11HasXValues = chart11.HasXValues;
 
         // Assert
-        Assert.False(chart8HasXValues);
-        Assert.False(chart11HasXValues);
+        chart8HasXValues.Should().BeFalse();
+        chart11HasXValues.Should().BeFalse();
     }
 
     [Test]
