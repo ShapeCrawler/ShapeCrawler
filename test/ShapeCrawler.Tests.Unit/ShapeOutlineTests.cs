@@ -8,7 +8,6 @@ public class ShapeOutlineTests : SCTest
 {
     [Test]
     [SlideShape("autoshape-grouping.pptx", 1, "TextBox 4", 0)]
-    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 6", 0.25)]
     [SlideShape("020.pptx", 1, "Shape 1", 0)]
     public void Weight_Getter_returns_outline_weight_in_points(IShape shape, int expectedWeight)
     {
@@ -21,7 +20,21 @@ public class ShapeOutlineTests : SCTest
         // Assert
         outlineWeight.Should().Be(expectedWeight);
     }
-
+    
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 6", 0.25)]
+    public void Weight_Getter_returns_outline_weight_in_decimal_points(IShape shape, double expectedWeight)
+    {
+        // Arrange
+        var autoShape = shape;
+        
+        // Act
+        var outlineWeight = autoShape.Outline.Weight;
+        
+        // Assert
+        outlineWeight.Should().Be((decimal)expectedWeight);
+    }
+    
     [Test]
     [TestCase("autoshape-grouping.pptx", 1, "TextBox 4")]
     [TestCase("020.pptx", 1, "Shape 1")]
