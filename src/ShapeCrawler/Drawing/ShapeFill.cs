@@ -20,7 +20,7 @@ internal record ShapeFill : IShapeFill
     private A.BlipFill? aBlipFill;
 
     internal ShapeFill(
-        OpenXmlPart sdkTypedOpenXmlPart, 
+        OpenXmlPart sdkTypedOpenXmlPart,
         OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
@@ -141,40 +141,40 @@ internal record ShapeFill : IShapeFill
 
     public IImage? Picture => this.GetPicture();
 
-    public FillType Type
+    public FillType Type => this.GetFillType();
+
+    private FillType GetFillType()
     {
-        get
+        var aSolidFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+        if (aSolidFillLocal != null)
         {
-            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (aSolidFill != null)
-            {
-                return FillType.Solid;
-            }
-
-            if (this.aGradFill != null)
-            {
-                return FillType.Gradient;
-            }
-
-            var aBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
-            if (aBlipFill is not null)
-            {
-                return FillType.Picture;
-            }
-
-            var aPattFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
-            if (aPattFill != null)
-            {
-                return FillType.Pattern;
-            }
-
-            if (this.sdkTypedOpenXmlCompositeElement.Ancestors<P.Shape>().First().UseBackgroundFill is not null)
-            {
-                return FillType.SlideBackground;
-            }
-            
-            return FillType.NoFill;
+            return FillType.Solid;
         }
+
+        var aGradFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.GradientFill>();
+        if (aGradFillLocal != null)
+        {
+            return FillType.Gradient;
+        }
+
+        var aBlipFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        if (aBlipFillLocal is not null)
+        {
+            return FillType.Picture;
+        }
+
+        var aPattFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
+        if (aPattFillLocal != null)
+        {
+            return FillType.Pattern;
+        }
+
+        if (this.sdkTypedOpenXmlCompositeElement.Ancestors<P.Shape>().First().UseBackgroundFill is not null)
+        {
+            return FillType.SlideBackground;
+        }
+
+        return FillType.NoFill;
     }
 
     public void SetPicture(Stream image)
@@ -233,7 +233,7 @@ internal record ShapeFill : IShapeFill
             }
         }
     }
-    
+
     private void InitPictureFillOr()
     {
         this.aBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
@@ -244,7 +244,7 @@ internal record ShapeFill : IShapeFill
             this.pictureImage = image;
         }
     }
-    
+
     private SlidePictureImage? GetPicture()
     {
         this.Initialize();

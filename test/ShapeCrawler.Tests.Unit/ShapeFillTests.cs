@@ -286,7 +286,7 @@ public class ShapeFillTests : SCTest
         // Act
         var pres = new Presentation(StreamOf("009_table.pptx"));
         var shapeFill = pres.Slides[1].Shapes.GetByName<IShape>("AutoShape 1").Fill;
-        
+
         // Act-Assert
         shapeFill.Type.Should().Be(FillType.Gradient);
     }
