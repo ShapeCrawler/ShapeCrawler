@@ -6,7 +6,6 @@ internal static class UnitConverter
 {
     private const int HorizontalResolutionDpi = 96;
     private const int VerticalResolutionDpi = 96;
-    private const double AngleToDegrees = 1 / 60000d;
     private const int EmusPerInch = 914400;
     private const int EmusPerCentimeter = 360000;
     private const int EmusPerPoint = 12700;
@@ -66,23 +65,8 @@ internal static class UnitConverter
         return HorizontalEmuToPixel(PointToEmu(point));
     }
 
-    internal static float PointToPixelF(float point)
-    {
-        return (float)HorizontalEmuToPixel(PointToEmu((decimal)point));
-    }
-
-    internal static decimal InchToPixel(decimal inch)
-    {
-        return inch * 96.0m;
-    }
-
     internal static float InchToPixelF(float inch)
     {
         return inch * 96.0f;
-    }
-    
-    internal static double AngleValueToDegrees(int angle)
-    {
-        return angle * AngleToDegrees;
     }
 }
