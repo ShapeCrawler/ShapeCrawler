@@ -55,7 +55,7 @@ internal readonly record struct ReferencedIndent
             return this.SlideColorTypeOrNull();
         }
 
-        return this.LayoutColorTypeOrNull();
+        return LayoutColorTypeOrNull();
     }
 
     internal bool? FontBoldFlagOrNull()
@@ -65,7 +65,7 @@ internal readonly record struct ReferencedIndent
             return this.SlideFontBoldFlagOrNull();
         }
 
-        return this.LayoutFontBoldFlagOrNull();
+        return LayoutFontBoldFlagOrNull();
     }
 
     internal A.LatinFont? ALatinFontOrNull()
@@ -75,7 +75,7 @@ internal readonly record struct ReferencedIndent
             return this.SlideALatinFontOrNull(sdkSlidePart);
         }
 
-        return this.LayoutALatinFontOrNull();
+        return LayoutALatinFontOrNull();
     }
 
     #endregion APIs
@@ -390,7 +390,7 @@ internal readonly record struct ReferencedIndent
         return null;
     }
 
-    private ColorType? LayoutColorTypeOrNull()
+    private static ColorType? LayoutColorTypeOrNull()
     {
         throw new System.NotImplementedException();
     }
@@ -431,7 +431,7 @@ internal readonly record struct ReferencedIndent
         return null;
     }
 
-    private bool? LayoutFontBoldFlagOrNull()
+    private static bool? LayoutFontBoldFlagOrNull()
     {
         throw new System.NotImplementedException();
     }
@@ -555,7 +555,7 @@ internal readonly record struct ReferencedIndent
         return null;
     }
 
-    private A.LatinFont LayoutALatinFontOrNull()
+    private static A.LatinFont LayoutALatinFontOrNull()
     {
         throw new SCException("Not implemented.");
     }

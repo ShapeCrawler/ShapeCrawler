@@ -12,15 +12,13 @@ namespace ShapeCrawler.Services;
 
 internal sealed class ChartGraphicFrameHandler
 {
-    private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
-
-    public P.GraphicFrame Create(OpenXmlPart typedOpenXmlPart)
+    internal P.GraphicFrame Create(OpenXmlPart typedOpenXmlPart)
     {
         var id = (UInt32Value)6U;
         var name = "Chart X";
 
         var chartPart = typedOpenXmlPart.AddNewPart<ChartPart>("rId2");
-        this.GenerateChartPartContent(chartPart);
+        GenerateChartPartContent(chartPart);
 
         // Create Excel
         var embeddedPackagePart = chartPart.AddNewPart<EmbeddedPackagePart>(
@@ -140,8 +138,8 @@ internal sealed class ChartGraphicFrameHandler
 
         return graphicFrame;
     }
-    
-    private void GenerateChartPartContent(ChartPart chartPart)
+
+    private static void GenerateChartPartContent(ChartPart chartPart)
     {
         var externamDataRId = "rId3";
         var chartSpace = new C.ChartSpace();
@@ -260,26 +258,26 @@ internal sealed class ChartGraphicFrameHandler
         C.BarGrouping barGrouping1 = new C.BarGrouping() { Val = C.BarGroupingValues.Clustered };
         C.VaryColors varyColors1 = new C.VaryColors() { Val = false };
 
-        var catAxisData = this.CreateCCategoryAxisData();
+        var catAxisData = CreateCCategoryAxisData();
 
         // Series 1    
         var defaultSeries1Values = new[] { 1, 3, 5 };
-        var barChartSeries1 = this.CreateBarChartSeries(
+        var barChartSeries1 = CreateBarChartSeries(
             "Series1",
             "Sheet1!$B$1",
             defaultSeries1Values,
             "Sheet1!$B$2:$B$4",
-            catAxisData.CloneNode(true), 
+            catAxisData.CloneNode(true),
             0);
 
         // Series 2
         var defaultSeries2Values = new[] { 2, 4, 6 };
-        var barChartSeriesC = this.CreateBarChartSeries(
+        var barChartSeriesC = CreateBarChartSeries(
             "Series2",
             "Sheet1!$C$1",
             defaultSeries2Values,
             "Sheet1!$C$2:$C$4",
-            catAxisData.CloneNode(true), 
+            catAxisData.CloneNode(true),
             1);
 
         C.DataLabels dataLabels1 = new C.DataLabels();
@@ -742,7 +740,7 @@ internal sealed class ChartGraphicFrameHandler
         chartPart.ChartSpace = chartSpace;
     }
 
-    private CategoryAxisData CreateCCategoryAxisData()
+    private static CategoryAxisData CreateCCategoryAxisData()
     {
         var catAxisData = new C.CategoryAxisData();
 
@@ -774,11 +772,11 @@ internal sealed class ChartGraphicFrameHandler
         return catAxisData;
     }
 
-    private C.BarChartSeries CreateBarChartSeries(
-        string title, 
-        string titleFormula, 
-        int[] values, 
-        string valuesFormula, 
+    private static C.BarChartSeries CreateBarChartSeries(
+        string title,
+        string titleFormula,
+        int[] values,
+        string valuesFormula,
         OpenXmlElement categories,
         int index)
     {
@@ -807,7 +805,7 @@ internal sealed class ChartGraphicFrameHandler
         seriesBNumCache.Append(seriesBPointCount);
         for (var i = 0; i < values.Length; i++)
         {
-            var seriesBNumPoint = this.CreateCNumericPoint(i, values[i]);
+            var seriesBNumPoint = CreateCNumericPoint(i, values[i]);
             seriesBNumCache.Append(seriesBNumPoint);
         }
 
@@ -824,7 +822,7 @@ internal sealed class ChartGraphicFrameHandler
         return barChartSeries;
     }
 
-    private C.NumericPoint CreateCNumericPoint(int index, int seriesValue)
+    private static C.NumericPoint CreateCNumericPoint(int index, int seriesValue)
     {
         var cNumPoint = new C.NumericPoint { Index = (uint)index };
         var cNumValue = new C.NumericValue();
