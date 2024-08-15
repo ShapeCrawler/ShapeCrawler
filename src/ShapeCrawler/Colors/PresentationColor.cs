@@ -14,9 +14,7 @@ internal sealed class PresentationColor
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
     }
-
-    #region APIs
-
+    
     internal IndentFont? PresentationFontOrThemeFontOrNull(int indentLevel)
     {
         var sdkPresDoc = (PresentationDocument)this.sdkTypedOpenXmlPart.OpenXmlPackage;
@@ -36,7 +34,7 @@ internal sealed class PresentationColor
             ? new IndentFonts(aTextDefault).FontOrNull(indentLevel)
             : null;
     }
-
+    
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
         var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
@@ -48,6 +46,49 @@ internal sealed class PresentationColor
         return colorType.RgbColorModelHex != null
             ? colorType.RgbColorModelHex.Val!.Value!
             : colorType.SystemColor!.LastColor!.Value!;
+    }
+
+    private static A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)
+    {
+        return sdkTypedOpenXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            _ => ((SlideMasterPart)sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+        };
+    }
+    
+    private static string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
+    {
+        var colorMap = new Dictionary<string, Func<A.Color2Type>>
+        {
+            ["dk1"] = () => aColorScheme.Dark1Color!,
+            ["lt1"] = () => aColorScheme.Light1Color!,
+            ["dk2"] = () => aColorScheme.Dark2Color!,
+            ["lt2"] = () => aColorScheme.Light2Color!,
+            ["accent1"] = () => aColorScheme.Accent1Color!,
+            ["accent2"] = () => aColorScheme.Accent2Color!,
+            ["accent3"] = () => aColorScheme.Accent3Color!,
+            ["accent4"] = () => aColorScheme.Accent4Color!,
+            ["accent5"] = () => aColorScheme.Accent5Color!,
+            ["accent6"] = () => aColorScheme.Accent6Color!,
+            ["hyperlink"] = () => aColorScheme.Hyperlink!
+        };
+
+        if (colorMap.TryGetValue(fontSchemeColor, out var getColor))
+        {
+            var colorType = getColor();
+            return colorType.RgbColorModelHex != null
+                ? colorType.RgbColorModelHex.Val!.Value!
+                : colorType.SystemColor!.LastColor!.Value!;
+        }
+
+        // Default or fallback color
+        return aColorScheme.Hyperlink!.RgbColorModelHex != null
+            ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
+            : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!;
     }
     
     private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
@@ -115,20 +156,6 @@ internal sealed class PresentationColor
         return this.GetThemeMappedColor(aSchemeColorValue);
     }
     
-    private static A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)
-    {
-        return sdkTypedOpenXmlPart switch
-        {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .ColorScheme!,
-            _ => ((SlideMasterPart)sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
-        };
-    }
-    
-    #endregion APIs
-
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)
     {
         var pColorMap = this.sdkTypedOpenXmlPart switch
@@ -159,36 +186,5 @@ internal sealed class PresentationColor
     {
         var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
         return GetColorFromScheme(aColorScheme, fontSchemeColor);
-    }
-    
-    private static string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
-    {
-        var colorMap = new Dictionary<string, Func<A.Color2Type>>
-        {
-            ["dk1"] = () => aColorScheme.Dark1Color!,
-            ["lt1"] = () => aColorScheme.Light1Color!,
-            ["dk2"] = () => aColorScheme.Dark2Color!,
-            ["lt2"] = () => aColorScheme.Light2Color!,
-            ["accent1"] = () => aColorScheme.Accent1Color!,
-            ["accent2"] = () => aColorScheme.Accent2Color!,
-            ["accent3"] = () => aColorScheme.Accent3Color!,
-            ["accent4"] = () => aColorScheme.Accent4Color!,
-            ["accent5"] = () => aColorScheme.Accent5Color!,
-            ["accent6"] = () => aColorScheme.Accent6Color!,
-            ["hyperlink"] = () => aColorScheme.Hyperlink!
-        };
-
-        if (colorMap.TryGetValue(fontSchemeColor, out var getColor))
-        {
-            var colorType = getColor();
-            return colorType.RgbColorModelHex != null
-                ? colorType.RgbColorModelHex.Val!.Value!
-                : colorType.SystemColor!.LastColor!.Value!;
-        }
-
-        // Default or fallback color
-        return aColorScheme.Hyperlink!.RgbColorModelHex != null
-            ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
-            : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!;
     }
 }

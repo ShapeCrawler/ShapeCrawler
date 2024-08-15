@@ -41,6 +41,38 @@ internal sealed class Shapes : IShapes
     
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
+    private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
+    {
+        if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
+        {
+            var graphicData = pGraphicFrame.Graphic!.GraphicData!;
+            if (graphicData.Uri!.Value!.Equals(
+                    "http://schemas.openxmlformats.org/drawingml/2006/table",
+                    StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsChartPGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
+    {
+        if (pShapeTreeChild is P.GraphicFrame)
+        {
+            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            if (aGraphicData.Uri!.Value!.Equals(
+                    "http://schemas.openxmlformats.org/drawingml/2006/chart",
+                    StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     private List<IShape> ShapesCore()
     {
         var pShapeTree = this.sdkTypedOpenXmlPart switch
@@ -215,37 +247,5 @@ internal sealed class Shapes : IShapes
         }
 
         return shapeList;
-    }
-
-    private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
-    {
-        if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
-        {
-            var graphicData = pGraphicFrame.Graphic!.GraphicData!;
-            if (graphicData.Uri!.Value!.Equals(
-                    "http://schemas.openxmlformats.org/drawingml/2006/table",
-                    StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool IsChartPGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
-    {
-        if (pShapeTreeChild is P.GraphicFrame)
-        {
-            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-            if (aGraphicData.Uri!.Value!.Equals(
-                    "http://schemas.openxmlformats.org/drawingml/2006/chart",
-                    StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
