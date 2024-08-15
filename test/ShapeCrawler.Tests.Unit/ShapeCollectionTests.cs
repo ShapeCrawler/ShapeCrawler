@@ -345,7 +345,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddPicture_adds_svg_picture()
+    public void AddPicture_adds_SVG_picture()
     {
         // Arrange
         var pres = new Presentation();
@@ -360,8 +360,6 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
-
-        // These values are the intrinsic size of the test image
         picture.Height.Should().Be(100);
         picture.Width.Should().Be(100);
         pres.Validate();

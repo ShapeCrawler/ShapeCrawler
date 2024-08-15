@@ -24,7 +24,7 @@ internal readonly ref struct ReferencedPShape
         var pShape = (P.Shape)this.pShapeTreeElement;
         if (this.sdkTypedOpenXmlPart is SlidePart sdkSlidePart)
         {
-            var layoutPShape = this.LayoutPShapeOrNullOf(pShape, sdkSlidePart);
+            var layoutPShape = LayoutPShapeOrNullOf(pShape, sdkSlidePart);
             if (layoutPShape != null && layoutPShape.ShapeProperties!.Transform2D != null)
             {
                 return layoutPShape.ShapeProperties.Transform2D;
@@ -100,7 +100,7 @@ internal readonly ref struct ReferencedPShape
         return null;
     }
     
-    private P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
+    private static P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();

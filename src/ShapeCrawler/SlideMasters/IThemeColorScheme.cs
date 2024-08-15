@@ -83,77 +83,77 @@ internal sealed class ThemeColorScheme : IThemeColorScheme
 
     public string Dark1
     {
-        get => this.GetColor(this.aColorScheme.Dark1Color!);
+        get => GetColor(this.aColorScheme.Dark1Color!);
         set => this.SetColor("dk1", value);
     }
 
     public string Light1
     {
-        get => this.GetColor(this.aColorScheme.Light1Color!);
+        get => GetColor(this.aColorScheme.Light1Color!);
         set => this.SetColor("lt1", value);
     }
 
     public string Dark2
     {
-        get => this.GetColor(this.aColorScheme.Dark2Color!);
+        get => GetColor(this.aColorScheme.Dark2Color!);
         set => this.SetColor("dk2", value);
     }
 
     public string Light2
     {
-        get => this.GetColor(this.aColorScheme.Light2Color!);
+        get => GetColor(this.aColorScheme.Light2Color!);
         set => this.SetColor("lt2", value);
     }
 
     public string Accent1
     {
-        get => this.GetColor(this.aColorScheme.Accent1Color!);
+        get => GetColor(this.aColorScheme.Accent1Color!);
         set => this.SetColor("accent1", value);
     }
 
     public string Accent2
     {
-        get => this.GetColor(this.aColorScheme.Accent2Color!);
+        get => GetColor(this.aColorScheme.Accent2Color!);
         set => this.SetColor("accent2", value);
     }
 
     public string Accent3
     {
-        get => this.GetColor(this.aColorScheme.Accent3Color!);
+        get => GetColor(this.aColorScheme.Accent3Color!);
         set => this.SetColor("accent3", value);
     }
 
     public string Accent4
     {
-        get => this.GetColor(this.aColorScheme.Accent4Color!);
+        get => GetColor(this.aColorScheme.Accent4Color!);
         set => this.SetColor("accent4", value);
     }
 
     public string Accent5
     {
-        get => this.GetColor(this.aColorScheme.Accent5Color!);
+        get => GetColor(this.aColorScheme.Accent5Color!);
         set => this.SetColor("accent5", value);
     }
 
     public string Accent6
     {
-        get => this.GetColor(this.aColorScheme.Accent6Color!);
+        get => GetColor(this.aColorScheme.Accent6Color!);
         set => this.SetColor("accent6", value);
     }
 
     public string Hyperlink
     {
-        get => this.GetColor(this.aColorScheme.Hyperlink!);
+        get => GetColor(this.aColorScheme.Hyperlink!);
         set => this.SetColor("hlink", value);
     }
 
     public string FollowedHyperlink
     {
-        get => this.GetColor(this.aColorScheme.FollowedHyperlinkColor!);
+        get => GetColor(this.aColorScheme.FollowedHyperlinkColor!);
         set => this.SetColor("folHlink", value);
     }
 
-    private string GetColor(A.Color2Type aColor2Type)
+    private static string GetColor(A.Color2Type aColor2Type)
     {
         var color = HexParser.GetWithoutScheme(aColor2Type);
         return color!.Value.Item2;

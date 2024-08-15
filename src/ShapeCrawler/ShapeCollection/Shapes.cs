@@ -115,7 +115,7 @@ internal sealed class Shapes : IShapes
                     continue;
                 }
 
-                if (this.IsChartPGraphicFrame(pShapeTreeElement))
+                if (IsChartPGraphicFrame(pShapeTreeElement))
                 {
                     aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
                     var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
@@ -168,7 +168,7 @@ internal sealed class Shapes : IShapes
                         new Categories(sdkChartPart, cCharts));
                     shapeList.Add(chart);
                 }
-                else if (this.IsTablePGraphicFrame(pShapeTreeElement))
+                else if (IsTablePGraphicFrame(pShapeTreeElement))
                 {
                     var table = new Table(this.sdkTypedOpenXmlPart, pShapeTreeElement);
                     shapeList.Add(table);
@@ -217,7 +217,7 @@ internal sealed class Shapes : IShapes
         return shapeList;
     }
 
-    private bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
+    private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
@@ -233,7 +233,7 @@ internal sealed class Shapes : IShapes
         return false;
     }
 
-    private bool IsChartPGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
+    private static bool IsChartPGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
         if (pShapeTreeChild is P.GraphicFrame)
         {

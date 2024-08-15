@@ -166,7 +166,7 @@ internal sealed class SlideShapes : ISlideShapes
                 pPicture = this.CreatePPicture(imageStream, "Picture");
             }
 
-            var transform2D = pPicture!.ShapeProperties!.Transform2D!;
+            var transform2D = pPicture.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = xEmu;
             transform2D.Offset!.Y = yEmu;
             transform2D.Extents!.Cx = cxEmu;
@@ -175,18 +175,17 @@ internal sealed class SlideShapes : ISlideShapes
         else
         {
             // Not a bitmap, let's try it as an SVG
-            Svg.SvgDocument? doc = null;
+            SvgDocument? doc;
             try
             {
-                doc = Svg.SvgDocument.Open<Svg.SvgDocument>(imageStream);
+                doc = SvgDocument.Open<SvgDocument>(imageStream);
             }
             catch
             {
-                // Neither bitmap nor svg can load this, so that's an error.
-                throw new SCException("Unable to decode image from supplied stream");
+                // Neither Bitmap nor SVG can load this, so that's an error
+                throw new SCException("Unable to decode the image from the supplied stream.");
             }
 
-            // Add it
             imageStream.Position = 0;
             this.AddPictureSvg(doc, imageStream);
         }

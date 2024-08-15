@@ -39,11 +39,11 @@ internal sealed class PresentationColor
 
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
-        var aColorScheme = this.GetColorScheme(this.sdkTypedOpenXmlPart);
+        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
         return this.GetColorValue(aColorScheme, aSchemeColorValue);
     }
     
-    private string GetRgbOrSystemColor(A.Color2Type colorType)
+    private static string GetRgbOrSystemColor(A.Color2Type colorType)
     {
         return colorType.RgbColorModelHex != null
             ? colorType.RgbColorModelHex.Val!.Value!
@@ -54,68 +54,68 @@ internal sealed class PresentationColor
     {
         if(aSchemeColorValue == A.SchemeColorValues.Dark1)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Dark1Color!);
+            return GetRgbOrSystemColor(aColorScheme.Dark1Color!);
         }
 
         if (aSchemeColorValue == A.SchemeColorValues.Light1)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Light1Color!);
+            return GetRgbOrSystemColor(aColorScheme.Light1Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Dark2)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Dark2Color!);
+            return GetRgbOrSystemColor(aColorScheme.Dark2Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Light2)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Light2Color!);
+            return GetRgbOrSystemColor(aColorScheme.Light2Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Accent1)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Accent1Color!);
+            return GetRgbOrSystemColor(aColorScheme.Accent1Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Accent2)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Accent2Color!);
+            return GetRgbOrSystemColor(aColorScheme.Accent2Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Accent3)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Accent3Color!);
+            return GetRgbOrSystemColor(aColorScheme.Accent3Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Accent4)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Accent4Color!);
+            return GetRgbOrSystemColor(aColorScheme.Accent4Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Accent5)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Accent5Color!);
+            return GetRgbOrSystemColor(aColorScheme.Accent5Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Accent6)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Accent6Color!);
+            return GetRgbOrSystemColor(aColorScheme.Accent6Color!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.Hyperlink)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.Hyperlink!);
+            return GetRgbOrSystemColor(aColorScheme.Hyperlink!);
         }
         
         if (aSchemeColorValue == A.SchemeColorValues.FollowedHyperlink)
         {
-            return this.GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
+            return GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
         }
 
         return this.GetThemeMappedColor(aSchemeColorValue);
     }
     
-    private A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)
+    private static A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)
     {
         return sdkTypedOpenXmlPart switch
         {
@@ -157,11 +157,11 @@ internal sealed class PresentationColor
 
     private string GetThemeColorByString(string fontSchemeColor)
     {
-        var aColorScheme = this.GetColorScheme(this.sdkTypedOpenXmlPart);
-        return this.GetColorFromScheme(aColorScheme, fontSchemeColor);
+        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
+        return GetColorFromScheme(aColorScheme, fontSchemeColor);
     }
     
-    private string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
+    private static string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
     {
         var colorMap = new Dictionary<string, Func<A.Color2Type>>
         {
