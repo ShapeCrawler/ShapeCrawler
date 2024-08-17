@@ -195,9 +195,6 @@ internal sealed class Slide : ISlide
         return notesPlaceholder?.TextFrame;
     }
 
-    /// <summary>
-    ///     Add a notes slide, with the specified lines of text.
-    /// </summary>
     private void AddNotesSlide(IEnumerable<string> lines)
     {
         // Build up the children of the text body element

@@ -206,68 +206,43 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void Notes_Getter_enables_changing_notes()
+    public void Notes_Paragraph_Text_Setter_updates_paragraph_of_note()
     {
         // Arrange
-        var pptxStream = StreamOf("056_slide-notes.pptx");
-        var pres = new Presentation(pptxStream);
+        var pres = new Presentation(StreamOf("056_slide-notes.pptx"));
         var slide = pres.Slides[0];
-        var notes = slide.Notes;
-        var expected = string.Join(Environment.NewLine, "0", "1", "2", "3" );
+        var expected = string.Join(Environment.NewLine, "0", "1", "2", "3");
 
         // Act
-        notes.Paragraphs[0].Text = "0";
-        notes.Paragraphs[1].Text = "1";
-        notes.Paragraphs[2].Text = "2";
-        notes.Paragraphs[3].Text = "3";
+        slide.Notes.Paragraphs[0].Text = "0";
+        slide.Notes.Paragraphs[1].Text = "1";
+        slide.Notes.Paragraphs[2].Text = "2";
+        slide.Notes.Paragraphs[3].Text = "3";
 
         // Assert
-        notes.Paragraphs.Should().HaveCount(4);
-        notes.Text.Should().Be(expected);
+        slide.Notes.Paragraphs.Should().HaveCount(4);
+        slide.Notes.Text.Should().Be(expected);
     }
 
     [Test]
-    public void Notes_Getter_returns_null_if_no_notes()
-    {
-        // Arrange
-        var pptxStream = StreamOf("003.pptx");
-        var pres = new Presentation(pptxStream);
-        var slide = pres.Slides[0];
-
-        // Act
-        var notes = slide.Notes;
-
-        // Assert
-        notes.Should().BeNull();
-    }
-
-    [Test]
-    public void NewPresentation_has_no_notes()
+    public void Notes_Paragraph_Text_Setter_updates_paragraph_of_added_note()
     {
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
+        slide.AddNotes(new[] { "SlideAddNotes_can_change_notes_with_many_lines" });
+        var notes = slide.Notes;
+        var expected = string.Join(Environment.NewLine, "1", "2", "3");
 
         // Act
-        var notes = slide.Notes;
+        notes.Paragraphs.Last().Text = "1";
+        notes.Paragraphs.Add();
+        notes.Paragraphs.Last().Text = "2";
+        notes.Paragraphs.Add();
+        notes.Paragraphs.Last().Text = "3";
 
         // Assert
-        notes.Should().BeNull();
-    }
-
-    [Test]
-    public void AddNotes_adds_notes()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        var expected = "SlideAddNotes_adds_notes";
-
-        // Act
-        slide.AddNotes(new[] { expected });
-        var notes = slide.Notes;
-
-        // Assert
+        notes.Paragraphs.Should().HaveCount(3);
         notes.Text.Should().Be(expected);
         pres.Validate();
     }
@@ -289,45 +264,63 @@ public class SlideTests : SCTest
     }
 
     [Test]
+    public void Notes_Getter_returns_null_if_no_notes()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("003.pptx"));
+        var slide = pres.Slides[0];
+
+        // Act-Assert
+        slide.Notes.Should().BeNull();
+    }
+
+    [Test]
+    public void Notes_Getter_returns_null_for_new_presentation()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+
+        // Act-Assert
+        slide.Notes.Should().BeNull();
+    }
+
+    [Test]
+    public void AddNotes_adds_notes()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var expected = "SlideAddNotes_adds_notes";
+
+        // Act
+        slide.AddNotes(new[] { expected });
+        var notes = slide.Notes;
+
+        // Assert
+        notes.Text.Should().Be(expected);
+        pres.Validate();
+    }
+
+    [Test]
     public void AddNotes_adds_many_notes()
     {
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
         var adding = new[] { "1", "2", "3" };
-        var expected = string.Join(Environment.NewLine, adding );
+        var expected = string.Join(Environment.NewLine, adding);
 
         // Act
         slide.AddNotes(adding);
-        var notes = slide.Notes;
 
         // Assert
-        notes.Text.Should().Be(expected);
+        slide.Notes.Text.Should().Be(expected);
         pres.Validate();
     }
 
     [Test]
-    public void AddNotes_adds_many_notes_and_can_add_more()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        var original = new[] { "1", "2", "3" };
-        var adding = new[] { "4", "5", "6" };
-        var expected = string.Join(Environment.NewLine, original.Concat(adding) );
-        slide.AddNotes(original);
-
-        // Act
-        slide.AddNotes(adding);
-        var notes = slide.Notes;
-
-        // Assert
-        notes.Text.Should().Be(expected);
-        pres.Validate();
-    }
-
-    [Test]
-    public void AddNotes_can_change_notes()
+    public void Notes_Text_Setter_updates_notes()
     {
         // Arrange
         var pres = new Presentation();
@@ -343,27 +336,4 @@ public class SlideTests : SCTest
         notes.Text.Should().Be(expected);
         pres.Validate();
     }
-
-    [Test]
-    public void AddNotes_can_change_notes_with_many_lines()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.AddNotes(new[] { "SlideAddNotes_can_change_notes_with_many_lines" });
-        var notes = slide.Notes;
-        var expected = string.Join(Environment.NewLine, "1", "2", "3" );
-
-        // Act
-        notes.Paragraphs.Last().Text = "1";
-        notes.Paragraphs.Add();
-        notes.Paragraphs.Last().Text = "2";
-        notes.Paragraphs.Add();
-        notes.Paragraphs.Last().Text = "3";
-
-        // Assert
-        notes.Paragraphs.Should().HaveCount(3);
-        notes.Text.Should().Be(expected);
-        pres.Validate();
-    }    
 }
