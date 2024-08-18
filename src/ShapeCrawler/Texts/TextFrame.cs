@@ -362,7 +362,7 @@ internal sealed record TextFrame : ITextFrame
 
                 if (wordY > wordMaxY)
                 {
-                    if (paint.TextSize == 5) // Min reduce font size
+                    if (paint.TextSize <= 5) // Min reduce font size
                     {
                         break;
                     }

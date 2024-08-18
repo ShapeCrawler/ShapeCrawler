@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 public interface ISlideShapes : IShapes
 {
     /// <summary>
-    ///     Adds a new shape from other shape.
+    ///     Adds the specified shape.
     /// </summary>
     void Add(IShape shape);
 
