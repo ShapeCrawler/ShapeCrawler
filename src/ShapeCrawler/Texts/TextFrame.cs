@@ -197,8 +197,7 @@ internal sealed record TextFrame : ITextFrame
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
-        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight,
-            this.sdkTextBody.Parent!);
+        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
         this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
     }
 
@@ -339,8 +338,7 @@ internal sealed record TextFrame : ITextFrame
         const int topBottomPadding = defaultPaddingSize * 2;
         var wordMaxY = shapeHeight - topBottomPadding;
 
-        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, shapeWidth - defaultPaddingSize,
-            shapeHeight - defaultPaddingSize);
+        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, shapeWidth - defaultPaddingSize, shapeHeight - defaultPaddingSize);
 
         var spaceWidth = paint.MeasureText(" ");
 
