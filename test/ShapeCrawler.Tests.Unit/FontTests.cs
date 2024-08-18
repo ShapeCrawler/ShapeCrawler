@@ -292,6 +292,25 @@ public class FontTests : SCTest
     }
     
     [Test]
+    public void LatinName_Setter_sets_font_for_the_latin_characters_of_table_cell()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(40, 40, 6, 5);
+        var table = (ITable)slide.Shapes.Last();
+        var cell = table[1, 2];
+        cell.TextFrame.Text = "Test";
+        var font = cell.TextFrame.Paragraphs.First().Portions.First().Font;
+
+        // Act
+        font.LatinName = "Arial";
+        
+        // Assert
+        font.LatinName.Should().Be("Arial");
+    }
+    
+    [Test]
     [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
     [SlideShape("020.pptx", 1, 3, 18)]
     [SlideShape("015.pptx", 2, 61, 18.67)]

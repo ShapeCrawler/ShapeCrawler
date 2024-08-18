@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
 
-internal readonly record struct ReferencedIndent
+internal readonly ref struct ReferencedIndent
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
@@ -27,8 +27,6 @@ internal readonly record struct ReferencedIndent
         this.aText = aText;
         this.presColor = presColor;
     }
-
-    #region APIs
 
     /// <summary>
     ///     Color's hexadecimal representation from Referenced Layout or Master Shape for specified Slide Shape.
@@ -68,6 +66,8 @@ internal readonly record struct ReferencedIndent
         return LayoutFontBoldFlagOrNull();
     }
 
+    internal int? FontSizeOrNull() => this.SlideFontSizeOrNull();
+    
     internal A.LatinFont? ALatinFontOrNull()
     {
         if (this.sdkTypedOpenXmlPart is SlidePart sdkSlidePart)
@@ -78,7 +78,74 @@ internal readonly record struct ReferencedIndent
         return LayoutALatinFontOrNull();
     }
 
-    #endregion APIs
+    private static ColorType? LayoutColorTypeOrNull() => throw new System.NotImplementedException();
+    
+    private static bool? LayoutFontBoldFlagOrNull() => throw new System.NotImplementedException(); 
+    
+    private static A.LatinFont LayoutALatinFontOrNull() => throw new SCException("Not implemented.");
+
+    private static bool ReferencedPShape(
+        IEnumerable<P.Shape> layoutPShapes,
+        P.PlaceholderShape slidePh,
+        out P.Shape? referencedShape)
+    {
+        foreach (var layoutPShape in layoutPShapes)
+        {
+            var layoutPh = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>();
+            if (layoutPh == null)
+            {
+                continue;
+            }
+
+            if (slidePh.Index is not null && layoutPh.Index is not null &&
+                slidePh.Index == layoutPh.Index)
+            {
+                referencedShape = layoutPShape;
+                return true;
+            }
+
+            if (slidePh.Type == null || layoutPh.Type == null)
+            {
+                referencedShape = layoutPShape;
+                return true;
+            }
+
+            if (slidePh.Type == P.PlaceholderValues.Body &&
+                slidePh.Index is not null && layoutPh.Index is not null)
+            {
+                if (slidePh.Index == layoutPh.Index)
+                {
+                    referencedShape = layoutPShape;
+                    return true;
+                }
+            }
+
+            if (slidePh.Type == P.PlaceholderValues.Title && layoutPh.Type == P.PlaceholderValues.Title)
+            {
+                referencedShape = layoutPShape;
+                return true;
+            }
+
+            if (slidePh.Type == P.PlaceholderValues.CenteredTitle && layoutPh.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                referencedShape = layoutPShape;
+                return true;
+            }
+        }
+
+        var byType = layoutPShapes.FirstOrDefault(layoutPShape =>
+            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == slidePh.Type?.Value);
+        if (byType != null)
+        {
+            referencedShape = byType;
+            return true;
+        }
+
+        referencedShape = null;
+        return false;
+    }
 
     /// <summary>
     ///     Tries to get color type from Referenced Master Placeholder of Slide Shape.
@@ -146,68 +213,6 @@ internal readonly record struct ReferencedIndent
         return null;
     }
 
-    private static bool ReferencedPShape(
-        IEnumerable<P.Shape> layoutPShapes,
-        P.PlaceholderShape slidePh,
-        out P.Shape? referencedShape)
-    {
-        foreach (var layoutPShape in layoutPShapes)
-        {
-            var layoutPh = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>();
-            if (layoutPh == null)
-            {
-                continue;
-            }
-
-            if (slidePh.Index is not null && layoutPh.Index is not null &&
-                slidePh.Index == layoutPh.Index)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-
-            if (slidePh.Type == null || layoutPh.Type == null)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-
-            if (slidePh.Type == P.PlaceholderValues.Body &&
-                slidePh.Index is not null && layoutPh.Index is not null)
-            {
-                if (slidePh.Index == layoutPh.Index)
-                {
-                    referencedShape = layoutPShape;
-                    return true;
-                }
-            }
-
-            if (slidePh.Type == P.PlaceholderValues.Title && layoutPh.Type == P.PlaceholderValues.Title)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-            
-            if (slidePh.Type == P.PlaceholderValues.CenteredTitle && layoutPh.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-        }
-
-        var byType = layoutPShapes.FirstOrDefault(layoutPShape =>
-            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == slidePh.Type?.Value);
-        if (byType != null)
-        {
-            referencedShape = byType;
-            return true;
-        }
-
-        referencedShape = null;
-        return false;
-    }
 
     private bool HexFromName(IndentFont? indentFont, out string? referencedShapeColorOrNull)
     {
@@ -390,10 +395,6 @@ internal readonly record struct ReferencedIndent
         return null;
     }
 
-    private static ColorType? LayoutColorTypeOrNull()
-    {
-        throw new System.NotImplementedException();
-    }
 
     private ColorType? SlideColorTypeOrNull()
     {
@@ -431,11 +432,8 @@ internal readonly record struct ReferencedIndent
         return null;
     }
 
-    private static bool? LayoutFontBoldFlagOrNull()
-    {
-        throw new System.NotImplementedException();
-    }
 
+    
     private bool? SlideFontBoldFlagOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
@@ -480,11 +478,6 @@ internal readonly record struct ReferencedIndent
         return null;
     }
     
-    internal int? FontSizeOrNull()
-    {
-        return this.SlideFontSizeOrNull();
-    }
-    
     private int? SlideFontSizeOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
@@ -494,7 +487,7 @@ internal readonly record struct ReferencedIndent
         {
             return null;
         }
-        
+
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (slidePh == null)
@@ -513,11 +506,12 @@ internal readonly record struct ReferencedIndent
                 if (font.HasValue)
                 {
                     return (int)font.Value.Size!;
-                }    
+                }
             }
 
             var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
-            var bodyStyleFonts = new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+            var bodyStyleFonts =
+                new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
             var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
             if (bodyStyleFont.HasValue)
             {
@@ -554,17 +548,17 @@ internal readonly record struct ReferencedIndent
 
         return null;
     }
-
-    private static A.LatinFont LayoutALatinFontOrNull()
-    {
-        throw new SCException("Not implemented.");
-    }
-
+    
     private A.LatinFont? SlideALatinFontOrNull(SlidePart sdkSlidePart)
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
-        var pShape = this.aText.Ancestors<P.Shape>().First();
+        var pShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape == null)
+        {
+            return null;
+        }
+
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholderShape == null)
@@ -580,14 +574,15 @@ internal readonly record struct ReferencedIndent
             {
                 if (pPlaceholderShape.Type!.Value == P.PlaceholderValues.CenteredTitle)
                 {
-                    return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
+                    return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.TitleStyle!
+                        .Level1ParagraphProperties!
                         .GetFirstChild<A.DefaultRunProperties>() !
-                        .GetFirstChild<A.LatinFont>();    
+                        .GetFirstChild<A.LatinFont>();
                 }
-                
+
                 return null;
             }
-            
+
             var fonts = new IndentFonts(refMasterPShape.TextBody!.ListStyle!);
 
             return fonts.ALatinFontOrNull(indentLevel);
