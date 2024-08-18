@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
 
-internal readonly record struct ReferencedIndent
+internal readonly ref struct ReferencedIndent
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
@@ -564,7 +564,11 @@ internal readonly record struct ReferencedIndent
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
-        var pShape = this.aText.Ancestors<P.Shape>().First();
+        var pShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape == null)
+        {
+            return null;
+        }
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholderShape == null)
