@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Texts;
 
-internal class PortionText
+internal sealed record PortionText
 {
     private readonly A.Field aField;
 

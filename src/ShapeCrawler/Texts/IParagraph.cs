@@ -21,12 +21,12 @@ public interface IParagraph
     string Text { get; set; }
 
     /// <summary>
-    ///     Gets collection of paragraph portions.
+    ///     Gets the collection of paragraph portions.
     /// </summary>
     IParagraphPortions Portions { get; }
 
     /// <summary>
-    ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
+    ///     Gets paragraph's bullet. Returns <see langword="null"/> if bullet doesn't exist.
     /// </summary>
     Bullet Bullet { get; }
 
@@ -63,6 +63,7 @@ internal sealed class Paragraph : IParagraph
     private readonly WrappedAParagraph wrappedAParagraph;
 
     private TextAlignment? alignment;
+    private A.Paragraph AParagraph { get; }
 
     internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
         : this(sdkTypedOpenXmlPart, aParagraph, new WrappedAParagraph(aParagraph))
@@ -180,8 +181,6 @@ internal sealed class Paragraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
-    
-    internal A.Paragraph AParagraph { get; }
 
     public void SetFontSize(int fontSize)
     {
