@@ -305,7 +305,6 @@ public class FontTests : SCTest
 
         // Act
         font.LatinName = "Arial";
-        SaveResult(pres);
         
         // Assert
         font.LatinName.Should().Be("Arial");
