@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Fonts;
+using ShapeCrawler.Texts;
 using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -254,7 +255,7 @@ internal readonly ref struct ReferencedIndent
     private string? LayoutColorHexOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -313,7 +314,7 @@ internal readonly ref struct ReferencedIndent
     private string? SlideColorHexOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -399,7 +400,7 @@ internal readonly ref struct ReferencedIndent
     private ColorType? SlideColorTypeOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().First();
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -435,7 +436,7 @@ internal readonly ref struct ReferencedIndent
     private bool? SlideFontBoldFlagOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().First();
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -479,7 +480,7 @@ internal readonly ref struct ReferencedIndent
     private int? SlideFontSizeOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
         if (slidePShape == null)
         {
@@ -550,7 +551,7 @@ internal readonly ref struct ReferencedIndent
     private A.LatinFont? SlideALatinFontOrNull(SlidePart sdkSlidePart)
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
         if (pShape == null)
         {

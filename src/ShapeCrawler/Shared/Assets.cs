@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace ShapeCrawler.Shared;
 
-internal readonly record struct Assets
+internal readonly ref struct Assets
 {
     private readonly Assembly assembly;
 

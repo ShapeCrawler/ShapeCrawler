@@ -6,7 +6,29 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.ShapeCollection;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a collection of presentation sections.
+/// </summary>
+public interface ISections : IReadOnlyCollection<ISection>
+{
+    /// <summary>
+    ///     Gets the section by index.
+    /// </summary>
+    ISection this[int index] { get; }
+
+    /// <summary>
+    ///     Removes specified section.
+    /// </summary>
+    void Remove(ISection removingSection);
+
+    /// <summary>
+    ///     Gets section by section name.
+    /// </summary>
+    ISection GetByName(string sectionName);
+}
 
 internal sealed class Sections : ISections
 {

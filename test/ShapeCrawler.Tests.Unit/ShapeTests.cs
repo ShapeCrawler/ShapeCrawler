@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
-using ShapeCrawler.Placeholders;
 
 namespace ShapeCrawler.Tests.Unit;
 

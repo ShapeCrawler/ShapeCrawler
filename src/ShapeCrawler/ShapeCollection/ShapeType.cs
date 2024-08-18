@@ -1,4 +1,5 @@
-namespace ShapeCrawler.Shapes;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Shape type.

@@ -45,7 +45,7 @@ internal static class FontService
 
                 if (wordY > wordMaxY)
                 {
-                    if (paint.TextSize == Constants.MinReduceFontSize)
+                    if (paint.TextSize == 5) // Min reduce font size
                     {
                         break;
                     }

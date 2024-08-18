@@ -1,13 +1,13 @@
 ﻿using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Wrappers;
+namespace ShapeCrawler.Texts;
 
-internal readonly record struct AParagraphWrap
+internal sealed record WrappedAParagraph
 {
     private readonly A.Paragraph aParagraph;
 
-    internal AParagraphWrap(A.Paragraph aParagraph)
+    internal WrappedAParagraph(A.Paragraph aParagraph)
     {
         this.aParagraph = aParagraph;
     }

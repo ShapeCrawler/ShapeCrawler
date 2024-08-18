@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler.Shared;
+﻿// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents MIME type.

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.SectionCollection;
 using ShapeCrawler.ShapeCollection;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

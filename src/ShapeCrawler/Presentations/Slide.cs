@@ -10,7 +10,6 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -191,7 +190,7 @@ internal sealed class Slide : ISlide
             .FirstOrDefault(x => 
                 x.IsPlaceholder && 
                 x.IsTextHolder && 
-                x.PlaceholderType == Placeholders.PlaceholderType.Text);
+                x.PlaceholderType == PlaceholderType.Text);
         return notesPlaceholder?.TextFrame;
     }
 

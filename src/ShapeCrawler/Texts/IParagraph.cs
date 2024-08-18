@@ -2,10 +2,8 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Texts;
-using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -62,20 +60,20 @@ internal sealed class Paragraph : IParagraph
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
-    private readonly AParagraphWrap aParagraphWrap;
+    private readonly WrappedAParagraph wrappedAParagraph;
 
     private TextAlignment? alignment;
 
     internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
-        : this(sdkTypedOpenXmlPart, aParagraph, new AParagraphWrap(aParagraph))
+        : this(sdkTypedOpenXmlPart, aParagraph, new WrappedAParagraph(aParagraph))
     {
     }
 
-    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
+    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, WrappedAParagraph wrappedAParagraph)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AParagraph = aParagraph;
-        this.aParagraphWrap = aParagraphWrap;
+        this.wrappedAParagraph = wrappedAParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
         this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.AParagraph);
@@ -177,8 +175,8 @@ internal sealed class Paragraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.aParagraphWrap.IndentLevel();
-        set => this.aParagraphWrap.UpdateIndentLevel(value);
+        get => this.wrappedAParagraph.IndentLevel();
+        set => this.wrappedAParagraph.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();

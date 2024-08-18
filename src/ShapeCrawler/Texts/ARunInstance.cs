@@ -1,6 +1,7 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using ShapeCrawler.Services;
+using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Services.Factories;
+namespace ShapeCrawler.Texts;
 
 internal sealed class ARunBuilder
 {
@@ -9,8 +10,7 @@ internal sealed class ARunBuilder
     internal ARunBuilder()
     {
         this.aRun = new A.Run();
-        var aRunPropertiesBuilder = new ARunPropertiesBuilder();
-        var aRunProperties = aRunPropertiesBuilder.Build();
+        var aRunProperties =  new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
         var aText = new A.Text
         {
             Text = string.Empty
@@ -19,8 +19,5 @@ internal sealed class ARunBuilder
         this.aRun.Append(aText);
     }
 
-    internal A.Run Build()
-    {
-        return this.aRun;
-    }
+    internal A.Run Build() => this.aRun;
 }

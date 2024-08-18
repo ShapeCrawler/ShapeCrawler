@@ -5,13 +5,13 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Wrappers;
+namespace ShapeCrawler.ShapeCollection;
 
-internal readonly ref struct PShapeTreeWrap
+internal readonly ref struct WrappedPShapeTree
 {
     private readonly P.ShapeTree pShapeTree;
 
-    internal PShapeTreeWrap(P.ShapeTree pShapeTree)
+    internal WrappedPShapeTree(P.ShapeTree pShapeTree)
     {
         this.pShapeTree = pShapeTree;
     }

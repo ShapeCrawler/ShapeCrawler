@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.ShapeCollection.GroupShapes;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Picture = ShapeCrawler.Drawing.Picture;
