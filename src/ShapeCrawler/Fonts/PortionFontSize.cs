@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Services;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;

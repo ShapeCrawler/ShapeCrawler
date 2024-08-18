@@ -26,7 +26,7 @@ public interface ISeries
     ChartType Type { get; }
 
     /// <summary>
-    ///     Gets collection of chart points.
+    ///     Gets the collection of chart points.
     /// </summary>
     IReadOnlyList<IChartPoint> Points { get; }
 

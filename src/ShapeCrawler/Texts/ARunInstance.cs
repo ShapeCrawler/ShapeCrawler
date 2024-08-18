@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.Services;
-using A = DocumentFormat.OpenXml.Drawing;
+﻿using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 

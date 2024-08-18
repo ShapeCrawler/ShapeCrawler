@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Wrappers;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
@@ -15,7 +15,7 @@ internal sealed class TextPortionFont : ITextPortionFont
     private readonly Lazy<FontColor> fontColor;
     private readonly IFontSize size;
     private readonly ThemeFontScheme themeFontScheme;
-    private readonly ATextWrap sdkATextWrap;
+    private readonly WrappedAText sdkWrappedAText;
 
     internal TextPortionFont(
         OpenXmlPart sdkTypedOpenXmlPart,
@@ -40,7 +40,7 @@ internal sealed class TextPortionFont : ITextPortionFont
         this.fontColor = new Lazy<FontColor>(() => new FontColor(sdkTypedOpenXmlPart, this.aText));
         this.size = size;
         this.themeFontScheme = themeFontScheme;
-        this.sdkATextWrap = new ATextWrap(sdkTypedOpenXmlPart, aText);
+        this.sdkWrappedAText = new WrappedAText(sdkTypedOpenXmlPart, aText);
     }
 
     #region Public APIs
@@ -67,8 +67,8 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     public string EastAsianName
     {
-        get => this.sdkATextWrap.EastAsianName();
-        set => this.sdkATextWrap.UpdateEastAsianName(value);
+        get => this.sdkWrappedAText.EastAsianName();
+        set => this.sdkWrappedAText.UpdateEastAsianName(value);
     }
 
     public bool IsBold

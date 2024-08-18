@@ -7,7 +7,6 @@ using ShapeCrawler.Fonts;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Texts;
-using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

@@ -19,7 +19,7 @@ public interface IAxis
     double Maximum { get; set; }
 }
 
-internal sealed class Axis : IAxis
+internal sealed record Axis : IAxis
 {
     private const double DefaultMax = 6;
     private readonly C.Scaling cScaling;

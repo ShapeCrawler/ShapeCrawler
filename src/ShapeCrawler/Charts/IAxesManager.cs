@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler;
+﻿// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
@@ -13,7 +14,7 @@ public interface IAxesManager
     IAxis? ValueAxis { get; }
 }
 
-internal sealed class AxesManager : IAxesManager
+internal sealed record AxesManager : IAxesManager
 {
     private readonly C.PlotArea cPlotArea;
 
