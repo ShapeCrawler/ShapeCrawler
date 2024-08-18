@@ -431,8 +431,6 @@ internal readonly ref struct ReferencedIndent
 
         return null;
     }
-
-
     
     private bool? SlideFontBoldFlagOrNull()
     {
