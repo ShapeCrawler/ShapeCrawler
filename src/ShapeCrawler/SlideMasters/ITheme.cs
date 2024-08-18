@@ -1,7 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using DocumentFormat.OpenXml.Packaging;
 
-using DocumentFormat.OpenXml.Packaging;
-
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 using A = DocumentFormat.OpenXml.Drawing;
@@ -17,7 +16,7 @@ public interface ITheme
     IThemeFontScheme FontScheme { get; }
 
     /// <summary>
-    ///     Gets color scheme.
+    ///     Gets the color scheme.
     /// </summary>
     IThemeColorScheme ColorScheme { get; }
 }

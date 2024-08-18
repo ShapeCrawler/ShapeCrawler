@@ -5,7 +5,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 

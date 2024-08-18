@@ -1,13 +1,13 @@
 using ShapeCrawler.Fonts;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Wrappers;
+namespace ShapeCrawler.SlideMasters;
 
-internal sealed record PSlideMasterWrap
+internal readonly ref struct WrappedPSlideMaster
 {
     private readonly P.SlideMaster pSlideMaster;
 
-    internal PSlideMasterWrap(P.SlideMaster pSlideMaster)
+    internal WrappedPSlideMaster(P.SlideMaster pSlideMaster)
     {
         this.pSlideMaster = pSlideMaster;
     }

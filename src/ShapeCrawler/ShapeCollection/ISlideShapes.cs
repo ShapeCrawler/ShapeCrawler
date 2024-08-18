@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using ShapeCrawler.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -10,7 +9,7 @@ namespace ShapeCrawler;
 public interface ISlideShapes : IShapes
 {
     /// <summary>
-    ///     Adds a new shape from other shape.
+    ///     Adds the specified shape.
     /// </summary>
     void Add(IShape shape);
 

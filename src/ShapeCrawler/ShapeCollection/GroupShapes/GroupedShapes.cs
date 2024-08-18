@@ -7,9 +7,9 @@ using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Picture = ShapeCrawler.Drawing.Picture;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.ShapeCollection.GroupShapes;
 
-internal sealed class GroupedShapes : IShapes
+internal sealed record GroupedShapes : IShapes
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;

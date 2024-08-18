@@ -4,7 +4,6 @@ using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
-using ShapeCrawler.Services;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -13,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextFrame : ITextFrame
+internal sealed record TextFrame : ITextFrame
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkTextBody;
@@ -45,7 +44,7 @@ internal sealed class TextFrame : ITextFrame
 
             return sb.ToString();
         }
-        
+
         set
         {
             var paragraphs = this.Paragraphs.ToList();
@@ -93,7 +92,7 @@ internal sealed class TextFrame : ITextFrame
 
             return AutofitType.None;
         }
-        
+
         set
         {
             var currentType = this.AutofitType;
@@ -101,12 +100,12 @@ internal sealed class TextFrame : ITextFrame
             {
                 return;
             }
-            
+
             var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
             var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
             var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
             var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
-            
+
             switch (value)
             {
                 case AutofitType.None:
@@ -130,7 +129,7 @@ internal sealed class TextFrame : ITextFrame
                     this.ResizeParentShape();
                     break;
                 }
-            
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
@@ -162,9 +161,9 @@ internal sealed class TextFrame : ITextFrame
     }
 
     public bool TextWrapped => this.IsTextWrapped();
-    
+
     public string SDKXPath => new XmlPath(this.sdkTextBody).XPath;
-    
+
     public void ResizeParentShape()
     {
         if (this.AutofitType != AutofitType.Resize)
@@ -295,16 +294,16 @@ internal sealed class TextFrame : ITextFrame
 
         var parent = this.sdkTextBody.Parent!;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
-        var fontSize = FontService.GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
+        var fontSize = GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
 
         var paragraphInternal = (Paragraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
     }
 
     private void UpdateShapeWidthIfNeeded(
-        SKPaint paint, 
-        decimal lMarginPixel, 
-        decimal rMarginPixel, 
+        SKPaint paint,
+        decimal lMarginPixel,
+        decimal rMarginPixel,
         TextFrame textFrame,
         OpenXmlElement parent)
     {
@@ -316,13 +315,77 @@ internal sealed class TextFrame : ITextFrame
                 .First().Text;
             var paraTextRect = default(SKRect);
             var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
-            
+
             // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
             // 96/72=1.4
             const double Scale = 1.4;
             var newWidth = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
             new ShapeSize(this.sdkTypedOpenXmlPart, parent).UpdateWidth(newWidth);
         }
+    }
+
+    private static int GetAdjustedFontSize(string text, ITextPortionFont font, int shapeWidth, int shapeHeight)
+    {
+        var surface = SKSurface.Create(new SKImageInfo(shapeWidth, shapeHeight));
+        var canvas = surface.Canvas;
+
+        var paint = new SKPaint();
+        var fontSize = font.Size;
+        paint.TextSize = (float)fontSize;
+        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
+        paint.IsAntialias = true;
+        const int defaultPaddingSize = 10;
+        const int topBottomPadding = defaultPaddingSize * 2;
+        var wordMaxY = shapeHeight - topBottomPadding;
+
+        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, shapeWidth - defaultPaddingSize, shapeHeight - defaultPaddingSize);
+
+        var spaceWidth = paint.MeasureText(" ");
+
+        var wordX = rect.Left;
+        var wordY = rect.Top + paint.TextSize;
+
+        var words = text.Split(' ').ToList();
+        for (var i = 0; i < words.Count;)
+        {
+            var word = words[i];
+            var wordWidth = paint.MeasureText(word);
+            if (wordWidth <= rect.Right - wordX)
+            {
+                canvas.DrawText(word, wordX, wordY, paint);
+                wordX += wordWidth + spaceWidth;
+            }
+            else
+            {
+                wordY += paint.FontSpacing;
+                wordX = rect.Left;
+
+                if (wordY > wordMaxY)
+                {
+                    if (paint.TextSize <= 5) // Min reduce font size
+                    {
+                        break;
+                    }
+
+                    paint.TextSize = --paint.TextSize;
+                    wordX = rect.Left;
+                    wordY = rect.Top + paint.TextSize;
+                    i = -1;
+                }
+                else
+                {
+                    wordX += wordWidth + spaceWidth;
+                    canvas.DrawText(word, wordX, wordY, paint);
+                }
+            }
+
+            i++;
+        }
+
+        const int dpi = 96;
+        var points = Math.Round(paint.TextSize * 72 / dpi, 0);
+
+        return (int)points;
     }
 
     private void UpdateShapeHeight(

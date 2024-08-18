@@ -5,7 +5,8 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Wrappers;
+using ShapeCrawler.SlideMasters;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -44,7 +45,7 @@ internal sealed class FontColor : IFontColor
 
             // TryFromTextBody()
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+            var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
             var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
@@ -97,7 +98,7 @@ internal sealed class FontColor : IFontColor
 
             // From TextBody
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+            var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()
                 !).FontOrNull(indentLevel);
@@ -130,7 +131,7 @@ internal sealed class FontColor : IFontColor
 
             // From Common Placeholder
             var pSlideMasterWrap =
-                new PSlideMasterWrap(pSlideMaster);
+                new WrappedPSlideMaster(pSlideMaster);
             var masterIndentFont = pSlideMasterWrap.BodyStyleFontOrNull(indentLevel);
             if (this.TryFromIndentFont(masterIndentFont, out var masterColor))
             {

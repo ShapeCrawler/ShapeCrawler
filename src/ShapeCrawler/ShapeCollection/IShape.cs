@@ -1,8 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
 
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;

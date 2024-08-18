@@ -1,10 +1,7 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Placeholders;
-using ShapeCrawler.Services.Factories;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Shared;
-using ShapeCrawler.Wrappers;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -37,7 +34,7 @@ internal class PortionFontSize : IFontSize
             return size.Value / HalfPointsInPoint;
         }
 
-        var indentLevel = new AParagraphWrap(this.aText.Ancestors<A.Paragraph>().First()).IndentLevel();
+        var indentLevel = new WrappedAParagraph(this.aText.Ancestors<A.Paragraph>().First()).IndentLevel();
         SlideMasterPart sdkSlideMasterPart;
         if (this.sdkTypedOpenXmlPart is SlideMasterPart)
         {
@@ -118,8 +115,8 @@ internal class PortionFontSize : IFontSize
                 return listStyleFont.Value.Size!.Value / HalfPointsInPoint;
             }
         }
-
-        return Constants.DefaultFontSize;
+        
+        return 18; // default: https://bit.ly/37Tjjlo
     }
 
     void IFontSize.Update(decimal points)
@@ -128,8 +125,7 @@ internal class PortionFontSize : IFontSize
         var aRunPr = parent.GetFirstChild<A.RunProperties>();
         if (aRunPr == null)
         {
-            var builder = new ARunPropertiesBuilder();
-            aRunPr = builder.Build();
+            aRunPr =  new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
             parent.InsertAt(aRunPr, 0);
         }
 

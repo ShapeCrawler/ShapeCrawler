@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.SectionCollection;
 
 internal sealed class SectionSlides : IReadOnlyList<ISlide>
 {

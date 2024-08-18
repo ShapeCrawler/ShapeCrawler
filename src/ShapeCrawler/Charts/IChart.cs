@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 public interface IChart : IShape
 {
     /// <summary>
-    ///     Gets chart type.
+    ///     Gets the chart type.
     /// </summary>
     ChartType Type { get; }
 

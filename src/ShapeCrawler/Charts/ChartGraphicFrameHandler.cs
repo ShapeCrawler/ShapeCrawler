@@ -8,9 +8,9 @@ using C14 = DocumentFormat.OpenXml.Office2010.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Services;
+namespace ShapeCrawler.Charts;
 
-internal sealed class ChartGraphicFrameHandler
+internal readonly ref struct ChartGraphicFrameHandler
 {
     internal P.GraphicFrame Create(OpenXmlPart typedOpenXmlPart)
     {

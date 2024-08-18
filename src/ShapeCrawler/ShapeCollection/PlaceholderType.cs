@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler.Placeholders;
+﻿// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Placeholder types.

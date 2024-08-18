@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Wrappers;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
@@ -18,6 +17,6 @@ internal abstract class CopyableShape : Shape
         P.ShapeTree pShapeTree,
         IEnumerable<string> existingShapeNames)
     {
-        new PShapeTreeWrap(pShapeTree).Add(this.pShapeTreeElement);
+        new WrappedPShapeTree(pShapeTree).Add(this.pShapeTreeElement);
     }
 }

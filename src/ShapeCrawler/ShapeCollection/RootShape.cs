@@ -1,8 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
-using ShapeCrawler.Wrappers;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -52,7 +50,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)this.pShape.Parent!;
-        var autoShapes = new PShapeTreeWrap(pShapeTree);
+        var autoShapes = new WrappedPShapeTree(pShapeTree);
         autoShapes.Add(this.pShape);
     }
 

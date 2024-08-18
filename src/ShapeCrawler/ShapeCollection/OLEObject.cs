@@ -1,13 +1,11 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.ShapeCollection;
 
-internal class OLEObject : ShapeCollection.Shape
+internal sealed class OLEObject : Shape
 {
     private readonly P.GraphicFrame pGraphicFrame;
 

@@ -1,14 +1,14 @@
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Wrappers;
+namespace ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-internal sealed class ATextWrap
+internal sealed record WrappedAText
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal ATextWrap(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal WrappedAText(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;
