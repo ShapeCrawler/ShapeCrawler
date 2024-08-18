@@ -21,12 +21,12 @@ public interface IParagraph
     string Text { get; set; }
 
     /// <summary>
-    ///     Gets collection of paragraph portions.
+    ///     Gets the collection of paragraph portions.
     /// </summary>
     IParagraphPortions Portions { get; }
 
     /// <summary>
-    ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
+    ///     Gets paragraph's bullet. Returns <see langword="null"/> if bullet doesn't exist.
     /// </summary>
     Bullet Bullet { get; }
 
@@ -61,9 +61,10 @@ internal sealed class Paragraph : IParagraph
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
     private readonly WrappedAParagraph wrappedAParagraph;
+    private readonly A.Paragraph aParagraph;
 
     private TextAlignment? alignment;
-
+    
     internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
         : this(sdkTypedOpenXmlPart, aParagraph, new WrappedAParagraph(aParagraph))
     {
@@ -72,11 +73,11 @@ internal sealed class Paragraph : IParagraph
     private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, WrappedAParagraph wrappedAParagraph)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.AParagraph = aParagraph;
+        this.aParagraph = aParagraph;
         this.wrappedAParagraph = wrappedAParagraph;
-        this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
+        this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.AParagraph);
+        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.aParagraph);
     }
 
     public bool IsRemoved { get; set; }
@@ -92,8 +93,8 @@ internal sealed class Paragraph : IParagraph
             }
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
-            var baseARun = this.AParagraph.GetFirstChild<A.Run>() !;
-            var remainingRuns = this.AParagraph.OfType<A.Run>().Where(run => run != baseARun).ToList();
+            var baseARun = this.aParagraph.GetFirstChild<A.Run>() !;
+            var remainingRuns = this.aParagraph.OfType<A.Run>().Where(run => run != baseARun).ToList();
             foreach (var removingRun in remainingRuns)
             {
                 removingRun.Remove();
@@ -122,7 +123,7 @@ internal sealed class Paragraph : IParagraph
             }
 
             // Resize
-            var sdkTextBody = this.AParagraph.Parent!;
+            var sdkTextBody = this.aParagraph.Parent!;
             var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
             textFrame.ResizeParentShape();
         }
@@ -141,10 +142,10 @@ internal sealed class Paragraph : IParagraph
                 return this.alignment.Value;
             }
 
-            var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment;
+            var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.AParagraph.Ancestors<P.Shape>().First());
+                var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.aParagraph.Ancestors<P.Shape>().First());
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextAlignment.Center;
@@ -180,8 +181,6 @@ internal sealed class Paragraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
-    
-    internal A.Paragraph AParagraph { get; }
 
     public void SetFontSize(int fontSize)
     {
@@ -204,11 +203,11 @@ internal sealed class Paragraph : IParagraph
         }
     }
 
-    public void Remove() => this.AParagraph.Remove();
+    public void Remove() => this.aParagraph.Remove();
     
-    private ISpacing GetSpacing() => new Spacing(this, this.AParagraph);
+    private ISpacing GetSpacing() => new Spacing(this, this.aParagraph);
 
-    private Bullet GetBullet() => new Bullet(this.AParagraph.ParagraphProperties!);
+    private Bullet GetBullet() => new Bullet(this.aParagraph.ParagraphProperties!);
 
     private string ParseText()
     {
@@ -231,16 +230,16 @@ internal sealed class Paragraph : IParagraph
             _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
         };
 
-        if (this.AParagraph.ParagraphProperties == null)
+        if (this.aParagraph.ParagraphProperties == null)
         {
-            this.AParagraph.ParagraphProperties = new A.ParagraphProperties
+            this.aParagraph.ParagraphProperties = new A.ParagraphProperties
             {
                 Alignment = new EnumValue<A.TextAlignmentTypeValues>(aTextAlignmentTypeValue)
             };
         }
         else
         {
-            this.AParagraph.ParagraphProperties.Alignment =
+            this.aParagraph.ParagraphProperties.Alignment =
                 new EnumValue<A.TextAlignmentTypeValues>(aTextAlignmentTypeValue);
         }
 

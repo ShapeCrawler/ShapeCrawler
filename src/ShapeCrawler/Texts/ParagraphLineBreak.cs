@@ -4,7 +4,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class ParagraphLineBreak : IParagraphPortion
+internal sealed record ParagraphLineBreak : IParagraphPortion
 {
     private readonly A.Break aBreak;
     
