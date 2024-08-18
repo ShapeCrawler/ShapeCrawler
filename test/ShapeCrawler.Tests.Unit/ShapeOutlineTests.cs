@@ -56,17 +56,24 @@ public class ShapeOutlineTests : SCTest
 
     [Test]
     [SlideShape("autoshape-grouping.pptx", 1, "TextBox 6", "000000")]
-    public void Color_Getter_returns_outline_color_in_hex_format(IShape shape, string expectedColor)
+    public void HexColor_Getter_returns_outline_color_in_hex_format(IShape shape, string expectedColor)
     {
         // Arrange
-        var autoShape = (IShape)shape;
-        var outline = autoShape.Outline;
+        var outline = shape.Outline;
         
-        // Act
-        var outlineColor = outline.HexColor;
+        // Act-Assert
+        outline.HexColor.Should().Be(expectedColor);
+    }
+    
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 4")]
+    public void HexColor_Getter_returns_null_for_NoOutline(IShape shape)
+    {
+        // Arrange
+        var outline = shape.Outline;
         
-        // Assert
-        outlineColor.Should().Be(expectedColor);
+        // Act-Assert
+        outline.HexColor.Should().BeNull();
     }
     
     [Test]
@@ -101,19 +108,5 @@ public class ShapeOutlineTests : SCTest
         // Assert
         outline.HexColor.Should().BeNull();
         pres.Validate();
-    }
-
-    [Test]
-    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 4")]
-    public void Color_Getter_returns_no_outline_color_as_null(IShape shape)
-    {
-        // Arrange
-        var outline = shape.Outline;
-        
-        // Act
-        var outlineColor = outline.HexColor;
-        
-        // Assert
-        outlineColor.Should().BeNull();
     }
 }
