@@ -161,8 +161,10 @@ internal sealed class Slides : ISlides
 
         NormalizeLayouts(sourceSlidePart);
 
-        var addedSlidePart = AddSlidePart(targetPresPart, sourceSlidePart, out var addedSlideMasterPart);
-
+        AddSlidePart(targetPresPart, sourceSlidePart);
+        var addedSlidePart = targetPresPart.SlideParts.Last();
+        var addedSlideMasterPart = targetPresPart.SlideMasterParts.Last();
+            
         AddNewSlideId(targetSdkPres, currentSdkPresDocument, addedSlidePart);
         var masterId = AddNewSlideMasterId(targetSdkPres, currentSdkPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(currentSdkPresDocument, masterId);
@@ -174,21 +176,19 @@ internal sealed class Slides : ISlides
         // }
     }
 
-    private static SlidePart AddSlidePart(
-        PresentationPart targetPresPart,
-        SlidePart sourceSlidePart,
-        out SlideMasterPart addedSlideMasterPart)
+    private static void AddSlidePart(PresentationPart targetPresPart, SlidePart sourceSlidePart)
     {
         var rId = targetPresPart.NextRelationshipId();
         var addedSlidePart = targetPresPart.AddPart(sourceSlidePart, rId);
-        var sdkNoticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
-        if (sdkNoticePart != null)
+        
+        var notesSlidePartAddedSlidePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
+        if (notesSlidePartAddedSlidePart != null)
         {
-            addedSlidePart.DeletePart(sdkNoticePart);
+            addedSlidePart.DeletePart(notesSlidePartAddedSlidePart);
         }
 
         rId = targetPresPart.NextRelationshipId();
-        addedSlideMasterPart = targetPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
+        var addedSlideMasterPart = targetPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
         var layoutIdList = addedSlideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
         foreach (var lId in layoutIdList.ToList())
         {
@@ -197,8 +197,6 @@ internal sealed class Slides : ISlides
                 lId.Remove();
             }
         }
-
-        return addedSlidePart;
     }
 
     private static P.TextBody ResolveTextBody(P.Shape shape)
