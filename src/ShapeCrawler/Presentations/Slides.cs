@@ -150,40 +150,46 @@ internal sealed class Slides : ISlides
         var tempStream = new MemoryStream();
         var currentSdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
         var addingSlideSdkPresDocumentCopy =
-            (PresentationDocument)addingSlideInternal.SDKPresentationDocument().Clone(tempStream);
+            addingSlideInternal.SDKPresentationDocument().Clone(tempStream);
 
         var addingSlideSdkPresPart = addingSlideSdkPresDocumentCopy.PresentationPart!;
-        var destPresPart = currentSdkPresDocument.PresentationPart!;
-        var destSdkPres = destPresPart.Presentation;
+        var targetPresPart = currentSdkPresDocument.PresentationPart!;
+        var targetSdkPres = targetPresPart.Presentation;
         var sourceSlideIndex = slide.Number - 1;
         var sourceSlideId = (P.SlideId)addingSlideSdkPresPart.Presentation.SlideIdList!.ChildElements[sourceSlideIndex];
         var sourceSlidePart = (SlidePart)addingSlideSdkPresPart.GetPartById(sourceSlideId.RelationshipId!);
 
         NormalizeLayouts(sourceSlidePart);
 
-        var addedSlidePart = AddSlidePart(destPresPart, sourceSlidePart, out var addedSlideMasterPart);
+        var addedSlidePart = AddSlidePart(targetPresPart, sourceSlidePart, out var addedSlideMasterPart);
 
-        AddNewSlideId(destSdkPres, currentSdkPresDocument, addedSlidePart);
-        var masterId = AddNewSlideMasterId(destSdkPres, currentSdkPresDocument, addedSlideMasterPart);
+        AddNewSlideId(targetSdkPres, currentSdkPresDocument, addedSlidePart);
+        var masterId = AddNewSlideMasterId(targetSdkPres, currentSdkPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(currentSdkPresDocument, masterId);
+        
+        // if (sourceSlidePart.NotesSlidePart != null)
+        // {
+        //     var addedNotesSlidePart = addedSlidePart.AddNewPart<NotesSlidePart>();
+        //     addedNotesSlidePart.FeedData(sourceSlidePart.NotesSlidePart.GetStream());
+        // }
     }
 
     private static SlidePart AddSlidePart(
-        PresentationPart destPresPart,
+        PresentationPart targetPresPart,
         SlidePart sourceSlidePart,
         out SlideMasterPart addedSlideMasterPart)
     {
-        var rId = destPresPart.NextRelationshipId();
-        var addedSlidePart = destPresPart.AddPart(sourceSlidePart, rId);
+        var rId = targetPresPart.NextRelationshipId();
+        var addedSlidePart = targetPresPart.AddPart(sourceSlidePart, rId);
         var sdkNoticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
         if (sdkNoticePart != null)
         {
             addedSlidePart.DeletePart(sdkNoticePart);
         }
 
-        rId = destPresPart.NextRelationshipId();
-        addedSlideMasterPart = destPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
-        var layoutIdList = addedSlideMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
+        rId = targetPresPart.NextRelationshipId();
+        addedSlideMasterPart = targetPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
+        var layoutIdList = addedSlideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
         foreach (var lId in layoutIdList.ToList())
         {
             if (!addedSlideMasterPart.TryGetPartById(lId!.RelationshipId!, out _))
