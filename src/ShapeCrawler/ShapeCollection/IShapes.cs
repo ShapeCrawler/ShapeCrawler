@@ -36,4 +36,11 @@ public interface IShapes : IReadOnlyList<IShape>
     ///     Gets shape by name.
     /// </summary>
     IShape GetByName(string name);
+    
+    /// <summary>
+    ///     Gets shape by specified type.
+    /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
+    IShape Last<T>()
+        where T : IShape;
 }

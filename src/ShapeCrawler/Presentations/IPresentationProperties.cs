@@ -21,19 +21,24 @@ public interface IPresentationProperties
     decimal SlideHeight { get; set; }
 
     /// <summary>
-    ///     Gets collection of the slide masters.
+    ///     Gets the collection of the slide masters.
     /// </summary>
     ISlideMasterCollection SlideMasters { get; }
     
     /// <summary>
-    ///     Gets section collection.
+    ///     Gets the collection of sections.
     /// </summary>
     ISections Sections { get; }
-
+    
     /// <summary>
     ///     Gets Header and Footer manager.
     /// </summary>
     IFooter Footer { get; }
+    
+    /// <summary>
+    ///     Returns slide with specified number.
+    /// </summary>
+    ISlide Slide(int number);
 
     /// <summary>
     ///     Saves presentation.

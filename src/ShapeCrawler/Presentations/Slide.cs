@@ -59,10 +59,7 @@ internal sealed class Slide : ISlide
         set => this.SetCustomData(value);
     }
 
-    public ITextFrame? Notes
-    {
-        get => this.GetNotes();
-    }
+    public ITextFrame? Notes => this.GetNotes();
 
     public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && !this.SDKSlidePart.Slide.Show.Value;
 
@@ -78,11 +75,11 @@ internal sealed class Slide : ISlide
             this.SDKSlidePart.Slide.Show = false;
         }
     }
-
-    public IShape ShapeWithName(string autoShape) => this.Shapes.GetByName<IShape>(autoShape);
-
-    public ITable TableWithName(string table) => this.Shapes.GetByName<ITable>(table);
     
+    public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
+
+    public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
+
     public void SaveAsPng(Stream stream)
     {
         var imageInfo = new SKImageInfo((int)this.slideSize.Width(), (int)this.slideSize.Height());

@@ -62,19 +62,21 @@ public interface ISlide
     bool Hidden();
     
     /// <summary>
-    ///     Gets shape by name.
-    /// </summary>
-    IShape ShapeWithName(string autoShape);
-    
-    /// <summary>
     ///     Gets table by name.
     /// </summary>
-    ITable TableWithName(string table);
+    ITable Table(string name);
     
     /// <summary>
     ///     Adds specified lines to the slide notes.
     /// </summary>
     void AddNotes(IEnumerable<string> lines);
+    
+    /// <summary>
+    ///     Returns shape with specified name.
+    /// </summary>
+    /// <param name="name">Shape name.</param>
+    /// <returns></returns>
+    IShape Shape(string name);
     
 #if DEBUG
     

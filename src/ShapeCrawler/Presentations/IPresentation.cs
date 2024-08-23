@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 public interface IPresentation : IPresentationProperties
 {
     /// <summary>
-    ///     Saves presentation in specified file path.
+    ///     Saves presentation in the specified file path.
     /// </summary>
     void SaveAs(string path);
 

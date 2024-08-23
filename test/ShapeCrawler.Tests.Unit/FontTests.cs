@@ -425,7 +425,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(StreamOf(presentation));
-        var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
+        var font = pres.Slides[slideNumber - 1].Shape(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
         var oldOffsetSize = font.OffsetEffect;
 

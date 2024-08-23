@@ -66,7 +66,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case005_text-frame.pptx"));
-            var textFrame = pres.Slides[0].ShapeWithName("TextBox 1").TextFrame;
+            var textFrame = pres.Slides[0].Shape("TextBox 1").TextFrame;
             var modifiedPres = new MemoryStream();
 
             // Act
@@ -89,7 +89,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf("001.pptx"));
-            var textFrame = pres.Slides[0].ShapeWithName("TextBox 8").TextFrame;
+            var textFrame = pres.Slide(1).Shape("TextBox 8").TextFrame;
             var newText = "Shrink text on overflow";
 
             // Act
@@ -106,7 +106,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
-            var shape = pres.Slides[0].ShapeWithName("AutoShape 4");
+            var shape = pres.Slides[0].Shape("AutoShape 4");
             var textFrame = shape.TextFrame;
 
             // Act
@@ -140,7 +140,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
-            var shape = pres.Slides[0].ShapeWithName("AutoShape 6");
+            var shape = pres.Slide(1).Shape("AutoShape 6");
             var textFrame = shape.TextFrame!;
 
             // Act

@@ -57,12 +57,15 @@ public sealed class Presentation : IPresentation
     
     /// <inheritdoc />
     public ISections Sections => this.validateable.Sections;
-   
+
     /// <inheritdoc />
     public IFooter Footer => this.validateable.Footer;
     
     /// <inheritdoc />
     public void Save() => this.validateable.Save();
+    
+    /// <inheritdoc />
+    public ISlide Slide(int number) => this.validateable.Slide(number);
     
     /// <summary>
     ///     Gets a presentation byte array.
