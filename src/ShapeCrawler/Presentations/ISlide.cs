@@ -64,7 +64,7 @@ public interface ISlide
     /// <summary>
     ///     Gets table by name.
     /// </summary>
-    ITable Table(string table);
+    ITable Table(string name);
     
     /// <summary>
     ///     Adds specified lines to the slide notes.
