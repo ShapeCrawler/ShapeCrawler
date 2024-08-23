@@ -54,7 +54,9 @@ internal sealed class ShapeFillImage : IImage
     public byte[] AsByteArray()
     {
         var stream = this.sdkImagePart.GetStream();
+        var bytes = new WrappedStream(stream).AsBytes();
+        stream.Close();
         
-        return new WrappedStream(stream).AsBytes();
+        return bytes;
     }
 }
