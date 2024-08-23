@@ -4,7 +4,7 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents collection of grouped shapes.
+///     Represents a collection of shapes.
 /// </summary>
 public interface IShapes : IReadOnlyList<IShape>
 {

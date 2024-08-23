@@ -134,7 +134,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Slides_Add_add_should_copy_notes()
+    public void Slides_Add_should_copy_notes()
     {
         // Arrange
         var sourcePres = new Presentation(StreamOf("008.pptx"));
@@ -145,7 +145,7 @@ public class PresentationTests : SCTest
         destPres.Slides.Add(copyingSlide);
 
         // Assert
-        destPres.Slides.Last().Notes.Text.Should().Be("Test note");
+        destPres.Slides.Last().Notes!.Text.Should().Be("Test note");
         destPres.Validate();
     }
 

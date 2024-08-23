@@ -148,14 +148,14 @@ internal sealed class Slides : ISlides
     {
         var sourceSlide = (Slide)slide;
         var sourcePresStream = new MemoryStream();
-        var targetSdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
+        var targetPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
         var sourceSlidePresDocument = sourceSlide.SDKPresentationDocument().Clone(sourcePresStream);
 
-        var sourceSlideSdkPresPart = sourceSlidePresDocument.PresentationPart!;
-        var targetPresPart = targetSdkPresDocument.PresentationPart!;
-        var targetSdkPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlideSdkPresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
-        var sourceSlidePart = (SlidePart)sourceSlideSdkPresPart.GetPartById(sourceSlideId.RelationshipId!);
+        var sourceSlidePresPart = sourceSlidePresDocument.PresentationPart!;
+        var targetPresPart = targetPresDocument.PresentationPart!;
+        var targetPres = targetPresPart.Presentation;
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
         NormalizeLayouts(sourceSlidePart);
 
@@ -164,15 +164,9 @@ internal sealed class Slides : ISlides
         var addedSlidePart = wrappedPresentationPart.Last<SlidePart>();
         var addedSlideMasterPart = wrappedPresentationPart.Last<SlideMasterPart>();
 
-        AddNewSlideId(targetSdkPresDocument, addedSlidePart);
-        var masterId = AddNewSlideMasterId(targetSdkPres, targetSdkPresDocument, addedSlideMasterPart);
-        AdjustLayoutIds(targetSdkPresDocument, masterId);
-
-        // if (sourceSlidePart.NotesSlidePart != null)
-        // {
-        //     var addedNotesSlidePart = addedSlidePart.AddNewPart<NotesSlidePart>();
-        //     addedNotesSlidePart.FeedData(sourceSlidePart.NotesSlidePart.GetStream());
-        // }
+        AddNewSlideId(targetPresDocument, addedSlidePart);
+        var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
+        AdjustLayoutIds(targetPresDocument, masterId);
     }
     
     private static P.TextBody ResolveTextBody(P.Shape shape)
