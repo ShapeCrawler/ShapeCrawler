@@ -111,14 +111,12 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Slides_Add_adds_should_copy_only_layout_of_copying_slide()
+    public void Slides_Add_should_copy_only_layout_of_copying_slide()
     {
         // Arrange
-        var sourcePptx = StreamOf("pictures-case004.pptx");
-        var destPptx = StreamOf("autoshape-grouping.pptx");
-        var sourcePres = new Presentation(sourcePptx);
+        var sourcePres = new Presentation(StreamOf("pictures-case004.pptx"));
         var copyingSlide = sourcePres.Slides[0];
-        var destPres = new Presentation(destPptx);
+        var destPres = new Presentation(StreamOf("autoshape-grouping.pptx"));
         var expectedCount = destPres.Slides.Count + 1;
         MemoryStream savedPre = new();
 
@@ -132,6 +130,22 @@ public class PresentationTests : SCTest
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
         destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
+        destPres.Validate();
+    }
+
+    [Test]
+    public void Slides_Add_should_copy_notes()
+    {
+        // Arrange
+        var sourcePres = new Presentation(StreamOf("008.pptx"));
+        var copyingSlide = sourcePres.Slides[0];
+        var destPres = new Presentation(StreamOf("autoshape-case017_slide-number.pptx"));
+
+        // Act
+        destPres.Slides.Add(copyingSlide);
+
+        // Assert
+        destPres.Slides.Last().Notes!.Text.Should().Be("Test note");
         destPres.Validate();
     }
 

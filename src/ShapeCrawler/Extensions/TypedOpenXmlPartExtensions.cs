@@ -10,13 +10,13 @@ namespace ShapeCrawler.Extensions;
 
 internal static class TypedOpenXmlPartExtensions
 {
-    internal static string NextRelationshipId(this OpenXmlPart typedOpenXmlPart)
+    internal static string NextRelationshipId(this OpenXmlPart openXmlPart)
     {
         var idNums = new List<long>();
-        var relationships = typedOpenXmlPart.ExternalRelationships.Select(r => r.Id)
-            .Union(typedOpenXmlPart.HyperlinkRelationships.Select(r => r.Id))
-            .Union(typedOpenXmlPart.DataPartReferenceRelationships.Select(r => r.Id))
-            .Union(typedOpenXmlPart.Parts.Select(p => p.RelationshipId));
+        var relationships = openXmlPart.ExternalRelationships.Select(r => r.Id)
+            .Union(openXmlPart.HyperlinkRelationships.Select(r => r.Id))
+            .Union(openXmlPart.DataPartReferenceRelationships.Select(r => r.Id))
+            .Union(openXmlPart.Parts.Select(p => p.RelationshipId));
         foreach (var relationship in relationships)
         {
             var match = Regex.Match(relationship, @"\d+", RegexOptions.None, TimeSpan.FromMilliseconds(1000));

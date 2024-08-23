@@ -37,7 +37,7 @@ public interface ISlide
     SlidePart SDKSlidePart { get; }
     
     /// <summary>
-    ///     Gets shape collection.
+    ///     Gets the shape collection.
     /// </summary>
     ISlideShapes Shapes { get; }
 
