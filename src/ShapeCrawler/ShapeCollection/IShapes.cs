@@ -38,7 +38,9 @@ public interface IShapes : IReadOnlyList<IShape>
     IShape GetByName(string name);
     
     /// <summary>
-    ///     Returns the last shape.
+    ///     Gets shape by specified type.
     /// </summary>
-    IShape Last<T>() where T : IShape;
+    /// <typeparam name="T">Shape type.</typeparam>
+    IShape Last<T>()
+        where T : IShape;
 }

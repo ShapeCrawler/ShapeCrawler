@@ -37,6 +37,7 @@ internal sealed class Shapes : IShapes
         (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
 
     public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
+
     public IShape Last<T>() where T : IShape => this.ShapesCore().Last(shape => shape is T);
 
     public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();

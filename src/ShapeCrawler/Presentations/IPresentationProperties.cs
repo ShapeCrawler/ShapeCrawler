@@ -29,16 +29,16 @@ public interface IPresentationProperties
     ///     Gets the collection of sections.
     /// </summary>
     ISections Sections { get; }
-
-    /// <summary>
-    ///     Returns slide with specified number.
-    /// </summary>
-    ISlide Slide(int number);
-
+    
     /// <summary>
     ///     Gets Header and Footer manager.
     /// </summary>
     IFooter Footer { get; }
+    
+    /// <summary>
+    ///     Returns slide with specified number.
+    /// </summary>
+    ISlide Slide(int number);
 
     /// <summary>
     ///     Saves presentation.
