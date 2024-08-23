@@ -24,21 +24,23 @@ internal sealed class Shapes : IShapes
     }
 
     public int Count => this.ShapesCore().Count;
-    
+
     public IShape this[int index] => this.ShapesCore()[index];
-    
+
     public T GetById<T>(int id) where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
-    
+
     public T? TryGetById<T>(int id) where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Id == id);
-    
+
     public T GetByName<T>(string name) where T : IShape => (T)this.GetByName(name);
-    
-    public T? TryGetByName<T>(string name) where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
-    
+
+    public T? TryGetByName<T>(string name) where T : IShape =>
+        (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
+
     public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
-    
+    public IShape Last<T>() where T : IShape => this.ShapesCore().Last(shape => shape is T);
+
     public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();
-    
+
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
@@ -72,7 +74,7 @@ internal sealed class Shapes : IShapes
 
         return false;
     }
-    
+
     private List<IShape> ShapesCore()
     {
         var pShapeTree = this.sdkTypedOpenXmlPart switch
@@ -225,7 +227,7 @@ internal sealed class Shapes : IShapes
 
                         continue;
                     }
-                    
+
                     case A.VideoFromFile:
                     {
                         var mediaShape = new MediaShape(this.sdkTypedOpenXmlPart, pPicture);

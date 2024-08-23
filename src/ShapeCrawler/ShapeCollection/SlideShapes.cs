@@ -496,7 +496,8 @@ internal sealed class SlideShapes : ISlideShapes
     public T? TryGetByName<T>(string name) where T : IShape => this.shapes.TryGetByName<T>(name);
     
     public IShape GetByName(string name) => this.shapes.GetByName(name);
-    
+    public IShape Last<T>() where T : IShape => this.shapes.Last<T>();
+
     public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();

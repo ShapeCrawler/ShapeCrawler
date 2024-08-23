@@ -190,7 +190,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(StreamOf("table-case001.pptx"));
-        var cell = pres.Slides[0].TableWithName("Table 1")[0, 0];
+        var cell = pres.Slides[0].Table("Table 1")[0, 0];
         
         // Act
         cell.LeftBorder.Width = 2;  
@@ -236,7 +236,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(StreamOf("table-case001.pptx"));
-        var table = pres.Slides[0].TableWithName("Table 1");
+        var table = pres.Slides[0].Table("Table 1");
         var row = table.Rows[0];
 
         // Act
@@ -500,7 +500,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(StreamOf("001.pptx"));
-        var table = pres.Slides[3].TableWithName("Table 2");
+        var table = pres.Slides[3].Table("Table 2");
         var mStream = new MemoryStream();
 
         // Act
