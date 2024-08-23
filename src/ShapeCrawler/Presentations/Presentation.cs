@@ -57,7 +57,10 @@ public sealed class Presentation : IPresentation
     
     /// <inheritdoc />
     public ISections Sections => this.validateable.Sections;
-   
+
+    /// <inheritdoc />
+    public ISlide Slide(int number) => this.validateable.Slide(number);
+
     /// <inheritdoc />
     public IFooter Footer => this.validateable.Footer;
     
