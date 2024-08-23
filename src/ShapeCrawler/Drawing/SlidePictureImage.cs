@@ -57,6 +57,8 @@ internal sealed class SlidePictureImage : IImage
     {
         var stream = this.sdkImagePart.GetStream();
         var bytes = new WrappedStream(stream).AsBytes();
+        
+        stream.Close();
 
         return bytes;
     }
