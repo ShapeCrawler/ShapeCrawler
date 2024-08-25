@@ -134,7 +134,6 @@ public class ParagraphTests : SCTest
             
         // Act
         paragraph.Text = "AutoShape 4 some text";
-        SaveResult(pres);
 
         // Assert
         shape.Height.Should().BeApproximately(58.81m,0.01m);
