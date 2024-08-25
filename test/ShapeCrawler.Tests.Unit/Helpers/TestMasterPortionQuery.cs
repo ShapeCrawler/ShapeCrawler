@@ -15,7 +15,7 @@ public class TestMasterPortionQuery : TestPortionQuery
 
     public override IParagraphPortion Get(IPresentation pres)
     {
-        return pres.SlideMasters[0].Shapes.GetByName<IShape>(this.shapeName).TextFrame!
+        return pres.SlideMasters[0].Shapes.GetByName<IShape>(this.shapeName).TextBox!
             .Paragraphs[this.paragraphNumber - 1].Portions[this.portionNumber - 1];
     }
 }

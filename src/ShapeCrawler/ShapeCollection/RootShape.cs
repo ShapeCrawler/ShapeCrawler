@@ -35,7 +35,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
     
     public override bool IsTextHolder => this.decoratedShape.IsTextHolder;
     
-    public override ITextFrame TextFrame => this.decoratedShape.TextFrame;
+    public override ITextBox TextBox => this.decoratedShape.TextBox;
     
     public override Geometry GeometryType => this.decoratedShape.GeometryType;
 
@@ -74,7 +74,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
             float bottom = (float)(this.Y + this.Height);
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
-            var textFrame = (TextFrame)this.TextFrame!;
+            var textFrame = (TextFrame)this.TextBox!;
             textFrame.Draw(slideCanvas, left, top);
         }
     }

@@ -31,6 +31,6 @@ public class TestSlidePortionQuery : TestPortionQuery
             ? shapes.GetById<IShape>(this.shapeId)
             : shapes.GetByName<IShape>(this.shapeName);
 
-        return shape.TextFrame!.Paragraphs[this.paragraphNumber - 1].Portions[this.portionNumber - 1];
+        return shape.TextBox!.Paragraphs[this.paragraphNumber - 1].Portions[this.portionNumber - 1];
     }
 }

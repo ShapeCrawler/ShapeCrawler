@@ -20,12 +20,12 @@ public interface ISlideMaster
     IImage? Background { get; }
 
     /// <summary>
-    ///     Gets collection of Slide Layouts.
+    ///     Gets the collection of Slide Layouts.
     /// </summary>
     IReadOnlyList<ISlideLayout> SlideLayouts { get; }
 
     /// <summary>
-    ///     Gets collection of master shapes.
+    ///     Gets the collection of master shapes.
     /// </summary>
     IShapes Shapes { get; }
 
@@ -38,6 +38,13 @@ public interface ISlideMaster
     ///     Gets slide number. Returns <see langword="null"/> if slide master does not have slide number.
     /// </summary>
     IMasterSlideNumber? SlideNumber { get; }
+
+    /// <summary>
+    ///     Returns a shape from the slide master.
+    /// </summary>
+    /// <param name="shape">The name of the shape.</param>
+    /// <returns>The requested shape.</returns>
+    IShape Shape(string shape);
 }
 
 internal sealed class SlideMaster : ISlideMaster
@@ -65,6 +72,8 @@ internal sealed class SlideMaster : ISlideMaster
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
     
     public int Number { get; set; }
+    
+    public IShape Shape(string shape) => this.Shapes.GetByName(shape);
     
     private MasterSlideNumber? CreateSlideNumber()
     {

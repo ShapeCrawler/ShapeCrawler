@@ -147,7 +147,7 @@ internal sealed class GroupedShape : IShape
     
     public bool IsTextHolder => this.decoratedShape.IsTextHolder;
     
-    public ITextFrame TextFrame => this.decoratedShape.TextFrame;
+    public ITextBox TextBox => this.decoratedShape.TextBox;
     
     public double Rotation => this.decoratedShape.Rotation;
     
@@ -156,6 +156,12 @@ internal sealed class GroupedShape : IShape
     public string SDKXPath => this.decoratedShape.SDKXPath;
     
     public OpenXmlElement SDKOpenXmlElement => this.decoratedShape.SDKOpenXmlElement.CloneNode(true);
+
+    public string Text
+    {
+        get => this.TextBox.Text;
+        set => this.TextBox.Text = value;
+    }
 
     public void Remove() => this.decoratedShape.Remove();
     

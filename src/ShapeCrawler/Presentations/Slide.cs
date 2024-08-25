@@ -59,7 +59,7 @@ internal sealed class Slide : ISlide
         set => this.SetCustomData(value);
     }
 
-    public ITextFrame? Notes => this.GetNotes();
+    public ITextBox? Notes => this.GetNotes();
 
     public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && !this.SDKSlidePart.Slide.Show.Value;
 
@@ -98,13 +98,13 @@ internal sealed class Slide : ISlide
         data.SaveTo(stream);
     }
 
-    public IList<ITextFrame> TextFrames()
+    public IList<ITextBox> TextFrames()
     {
-        var returnList = new List<ITextFrame>();
+        var returnList = new List<ITextBox>();
 
         var frames = this.Shapes
             .Where(x => x.IsTextHolder)
-            .Select(t => t.TextFrame)
+            .Select(t => t.TextBox)
             .ToList();
         returnList.AddRange(frames);
 
@@ -153,7 +153,7 @@ internal sealed class Slide : ISlide
     /// <summary>
     ///     Iterates group recursively and add all text boxes in the list.
     /// </summary>
-    private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextFrame> textBoxes)
+    private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextBox> textBoxes)
     {
         foreach (var shape in group.Shapes)
         {
@@ -165,7 +165,7 @@ internal sealed class Slide : ISlide
                 case ShapeType.AutoShape:
                     if (shape.IsTextHolder)
                     {
-                        textBoxes.Add(shape.TextFrame);
+                        textBoxes.Add(shape.TextBox);
                     }
 
                     break;
@@ -173,7 +173,7 @@ internal sealed class Slide : ISlide
         }
     }
 
-    private ITextFrame? GetNotes()
+    private ITextBox? GetNotes()
     {
         var notes = this.SDKSlidePart.NotesSlidePart;
 
@@ -188,7 +188,7 @@ internal sealed class Slide : ISlide
                 x.IsPlaceholder && 
                 x.IsTextHolder && 
                 x.PlaceholderType == PlaceholderType.Text);
-        return notesPlaceholder?.TextFrame;
+        return notesPlaceholder?.TextBox;
     }
 
     private void AddNotesSlide(IEnumerable<string> lines)

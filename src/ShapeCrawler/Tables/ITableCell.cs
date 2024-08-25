@@ -15,7 +15,7 @@ public interface ITableCell
     /// <summary>
     ///     Gets text box.
     /// </summary>
-    ITextFrame TextFrame { get; }
+    ITextBox TextFrame { get; }
 
     /// <summary>
     ///     Gets a value indicating whether cell belongs to merged cell.
@@ -79,7 +79,7 @@ internal sealed class TableCell : ITableCell
 
     public IBorder RightBorder { get; }
 
-    public ITextFrame TextFrame { get; }
+    public ITextBox TextFrame { get; }
 
     internal A.TableCell ATableCell { get; }
 

@@ -11,12 +11,12 @@ namespace ShapeCrawler;
 public interface IShape : IPosition
 {
     /// <summary>
-    ///     Gets or sets width of the shape in pixels.
+    ///     Gets or sets the width of the shape in pixels.
     /// </summary>
     decimal Width { get; set; }
 
     /// <summary>
-    ///     Gets or sets height of the shape in pixels.
+    ///     Gets or sets the height of the shape in pixels.
     /// </summary>
     decimal Height { get; set; }
 
@@ -31,7 +31,7 @@ public interface IShape : IPosition
     string Name { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether shape is hidden.
+    ///     Gets a value indicating whether the shape is hidden.
     /// </summary>
     bool Hidden { get; }
 
@@ -42,12 +42,12 @@ public interface IShape : IPosition
     bool IsPlaceholder { get; }
     
     /// <summary>
-    ///     Gets placeholder type if the is a placeholder.
+    ///     Gets the placeholder type of the shape.
     /// </summary>
     PlaceholderType PlaceholderType { get; }
 
     /// <summary>
-    ///     Gets geometry form type of the shape.
+    ///     Gets the geometry form of the shape.
     /// </summary>
     Geometry GeometryType { get; }
 
@@ -57,7 +57,7 @@ public interface IShape : IPosition
     string? CustomData { get; set; }
 
     /// <summary>
-    ///     Gets shape type.
+    ///     Gets the type of shape.
     /// </summary>
     ShapeType ShapeType { get; }
     
@@ -67,7 +67,7 @@ public interface IShape : IPosition
     bool HasOutline { get; }
     
     /// <summary>
-    ///     Gets shape outline.
+    ///     Gets outline of the shape.
     /// </summary>
     IShapeOutline Outline { get; }
  
@@ -77,19 +77,19 @@ public interface IShape : IPosition
     bool HasFill { get; }
     
     /// <summary>
-    ///     Gets shape fill. Returns <see langword="null"/> if the shape can not be filled, for example, a line.
+    ///     Gets the fill of the shape. Returns <see langword="null"/> if the shape cannot be filled, for example, a line.
     /// </summary>
     IShapeFill Fill { get; }
     
     /// <summary>
-    ///     Gets a value indicating whether the AutoShape is a text holder.
+    ///     Gets a value indicating whether the shape is a text holder.
     /// </summary>
     bool IsTextHolder { get; }
     
     /// <summary>
     ///     Gets Text Frame.
     /// </summary>
-    ITextFrame TextFrame { get; }
+    ITextBox TextBox { get; }
     
     /// <summary>
     ///     Gets the rotation of the shape in degrees.
@@ -107,10 +107,15 @@ public interface IShape : IPosition
     public string SDKXPath { get; }
     
     /// <summary>
-    ///     Gets copy of the underlying Open XML element.
+    ///     Gets a copy of the underlying Open XML element.
     /// </summary>
-    public OpenXmlElement SDKOpenXmlElement { get; }
-    
+    OpenXmlElement SDKOpenXmlElement { get; }
+
+    /// <summary>
+    ///     Gets or sets the text content of the shape.
+    /// </summary>
+    string Text { get; set; }
+
     /// <summary>
     ///     Removes the shape from the slide.
     /// </summary>

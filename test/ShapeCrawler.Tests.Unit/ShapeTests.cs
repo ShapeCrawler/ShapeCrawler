@@ -142,7 +142,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.Y.Should().Be(359);
         parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
-        parentGroupShape.Height.Should().BeApproximately(172.84m,0.01m);
+        parentGroupShape.Height.Should().BeApproximately(172.84m, 0.01m);
     }
 
     [Test]
@@ -158,7 +158,8 @@ public class ShapeTests : SCTest
 
         // Assert
         groupedShape.Y.Should().Be(555);
-        groupShape.Height.Should().BeApproximately(179.11m, 0.01m, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+        groupShape.Height.Should().BeApproximately(179.11m, 0.01m,
+            "because it was 108 and the down-hand grouped shape got down on 71 pixels");
     }
 
     [Test]
@@ -175,7 +176,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.X.Should().Be(67);
         groupShape.X.Should().Be(67, "because the moved grouped shape was on the left-hand side");
-        groupShape.Width.Should().BeApproximately(117.25m,0.01m);
+        groupShape.Width.Should().BeApproximately(117.25m, 0.01m);
     }
 
     [Test]
@@ -193,7 +194,7 @@ public class ShapeTests : SCTest
         groupedShape.X.Should().Be(91);
         groupShape.X.Should().Be(79,
             "because the X-coordinate of parent group shouldn't be changed when a grouped shape is moved to the right side");
-        groupShape.Width.Should().BeApproximately(115.97m,0.01m);
+        groupShape.Width.Should().BeApproximately(115.97m, 0.01m);
     }
 
     [Test]
@@ -201,7 +202,8 @@ public class ShapeTests : SCTest
     {
         // Arrange
         IShape shapeCase1 = new Presentation(StreamOf("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IGroupShape groupShape = (IGroupShape)new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
+        IGroupShape groupShape =
+            (IGroupShape)new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
         IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
         IShape shapeCase3 = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
@@ -229,7 +231,7 @@ public class ShapeTests : SCTest
         var height = groupedShape.Height;
 
         // Assert
-        height.Should().BeApproximately(68.67m,0.01m);
+        height.Should().BeApproximately(68.67m, 0.01m);
     }
 
     [TestCase(2, Geometry.Rectangle)]
@@ -245,7 +247,7 @@ public class ShapeTests : SCTest
         // Assert
         shape.GeometryType.Should().Be(expectedGeometryType);
     }
-    
+
     [Test]
     public void Shape_IsNotGroupShape()
     {
@@ -255,7 +257,7 @@ public class ShapeTests : SCTest
         // Act-Assert
         shape.Should().NotBeOfType<IGroupShape>();
     }
-    
+
     [Test]
     public void CustomData_ReturnsNull_WhenShapeHasNotCustomData()
     {
@@ -318,7 +320,8 @@ public class ShapeTests : SCTest
     [TestCase("autoshape-case018_rotation.pptx", 2, "VerticalTextPH", 281.97)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "NoRotationGroup", 0)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 55.60)]
-    public void Rotation_returns_shape_rotation_in_degrees(string presentationName, int slideNumber, string shapeName, double expectedAngle)
+    public void Rotation_returns_shape_rotation_in_degrees(string presentationName, int slideNumber, string shapeName,
+        double expectedAngle)
     {
         // Arrange
         var pres = new Presentation(StreamOf(presentationName));
@@ -330,7 +333,7 @@ public class ShapeTests : SCTest
         // Assert
         rotation.Should().BeApproximately(expectedAngle, 0.01);
     }
-    
+
     [Test]
     [TestCase("001.pptx", 1, "TextBox 3")]
     [TestCase("001.pptx", 1, "Head 1")]
@@ -366,11 +369,11 @@ public class ShapeTests : SCTest
         // Assert
         pres.SaveAs(stream);
         pres = new Presentation(stream);
-        shape = pres.Slides[slideNumber-1].Shapes.GetByName<IShape>(shapeName);
+        shape = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName);
         shape.X.Should().Be(400);
         pres.Validate();
     }
-    
+
     [Test]
     [TestCase("006_1 slides.pptx", 1, "Shape 1")]
     public void Width_Setter_sets_width(string file, int slideNumber, string shapeName)
@@ -391,7 +394,7 @@ public class ShapeTests : SCTest
         shape.Width.Should().Be(600);
         pres.Validate();
     }
-    
+
     [Test]
     public void Remove_removes_shape()
     {
@@ -407,7 +410,7 @@ public class ShapeTests : SCTest
         act.Should().Throw<Exception>();
         pres.Validate();
     }
-    
+
     [Test]
     [SlideShape("021.pptx", slideNumber: 4, shapeId: 2, expectedResult: PlaceholderType.Footer)]
     [SlideShape("008.pptx", 1, 3, PlaceholderType.DateAndTime)]
@@ -434,7 +437,7 @@ public class ShapeTests : SCTest
     [TestCase("054_get_shape_xpath.pptx", 1, 2, "Title 1")]
     [TestCase("054_get_shape_xpath.pptx", 1, 3, "SubTitle 2")]
     [TestCase("054_get_shape_xpath.pptx", 1, 4, null)]
-    public void TryGetSlideShapeById(string presentationName,int slideNumber, int shapeId, string? expectedShapeName)
+    public void TryGetSlideShapeById(string presentationName, int slideNumber, int shapeId, string? expectedShapeName)
     {
         // Arrange
         var pres = new Presentation(StreamOf(presentationName));
@@ -447,7 +450,7 @@ public class ShapeTests : SCTest
         // Assert
         shapeName.Should().Be(expectedShapeName);
     }
-    
+
     [Test]
     [TestCase("054_get_shape_xpath.pptx", 1, "Foo", null)]
     [TestCase("054_get_shape_xpath.pptx", 1, "Title 1", 2)]
@@ -466,7 +469,7 @@ public class ShapeTests : SCTest
         // Assert
         shapeId.Should().Be(expectedShapeId);
     }
-    
+
     [Test]
     public void AsTable_returns_ITable()
     {
@@ -504,20 +507,20 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("009_table.pptx"));
         var shape = pres.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
-        
+
         // Act
         decimal x = shape.X;
-        
+
         // Assert
-        x.Should().BeApproximately(53.05m,0.01m);
+        x.Should().BeApproximately(53.05m, 0.01m);
     }
-    
+
     [Test]
     [TestCase("050_title-placeholder.pptx", 1, 2, 777.6)]
     [TestCase("051_title-placeholder.pptx", 1, 3074, 864.0)]
     public void Width_returns_width_of_Title_placeholder(
-        string filename, 
-        int slideNumber, 
+        string filename,
+        int slideNumber,
         int shapeId,
         decimal expectedWidth)
     {
@@ -531,20 +534,20 @@ public class ShapeTests : SCTest
         // Assert
         shapeWidth.Should().Be(expectedWidth);
     }
-    
+
     [Test]
     [SlideShape("006_1 slides.pptx", 1, "Shape 2", 149.66)]
-    [SlideShape( "009_table.pptx", 2, "Object 3", 39.17)]
-    [SlideShape( "autoshape-grouping.pptx", 1, "Group 2", 108.02)]
+    [SlideShape("009_table.pptx", 2, "Object 3", 39.17)]
+    [SlideShape("autoshape-grouping.pptx", 1, "Group 2", 108.02)]
     public void Height_returns_shape_height_in_pixels(IShape shape, double expectedHeight)
     {
         // Act
         var height = shape.Height;
 
         // Assert
-        height.Should().BeApproximately((decimal)expectedHeight,0.01m);
+        height.Should().BeApproximately((decimal)expectedHeight, 0.01m);
     }
-    
+
     [Test]
     [SlideShape("021.pptx", 4, 2, Geometry.Rectangle)]
     [SlideShape("021.pptx", 4, 3, Geometry.Ellipse)]
@@ -553,7 +556,7 @@ public class ShapeTests : SCTest
         // Assert
         shape.GeometryType.Should().Be(expectedGeometryType);
     }
-    
+
     [Test]
     [SlideShape("054_get_shape_xpath.pptx", 1, "Title 1", "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]")]
     [SlideShape("054_get_shape_xpath.pptx", 1, "SubTitle 2", "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[2]")]
@@ -564,5 +567,19 @@ public class ShapeTests : SCTest
 
         // Assert
         shapeXPath.Should().Be(expectedXPath);
+    }
+
+    [Test]
+    public void Text_Setter_updates_shape_text()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("autoshape-case017_slide-number.pptx"));
+        var shape = pres.SlideMaster(1).Shape("Shape 1");
+
+        // Act
+        shape.Text = "Test";
+
+        // Assert
+        shape.Text.Should().Be("Test");
     }
 }
