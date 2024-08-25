@@ -256,27 +256,22 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(pShape);
-        if (refMasterPShapeOfLayout != null)
+        var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
+        if (referencedMasterPShape != null)
         {
-            var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
-            var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
-            if (masterIndentFontOfLayout != null
-                && this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
+            var masterFonts = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
+            var indentMasterFont = masterFonts.FontOrNull(indentLevel);
+            if (indentMasterFont != null
+                && this.HexFromName(indentMasterFont, out var masterColor))
             {
-                return masterColorOfLayout;
+                return masterColor;
             }
         }
 
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            var pTitleStyle = this.sdkOpenXmlPart switch
-            {
-                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
-                    .TitleStyle!,
-                _ => ((SlideLayoutPart)this.sdkOpenXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
-                    .TitleStyle!
-            };
+            var pTitleStyle = ((SlideLayoutPart)this.sdkOpenXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
+                .TitleStyle!;
             var masterTitleFonts = new IndentFonts(pTitleStyle);
             var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterTitleFont, out var masterTitleColor))
@@ -286,12 +281,7 @@ internal readonly ref struct ReferencedIndentLevel
         }
         else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            var pBodyStyle = this.sdkOpenXmlPart switch
-            {
-                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
-                    .BodyStyle!,
-                _ => ((SlideLayoutPart)this.sdkOpenXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
-            };
+            var pBodyStyle = ((SlideLayoutPart)this.sdkOpenXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!;
             var masterBodyFonts = new IndentFonts(pBodyStyle);
             var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterBodyFont, out var masterTitleColor))
