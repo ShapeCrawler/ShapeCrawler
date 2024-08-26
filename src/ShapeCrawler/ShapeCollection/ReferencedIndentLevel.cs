@@ -247,7 +247,6 @@ internal readonly ref struct ReferencedIndentLevel
     private string? LayoutColorHexOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -257,12 +256,12 @@ internal readonly ref struct ReferencedIndentLevel
         }
 
         var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         if (referencedMasterPShape != null)
         {
-            var masterFonts = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
-            var indentMasterFont = masterFonts.FontOrNull(indentLevel);
-            if (indentMasterFont != null
-                && this.HexFromName(indentMasterFont, out var masterColor))
+            var masterIndentFonts = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
+            var masterIndentFont = masterIndentFonts.FontOrNull(indentLevel);
+            if (masterIndentFont != null && this.HexFromName(masterIndentFont, out var masterColor))
             {
                 return masterColor;
             }
@@ -296,7 +295,6 @@ internal readonly ref struct ReferencedIndentLevel
     private string? SlideColorHexOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -305,16 +303,17 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNullOf(pShape);
-        if (refLayoutPShapeOfSlide == null)
+        var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNullOf(pShape);
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
+        if (referencedLayoutPShape == null)
         {
-            var refMasterPShapeOfSlide = this.ReferencedMasterPShapeOrNullOf(pShape);
-            if (refMasterPShapeOfSlide == null)
+            var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
+            if (referencedMasterPShape == null)
             {
                 return null;
             }
 
-            var masterFontsOfSlide = new IndentFonts(refMasterPShapeOfSlide!.TextBody!.ListStyle!);
+            var masterFontsOfSlide = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
             var masterIndentFontOfSlide = masterFontsOfSlide.FontOrNull(indentLevel);
             if (this.HexFromName(masterIndentFontOfSlide, out var masterColorOfSlide))
             {
@@ -324,14 +323,14 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
+        var layoutFonts = new IndentFonts(referencedLayoutPShape.TextBody!.ListStyle!);
         var layoutIndentFontOfSlide = layoutFonts.FontOrNull(indentLevel);
         if (layoutIndentFontOfSlide != null && this.HexFromName(layoutIndentFontOfSlide, out var layoutColorOfSlide))
         {
             return layoutColorOfSlide;
         }
 
-        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(refLayoutPShapeOfSlide);
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(referencedLayoutPShape);
         if (refMasterPShapeOfLayout != null)
         {
             var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
@@ -381,7 +380,6 @@ internal readonly ref struct ReferencedIndentLevel
     private ColorType? SlideColorTypeOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().First();
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -390,20 +388,21 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNullOf(slidePShape);
-        if (refLayoutPShapeOfSlide == null)
+        var referencedLayoutPShapeOrNull = this.ReferencedLayoutPShapeOrNullOf(slidePShape);
+        var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
+        if (referencedLayoutPShapeOrNull == null)
         {
             return this.MasterOfSlideIndentColorType(slidePShape, indentLevel);
         }
 
-        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
+        var layoutFonts = new IndentFonts(referencedLayoutPShapeOrNull.TextBody!.ListStyle!);
         var layoutIndentColorType = layoutFonts.ColorType(indentLevel);
         if (layoutIndentColorType.HasValue)
         {
             return layoutIndentColorType;
         }
 
-        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(refLayoutPShapeOfSlide);
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(referencedLayoutPShapeOrNull);
         var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
         var masterOfLayoutIndentColorType = masterFontsOfLayout.ColorType(indentLevel);
         if (masterOfLayoutIndentColorType.HasValue)
