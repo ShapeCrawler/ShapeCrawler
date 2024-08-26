@@ -246,7 +246,6 @@ internal readonly ref struct ReferencedIndentLevel
 
     private string? LayoutColorHexOrNull()
     {
-        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -256,6 +255,7 @@ internal readonly ref struct ReferencedIndentLevel
         }
 
         var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
+        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         if (referencedMasterPShape != null)
         {
@@ -294,7 +294,6 @@ internal readonly ref struct ReferencedIndentLevel
 
     private string? SlideColorHexOrNull()
     {
-        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -304,6 +303,7 @@ internal readonly ref struct ReferencedIndentLevel
         }
 
         var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNullOf(pShape);
+        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         if (referencedLayoutPShape == null)
         {
