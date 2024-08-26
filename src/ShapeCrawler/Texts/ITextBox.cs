@@ -4,10 +4,10 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a text frame.
 /// </summary>
-public interface ITextFrame
+public interface ITextBox
 {
     /// <summary>
-    ///     Gets collection of paragraphs.
+    ///     Gets the collection of paragraphs.
     /// </summary>
     IParagraphs Paragraphs { get; }
 
@@ -17,7 +17,7 @@ public interface ITextFrame
     string Text { get; set; }
 
     /// <summary>
-    ///     Gets or sets Autofit type.
+    ///     Gets or sets the Autofit type.
     /// </summary>
     AutofitType AutofitType { get; set; }
 
@@ -42,7 +42,7 @@ public interface ITextFrame
     decimal BottomMargin { get; set; }
 
     /// <summary>
-    ///     Gets a value indicating whether text is wrapped in shape.
+    ///     Gets a value indicating whether the text is wrapped in the shape.
     /// </summary>
     bool TextWrapped { get; }
     

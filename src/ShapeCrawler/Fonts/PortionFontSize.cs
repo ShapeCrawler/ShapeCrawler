@@ -28,7 +28,7 @@ internal class PortionFontSize : IFontSize
             return fontSize.Value / HalfPointsInPoint;
         }
  
-        var size = new ReferencedIndent(this.sdkTypedOpenXmlPart, this.aText).FontSizeOrNull();
+        var size = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).FontSizeOrNull();
         if (size != null)
         {
             return size.Value / HalfPointsInPoint;

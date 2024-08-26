@@ -85,6 +85,11 @@ public sealed class Presentation : IPresentation
         this.validateable.CopyTo(stream);
         this.validateable = new StreamPresentation(stream);
     }
+    
+    /// <summary>
+    ///     Gets Slide Master by number.
+    /// </summary>
+    public ISlideMaster SlideMaster(int number) => this.SlideMasters[number - 1];
 
     internal void Validate() => this.validateable.Validate();
 }

@@ -23,7 +23,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var pptx9 = StreamOf("009_table.pptx");
             var pres9 = new Presentation(pptx9);
             var textFrame1 = ((IShape)new Presentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3))
-                .TextFrame;
+                .TextBox;
             var textFrame2 = ((ITable)new Presentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3))
                 .Rows[0].Cells[0]
                 .TextFrame;
@@ -54,7 +54,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Act
             pres.Slides.AddEmptySlide(layout);
             var newSlide = pres.Slides.Last();
-            var textFrame = newSlide.Shapes.GetByName<IShape>("Holder 5").TextFrame;
+            var textFrame = newSlide.Shapes.GetByName<IShape>("Holder 5").TextBox;
             var text = textFrame.Text;
 
             // Assert
@@ -66,7 +66,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case005_text-frame.pptx"));
-            var textFrame = pres.Slides[0].Shape("TextBox 1").TextFrame;
+            var textFrame = pres.Slides[0].Shape("TextBox 1").TextBox;
             var modifiedPres = new MemoryStream();
 
             // Act
@@ -78,7 +78,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             pres.SaveAs(modifiedPres);
             pres = new Presentation(modifiedPres);
-            textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextFrame;
+            textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextBox;
             textFrame.Text.Should().Contain("confirm this");
             textFrame.Text.Should().Contain("confirm that");
         }
@@ -89,7 +89,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf("001.pptx"));
-            var textFrame = pres.Slide(1).Shape("TextBox 8").TextFrame;
+            var textFrame = pres.Slide(1).Shape("TextBox 8").TextBox;
             var newText = "Shrink text on overflow";
 
             // Act
@@ -107,14 +107,14 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
             var shape = pres.Slides[0].Shape("AutoShape 4");
-            var textFrame = shape.TextFrame;
+            var textFrame = shape.TextBox;
 
             // Act
             textFrame.Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().BeApproximately(51.48m, 0.01m);
-            shape.Y.Should().Be(149m);
+            shape.Height.Should().BeApproximately(58.81m, 0.01m);
+            shape.Y.Should().Be(146m);
             pres.Validate();
         }
 
@@ -125,7 +125,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var pres = new Presentation();
             var shapes = pres.Slides[0].Shapes;
             shapes.AddRectangle(50, 60, 100, 70);
-            var textFrame = shapes.Last().TextFrame;
+            var textFrame = shapes.Last().TextBox;
 
             // Act
             textFrame.Text = "Test";
@@ -141,13 +141,13 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
             var shape = pres.Slide(1).Shape("AutoShape 6");
-            var textFrame = shape.TextFrame!;
+            var textFrame = shape.TextBox!;
 
             // Act
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Width.Should().BeApproximately(107.90m, 0.01m);
+            shape.Width.Should().BeApproximately(136.89m, 0.01m);
             pres.Validate();
         }
 
@@ -158,13 +158,13 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var pptxStream = StreamOf("autoshape-case003.pptx");
             var pres = new Presentation(pptxStream);
             var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 7");
-            var textFrame = shape.TextFrame!;
+            var textFrame = shape.TextBox!;
 
             // Act
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Height.Should().BeApproximately(40.48m, 0.01m);
+            shape.Height.Should().BeApproximately(44.14m, 0.01m);
             pres.Validate();
         }
 
@@ -175,7 +175,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var pptx = StreamOf("001.pptx");
             var pres = new Presentation(pptx);
             var autoShape = pres.Slides[0].Shapes.GetById<IShape>(9);
-            var textBox = autoShape.TextFrame;
+            var textBox = autoShape.TextBox;
 
             // Act
             var autofitType = textBox.AutofitType;
@@ -212,7 +212,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
             var pres = new Presentation(StreamOf("001.pptx"));
-            var textFrame = ((IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
+            var textFrame = ((IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             int originParagraphsCount = textFrame.Paragraphs.Count;
 
             // Act
@@ -227,7 +227,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             pres.SaveAs(mStream);
             pres = new Presentation(mStream);
-            textFrame = ((IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
+            textFrame = ((IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             textFrame.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
             textFrame.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
         }
@@ -238,7 +238,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Arrange
             var pptxStream = StreamOf("autoshape-case007.pptx");
             var pres = new Presentation(pptxStream);
-            var paragraphs = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 1").TextFrame.Paragraphs;
+            var paragraphs = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 1").TextBox.Paragraphs;
 
             // Act
             paragraphs.Add();
@@ -253,7 +253,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             var pres = new Presentation(StreamOf("001.pptx"));
             var autoShape = (IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
-            var textBox = autoShape.TextFrame;
+            var textBox = autoShape.TextBox;
             var paragraphs = textBox.Paragraphs;
             var paragraph = textBox.Paragraphs.First();
 
@@ -276,7 +276,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var pres = new Presentation(StreamOf(file));
             var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame!;
+            var textFrame = autoShape.TextBox!;
 
             // Act
             textFrame.AutofitType = AutofitType.Resize;
@@ -287,18 +287,18 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         }
 
         [Test]
-        [SlideShape("autoshape-case013.pptx", 1, "AutoShape 1")]
-        public void Text_Setter_sets_long_text(IShape shape)
+        public void Text_Setter_sets_long_text()
         {
             // Arrange
-            var textFrame = shape.TextFrame;
+            var pres = new Presentation(StreamOf("autoshape-case013.pptx"));
+            var shape = pres.Slide(1).Shape("AutoShape 1");
 
             // Act
-            var text = textFrame.Text;
-            textFrame.Text = "Some sentence. Some sentence";
+            var text = shape.TextBox.Text;
+            shape.TextBox.Text = "Some sentence. Some sentence";
 
             // Assert
-            shape.Height.Should().BeApproximately(93.48m, 0.01m);
+            shape.Height.Should().BeApproximately(114.81m, 0.01m);
         }
 
         [Test]
@@ -313,7 +313,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Getter_returns_text(IShape shape, string expectedText)
         {
             // Arrange
-            var textFrame = ((IShape)shape).TextFrame;
+            var textFrame = ((IShape)shape).TextBox;
 
             // Act
             var text = textFrame.Text;
@@ -330,7 +330,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             expectedText = expectedText.Replace("#NewLine#", Environment.NewLine);
-            var textFrame = shape.TextFrame;
+            var textFrame = shape.TextBox;
 
             // Act
             var text = textFrame.Text;
@@ -349,7 +349,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var pres = new Presentation(StreamOf(presName));
-            var textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextFrame;
+            var textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
             var mStream = new MemoryStream();
 
             // Act
@@ -361,7 +361,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             pres.SaveAs(mStream);
             pres = new Presentation(mStream);
-            textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextFrame;
+            textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
             textFrame.Text.Should().BeEquivalentTo("Test");
             textFrame.Paragraphs.Should().HaveCount(1);
         }
@@ -372,7 +372,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame;
+            var textFrame = autoShape.TextBox;
 
             // Act
             var text = textFrame.Text;
@@ -391,7 +391,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame!;
+            var textFrame = autoShape.TextBox!;
 
             // Act
             var textWrapped = textFrame.TextWrapped;
@@ -408,7 +408,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             int expectedParagraphsCount)
         {
             // Arrange
-            var textFrame = ((IShape)shape).TextFrame;
+            var textFrame = ((IShape)shape).TextBox;
 
             // Act
             var paragraphsCount = textFrame.Paragraphs.Count;
@@ -439,7 +439,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame;
+            var textFrame = autoShape.TextBox;
 
             // Act
             var leftMargin = textFrame.LeftMargin;
@@ -454,7 +454,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame;
+            var textFrame = autoShape.TextBox;
 
             // Act
             textFrame.LeftMargin = 0.5m;
@@ -470,7 +470,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame;
+            var textFrame = autoShape.TextBox;
 
             // Act
             var rightMargin = textFrame.RightMargin;
@@ -487,7 +487,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame;
+            var textFrame = autoShape.TextBox;
 
             // Act
             var topMargin = textFrame.TopMargin;
@@ -503,7 +503,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             // Arrange
             var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextFrame;
+            var textFrame = autoShape.TextBox;
 
             // Act
             var bottomMargin = textFrame.BottomMargin;

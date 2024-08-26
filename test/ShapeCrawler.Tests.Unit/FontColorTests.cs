@@ -13,7 +13,7 @@ public class FontColorTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("020.pptx"));
         var shape = pres.Slides[0].Shapes.First(sp => sp.Id == 4);
-        var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.Color;
+        var colorFormat = shape.TextBox!.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.Hex.Should().Be("FFFFFF");
@@ -25,7 +25,7 @@ public class FontColorTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("001.pptx"));
         var titlePlaceholder = pres.Slides[0].SlideLayout.Shapes.GetById<IShape>(2);
-        var fontColor = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font!.Color;
+        var fontColor = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font!.Color;
 
         // Act-Assert
         fontColor.Hex.Should().Be("000000");
@@ -36,7 +36,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         IShape nonPlaceholder = (IShape)new Presentation(StreamOf("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
-        IFontColor colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
+        IFontColor colorFormat = nonPlaceholder.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.Hex.Should().Be("FFFFFF");
@@ -47,7 +47,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         IShape titlePlaceholder = (IShape)new Presentation(StreamOf("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
-        IFontColor colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
+        IFontColor colorFormat = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.Hex.Should().Be("000000");
@@ -71,7 +71,7 @@ public class FontColorTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("020.pptx"));
         var nonPhAutoShape = pres.Slides[0].Shapes.GetById<IShape>(2);
-        var fontColor = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.Color;
+        var fontColor = nonPhAutoShape.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
         var colorType = fontColor.Type;
@@ -86,7 +86,7 @@ public class FontColorTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("014.pptx"));
         var placeholder = pres.Slides[5].Shapes.GetById<IShape>(52);
-        var fontColor = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
+        var fontColor = placeholder.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
         var colorType = fontColor.Type;

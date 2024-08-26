@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Texts;
 
-internal readonly struct NullTextFrame : ITextFrame
+internal readonly struct NullTextFrame : ITextBox
 {
     private const string error = $"The shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.";
     

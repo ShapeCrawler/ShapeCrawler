@@ -139,7 +139,7 @@ public class SlideMasterTests : SCTest
         IShape autoShape = (IShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert
-        autoShape.TextFrame.Text.Should().BeEquivalentTo("id8");
+        autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
     }
 
     [Test]

@@ -21,7 +21,7 @@ internal sealed class AutoShape : CopyableShape
         : this(sdkTypedOpenXmlPart, pShape)
     {
         this.IsTextHolder = true;
-        this.TextFrame = textFrame;
+        this.TextBox = textFrame;
     }
 
     internal AutoShape(
@@ -103,7 +103,7 @@ internal sealed class AutoShape : CopyableShape
             float bottom = (float)(this.Y + this.Height);
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
-            var textFrame = (TextFrame)this.TextFrame!;
+            var textFrame = (TextFrame)this.TextBox!;
             textFrame.Draw(slideCanvas, left, top);
         }
     }

@@ -6,13 +6,14 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed record TextFrame : ITextFrame
+internal sealed record TextFrame : ITextBox
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkTextBody;
@@ -178,9 +179,10 @@ internal sealed record TextFrame : ITextFrame
         var font = popularPortion.Font;
 
         var paint = new SKPaint();
-        var fontSize = font.Size;
-        paint.TextSize = (float)fontSize;
-        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
+        paint.TextSize = new Points(font.Size).AsPixels();
+        var fontFamily = font.LatinName == "Calibri Light" ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
+            : font.LatinName;
+        paint.Typeface = SKTypeface.FromFamilyName(fontFamily);
         paint.IsAntialias = true;
 
         var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
@@ -189,7 +191,7 @@ internal sealed record TextFrame : ITextFrame
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
         var textRect = default(SKRect);
-        var text = this.Text;
+        var text = this.Text.ToUpper();
         paint.MeasureText(text, ref textRect);
         var textWidth = (decimal)textRect.Width;
         var textHeight = (decimal)paint.TextSize;

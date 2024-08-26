@@ -283,7 +283,7 @@ public class PresentationTests : SCTest
         // Arrange
         var pptx = StreamOf("autoshape-case003.pptx");
         var pres = new Presentation(pptx);
-        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextFrame!;
+        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text = "Test";
 
         // Act
@@ -291,7 +291,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres = new Presentation(pptx);
-        textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextFrame!;
+        textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
 
@@ -301,7 +301,7 @@ public class PresentationTests : SCTest
         // Arrange
         var originalStream = StreamOf("001.pptx");
         var pres = new Presentation(originalStream);
-        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
+        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
         var originalText = textBox!.Text;
         var newStream = new MemoryStream();
 
@@ -310,7 +310,7 @@ public class PresentationTests : SCTest
         pres.SaveAs(newStream);
 
         pres = new Presentation(originalStream);
-        textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
+        textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
         var autoShapeText = textBox!.Text;
 
         // Assert
@@ -376,7 +376,7 @@ public class PresentationTests : SCTest
         // Arrange
         var originalPath = GetTestPath("001.pptx");
         var pres = new Presentation(originalPath);
-        var textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
+        var textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
         var originalText = textFrame!.Text;
         var newPath = Path.GetTempFileName();
         textFrame.Text = originalText + "modified";
@@ -386,7 +386,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres = new Presentation(originalPath);
-        textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
+        textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
         var autoShapeText = textFrame!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
 

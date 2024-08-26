@@ -68,7 +68,7 @@ internal sealed class FontColor : IFontColor
             // From Referenced Shape
             if (this.sdkTypedOpenXmlPart is not SlideMasterPart)
             {
-                var refShapeColorType = new ReferencedIndent(this.sdkTypedOpenXmlPart, this.aText).ColorTypeOrNull();
+                var refShapeColorType = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).ColorTypeOrNull();
                 if (refShapeColorType.HasValue)
                 {
                     return (ColorType)refShapeColorType;
@@ -122,7 +122,7 @@ internal sealed class FontColor : IFontColor
             // From Referenced Shape
             if (this.sdkTypedOpenXmlPart is not SlideMasterPart)
             {
-                var refShapeFontColorHex = new ReferencedIndent(this.sdkTypedOpenXmlPart, this.aText).ColorHexOrNull();
+                var refShapeFontColorHex = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).ColorHexOrNull();
                 if (refShapeFontColorHex != null)
                 {
                     return refShapeFontColorHex;

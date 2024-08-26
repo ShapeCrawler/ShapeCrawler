@@ -188,7 +188,7 @@ internal abstract class Shape : IShape
 
     public virtual bool IsTextHolder { get; protected init; }
     
-    public virtual ITextFrame TextFrame { get; protected init; } = new NullTextFrame();
+    public virtual ITextBox TextBox { get; protected init; } = new NullTextFrame();
 
     public virtual double Rotation
     {
@@ -213,6 +213,12 @@ internal abstract class Shape : IShape
     public string SDKXPath => new XmlPath(this.pShapeTreeElement).XPath;
     
     public OpenXmlElement SDKOpenXmlElement => this.pShapeTreeElement.CloneNode(true);
+
+    public string Text
+    {
+        get => this.TextBox.Text;
+        set => this.TextBox.Text = value;
+    }
 
     public virtual ITable AsTable() => throw new SCException(
         $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
