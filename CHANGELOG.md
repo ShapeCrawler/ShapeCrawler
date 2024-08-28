@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.54.1 - Unreleased
+## Version 0.54.1 - 2024-08-28
 🐞Fixed `IFont.LatinName` [#669](https://github.com/ShapeCrawler/ShapeCrawler/issues/669)  
 🐞Fixed copying Slide Notes [#616](https://github.com/ShapeCrawler/ShapeCrawler/issues/616)  
 🐞Fixed text Autofit [#643](https://github.com/ShapeCrawler/ShapeCrawler/issues/643)
