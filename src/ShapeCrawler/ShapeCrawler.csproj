@@ -10,7 +10,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
-    <PackageReleaseNotes>Added APIs TopBorder, BottomBorder etc. to table cell to manage borders</PackageReleaseNotes>
+    <PackageReleaseNotes>🐞Fixed `IFont.LatinName` [#669](https://github.com/ShapeCrawler/ShapeCrawler/issues/669)  
+🐞Fixed copying Slide Notes [#616](https://github.com/ShapeCrawler/ShapeCrawler/issues/616)  
+🐞Fixed text Autofit [#643](https://github.com/ShapeCrawler/ShapeCrawler/issues/643)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
