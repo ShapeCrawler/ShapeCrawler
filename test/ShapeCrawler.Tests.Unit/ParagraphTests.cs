@@ -5,7 +5,6 @@ using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit;
 
-[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ParagraphTests : SCTest
 {
     [Test]
