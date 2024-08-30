@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Vml.Office;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;

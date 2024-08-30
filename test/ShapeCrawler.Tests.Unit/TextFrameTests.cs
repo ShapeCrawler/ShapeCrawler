@@ -1,15 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
 
-// ReSharper disable All
-// ReSharper disable TooManyChainedReferences
-// ReSharper disable TooManyDeclarations
-
-namespace ShapeCrawler.Tests.Unit.xUnit
+namespace ShapeCrawler.Tests.Unit
 {
-    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
     public class TextFrameTests : SCTest
     {
         [Test]

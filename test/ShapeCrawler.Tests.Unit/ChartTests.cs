@@ -12,7 +12,6 @@ namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ChartTests : SCTest
 {
     [Test]
