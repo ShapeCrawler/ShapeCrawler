@@ -83,16 +83,3 @@ public abstract class SCTest
         return new Presentation(stream);
     }
 }
-
-public class ValidationError
-{
-    public ValidationError(string description, string path)
-    {
-        this.Description = description;
-        this.Path = path;
-    }
-
-    public string Path { get; }
-
-    public string Description { get; }
-}
