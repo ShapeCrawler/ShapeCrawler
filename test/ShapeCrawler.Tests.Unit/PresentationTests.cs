@@ -86,7 +86,23 @@ public class PresentationTests : SCTest
         numberSlidesCase1.Should().Be(1);
         numberSlidesCase2.Should().Be(1);
     }
+    
+    [Test]
+    [Ignore("https://github.com/ShapeCrawler/ShapeCrawler/issues/749")]
+    public void Slides_Count()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("007_2 slides.pptx"));
+        var removingSlide = pres.Slides[0];
+        var slides = pres.Slides;
 
+        // Act
+        slides.Remove(removingSlide);
+        
+        // Assert
+        slides.Count.Should().Be(1);
+    }
+    
     [Test]
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
