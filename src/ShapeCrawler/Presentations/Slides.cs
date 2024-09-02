@@ -64,9 +64,9 @@ internal sealed class Slides : ISlides
 
     public void AddEmptySlide(SlideLayoutType layoutType)
     {
-        var sdkPresentationDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var slideMaster = new SlideMasterCollection(sdkPresentationDocument.PresentationPart!.SlideMasterParts);
-        var layout = slideMaster.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
+        var sdkPresDoc = (PresentationDocument)this.presentationPart.OpenXmlPackage;
+        var slideMasters = new SlideMasterCollection(sdkPresDoc.PresentationPart!.SlideMasterParts);
+        var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 
         this.AddEmptySlide(layout);
     }
@@ -125,7 +125,9 @@ internal sealed class Slides : ISlides
         }
 
         var pSlideIdList = sdkPresPart.Presentation.SlideIdList!;
-        var nextId = pSlideIdList.OfType<P.SlideId>().Any() ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1 : 1;
+        var nextId = pSlideIdList.OfType<P.SlideId>().Any()
+            ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
+            : 256; // according to the scheme, this id starts at 256
         var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
         pSlideIdList.Append(pSlideId);
     }
