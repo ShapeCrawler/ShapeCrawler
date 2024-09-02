@@ -174,10 +174,8 @@ public class PresentationTests : SCTest
         pres.Slides.Remove(removingSlide);
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         
-        SaveResult(pres);
-        
         // Assert
-        // pres.Slides.Count.Should().Be(1);
+        pres.Slides.Count.Should().Be(1);
         pres.Validate();
     }
 
