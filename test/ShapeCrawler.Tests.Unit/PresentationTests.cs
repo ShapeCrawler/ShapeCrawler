@@ -164,6 +164,22 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Slides_AddEmptySlide()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var removingSlide = pres.Slides[0];
+        
+        // Act
+        pres.Slides.Remove(removingSlide);
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        
+        // Assert
+        pres.Slides.Count.Should().Be(1);
+        pres.Validate();
+    }
+
+    [Test]
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange

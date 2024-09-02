@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.54.2 - Unreleased
+🐞Fixed `Slides.AddEmptySlide` [#658](https://github.com/ShapeCrawler/ShapeCrawler/issues/658)  
+
 ## Version 0.54.1 - 2024-08-28
 🐞Fixed `IFont.LatinName` [#669](https://github.com/ShapeCrawler/ShapeCrawler/issues/669)  
 🐞Fixed copying Slide Notes [#616](https://github.com/ShapeCrawler/ShapeCrawler/issues/616)  

@@ -26,7 +26,7 @@ internal sealed class PresentationCore
         var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
         this.Sections = new Sections(this.sdkPresDocument);
-        this.Slides = new Slides(this.sdkPresDocument.PresentationPart!.SlideParts);
+        this.Slides = new Slides(this.sdkPresDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
     }
@@ -38,7 +38,7 @@ internal sealed class PresentationCore
         var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
         this.Sections = new Sections(this.sdkPresDocument);
-        this.Slides = new Slides(this.sdkPresDocument.PresentationPart!.SlideParts);
+        this.Slides = new Slides(this.sdkPresDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
     }

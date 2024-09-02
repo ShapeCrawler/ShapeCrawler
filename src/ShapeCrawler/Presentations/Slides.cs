@@ -14,18 +14,17 @@ namespace ShapeCrawler;
 
 internal sealed class Slides : ISlides
 {
-    private readonly IEnumerable<SlidePart> sdkSlideParts;
     private readonly ReadOnlySlides readOnlySlides;
+    private readonly PresentationPart presentationPart;
 
-    internal Slides(IEnumerable<SlidePart> sdkSlideParts)
-        : this(sdkSlideParts, new ReadOnlySlides(sdkSlideParts))
+    internal Slides(PresentationPart presentationPart)
+        : this(presentationPart, new ReadOnlySlides(presentationPart.SlideParts))
     {
-        this.sdkSlideParts = sdkSlideParts;
     }
 
-    private Slides(IEnumerable<SlidePart> sdkSlideParts, ReadOnlySlides readOnlySlides)
+    private Slides(PresentationPart presentationPart, ReadOnlySlides readOnlySlides)
     {
-        this.sdkSlideParts = sdkSlideParts;
+        this.presentationPart = presentationPart;
         this.readOnlySlides = readOnlySlides;
     }
 
@@ -40,7 +39,7 @@ internal sealed class Slides : ISlides
     public void Remove(ISlide slide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var sdkPresentationDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
         var sdkPresentationPart = sdkPresentationDocument.PresentationPart!;
         var pPresentation = sdkPresentationPart.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
@@ -65,16 +64,16 @@ internal sealed class Slides : ISlides
 
     public void AddEmptySlide(SlideLayoutType layoutType)
     {
-        var sdkPresentationDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
-        var slideMaster = new SlideMasterCollection(sdkPresentationDocument.PresentationPart!.SlideMasterParts);
-        var layout = slideMaster.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
+        var sdkPresDoc = (PresentationDocument)this.presentationPart.OpenXmlPackage;
+        var slideMasters = new SlideMasterCollection(sdkPresDoc.PresentationPart!.SlideMasterParts);
+        var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 
         this.AddEmptySlide(layout);
     }
 
     public void AddEmptySlide(ISlideLayout layout)
     {
-        var sdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
+        var sdkPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
         var sdkPresPart = sdkPresDocument.PresentationPart!;
         var rId = sdkPresPart.NextRelationshipId();
         var sdkSlidePart = sdkPresPart.AddNewPart<SlidePart>(rId);
@@ -126,7 +125,9 @@ internal sealed class Slides : ISlides
         }
 
         var pSlideIdList = sdkPresPart.Presentation.SlideIdList!;
-        var nextId = pSlideIdList.OfType<P.SlideId>().Last().Id! + 1;
+        var nextId = pSlideIdList.OfType<P.SlideId>().Any()
+            ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
+            : 256; // according to the scheme, this id starts at 256
         var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
         pSlideIdList.Append(pSlideId);
     }
@@ -148,7 +149,7 @@ internal sealed class Slides : ISlides
     {
         var sourceSlide = (Slide)slide;
         var sourcePresStream = new MemoryStream();
-        var targetPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
+        var targetPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
         var sourceSlidePresDocument = sourceSlide.SDKPresentationDocument().Clone(sourcePresStream);
 
         var sourceSlidePresPart = sourceSlidePresDocument.PresentationPart!;
