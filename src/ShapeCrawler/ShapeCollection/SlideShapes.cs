@@ -550,8 +550,7 @@ internal sealed class SlideShapes : ISlideShapes
             maxId = shapes.Max(s => s.Id);
         }
 
-        var maxOrder = Regex.Matches(string.Join(string.Empty, shapes.Select(s => s.Name)), "\\d+", RegexOptions.None,
-                TimeSpan.FromSeconds(100))
+        var maxOrder = Regex.Matches(string.Join(string.Empty, shapes.Select(s => s.Name)), "\\d+", RegexOptions.None, TimeSpan.FromSeconds(100))
 
 #if NETSTANDARD2_0
             .Cast<Match>()
