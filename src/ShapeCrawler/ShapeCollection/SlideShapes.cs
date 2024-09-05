@@ -505,6 +505,7 @@ internal sealed class SlideShapes : ISlideShapes
 
     private static string Mime(Stream imageStream)
     {
+        imageStream.Seek(0, SeekOrigin.Begin);
         using var codec = SKCodec.Create(imageStream);
         var mime = codec.EncodedFormat switch
         {
@@ -600,8 +601,9 @@ internal sealed class SlideShapes : ISlideShapes
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
         var imgPartRId = this.sdkSlidePart.NextRelationshipId();
-
-        var mime = Mime(imageStream);
+        var mStream = new MemoryStream();
+        imageStream.CopyTo(mStream);
+        var mime = Mime(mStream);
         var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
         imageStream.Position = 0;
         imagePart.FeedData(imageStream);
