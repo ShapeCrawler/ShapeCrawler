@@ -503,6 +503,21 @@ internal sealed class SlideShapes : ISlideShapes
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
+    private static string Mime(Stream imageStream)
+    {
+        using var codec = SKCodec.Create(imageStream);
+        var mime = codec.EncodedFormat switch
+        {
+            SKEncodedImageFormat.Jpeg => "image/jpeg",
+            SKEncodedImageFormat.Png => "image/png",
+            SKEncodedImageFormat.Gif => "image/gif",
+            SKEncodedImageFormat.Bmp => "image/bmp",
+            _ => "image/png"
+        };
+        
+        return mime;
+    }
+    
     private static SizeF GetSvgPixelSize(SvgDocument image)
     {
         // Default base size come from viewbox if specified, else use the raw
@@ -629,22 +644,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         return pPicture;
     }
-
-    private static string Mime(Stream imageStream)
-    {
-        using var codec = SKCodec.Create(imageStream);
-        var mime = codec.EncodedFormat switch
-        {
-            SKEncodedImageFormat.Jpeg => "image/jpeg",
-            SKEncodedImageFormat.Png => "image/png",
-            SKEncodedImageFormat.Gif => "image/gif",
-            SKEncodedImageFormat.Bmp => "image/bmp",
-            _ => "image/png"
-        };
-        
-        return mime;
-    }
-
+    
     private void AddPictureSvg(SvgDocument image, Stream svgStream)
     {
         // Determine intrinsic size in 
