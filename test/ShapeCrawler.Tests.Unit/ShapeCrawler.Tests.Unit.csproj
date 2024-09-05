@@ -220,6 +220,8 @@
     <EmbeddedResource Include="Assets\autoshape\line-shape.xml" />
     <None Remove="Assets\images\jpeg image.jpg" />
     <EmbeddedResource Include="Assets\images\jpeg image.jpg" />
+    <None Remove="Assets\images\jpeg image-500w.jpg" />
+    <EmbeddedResource Include="Assets\images\jpeg image-500w.jpg" />
   </ItemGroup>
 
 </Project>

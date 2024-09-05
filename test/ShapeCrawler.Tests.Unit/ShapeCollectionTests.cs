@@ -347,7 +347,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        var image = StreamOf("test-vector-image-1.svg");
         image.Position = 0;
 
         // Act
@@ -386,7 +386,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-large.svg");
+        var image = StreamOf("test-vector-image-large.svg");
         image.Position = 0;
 
         // Act
@@ -566,7 +566,23 @@ public class ShapeCollectionTests : SCTest
         var addedPictureImage = shapes.Last<IPicture>().Image!;
         addedPictureImage.MIME.Should().Be("image/jpeg");
     }
+    
+    [Test]
+    public void AddPicture_should_not_change_the_underlying_file_size()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = StreamOf("jpeg image-500w.jpg");
 
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var addedPictureImage = shapes.Last<IPicture>().Image!;
+        addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
+    }
+    
     [Test]
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {
