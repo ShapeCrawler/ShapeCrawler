@@ -196,12 +196,12 @@
     <EmbeddedResource Include="Assets\056_slide-notes.pptx" />
     <None Remove="Assets\tables-case001.pptx" />
     <EmbeddedResource Include="Assets\tables-case001.pptx" />
-    <None Remove="Assets\test-image-1.png" />
-    <EmbeddedResource Include="Assets\test-image-1.png" />
-    <None Remove="Assets\test-image-2.png" />
-    <EmbeddedResource Include="Assets\test-image-2.png" />
-    <None Remove="Assets\test-image-large.png" />
-    <EmbeddedResource Include="Assets\test-image-large.png" />
+    <None Remove="Assets\images\png image-1.png" />
+    <EmbeddedResource Include="Assets\images\png image-1.png" />
+    <None Remove="Assets\images\png image-2.png" />
+    <EmbeddedResource Include="Assets\images\png image-2.png" />
+    <None Remove="Assets\images\png image-large.png" />
+    <EmbeddedResource Include="Assets\images\png image-large.png" />
     <None Remove="Assets\test-mp3.mp3" />
     <EmbeddedResource Include="Assets\test-mp3.mp3" />
     <None Remove="Assets\test-vector-image-1.svg" />
@@ -218,6 +218,8 @@
     <EmbeddedResource Include="Assets\040_video.pptx" />
     <None Remove="Assets\autoshape\line-shape.xml" />
     <EmbeddedResource Include="Assets\autoshape\line-shape.xml" />
+    <None Remove="Assets\images\jpeg image.jpg" />
+    <EmbeddedResource Include="Assets\images\jpeg image.jpg" />
   </ItemGroup>
 
 </Project>

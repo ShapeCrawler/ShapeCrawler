@@ -78,7 +78,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("009_table");
-        var pngStream = StreamOf("test-image-2.png");
+        var pngStream = StreamOf("png image-2.png");
         var pres = new Presentation(pptx);
         var mStream = new MemoryStream();
         var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
@@ -117,7 +117,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("pictures-case001.pptx");
-        var image = GetTestBytes("test-image-2.png");
+        var image = GetTestBytes("png image-2.png");
         var pres = new Presentation(pptx);
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
         var groupedPicture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");

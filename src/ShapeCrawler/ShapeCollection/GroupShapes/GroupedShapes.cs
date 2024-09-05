@@ -37,7 +37,7 @@ internal sealed record GroupedShapes : IShapes
         (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Name == name);
 
     public IShape GetByName(string name) => this.GroupedShapesCore().First(shape => shape.Name == name);
-    public IShape Last<T>() where T : IShape => this.GroupedShapesCore().Last(shape => shape is T);
+    public T Last<T>() where T : IShape => (T)this.GroupedShapesCore().Last(shape => shape is T);
 
     public T GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
 

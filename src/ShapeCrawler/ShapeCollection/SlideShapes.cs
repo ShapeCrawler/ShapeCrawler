@@ -497,7 +497,7 @@ internal sealed class SlideShapes : ISlideShapes
     
     public IShape GetByName(string name) => this.shapes.GetByName(name);
 
-    public IShape Last<T>() where T : IShape => this.shapes.Last<T>();
+    public T Last<T>() where T : IShape => this.shapes.Last<T>();
 
     public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
@@ -585,7 +585,9 @@ internal sealed class SlideShapes : ISlideShapes
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
         var imgPartRId = this.sdkSlidePart.NextRelationshipId();
-        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+
+        var mime = Mime(imageStream);
+        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
         imageStream.Position = 0;
         imagePart.FeedData(imageStream);
 
@@ -626,6 +628,21 @@ internal sealed class SlideShapes : ISlideShapes
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         return pPicture;
+    }
+
+    private static string Mime(Stream imageStream)
+    {
+        using var codec = SKCodec.Create(imageStream);
+        var mime = codec.EncodedFormat switch
+        {
+            SKEncodedImageFormat.Jpeg => "image/jpeg",
+            SKEncodedImageFormat.Png => "image/png",
+            SKEncodedImageFormat.Gif => "image/gif",
+            SKEncodedImageFormat.Bmp => "image/bmp",
+            _ => "image/png"
+        };
+        
+        return mime;
     }
 
     private void AddPictureSvg(SvgDocument image, Stream svgStream)
