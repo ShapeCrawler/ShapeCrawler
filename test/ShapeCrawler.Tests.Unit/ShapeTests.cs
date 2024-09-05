@@ -72,7 +72,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("009_table.pptx");
-        var image = StreamOf("test-image-2.png");
+        var image = StreamOf("png image-2.png");
         IPresentation presentation = new Presentation(pptx);
         IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
         IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);

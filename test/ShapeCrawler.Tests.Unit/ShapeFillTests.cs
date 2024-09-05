@@ -27,7 +27,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("009_table.pptx");
-        var image = StreamOf("test-image-2.png");
+        var image = StreamOf("png image-2.png");
         var shape = new Presentation(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var imageSizeBefore = fill.Picture!.AsByteArray().Length;
@@ -234,7 +234,7 @@ public class ShapeFillTests : SCTest
         var pres = new Presentation(StreamOf(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var shapeFill = shape.Fill;
-        var imageStream = StreamOf("test-image-1.png");
+        var imageStream = StreamOf("png image-1.png");
 
         // Act
         shapeFill.SetPicture(imageStream);
@@ -254,7 +254,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var fill = shape.Fill;
-        var imageStream = StreamOf("test-image-1.png");
+        var imageStream = StreamOf("png image-1.png");
 
         // Act
         fill.SetPicture(imageStream);

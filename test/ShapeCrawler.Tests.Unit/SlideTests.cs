@@ -49,7 +49,7 @@ public class SlideTests : SCTest
         // Arrange
         var pre = new Presentation(StreamOf("009_table.pptx"));
         var backgroundImage = pre.Slides[0].Background;
-        var image = StreamOf("test-image-2.png");
+        var image = StreamOf("png image-2.png");
         var bytesBefore = backgroundImage.AsByteArray();
 
         // Act
@@ -67,7 +67,7 @@ public class SlideTests : SCTest
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
-        var bgImage = StreamOf("test-image-2.png");
+        var bgImage = StreamOf("png image-2.png");
 
         // Act
         slide.Background.Update(bgImage);
