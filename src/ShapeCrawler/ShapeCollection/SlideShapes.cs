@@ -37,9 +37,9 @@ internal sealed class SlideShapes : ISlideShapes
     }
 
     public int Count => this.shapes.Count;
-    
+
     public IShape this[int index] => this.shapes[index];
-    
+
     public void Add(IShape addingShape)
     {
         var pShapeTree = this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
@@ -132,20 +132,17 @@ internal sealed class SlideShapes : ISlideShapes
         {
             var height = skBitmap.Height;
             var width = skBitmap.Width;
-            var resize = false;
 
             if (height > 500)
             {
                 height = 500;
                 width = (int)(height * skBitmap.Width / (decimal)skBitmap.Height);
-                resize = true;
             }
 
             if (width > 500)
             {
                 width = 500;
                 height = (int)(width * skBitmap.Height / (decimal)skBitmap.Width);
-                resize = true;
             }
 
             var xEmu = UnitConverter.HorizontalPixelToEmu(100);
@@ -153,19 +150,7 @@ internal sealed class SlideShapes : ISlideShapes
             var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
             var cyEmu = UnitConverter.VerticalPixelToEmu(height);
 
-            P.Picture? pPicture;
-            if (resize)
-            {
-                skBitmap.Resize(new SKSizeI(width:width, height:height), SKFilterQuality.High);
-                var resizedStream = new MemoryStream();
-                skBitmap.Encode(resizedStream, SKEncodedImageFormat.Png, 95);
-                resizedStream.Position = 0;
-                pPicture = this.CreatePPicture(resizedStream, "Picture");
-            }
-            else
-            {
-                pPicture = this.CreatePPicture(imageStream, "Picture");
-            }
+            var pPicture = this.CreatePPicture(imageStream, "Picture");
 
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = xEmu;
@@ -427,7 +412,8 @@ internal sealed class SlideShapes : ISlideShapes
 
         var graphicFrame = new P.GraphicFrame();
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = (uint)this.NextShapeId(), Name = shapeName };
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
+            { Id = (uint)this.NextShapeId(), Name = shapeName };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
         nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
@@ -486,15 +472,15 @@ internal sealed class SlideShapes : ISlideShapes
 
         throw new SCException("Shape is not cannot be removed.");
     }
-    
+
     public T GetById<T>(int id) where T : IShape => this.shapes.GetById<T>(id);
-    
+
     public T? TryGetById<T>(int id) where T : IShape => this.shapes.TryGetById<T>(id);
-    
+
     public T GetByName<T>(string name) where T : IShape => this.shapes.GetByName<T>(name);
-    
+
     public T? TryGetByName<T>(string name) where T : IShape => this.shapes.TryGetByName<T>(name);
-    
+
     public IShape GetByName(string name) => this.shapes.GetByName(name);
 
     public T Last<T>() where T : IShape => this.shapes.Last<T>();
@@ -515,18 +501,18 @@ internal sealed class SlideShapes : ISlideShapes
             SKEncodedImageFormat.Bmp => "image/bmp",
             _ => "image/png"
         };
-        
+
         return mime;
     }
-    
+
     private static SizeF GetSvgPixelSize(SvgDocument image)
     {
         // Default base size come from viewbox if specified, else use the raw
         // image bounds
-        var bounds = 
-            (image.ViewBox.Width > 0 && image.ViewBox.Height > 0) ?
-            new SizeF(width:image.ViewBox.Width, height:image.ViewBox.Height) :
-            new SizeF(width:image.Bounds.Width, height:image.Bounds.Height);
+        var bounds =
+            (image.ViewBox.Width > 0 && image.ViewBox.Height > 0)
+                ? new SizeF(width: image.ViewBox.Width, height: image.ViewBox.Height)
+                : new SizeF(width: image.Bounds.Width, height: image.Bounds.Height);
 
         return new SizeF()
         {
@@ -534,7 +520,7 @@ internal sealed class SlideShapes : ISlideShapes
             {
                 SvgUnitType.Percentage => bounds.Width * image.Width.Value / 100.0f,
                 SvgUnitType.User or
-                SvgUnitType.Pixel => image.Width.Value,
+                    SvgUnitType.Pixel => image.Width.Value,
                 SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Width.Value),
                 SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Width.Value),
                 SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Width.Value / 10.0f),
@@ -545,11 +531,11 @@ internal sealed class SlideShapes : ISlideShapes
             {
                 SvgUnitType.Percentage => bounds.Height * image.Height.Value / 100.0f,
                 SvgUnitType.User or
-                SvgUnitType.Pixel => image.Height.Value,
+                    SvgUnitType.Pixel => image.Height.Value,
                 SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Height.Value),
                 SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Height.Value),
                 SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Height.Value / 10.0f),
-                SvgUnitType.Point => new Points(image.Height.Value).AsPixels(), 
+                SvgUnitType.Point => new Points(image.Height.Value).AsPixels(),
                 _ => throw new NotImplementedException()
             }
         };
@@ -646,7 +632,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         return pPicture;
     }
-    
+
     private void AddPictureSvg(SvgDocument image, Stream svgStream)
     {
         // Determine intrinsic size in 
@@ -662,7 +648,7 @@ internal sealed class SlideShapes : ISlideShapes
             size.Height = 500.0f;
             size.Width = size.Height * image.Width.Value / image.Height.Value;
         }
-        
+
         if (size.Width > 500.0f)
         {
             size.Width = 500.0f;
@@ -713,9 +699,11 @@ internal sealed class SlideShapes : ISlideShapes
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
 
-        A.NonVisualDrawingPropertiesExtensionList aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
+        A.NonVisualDrawingPropertiesExtensionList aNonVisualDrawingPropertiesExtensionList =
+            new A.NonVisualDrawingPropertiesExtensionList();
 
-        A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
+        A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension =
+            new A.NonVisualDrawingPropertiesExtension();
         aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
 
         A16.CreationId a16CreationId = new A16.CreationId();

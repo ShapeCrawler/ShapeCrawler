@@ -29,10 +29,10 @@ public abstract class SCTest
         return StreamOf(fileName).ToArray();
     }
 
-    public static MemoryStream StreamOf(string fileName)
+    public static MemoryStream StreamOf(string file)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var stream = assembly.GetResourceStream(fileName);
+        var stream = assembly.GetResourceStream(file);
         var mStream = new MemoryStream();
         stream!.CopyTo(mStream);
 
