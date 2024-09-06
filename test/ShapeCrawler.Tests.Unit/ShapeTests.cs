@@ -400,7 +400,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
-        var shape = pres.Slides[0].Shapes.GetByName("TextBox 3");
+        var shape = pres.Slides[0].Shape("TextBox 3");
 
         // Act
         shape.Remove();

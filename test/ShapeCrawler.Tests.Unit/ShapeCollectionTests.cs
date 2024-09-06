@@ -342,7 +342,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddPicture_adds_SVG_picture()
+    public void AddPicture_adds_svg_picture()
     {
         // Arrange
         var pres = new Presentation();
@@ -818,65 +818,20 @@ public class ShapeCollectionTests : SCTest
         addedSlide.Should().NotBeNull();
         titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
     }
-
-    [Test]
-    public void Slides_Insert_inserts_slide_at_the_specified_position()
-    {
-        // Arrange
-        var pptx = StreamOf("001.pptx");
-        var sourceSlide = new Presentation(pptx).Slides[0];
-        var sourceSlideId = Guid.NewGuid().ToString();
-        sourceSlide.CustomData = sourceSlideId;
-        pptx = StreamOf("002.pptx");
-        var destPre = new Presentation(pptx);
-
-        // Act
-        destPre.Slides.Insert(2, sourceSlide);
-
-        // Assert
-        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
-    }
     
     [Test]
-    [TestCase("007_2 slides.pptx", 1)]
-    public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
+    public void Remove()
     {
         // Arrange
-        var pptx = StreamOf(file);
-        var pres = new Presentation(pptx);
-        var removingSlide = pres.Slides[0];
-        var mStream = new MemoryStream();
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes; 
+        shapes.AddRectangle(10, 10, 10, 10);
 
         // Act
-        pres.Slides.Remove(removingSlide);
-
+        shapes.Remove(shapes.Last());
+        
         // Assert
-        pres.Slides.Should().HaveCount(expectedSlidesCount);
-
-        pres.SaveAs(mStream);
-        pres = new Presentation(mStream);
-        pres.Slides.Should().HaveCount(expectedSlidesCount);
-    }
-    
-    [Test]
-    public void Slides_Remove_removes_slide_from_section()
-    {
-        // Arrange
-        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
-        var pres = new Presentation(pptxStream);
-        var sectionSlides = pres.Sections[0].Slides;
-        var removingSlide = sectionSlides[0];
-        var mStream = new MemoryStream();
-
-        // Act
-        pres.Slides.Remove(removingSlide);
-
-        // Assert
-        sectionSlides.Count.Should().Be(0);
-
-        pres.SaveAs(mStream);
-        pres = new Presentation(mStream);
-        sectionSlides = pres.Sections[0].Slides;
-        sectionSlides.Count.Should().Be(0);
+        shapes.Should().HaveCount(0);
+        pres.Validate();
     }
 }
