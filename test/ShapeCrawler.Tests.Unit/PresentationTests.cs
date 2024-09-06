@@ -194,7 +194,7 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
-
+    
     [Test]
     public void Slides_Remove_removes_slide_from_section()
     {
@@ -451,8 +451,7 @@ public class PresentationTests : SCTest
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pptx = StreamOf(file);
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf(file));
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
 
@@ -465,5 +464,23 @@ public class PresentationTests : SCTest
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
+    }
+    
+    [Test]
+    public void Slides_Insert_inserts_slide_at_the_specified_position()
+    {
+        // Arrange
+        var pptx = StreamOf("001.pptx");
+        var sourceSlide = new Presentation(pptx).Slides[0];
+        var sourceSlideId = Guid.NewGuid().ToString();
+        sourceSlide.CustomData = sourceSlideId;
+        pptx = StreamOf("002.pptx");
+        var destPre = new Presentation(pptx);
+
+        // Act
+        destPre.Slides.Insert(2, sourceSlide);
+
+        // Assert
+        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
 }

@@ -460,17 +460,13 @@ internal sealed class SlideShapes : ISlideShapes
 
     public void Remove(IShape shape)
     {
-        if (this.shapes.Any(x => x != shape))
+        var removingShape = this.shapes.FirstOrDefault(sp => sp.Id == shape.Id);
+        if (removingShape == null)
         {
             throw new SCException("Shape is not found.");
         }
 
-        if (shape is IRemoveable removeable)
-        {
-            removeable.Remove();
-        }
-
-        throw new SCException("Shape is not cannot be removed.");
+        removingShape.Remove();
     }
 
     public T GetById<T>(int id) where T : IShape => this.shapes.GetById<T>(id);
