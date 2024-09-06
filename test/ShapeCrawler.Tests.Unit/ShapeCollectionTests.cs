@@ -824,9 +824,10 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var shapes = pres.Slide(1).Shapes; 
         shapes.AddRectangle(10, 10, 10, 10);
 
+        // Act
         shapes.Remove(shapes.Last());
         
         // Assert
