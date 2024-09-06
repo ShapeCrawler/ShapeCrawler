@@ -770,7 +770,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Add_add_adds_New_slide()
+    public void AddEmptySlide_adds_New_slide()
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
@@ -785,6 +785,21 @@ public class ShapeCollectionTests : SCTest
         var addedSlide = slides.Last();
         addedSlide.Should().NotBeNull();
         pres.Validate();
+    }
+    
+    [Test]
+    [Ignore("https://github.com/ShapeCrawler/ShapeCrawler/issues/9")]
+    public void AddEmptySlide_adds_empty_slide()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slides = pres.Slides;
+
+        // Act
+        slides.AddEmptySlide(SlideLayoutType.Blank);
+
+        // Assert
+        slides[1].Shapes.Should().HaveCount(0);
     }
 
     [Test]
