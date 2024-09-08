@@ -183,7 +183,7 @@ internal sealed record TextFrame : ITextBox
 				this.valignment = TextVerticalAlignment.Middle;
 			}
 
-			else if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Center)
+			else if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Bottom)
 			{
 				this.valignment = TextVerticalAlignment.Bottom;
 			}
