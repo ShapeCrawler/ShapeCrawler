@@ -69,7 +69,7 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    public void Alignment_Setter_updates_text_alignment_of_table_Cell()
+    public void Alignment_Setter_updates_text_horizontal_alignment_of_table_Cell()
     {
         // Arrange
         var pres = new Presentation();
@@ -79,11 +79,11 @@ public class ParagraphTests : SCTest
         cellTextFrame.Text = "some-text";
         var paragraph = cellTextFrame.Paragraphs[0];
         
-        // Act
-        paragraph.Alignment = TextAlignment.Center;
-        
-        // Assert
-        paragraph.Alignment.Should().Be(TextAlignment.Center);
+        // Act 
+        cellTextFrame.VerticalAlignment = TextVerticalAlignment.Bottom;
+
+        // Assert 
+		cellTextFrame.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
         pres.Validate();
     }
 
@@ -251,15 +251,15 @@ public class ParagraphTests : SCTest
     }
     
     [Test]
-    [SlideShape("001.pptx", 1, "TextBox 3", TextAlignment.Center)]
-    [SlideShape("001.pptx", 1, "Head 1", TextAlignment.Center)]
-    public void Alignment_Getter_returns_text_alignment(IShape autoShape, TextAlignment expectedAlignment)
+    [SlideShape("001.pptx", 1, "TextBox 3", TextHorizontalAlignment.Center)]
+    [SlideShape("001.pptx", 1, "Head 1", TextHorizontalAlignment.Center)]
+    public void Alignment_Getter_returns_text_horizontal_alignment(IShape autoShape, TextHorizontalAlignment expectedAlignment)
     {
         // Arrange
         var paragraph = autoShape.TextBox.Paragraphs[0];
 
         // Act
-        var textAlignment = paragraph.Alignment;
+        var textAlignment = paragraph.HorizontalAlignment;
 
         // Assert
         textAlignment.Should().Be(expectedAlignment);
@@ -267,7 +267,7 @@ public class ParagraphTests : SCTest
 
     [Test]
     [TestCase("001.pptx", 1, "TextBox 4")]
-    public void Alignment_Setter_updates_text_alignment(string presName, int slideNumber, string shapeName)
+    public void Alignment_Setter_updates_text_horizontal_alignment(string presName, int slideNumber, string shapeName)
     {
         // Arrange
         var pres = new Presentation(StreamOf(presName));
@@ -275,15 +275,15 @@ public class ParagraphTests : SCTest
         var mStream = new MemoryStream();
         
         // Act
-        paragraph.Alignment = TextAlignment.Right;
+        paragraph.HorizontalAlignment = TextHorizontalAlignment.Right;
 
         // Assert
-        paragraph.Alignment.Should().Be(TextAlignment.Right);
+        paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
-        paragraph.Alignment.Should().Be(TextAlignment.Right);
+        paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
     }
 
     [Test]
