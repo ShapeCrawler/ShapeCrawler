@@ -95,9 +95,10 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.54.1 - 2024-08-28
-🐞Fixed `IFont.LatinName` [#669](https://github.com/ShapeCrawler/ShapeCrawler/issues/669)  
-🐞Fixed copying Slide Notes [#616](https://github.com/ShapeCrawler/ShapeCrawler/issues/616)  
-🐞Fixed text Autofit [#643](https://github.com/ShapeCrawler/ShapeCrawler/issues/643)
+### Version 0.54.2 - 2024-09-11
+🐞Fixed `Slides.AddEmptySlide()` [#658](https://github.com/ShapeCrawler/ShapeCrawler/issues/658)  
+🐞Fixed `Shapes.Remove()` [#735](https://github.com/ShapeCrawler/ShapeCrawler/issues/735)  
+🐞Fixed `Image.MIME`  
+🐞Fixed `Shapes.AddPicture()`
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.

@@ -1,11 +1,10 @@
 # Changelog  
 
-## Version 0.54.2 - Unreleased
+## Version 0.54.2 - 2024-09-11
 🐞Fixed `Slides.AddEmptySlide()` [#658](https://github.com/ShapeCrawler/ShapeCrawler/issues/658)  
 🐞Fixed `Shapes.Remove()` [#735](https://github.com/ShapeCrawler/ShapeCrawler/issues/735)  
 🐞Fixed `Image.MIME`  
 🐞Fixed `Shapes.AddPicture()`
-
 
 ## Version 0.54.1 - 2024-08-28
 🐞Fixed `IFont.LatinName` [#669](https://github.com/ShapeCrawler/ShapeCrawler/issues/669)  
