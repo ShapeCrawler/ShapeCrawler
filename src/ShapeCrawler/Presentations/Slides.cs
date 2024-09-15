@@ -88,11 +88,11 @@ internal sealed class Slides : ISlides
             new P.ColorMapOverride(new A.MasterColorMapping()));
         var layoutInternal = (SlideLayout)layout;
         sdkSlidePart.AddPart(layoutInternal.SDKSlideLayoutPart(), "rId1");
-		
+
         // Copy layout placeholders
-        if (layoutInternal.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree && layout.Type != SlideLayoutType.Blank) // if the layout is blank, no need to add placeholder
-		{
-			var placeholderShapes = shapeTree.ChildElements
+        if (layoutInternal.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) // && layout.Type != SlideLayoutType.Blank) // if the layout is blank, no need to add placeholder
+        {
+            var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()
 
                 // Select all shapes with placeholder.
@@ -112,7 +112,7 @@ internal sealed class Slides : ISlides
                     ShapeProperties = new P.ShapeProperties()
                 });
 
-			sdkSlidePart.Slide.CommonSlideData = new P.CommonSlideData()
+            sdkSlidePart.Slide.CommonSlideData = new P.CommonSlideData()
             {
                 ShapeTree = new P.ShapeTree(placeholderShapes)
                 {
@@ -122,7 +122,7 @@ internal sealed class Slides : ISlides
                 }
             };
         }
-          
+
         var pSlideIdList = sdkPresPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
             ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
@@ -168,7 +168,7 @@ internal sealed class Slides : ISlides
         var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(targetPresDocument, masterId);
     }
-    
+
     private static P.TextBody ResolveTextBody(P.Shape shape)
     {
         // Creates a new TextBody
