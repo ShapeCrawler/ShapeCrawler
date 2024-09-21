@@ -43,8 +43,14 @@ internal readonly struct NullTextFrame : ITextBox
         get => throw new Exception(error); 
         set => throw new Exception(error);
     }
-    
+
     public bool TextWrapped => throw new Exception(error);
     
     public string SDKXPath => throw new Exception(error);
+
+    public TextVerticalAlignment VerticalAlignment 
+    {
+        get => throw new Exception(error);
+        set => throw new Exception(error);
+    }
 }

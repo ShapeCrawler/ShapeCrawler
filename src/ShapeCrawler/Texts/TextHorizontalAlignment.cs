@@ -5,7 +5,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Text alignment.
 /// </summary>
-public enum TextAlignment
+public enum TextHorizontalAlignment
 {
     /// <summary>
     ///     Left alignment.

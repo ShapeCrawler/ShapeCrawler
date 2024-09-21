@@ -90,8 +90,7 @@ internal sealed class Slides : ISlides
         sdkSlidePart.AddPart(layoutInternal.SDKSlideLayoutPart(), "rId1");
 
         // Copy layout placeholders
-        if (layoutInternal.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData
-            && commonSlideData.ShapeTree is P.ShapeTree shapeTree)
+        if (layoutInternal.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) // && layout.Type != SlideLayoutType.Blank) // if the layout is blank, no need to add placeholder
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()
@@ -169,7 +168,7 @@ internal sealed class Slides : ISlides
         var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(targetPresDocument, masterId);
     }
-    
+
     private static P.TextBody ResolveTextBody(P.Shape shape)
     {
         // Creates a new TextBody

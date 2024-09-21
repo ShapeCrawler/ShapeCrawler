@@ -317,6 +317,20 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
+		[SlideShape("014.pptx", 2, 5, TextVerticalAlignment.Middle)] 
+		public void Text_Getter_returns_vertical_alignment(IShape shape, TextVerticalAlignment expectedVAlignment)
+        {
+            // Arrange
+            var textFrame = ((IShape)shape).TextBox;
+
+            // Act
+            var valignment = textFrame.VerticalAlignment;
+
+            // Assert
+            valignment.Should().Be(expectedVAlignment);
+        }
+
+        [Test]
         [SlideShape("001.pptx", 1, 6, $"id6-Text1#NewLine#Text2")]
         [SlideShape("014.pptx", 1, 61, $"test1#NewLine#test2#NewLine#test3#NewLine#test4#NewLine#test5")]
         [SlideShape("011_dt.pptx", 1, 2, $"P1#NewLine#")]
@@ -506,7 +520,28 @@ namespace ShapeCrawler.Tests.Unit
             bottomMargin.Should().Be((decimal)expectedMargin);
         }
 
-        [Test]
+		[Test]
+		[TestCase("001.pptx", 1, "TextBox 4")]
+		public void Alignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber, string shapeName)
+		{
+			// Arrange
+			var pres = new Presentation(StreamOf(presName));
+			var textbox = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
+			var mStream = new MemoryStream();
+
+			// Act
+			textbox.VerticalAlignment = TextVerticalAlignment.Bottom;
+
+			// Assert
+			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+
+			pres.SaveAs(mStream);
+			pres = new Presentation(mStream);
+			textbox = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
+			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+		}
+
+		[Test]
         [TestCase("054_get_shape_xpath.pptx", 1, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
         [TestCase("054_get_shape_xpath.pptx", 2, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
         public void SDKXPath_returns_xpath_of_undelying_txBody_element(string presentationName, int slideNumber, string expectedXPath)

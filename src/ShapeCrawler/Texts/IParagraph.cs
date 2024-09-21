@@ -31,9 +31,9 @@ public interface IParagraph
     Bullet Bullet { get; }
 
     /// <summary>
-    ///     Gets or sets the text alignment.
+    ///     Gets or sets the text horizontal alignment.
     /// </summary>
-    TextAlignment Alignment { get; set; }
+    TextHorizontalAlignment HorizontalAlignment { get; set; }
 
     /// <summary>
     ///     Gets or sets paragraph's indent level.
@@ -63,7 +63,7 @@ internal sealed class Paragraph : IParagraph
     private readonly WrappedAParagraph wrappedAParagraph;
     private readonly A.Paragraph aParagraph;
 
-    private TextAlignment? alignment;
+    private TextHorizontalAlignment? alignment;
     
     internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
         : this(sdkTypedOpenXmlPart, aParagraph, new WrappedAParagraph(aParagraph))
@@ -133,7 +133,7 @@ internal sealed class Paragraph : IParagraph
 
     public Bullet Bullet => this.bullet.Value;
 
-    public TextAlignment Alignment
+    public TextHorizontalAlignment HorizontalAlignment
     {
         get
         {
@@ -148,25 +148,25 @@ internal sealed class Paragraph : IParagraph
                 var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.aParagraph.Ancestors<P.Shape>().First());
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
-                    return TextAlignment.Center;
+                    return TextHorizontalAlignment.Center;
                 }
             }
 
             if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Center)
             {
-                this.alignment = TextAlignment.Center;
+                this.alignment = TextHorizontalAlignment.Center;
             }
             else if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Right)
             {
-                this.alignment = TextAlignment.Right;
+                this.alignment = TextHorizontalAlignment.Right;
             }
             else if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Justified)
             {
-                this.alignment = TextAlignment.Justify;
+                this.alignment = TextHorizontalAlignment.Justify;
             }
             else
             {
-                this.alignment = TextAlignment.Left;
+                this.alignment = TextHorizontalAlignment.Left;
             }
 
             return this.alignment.Value;
@@ -219,14 +219,14 @@ internal sealed class Paragraph : IParagraph
         return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
     }
 
-    private void SetAlignment(TextAlignment alignmentValue)
+    private void SetAlignment(TextHorizontalAlignment alignmentValue)
     {
         var aTextAlignmentTypeValue = alignmentValue switch
         {
-            TextAlignment.Left => A.TextAlignmentTypeValues.Left,
-            TextAlignment.Center => A.TextAlignmentTypeValues.Center,
-            TextAlignment.Right => A.TextAlignmentTypeValues.Right,
-            TextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
+            TextHorizontalAlignment.Left => A.TextAlignmentTypeValues.Left,
+            TextHorizontalAlignment.Center => A.TextAlignmentTypeValues.Center,
+            TextHorizontalAlignment.Right => A.TextAlignmentTypeValues.Right,
+            TextHorizontalAlignment.Justify => A.TextAlignmentTypeValues.Justified,
             _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
         };
 
