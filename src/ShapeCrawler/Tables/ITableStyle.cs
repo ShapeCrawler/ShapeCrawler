@@ -45,33 +45,3 @@ internal class TableStyle : ITableStyle
         return hashCode;
     }
 }
-
-// ici on aura les modifications en rapport au tableau
-
-/* A cote pour ne pas oublier : marge dans les cells */
-
-/*
- Comment utiliser 
-
-AddTable( xxx )
-
-ITable table ;
-
-table.Style = xxx 
- 
- */
-
-
-/*
-Scenario a prendre en compte
-
-
-On a l'enum on veut recuperer sa classe => lib (trivia)
-On a le Nom, on veut recuperer l'enum => User
-On a le GUID, on veut recuperer l'enum => lib
-
-Un dictionnaire avec comme cle [ nom/GUID ] et valeur enum
-
-Une classe static avec la liste des classes + fonction convert  Enum => Class
-
-*/ 
