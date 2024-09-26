@@ -38,7 +38,7 @@ public interface IShape : IPosition
     /// <summary>
     ///     Gets a value indicating whether shape is a placeholder.
     /// </summary>
-    /// <returns></returns>
+    /// <returns> bool. </returns>
     bool IsPlaceholder { get; }
     
     /// <summary>

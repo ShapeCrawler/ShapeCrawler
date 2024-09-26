@@ -28,5 +28,4 @@ internal sealed class SlideSize
         var emu = UnitConverter.VerticalPixelToEmu(pixels);
         this.pSlideSize.Cy = new Int32Value((int)emu);
     }
-
 }

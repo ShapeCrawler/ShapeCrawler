@@ -1,5 +1,4 @@
-﻿using System;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
@@ -53,7 +52,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
             aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
         }
 
-        aOutline.Width = new Int32Value((Int32)UnitConverter.PointToEmu(points));
+        aOutline.Width = new Int32Value((int)UnitConverter.PointToEmu(points));
     }
     
     private void UpdateFill(OpenXmlElement child)

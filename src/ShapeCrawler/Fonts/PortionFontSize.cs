@@ -2,8 +2,8 @@
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Texts;
-using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
@@ -125,7 +125,7 @@ internal class PortionFontSize : IFontSize
         var aRunPr = parent.GetFirstChild<A.RunProperties>();
         if (aRunPr == null)
         {
-            aRunPr =  new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
+            aRunPr = new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
             parent.InsertAt(aRunPr, 0);
         }
 

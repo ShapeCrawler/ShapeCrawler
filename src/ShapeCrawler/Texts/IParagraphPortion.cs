@@ -27,7 +27,7 @@ public interface IParagraphPortion
     Color TextHighlightColor { get; set; }
 
     /// <summary>
-    /// 	Removes portion from paragraph.
+    ///     Removes portion from paragraph.
     /// </summary>
     void Remove();
 }

@@ -13,6 +13,7 @@ using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using Svg;
@@ -92,7 +93,7 @@ internal sealed class SlideShapes : ISlideShapes
         var appNonVisualDrawingPropsExtensionList = new P.ApplicationNonVisualDrawingPropertiesExtensionList();
 
         var appNonVisualDrawingPropsExtension = new P.ApplicationNonVisualDrawingPropertiesExtension
-            { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
+        { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
         var media = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media { Embed = mediaRef.Id };
         media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
@@ -110,7 +111,7 @@ internal sealed class SlideShapes : ISlideShapes
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
         var nonVisualDrawingProps = pPicture.NonVisualDrawingProperties();
         var hyperlinkOnClick = new A.HyperlinkOnClick
-            { Id = string.Empty, Action = "ppaction://media" };
+        { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
         nonVisualPictureProps.Append(new P.NonVisualPictureDrawingProperties());
 
@@ -179,7 +180,7 @@ internal sealed class SlideShapes : ISlideShapes
 
     public void AddBarChart(BarChartType barChartType)
     {
-        var chartFactory = new ChartGraphicFrameHandler();
+        var chartFactory = default(ChartGraphicFrameHandler);
         var newPGraphicFrame = chartFactory.Create(this.sdkSlidePart);
 
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPGraphicFrame);
@@ -209,7 +210,7 @@ internal sealed class SlideShapes : ISlideShapes
         var shapeId = (uint)this.shapes.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
         var hyperlinkOnClick1 = new A.HyperlinkOnClick()
-            { Id = string.Empty, Action = "ppaction://media" };
+        { Id = string.Empty, Action = "ppaction://media" };
 
         A.NonVisualDrawingPropertiesExtensionList
             nonVisualDrawingPropertiesExtensionList1 = new();
@@ -271,7 +272,7 @@ internal sealed class SlideShapes : ISlideShapes
         transform2D1.Append(extents2);
 
         A.PresetGeometry presetGeometry1 = new()
-            { Preset = A.ShapeTypeValues.Rectangle };
+        { Preset = A.ShapeTypeValues.Rectangle };
         A.AdjustValueList adjustValueList1 = new();
 
         presetGeometry1.Append(adjustValueList1);
@@ -405,6 +406,12 @@ internal sealed class SlideShapes : ISlideShapes
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
     {
+        // default style (to keep it how it was)
+        this.AddTable(x, y, columnsCount, rowsCount, TableStyleEnum.MediumStyle2Accent1);
+    }
+
+    public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
+    {
         var shapeName = this.GenerateNextTableName();
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
@@ -413,7 +420,7 @@ internal sealed class SlideShapes : ISlideShapes
         var graphicFrame = new P.GraphicFrame();
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
-            { Id = (uint)this.NextShapeId(), Name = shapeName };
+        { Id = (uint)this.NextShapeId(), Name = shapeName };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
         nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
@@ -426,12 +433,12 @@ internal sealed class SlideShapes : ISlideShapes
 
         var graphic = new A.Graphic();
         var graphicData = new A.GraphicData
-            { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
+        { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
         var aTable = new A.Table();
 
         var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
         var tableStyleId = new A.TableStyleId
-            { Text = "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}" };
+        { Text = style.GUID };
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new A.TableGrid();
@@ -458,6 +465,12 @@ internal sealed class SlideShapes : ISlideShapes
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
+    public void AddTable(int x, int y, int columnsCount, int rowsCount, TableStyleEnum style)
+    {
+        ITableStyle vstyle = CommonTableStyles.GetTableStyleByEnum(style);
+        this.AddTable(x, y, columnsCount, rowsCount, vstyle);
+    }
+
     public void Remove(IShape shape)
     {
         var removingShape = this.shapes.FirstOrDefault(sp => sp.Id == shape.Id);
@@ -469,17 +482,22 @@ internal sealed class SlideShapes : ISlideShapes
         removingShape.Remove();
     }
 
-    public T GetById<T>(int id) where T : IShape => this.shapes.GetById<T>(id);
+    public T GetById<T>(int id) 
+        where T : IShape => this.shapes.GetById<T>(id);
 
-    public T? TryGetById<T>(int id) where T : IShape => this.shapes.TryGetById<T>(id);
+    public T? TryGetById<T>(int id) 
+        where T : IShape => this.shapes.TryGetById<T>(id);
 
-    public T GetByName<T>(string name) where T : IShape => this.shapes.GetByName<T>(name);
+    public T GetByName<T>(string name) 
+        where T : IShape => this.shapes.GetByName<T>(name);
 
-    public T? TryGetByName<T>(string name) where T : IShape => this.shapes.TryGetByName<T>(name);
+    public T? TryGetByName<T>(string name) 
+        where T : IShape => this.shapes.TryGetByName<T>(name);
 
     public IShape GetByName(string name) => this.shapes.GetByName(name);
 
-    public T Last<T>() where T : IShape => this.shapes.Last<T>();
+    public T Last<T>() 
+        where T : IShape => this.shapes.Last<T>();
 
     public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
@@ -594,7 +612,8 @@ internal sealed class SlideShapes : ISlideShapes
         var shapeId = (uint)this.NextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = shapeId, Name = $"{shapeName} {shapeId}"
+            Id = shapeId,
+            Name = $"{shapeName} {shapeId}"
         };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
@@ -614,7 +633,7 @@ internal sealed class SlideShapes : ISlideShapes
             new A.Extents { Cx = 0, Cy = 0 });
 
         var presetGeometry = new A.PresetGeometry
-            { Preset = A.ShapeTypeValues.Rectangle };
+        { Preset = A.ShapeTypeValues.Rectangle };
         var shapeProperties = new P.ShapeProperties();
         shapeProperties.Append(transform2D);
         shapeProperties.Append(presetGeometry);
@@ -690,7 +709,8 @@ internal sealed class SlideShapes : ISlideShapes
         var shapeId = (uint)this.NextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = shapeId, Name = $"{shapeName} {shapeId}"
+            Id = shapeId,
+            Name = $"{shapeName} {shapeId}"
         };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
@@ -772,7 +792,7 @@ internal sealed class SlideShapes : ISlideShapes
             new A.Extents { Cx = 0, Cy = 0 });
 
         var presetGeometry = new A.PresetGeometry
-            { Preset = A.ShapeTypeValues.Rectangle };
+        { Preset = A.ShapeTypeValues.Rectangle };
 
         A.AdjustValueList aAdjustValueList = new A.AdjustValueList();
 

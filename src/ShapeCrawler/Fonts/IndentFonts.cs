@@ -79,7 +79,7 @@ internal readonly record struct IndentFonts
                     System.Globalization.CultureInfo.CurrentCulture);
 #else
             var localName = textPr.LocalName.AsSpan();
-            var level = localName.Slice(3,1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
+            var level = localName.Slice(3, 1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
             var paragraphLvl = int.Parse(level, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture);
 #endif
             if (paragraphLvl == indentLevelFor)

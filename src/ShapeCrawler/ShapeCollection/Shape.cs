@@ -15,7 +15,7 @@ internal abstract class Shape : IShape
 {
     protected readonly OpenXmlPart sdkTypedOpenXmlPart;
     protected readonly OpenXmlElement pShapeTreeElement;
-    private const string customDataElementName = "ctd";
+    private const string CustomDataElementName = "ctd";
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
@@ -148,7 +148,7 @@ internal abstract class Shape : IShape
     {
         get
         {
-            const string pattern = @$"<{customDataElementName}>(.*)<\/{customDataElementName}>";
+            const string pattern = @$"<{CustomDataElementName}>(.*)<\/{CustomDataElementName}>";
 
 #if NETSTANDARD2_0
             var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
@@ -168,7 +168,7 @@ internal abstract class Shape : IShape
         set
         {
             var customDataElement =
-                $@"<{customDataElementName}>{value}</{customDataElementName}>";
+                $@"<{CustomDataElementName}>{value}</{CustomDataElementName}>";
             this.pShapeTreeElement.InnerXml += customDataElement;
         }
     }
@@ -188,7 +188,7 @@ internal abstract class Shape : IShape
 
     public virtual bool IsTextHolder { get; protected init; }
     
-    public virtual ITextBox TextBox { get; protected init; } = new NullTextFrame();
+    public virtual ITextBox TextBox { get; protected init; } = default(NullTextFrame);
 
     public virtual double Rotation
     {

@@ -21,7 +21,6 @@ public interface ISlides : IReadOnlyList<ISlide>
     /// <summary>
     ///     Adds a new slide based on the predefined layout type.
     /// </summary>
-    /// <returns>A new slide.</returns>
     void AddEmptySlide(SlideLayoutType layoutType);
 
     /// <summary>

@@ -42,7 +42,7 @@ internal record ExcelSheet
         {
             var xWorksheet = sdkWorksheetPart.Worksheet;
             var xSheetData = xWorksheet.Elements<X.SheetData>().First();
-            var rowNumberStr = Regex.Match(address, @"\d+",RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
+            var rowNumberStr = Regex.Match(address, @"\d+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
             var rowNumber = int.Parse(rowNumberStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
             var xRow = xSheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
             var newXCell = new X.Cell

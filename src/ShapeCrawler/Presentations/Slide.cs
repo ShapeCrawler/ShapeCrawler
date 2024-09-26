@@ -194,7 +194,8 @@ internal sealed class Slide : ISlide
     private void AddNotesSlide(IEnumerable<string> lines)
     {
         // Build up the children of the text body element
-        var textBodyChildren = new List<OpenXmlElement>() {
+        var textBodyChildren = new List<OpenXmlElement>() 
+        {
             new BodyProperties(),
             new ListStyle()
         };

@@ -27,18 +27,22 @@ internal sealed class Shapes : IShapes
 
     public IShape this[int index] => this.ShapesCore()[index];
 
-    public T GetById<T>(int id) where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
+    public T GetById<T>(int id) 
+        where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
 
-    public T? TryGetById<T>(int id) where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Id == id);
+    public T? TryGetById<T>(int id) 
+        where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Id == id);
 
-    public T GetByName<T>(string name) where T : IShape => (T)this.GetByName(name);
+    public T GetByName<T>(string name) 
+        where T : IShape => (T)this.GetByName(name);
 
-    public T? TryGetByName<T>(string name) where T : IShape =>
-        (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
+    public T? TryGetByName<T>(string name) 
+        where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
 
     public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
 
-    public T Last<T>() where T : IShape => (T)this.ShapesCore().Last(shape => shape is T);
+    public T Last<T>() 
+        where T : IShape => (T)this.ShapesCore().Last(shape => shape is T);
 
     public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();
 

@@ -8,6 +8,6 @@ public interface ISlideBgImage : IImage
     /// <summary>
     ///     Presents whether the background image is presented.
     /// </summary>
-    /// <returns></returns>
+    /// <returns> bool. </returns>
     bool Present();
 }

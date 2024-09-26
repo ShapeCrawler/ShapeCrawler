@@ -26,18 +26,20 @@ internal sealed record GroupedShapes : IShapes
 
     public IShape this[int index] => this.GroupedShapesCore()[index];
 
-    public T GetById<T>(int id) where T : IShape => (T)this.GroupedShapesCore().First(shape => shape.Id == id);
+    public T GetById<T>(int id)
+        where T : IShape => (T)this.GroupedShapesCore().First(shape => shape.Id == id);
 
-    public T? TryGetById<T>(int id) where T : IShape =>
-        (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Id == id);
+    public T? TryGetById<T>(int id) 
+        where T : IShape => (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Id == id);
 
     T IShapes.GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
 
-    T? IShapes.TryGetByName<T>(string name) where T : default =>
-        (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Name == name);
+    T? IShapes.TryGetByName<T>(string name) 
+        where T : default => (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Name == name);
 
     public IShape GetByName(string name) => this.GroupedShapesCore().First(shape => shape.Name == name);
-    public T Last<T>() where T : IShape => (T)this.GroupedShapesCore().Last(shape => shape is T);
+    public T Last<T>() 
+        where T : IShape => (T)this.GroupedShapesCore().Last(shape => shape is T);
 
     public T GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
 

@@ -29,7 +29,7 @@ internal sealed class Chart : Shape, IChart
         ChartPart sdkChartPart, 
         P.GraphicFrame pGraphicFrame,
         IReadOnlyList<ICategory> categories)
-        : base(sdkTypedOpenXmlPart,pGraphicFrame)
+        : base(sdkTypedOpenXmlPart, pGraphicFrame)
     {
         this.SDKChartPart = sdkChartPart;
         this.SDKGraphicFrame = pGraphicFrame;

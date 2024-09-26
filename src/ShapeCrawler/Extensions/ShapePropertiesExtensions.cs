@@ -34,8 +34,6 @@ internal static class ShapePropertiesExtensions
                 pShapeProperties.Append(aNoFill);
             }
         }
-
-
     }
 
     internal static void AddASolidFill(this OpenXmlCompositeElement pShapeProperties, string hex)

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
