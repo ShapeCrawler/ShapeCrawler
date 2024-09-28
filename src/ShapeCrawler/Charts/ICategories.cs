@@ -100,8 +100,8 @@ internal sealed class Categories : IReadOnlyList<ICategory>
             }
 
             var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
-            var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)",RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
-            var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+",RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> A2:A5
+            var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
+            var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> A2:A5
             var addresses = new ExcelCellsRange(cellsRange).Addresses();
             for (var i = 0; i < addresses.Count; i++)
             {

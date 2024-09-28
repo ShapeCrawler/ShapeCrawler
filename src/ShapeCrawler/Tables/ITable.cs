@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Tables;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -29,6 +30,11 @@ public interface ITable : IShape
     ITableRows Rows { get; }
 
     /// <summary>
+    ///     Gets or sets the table style.
+    /// </summary>
+    ITableStyle TableStyle { get; set; }
+
+    /// <summary>
     ///     Gets cell by row and column indexes.
     /// </summary>
     ITableCell this[int rowIndex, int columnIndex] { get; }
@@ -49,9 +55,10 @@ public interface ITable : IShape
     void UpdateFill(string colorHex);
 }
 
-internal sealed class Table : CopyableShape, ITable 
+internal sealed class Table : CopyableShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
+    private ITableStyle? tableStyle;
 
     internal Table(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
         : base(sdkTypedOpenXmlPart, pShapeTreeElement)
@@ -61,11 +68,17 @@ internal sealed class Table : CopyableShape, ITable
     }
 
     public override ShapeType ShapeType => ShapeType.Table;
-    
+
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
-    
+
     public ITableRows Rows { get; }
-    
+
+    public ITableStyle TableStyle
+    {
+        get => this.GetTableStyle();
+        set => this.SetTableStyle(value);
+    }
+
     public override bool Removeable => true;
 
     public override Geometry GeometryType => Geometry.Rectangle;
@@ -117,7 +130,7 @@ internal sealed class Table : CopyableShape, ITable
         {
             this.MergeVertically(maxRowIndex, minRowIndex, aTableRows, minColIndex, maxColIndex);
         }
-        
+
         this.RemoveColumnIfNeeded(aTableRows);
         this.RemoveRowIfNeeded();
     }
@@ -147,10 +160,31 @@ internal sealed class Table : CopyableShape, ITable
         return false;
     }
 
+    private void SetTableStyle(ITableStyle style)
+    {
+        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = style.GUID;
+        this.tableStyle = style;
+    }
+
+    private ITableStyle GetTableStyle()
+    {
+        if (this.tableStyle is null)
+        {
+            var tableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
+
+            var style = CommonTableStyles.GetTableStyleByGUID(tableStyleId) !;
+
+            // style ??= new TableStyle("Custom Style", tableStyleId);
+            this.tableStyle = style;
+        }
+
+        return this.tableStyle;
+    }
+
     private void RemoveRowIfNeeded()
     {
         int rowIdx = 0;
-    
+
         while (rowIdx < this.Rows.Count)
         {
             var cells = this.Rows[rowIdx].Cells.OfType<TableCell>().ToList();
@@ -174,7 +208,7 @@ internal sealed class Table : CopyableShape, ITable
             }
         }
     }
-    
+
     private void MergeVertically(
         int bottomIndex,
         int topRowIndex,
@@ -225,9 +259,9 @@ internal sealed class Table : CopyableShape, ITable
     }
 
     private void MergeHorizontal(
-        int maxColIndex, 
-        int minColIndex, 
-        int minRowIndex, 
+        int maxColIndex,
+        int minColIndex,
+        int minRowIndex,
         int maxRowIndex,
         List<A.TableRow> aTableRows)
     {
@@ -246,7 +280,7 @@ internal sealed class Table : CopyableShape, ITable
             }
         }
     }
-    
+
     private IReadOnlyList<Column> GetColumnList()
     {
         IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();
@@ -269,7 +303,7 @@ internal sealed class Table : CopyableShape, ITable
             if (topColumnCellSpan > 1 && sameGridSpan)
             {
                 var deleteColumnCount = topColumnCellSpan.Value - 1;
-                
+
                 // Delete a:gridCol elements and append width of deleting column to merged column
                 for (int i = 0; i < deleteColumnCount; i++)
                 {
@@ -277,7 +311,7 @@ internal sealed class Table : CopyableShape, ITable
                     column.AGridColumn.Remove();
                     this.Columns[colIdx].Width += column.Width;
                 }
-                
+
                 // Delete a:tc elements
                 foreach (var aTblRow in aTableRows)
                 {
@@ -287,7 +321,7 @@ internal sealed class Table : CopyableShape, ITable
                         aTblCell.Remove();
                     }
                 }
-                
+
                 colIdx += topColumnCellSpan.Value;
             }
             else

@@ -176,8 +176,7 @@ internal sealed class Slides : ISlides
         {
             return new P.TextBody(new OpenXmlElement[]
             {
-                new DocumentFormat.OpenXml.Drawing.Paragraph(new OpenXmlElement[]
-                    { new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties() })
+                new DocumentFormat.OpenXml.Drawing.Paragraph([new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties()])
             })
             {
                 BodyProperties = new DocumentFormat.OpenXml.Drawing.BodyProperties(),

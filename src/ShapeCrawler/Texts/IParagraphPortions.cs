@@ -32,7 +32,7 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     void AddText(string text);
 
     /// <summary>
-    /// 	Adds Line Break.
+    ///     Adds Line Break.
     /// </summary>
     void AddLineBreak();
 

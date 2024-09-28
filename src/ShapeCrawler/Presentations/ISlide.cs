@@ -75,7 +75,7 @@ public interface ISlide
     ///     Returns shape with specified name.
     /// </summary>
     /// <param name="name">Shape name.</param>
-    /// <returns></returns>
+    /// <returns> The IShape requested. </returns>
     IShape Shape(string name);
     
 #if DEBUG

@@ -68,8 +68,8 @@ internal sealed class RootShape : CopyableShape, IRootShape
 
         if (this.GeometryType == Geometry.Rectangle)
         {
-            float left = (float)(this.X);
-            float top = (float)(this.Y);
+            float left = (float)this.X;
+            float top = (float)this.Y;
             float right = (float)(this.X + this.Width);
             float bottom = (float)(this.Y + this.Height);
             var rect = new SKRect(left, top, right, bottom);

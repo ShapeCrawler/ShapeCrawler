@@ -9,7 +9,7 @@ internal sealed class ARunBuilder
     internal ARunBuilder()
     {
         this.aRun = new A.Run();
-        var aRunProperties =  new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
+        var aRunProperties = new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
         var aText = new A.Text
         {
             Text = string.Empty

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ShapeCrawler.Tables;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -17,7 +18,7 @@ public interface ISlideShapes : IShapes
     ///     Adds a new audio shape.
     /// </summary>
     void AddAudio(int x, int y, Stream audio);
-    
+
     /// <summary>
     ///     Adds a new audio shape.
     /// </summary>
@@ -60,6 +61,11 @@ public interface ISlideShapes : IShapes
     ///     Adds a new table.
     /// </summary>
     void AddTable(int x, int y, int columnsCount, int rowsCount);
+
+    /// <summary>
+    ///     Adds a new table with a custom style.
+    /// </summary>
+    void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style);
 
     /// <summary>
     ///     Removes specified shape.

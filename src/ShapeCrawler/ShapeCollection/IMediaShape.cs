@@ -22,7 +22,6 @@ public interface IMediaShape : IShape
     ///     Gets bytes of video content.
     /// </summary>
     public byte[] AsByteArray();
-
 }
 
 internal class MediaShape : Shape, IMediaShape

@@ -34,5 +34,7 @@ internal readonly ref struct WrappedPresentationPart
         }
     }
 
-    internal T Last<T>() where T : OpenXmlPart => this.presentationPart.GetPartsOfType<T>().Last();
+    internal T Last<T>()
+        where T : OpenXmlPart
+        => this.presentationPart.GetPartsOfType<T>().Last();
 }
