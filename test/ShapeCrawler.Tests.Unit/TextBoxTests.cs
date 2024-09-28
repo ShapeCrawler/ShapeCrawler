@@ -528,7 +528,6 @@ namespace ShapeCrawler.Tests.Unit
 
 			// Act
 			textbox.VerticalAlignment = TextVerticalAlignment.Bottom;
-            SaveResult(pres);
 
 			// Assert
 			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
