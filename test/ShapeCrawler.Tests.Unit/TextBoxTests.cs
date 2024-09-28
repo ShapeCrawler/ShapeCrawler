@@ -318,16 +318,13 @@ namespace ShapeCrawler.Tests.Unit
 
         [Test]
 		[SlideShape("014.pptx", 2, 5, TextVerticalAlignment.Middle)] 
-		public void Text_Getter_returns_vertical_alignment(IShape shape, TextVerticalAlignment expectedVAlignment)
+		public void VerticalAlignment_Getter_returns_vertical_alignment(IShape shape, TextVerticalAlignment expectedVAlignment)
         {
             // Arrange
-            var textFrame = ((IShape)shape).TextBox;
+            var textBox = shape.TextBox;
 
-            // Act
-            var valignment = textFrame.VerticalAlignment;
-
-            // Assert
-            valignment.Should().Be(expectedVAlignment);
+            // Act-Assert
+            textBox.VerticalAlignment.Should().Be(expectedVAlignment);
         }
 
         [Test]
@@ -522,7 +519,7 @@ namespace ShapeCrawler.Tests.Unit
 
 		[Test]
 		[TestCase("001.pptx", 1, "TextBox 4")]
-		public void Alignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber, string shapeName)
+		public void VerticalAlignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber, string shapeName)
 		{
 			// Arrange
 			var pres = new Presentation(StreamOf(presName));
@@ -531,6 +528,7 @@ namespace ShapeCrawler.Tests.Unit
 
 			// Act
 			textbox.VerticalAlignment = TextVerticalAlignment.Bottom;
+            SaveResult(pres);
 
 			// Assert
 			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);

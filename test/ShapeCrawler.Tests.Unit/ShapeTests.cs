@@ -31,7 +31,7 @@ public class ShapeTests : SCTest
         var audioShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Audio 1");
 
         // Act
-        var mime = audioShape.MIME;
+        var mime = audioShape.Mime;
 
         // Assert
         mime.Should().Be("audio/mpeg");
@@ -61,7 +61,7 @@ public class ShapeTests : SCTest
         var videoShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Video 1");
 
         // Act
-        var mime = videoShape.MIME;
+        var mime = videoShape.Mime;
 
         // Assert
         mime.Should().Be("video/mp4");

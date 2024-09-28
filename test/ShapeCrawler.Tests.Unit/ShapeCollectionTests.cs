@@ -297,7 +297,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[1].Shapes;
 
         // Act
-        shapes.AddAudio(300, 100, wav, AudioType.WAVE);
+        shapes.AddAudio(300, 100, wav, AudioType.Wave);
 
         // Assert
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();

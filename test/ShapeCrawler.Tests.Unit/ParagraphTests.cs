@@ -254,21 +254,18 @@ public class ParagraphTests : SCTest
     [Test]
     [SlideShape("001.pptx", 1, "TextBox 3", TextHorizontalAlignment.Center)]
     [SlideShape("001.pptx", 1, "Head 1", TextHorizontalAlignment.Center)]
-    public void Alignment_Getter_returns_text_horizontal_alignment(IShape autoShape, TextHorizontalAlignment expectedAlignment)
+    public void HorizontalAlignment_Getter_returns_text_horizontal_alignment(IShape autoShape, TextHorizontalAlignment expectedAlignment)
     {
         // Arrange
         var paragraph = autoShape.TextBox.Paragraphs[0];
 
-        // Act
-        var textAlignment = paragraph.HorizontalAlignment;
-
-        // Assert
-        textAlignment.Should().Be(expectedAlignment);
+        // Act-Assert
+        paragraph.HorizontalAlignment.Should().Be(expectedAlignment);
     }
 
     [Test]
     [TestCase("001.pptx", 1, "TextBox 4")]
-    public void Alignment_Setter_updates_text_horizontal_alignment(string presName, int slideNumber, string shapeName)
+    public void HorizontalAlignment_Setter_updates_text_horizontal_alignment(string presName, int slideNumber, string shapeName)
     {
         // Arrange
         var pres = new Presentation(StreamOf(presName));
