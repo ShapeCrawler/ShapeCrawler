@@ -21,7 +21,7 @@ public class TableTests : SCTest
 		var tableStyle = table.TableStyle;
 
 		// Assert
-		tableStyle.Should().Be(CommonTableStyles.GetTableStyleByEnum(TableStyleEnum.MediumStyle2Accent1));
+		tableStyle.Should().BeEquivalentTo(TableStyle.MediumStyle2Accent1);
 		pres.Validate();
 	}
 
@@ -35,38 +35,14 @@ public class TableTests : SCTest
 		var mStream = new MemoryStream();
 
 		// Act
-		table.TableStyle = CommonTableStyles.GetTableStyleByEnum(TableStyleEnum.ThemedStyle1Accent4);
+		table.TableStyle = TableStyle.ThemedStyle1Accent4;
 
 		// Assert
-		table.TableStyle.Should().Be(CommonTableStyles.GetTableStyleByEnum(TableStyleEnum.ThemedStyle1Accent4));
-
-
+		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
 		pres.SaveAs(mStream);
 		pres = new Presentation(mStream);
 		table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
-		table.TableStyle.Should().Be(CommonTableStyles.GetTableStyleByEnum(TableStyleEnum.ThemedStyle1Accent4));
-		pres.Validate();
-	}
-
-	[Test]
-	public void TableStyle_Setter_set_style_using_enum()
-	{
-		// Arrange
-		var pptx = StreamOf("009_table.pptx");
-		var pres = new Presentation(pptx);
-		var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
-		var mStream = new MemoryStream();
-
-		// Act
-		table.TableStyleByEnum = TableStyleEnum.MediumStyle4;
-
-		// Assert
-		table.TableStyle.Should().Be(CommonTableStyles.GetTableStyleByEnum(TableStyleEnum.MediumStyle4));
-
-		pres.SaveAs(mStream);
-		pres = new Presentation(mStream);
-		table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
-		table.TableStyle.Should().Be(CommonTableStyles.GetTableStyleByEnum(TableStyleEnum.MediumStyle4));
+		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
 		pres.Validate();
 	}
 

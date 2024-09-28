@@ -407,7 +407,7 @@ internal sealed class SlideShapes : ISlideShapes
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
     {
         // default style (to keep it how it was)
-        this.AddTable(x, y, columnsCount, rowsCount, TableStyleEnum.MediumStyle2Accent1);
+        this.AddTable(x, y, columnsCount, rowsCount, TableStyle.MediumStyle2Accent1);
     }
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
@@ -463,12 +463,6 @@ internal sealed class SlideShapes : ISlideShapes
         graphicFrame.Append(graphic);
 
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
-    }
-
-    public void AddTable(int x, int y, int columnsCount, int rowsCount, TableStyleEnum style)
-    {
-        ITableStyle vstyle = CommonTableStyles.GetTableStyleByEnum(style);
-        this.AddTable(x, y, columnsCount, rowsCount, vstyle);
     }
 
     public void Remove(IShape shape)

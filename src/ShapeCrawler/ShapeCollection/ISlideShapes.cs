@@ -68,11 +68,6 @@ public interface ISlideShapes : IShapes
     void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style);
 
     /// <summary>
-    ///     Adds a new table with custom style using enum.
-    /// </summary>
-    void AddTable(int x, int y, int columnsCount, int rowsCount, TableStyleEnum style);
-
-    /// <summary>
     ///     Removes specified shape.
     /// </summary>
     void Remove(IShape shape);

@@ -35,11 +35,6 @@ public interface ITable : IShape
     ITableStyle TableStyle { get; set; }
 
     /// <summary>
-    ///     Sets the table style using enum.
-    /// </summary>
-    TableStyleEnum TableStyleByEnum { set; }
-
-    /// <summary>
     ///     Gets cell by row and column indexes.
     /// </summary>
     ITableCell this[int rowIndex, int columnIndex] { get; }
@@ -82,12 +77,6 @@ internal sealed class Table : CopyableShape, ITable
     {
         get => this.GetTableStyle();
         set => this.SetTableStyle(value);
-    }
-
-    // est-ce que c'est utile ?
-    public TableStyleEnum TableStyleByEnum
-    {
-        set => this.SetTableStyle(CommonTableStyles.GetTableStyleByEnum(value));
     }
 
     public override bool Removeable => true;
@@ -183,10 +172,9 @@ internal sealed class Table : CopyableShape, ITable
         {
             var tableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
 
-            var style = CommonTableStyles.GetTableStyleByGUID(tableStyleId);
+            var style = CommonTableStyles.GetTableStyleByGUID(tableStyleId) !;
 
-            style ??= new TableStyle("Custom Style", tableStyleId);
-
+            // style ??= new TableStyle("Custom Style", tableStyleId);
             this.tableStyle = style;
         }
 
