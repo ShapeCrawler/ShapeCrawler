@@ -20,11 +20,11 @@ namespace ShapeCrawler.Tests.Unit
                 .TextBox;
             var textFrame2 = ((ITable)new Presentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3))
                 .Rows[0].Cells[0]
-                .TextFrame;
+                .TextBox;
             var textFrame3 =
                 ((ITable)new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0]
                 .Cells[0]
-                .TextFrame;
+                .TextBox;
 
             // Act
             var text1 = textFrame1.Text;
@@ -430,7 +430,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var pres = new Presentation(StreamOf("009_table.pptx"));
-            var textFrame = pres.Slides[2].Shapes.GetById<ITable>(3).Rows[0].Cells[0].TextFrame;
+            var textFrame = pres.Slides[2].Shapes.GetById<ITable>(3).Rows[0].Cells[0].TextBox;
 
             // Act
             var paragraphsCount = textFrame.Paragraphs.Count;

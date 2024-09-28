@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -69,21 +70,21 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    public void Alignment_Setter_updates_text_horizontal_alignment_of_table_Cell()
+    public void HorizontalAlignment_Setter_sets_horizontal_alignment()
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides[0].Shapes.AddTable(10, 10, 2, 2);
-        var table = (ITable)pres.Slides[0].Shapes.Last();
-        var cellTextFrame = table.Rows[0].Cells[0].TextFrame;
-        cellTextFrame.Text = "some-text";
-        var paragraph = cellTextFrame.Paragraphs[0];
+        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var table = pres.Slide(1).Shapes.Last<ITable>();
+        var textFrame = table.Rows[0].Cells[0].TextBox;
+        textFrame.Text = "some-text";
+        var paragraph = textFrame.Paragraphs[0];
         
         // Act 
-        cellTextFrame.VerticalAlignment = TextVerticalAlignment.Bottom;
+        paragraph.HorizontalAlignment = TextHorizontalAlignment.Center;
 
         // Assert 
-		cellTextFrame.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+        paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
         pres.Validate();
     }
 
@@ -179,7 +180,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var textBox1 = ((IShape)new Presentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextBox;
         var textBox2 = ((ITable)new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
-            .TextFrame;
+            .TextBox;
 
         // Act
         string paragraphTextCase1 = textBox1.Paragraphs[0].Text;

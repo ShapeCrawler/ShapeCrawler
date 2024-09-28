@@ -55,7 +55,7 @@ internal readonly struct Paragraphs : IParagraphs
         var aParagraphs = this.sdkTextBody.Elements<A.Paragraph>().ToList();
         if (!aParagraphs.Any())
         {
-            return new List<Paragraph>(0);
+            return [];
         }
 
         var paraList = new List<Paragraph>();

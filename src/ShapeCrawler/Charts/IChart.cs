@@ -39,7 +39,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets chart title.
     /// </summary>
-    string Title { get; }
+    string? Title { get; }
 
     /// <summary>
     ///     Gets a value indicating whether the chart has categories.

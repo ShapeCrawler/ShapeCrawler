@@ -113,7 +113,7 @@ internal sealed class Slide : ISlide
         if (tablesOnSlide.Any())
         {
             returnList.AddRange(tablesOnSlide.SelectMany(table =>
-                table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextFrame)));
+                table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextBox)));
         }
 
         // if there are groups on that slide, they need to be added as well since those are not direct descendants of the slide either

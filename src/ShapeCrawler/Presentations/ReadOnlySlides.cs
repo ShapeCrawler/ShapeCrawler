@@ -27,7 +27,7 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
     {
         if (!this.sdkSlideParts.Any())
         {
-            return new List<Slide>(0);
+            return [];
         }
         
         var sdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;

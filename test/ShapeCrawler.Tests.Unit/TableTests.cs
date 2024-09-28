@@ -260,14 +260,14 @@ public class TableTests : SCTest
         // Assert
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
-        table[0, 0].TextFrame.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
+        table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
-        table[0, 0].TextFrame.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
+        table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
     }
 
     [Test(Description = "MergeCells #2")]
@@ -292,8 +292,8 @@ public class TableTests : SCTest
         {
             tableSc[0, 1].IsMergedCell.Should().BeTrue();
             tableSc[0, 2].IsMergedCell.Should().BeTrue();
-            tableSc[0, 1].TextFrame.Text.Should().Be("Text0_2");
-            tableSc[0, 2].TextFrame.Text.Should().Be("Text0_2");
+            tableSc[0, 1].TextBox.Text.Should().Be("Text0_2");
+            tableSc[0, 2].TextBox.Text.Should().Be("Text0_2");
         }
     }
 
@@ -369,8 +369,8 @@ public class TableTests : SCTest
             string expectedText = $"id5{Environment.NewLine}Text1_0";
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeFalse();
-            table[0, 0].TextFrame.Text.Should().Be(expectedText);
-            table[1, 0].TextFrame.Text.Should().Be(expectedText);
+            table[0, 0].TextBox.Text.Should().Be(expectedText);
+            table[1, 0].TextBox.Text.Should().Be(expectedText);
         }
     }
 
@@ -396,14 +396,14 @@ public class TableTests : SCTest
         var pres = new Presentation();
         pres.Slides[0].Shapes.AddTable(10, 10, 3, 4);
         var table = (ITable)pres.Slides[0].Shapes.Last();
-        table[1, 0].TextFrame.Text = "A";
-        table[3, 0].TextFrame.Text = "B";
+        table[1, 0].TextBox.Text = "A";
+        table[3, 0].TextBox.Text = "B";
 
         // Act
         table.MergeCells(table[1, 0], table[2, 0]);
 
         // Assert
-        table[1, 0].TextFrame.Text.Should().Be("A");
+        table[1, 0].TextBox.Text.Should().Be("A");
     }
 
     [Test(Description = "MergeCells #6")]

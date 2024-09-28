@@ -51,7 +51,7 @@ public class FontTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("009_table.pptx"));
         var table = pres.Slides[2].Shapes.GetById<ITable>(3);
-        var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
+        var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act-Assert
         portion.Font.Size.Should().Be(18);
@@ -300,8 +300,8 @@ public class FontTests : SCTest
         slide.Shapes.AddTable(40, 40, 6, 5);
         var table = (ITable)slide.Shapes.Last();
         var cell = table[1, 2];
-        cell.TextFrame.Text = "Test";
-        var font = cell.TextFrame.Paragraphs.First().Portions.First().Font;
+        cell.TextBox.Text = "Test";
+        var font = cell.TextBox.Paragraphs.First().Portions.First().Font;
 
         // Act
         font.LatinName = "Arial";

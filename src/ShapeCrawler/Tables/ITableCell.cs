@@ -4,7 +4,7 @@ using ShapeCrawler.Tables;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable CheckNamespace
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>
@@ -15,7 +15,7 @@ public interface ITableCell
     /// <summary>
     ///     Gets text box.
     /// </summary>
-    ITextBox TextFrame { get; }
+    ITextBox TextBox { get; }
 
     /// <summary>
     ///     Gets a value indicating whether cell belongs to merged cell.
@@ -55,7 +55,7 @@ internal sealed class TableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.TextFrame = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
+        this.TextBox = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);
@@ -79,7 +79,7 @@ internal sealed class TableCell : ITableCell
 
     public IBorder RightBorder { get; }
 
-    public ITextBox TextFrame { get; }
+    public ITextBox TextBox { get; }
 
     internal A.TableCell ATableCell { get; }
 

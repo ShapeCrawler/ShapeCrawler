@@ -13,7 +13,7 @@ public class ParagraphPortionTests : SCTest
         var pptx = StreamOf("009_table");
         var pres = new Presentation(pptx);
         IParagraphPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
-            .TextFrame
+            .TextBox
             .Paragraphs[0].Portions[0];
 
         // Act
@@ -105,7 +105,7 @@ public class ParagraphPortionTests : SCTest
         var pptxStream =  StreamOf("table-case001.pptx");
         var pres = new Presentation(pptxStream);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
-        var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
+        var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act
         portion.Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";

@@ -58,7 +58,7 @@ public class FontColorTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("001.pptx"));
         var table = pres.Slides[1].Shapes.GetById<ITable>(4);
-        var fontColor = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.Color;
+        var fontColor = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         fontColor.Hex.Should().Be("FF0000");
