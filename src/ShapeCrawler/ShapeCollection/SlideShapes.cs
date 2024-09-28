@@ -56,7 +56,7 @@ internal sealed class SlideShapes : ISlideShapes
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
+    public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.Mp3);
 
     public void AddAudio(int x, int y, Stream audio, AudioType type)
     {
@@ -64,11 +64,11 @@ internal sealed class SlideShapes : ISlideShapes
         string? extension;
         switch (type)
         {
-            case AudioType.MP3:
+            case AudioType.Mp3:
                 contentType = "audio/mpeg";
                 extension = ".mp3";
                 break;
-            case AudioType.WAVE:
+            case AudioType.Wave:
                 contentType = "audio/wav";
                 extension = ".wav";
                 break;

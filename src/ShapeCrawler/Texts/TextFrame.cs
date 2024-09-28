@@ -262,7 +262,7 @@ internal sealed record TextFrame : ITextBox
         using var paint = new SKPaint();
         paint.Color = SKColors.Black;
         var firstPortion = this.Paragraphs.First().Portions.First();
-        paint.TextSize = (float)firstPortion.Font.Size;
+        paint.TextSize = (float)firstPortion.Font!.Size;
         var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName);
         paint.Typeface = typeFace;
         float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);
@@ -346,7 +346,7 @@ internal sealed record TextFrame : ITextBox
     {
         var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font!.Size).OrderByDescending(x => x.Count())
             .First().First();
-        var font = popularPortion.Font;
+        var font = popularPortion.Font!;
 
         var parent = this.sdkTextBody.Parent!;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);

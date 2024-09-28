@@ -14,7 +14,7 @@ public interface ISlide
     /// <summary>
     ///     Gets background image.
     /// </summary>
-    IImage Background { get; }
+    IImage? Background { get; }
 
     /// <summary>
     ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.

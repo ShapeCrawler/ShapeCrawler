@@ -20,11 +20,11 @@ namespace ShapeCrawler.Tests.Unit
                 .TextBox;
             var textFrame2 = ((ITable)new Presentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3))
                 .Rows[0].Cells[0]
-                .TextFrame;
+                .TextBox;
             var textFrame3 =
                 ((ITable)new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0]
                 .Cells[0]
-                .TextFrame;
+                .TextBox;
 
             // Act
             var text1 = textFrame1.Text;
@@ -318,16 +318,13 @@ namespace ShapeCrawler.Tests.Unit
 
         [Test]
 		[SlideShape("014.pptx", 2, 5, TextVerticalAlignment.Middle)] 
-		public void Text_Getter_returns_vertical_alignment(IShape shape, TextVerticalAlignment expectedVAlignment)
+		public void VerticalAlignment_Getter_returns_vertical_alignment(IShape shape, TextVerticalAlignment expectedVAlignment)
         {
             // Arrange
-            var textFrame = ((IShape)shape).TextBox;
+            var textBox = shape.TextBox;
 
-            // Act
-            var valignment = textFrame.VerticalAlignment;
-
-            // Assert
-            valignment.Should().Be(expectedVAlignment);
+            // Act-Assert
+            textBox.VerticalAlignment.Should().Be(expectedVAlignment);
         }
 
         [Test]
@@ -430,7 +427,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var pres = new Presentation(StreamOf("009_table.pptx"));
-            var textFrame = pres.Slides[2].Shapes.GetById<ITable>(3).Rows[0].Cells[0].TextFrame;
+            var textFrame = pres.Slides[2].Shapes.GetById<ITable>(3).Rows[0].Cells[0].TextBox;
 
             // Act
             var paragraphsCount = textFrame.Paragraphs.Count;
@@ -522,7 +519,7 @@ namespace ShapeCrawler.Tests.Unit
 
 		[Test]
 		[TestCase("001.pptx", 1, "TextBox 4")]
-		public void Alignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber, string shapeName)
+		public void VerticalAlignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber, string shapeName)
 		{
 			// Arrange
 			var pres = new Presentation(StreamOf(presName));

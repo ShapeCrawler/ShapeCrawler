@@ -72,7 +72,7 @@ internal sealed class Sections : ISections
         var p14SectionList = this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
             ?.Descendants<P14.SectionList>().FirstOrDefault();
         return p14SectionList == null
-            ? new List<Section>(0)
+            ? []
             : p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section))
                 .ToList();
     }

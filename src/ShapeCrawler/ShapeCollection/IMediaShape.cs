@@ -16,7 +16,7 @@ public interface IMediaShape : IShape
     /// <summary>
     ///     Gets MIME type.
     /// </summary>
-    string MIME { get; }
+    string Mime { get; }
     
     /// <summary>
     ///     Gets bytes of video content.
@@ -49,7 +49,7 @@ internal class MediaShape : Shape, IMediaShape
     
     public override bool Removeable => true;
 
-    public string MIME
+    public string Mime
     {
         get
         {

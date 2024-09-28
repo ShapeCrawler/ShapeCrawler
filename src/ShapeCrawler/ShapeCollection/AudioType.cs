@@ -9,10 +9,10 @@ public enum AudioType
     /// <summary>
     ///    MP3 audio.
     /// </summary>
-    MP3,
+    Mp3,
     
     /// <summary>
     ///     WAVE audio.
     /// </summary>
-    WAVE
+    Wave
 }
