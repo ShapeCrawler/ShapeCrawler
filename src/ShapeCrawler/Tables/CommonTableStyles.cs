@@ -6,7 +6,7 @@ namespace ShapeCrawler.Tables;
 // TODO : verify the values 
 internal static class CommonTableStyles
 {
-    public static readonly Dictionary<string, ITableStyle> Styles = new Dictionary<string, ITableStyle>
+    private static readonly Dictionary<string, ITableStyle> Styles = new Dictionary<string, ITableStyle>
     {
         { "No Style, No Grid", TableStyle.NoStyleNoGrid },
         { "No Style, Table Grid", TableStyle.NoStyleTableGrid },
@@ -102,10 +102,10 @@ internal static class CommonTableStyles
     /// <summary>
     ///     Get the style using its GUID.
     /// </summary>
-    public static ITableStyle? GetTableStyleByGUID(string guid)
+    public static ITableStyle? GetTableStyleByGuid(string guid)
     {
         // Search through the dictionary for the matching GUID
-        foreach (var value in CommonTableStyles.Styles)
+        foreach (var value in Styles)
         {
             if (value.Value.GUID.Equals(guid, StringComparison.OrdinalIgnoreCase))
             {
@@ -126,7 +126,7 @@ internal static class CommonTableStyles
 
         if (res == null)
         {
-            res = GetTableStyleByGUID(search);
+            res = GetTableStyleByGuid(search);
         }
 
         return res;

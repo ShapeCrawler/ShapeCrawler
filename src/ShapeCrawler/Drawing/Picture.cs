@@ -64,19 +64,19 @@ internal sealed class Picture : CopyableShape, IPicture
         base.CopyTo(id, pShapeTree, existingShapeNames);
 
         // COPY PARTS
-        var sourceSdkSlidePart = this.sdkTypedOpenXmlPart;
+        var sourceSdkSlidePart = this.SdkTypedOpenXmlPart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...
-        var targetImagePartRId = this.sdkTypedOpenXmlPart.NextRelationshipId();
+        var targetImagePartRId = this.SdkTypedOpenXmlPart.NextRelationshipId();
 
         // Adds to current slide parts and update relation id.
-        var targetImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
+        var targetImagePart = this.SdkTypedOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);
 
-        var copy = this.pShapeTreeElement.CloneNode(true);
+        var copy = this.PShapeTreeElement.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
     
@@ -91,7 +91,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(svgId);
+        var imagePart = (ImagePart)this.SdkTypedOpenXmlPart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 

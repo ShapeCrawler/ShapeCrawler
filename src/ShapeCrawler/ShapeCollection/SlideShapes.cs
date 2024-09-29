@@ -404,11 +404,8 @@ internal sealed class SlideShapes : ISlideShapes
         aXfrm.VerticalFlip = new BooleanValue(flipV);
     }
 
-    public void AddTable(int x, int y, int columnsCount, int rowsCount)
-    {
-        // default style (to keep it how it was)
+    public void AddTable(int x, int y, int columnsCount, int rowsCount) =>
         this.AddTable(x, y, columnsCount, rowsCount, TableStyle.MediumStyle2Accent1);
-    }
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {

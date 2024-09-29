@@ -30,8 +30,8 @@ internal sealed class AutoShape : CopyableShape
         : base(sdkTypedOpenXmlPart, pShape)
     {
         this.pShape = pShape;
-        this.Outline = new SlideShapeOutline(this.sdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(this.sdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.Outline = new SlideShapeOutline(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
     }
 
     public override bool HasOutline => true;
@@ -50,7 +50,7 @@ internal sealed class AutoShape : CopyableShape
     {
         get
         {
-            var spPr = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
 
             if (aPresetGeometry == null)

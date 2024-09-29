@@ -172,7 +172,7 @@ internal sealed class Table : CopyableShape, ITable
         {
             var tableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
 
-            var style = CommonTableStyles.GetTableStyleByGUID(tableStyleId) !;
+            var style = CommonTableStyles.GetTableStyleByGuid(tableStyleId) !;
 
             // style ??= new TableStyle("Custom Style", tableStyleId);
             this.tableStyle = style;

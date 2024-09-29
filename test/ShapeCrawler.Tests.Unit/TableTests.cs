@@ -13,9 +13,8 @@ public class TableTests : SCTest
 	public void TableStyle_Getter_return_style_of_table()
 	{
 		// Arrange
-		var pptx = StreamOf("009_table.pptx");
-		var pres = new Presentation(pptx);
-		var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
+		var pres = new Presentation(StreamOf("009_table.pptx"));
+        var table = pres.Slide(3).Table("Таблица 4");
 
 		// Act 
 		var tableStyle = table.TableStyle;
@@ -26,22 +25,22 @@ public class TableTests : SCTest
 	}
 
 	[Test]
-	public void TableStyle_Setter_set_style()
+	public void TableStyle_Setter_sets_style()
 	{
 		// Arrange
-		var pptx = StreamOf("009_table.pptx");
-		var pres = new Presentation(pptx);
-		var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
+		var pres = new Presentation(StreamOf("009_table.pptx"));
+		var table = pres.Slide(3).Table("Таблица 4");
 		var mStream = new MemoryStream();
 
 		// Act
 		table.TableStyle = TableStyle.ThemedStyle1Accent4;
+        SaveResult(pres);
 
 		// Assert
 		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
 		pres.SaveAs(mStream);
 		pres = new Presentation(mStream);
-		table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
+        table = pres.Slide(3).Table("Таблица 4");
 		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
 		pres.Validate();
 	}
