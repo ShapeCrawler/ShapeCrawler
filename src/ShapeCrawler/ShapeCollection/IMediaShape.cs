@@ -55,7 +55,7 @@ internal class MediaShape : Shape, IMediaShape
             var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
                 .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
             var relationship =
-                this.sdkTypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+                this.SdkTypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
             return relationship.DataPart.ContentType;
         }
@@ -65,7 +65,7 @@ internal class MediaShape : Shape, IMediaShape
     {
         var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
             .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.sdkTypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = this.SdkTypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var ms = new MemoryStream();
         stream.CopyTo(ms);

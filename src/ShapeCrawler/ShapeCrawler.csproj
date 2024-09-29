@@ -10,10 +10,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🐞Fixed `Slides.AddEmptySlide()` [#658](https://github.com/ShapeCrawler/ShapeCrawler/issues/658)  
-🐞Fixed `Shapes.Remove()` [#735](https://github.com/ShapeCrawler/ShapeCrawler/issues/735)  
-🐞Fixed `Image.MIME`  
-🐞Fixed `Shapes.AddPicture()`</PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added vertical text alignment support [#624](https://github.com/ShapeCrawler/ShapeCrawler/issues/624)  
+🍀Added table style support</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>

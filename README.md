@@ -95,10 +95,8 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.54.2 - 2024-09-11
-🐞Fixed `Slides.AddEmptySlide()` [#658](https://github.com/ShapeCrawler/ShapeCrawler/issues/658)  
-🐞Fixed `Shapes.Remove()` [#735](https://github.com/ShapeCrawler/ShapeCrawler/issues/735)  
-🐞Fixed `Image.MIME`  
-🐞Fixed `Shapes.AddPicture()`
+### Version 0.55.0 - 2024-09-29
+🍀Added vertical text alignment support [#624](https://github.com/ShapeCrawler/ShapeCrawler/issues/624)  
+🍀Added table style support
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.

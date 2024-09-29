@@ -13,19 +13,18 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class Shape : IShape
 {
-    protected readonly OpenXmlPart sdkTypedOpenXmlPart;
-    protected readonly OpenXmlElement pShapeTreeElement;
-    private const string CustomDataElementName = "ctd";
+    protected readonly OpenXmlPart SdkTypedOpenXmlPart;
+    protected readonly OpenXmlElement PShapeTreeElement;
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
 
     internal Shape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.pShapeTreeElement = pShapeTreeElement;
+        this.SdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.PShapeTreeElement = pShapeTreeElement;
         this.position = new Position(sdkTypedOpenXmlPart, pShapeTreeElement);
-        this.size = new ShapeSize(this.sdkTypedOpenXmlPart, pShapeTreeElement);
+        this.size = new ShapeSize(this.SdkTypedOpenXmlPart, pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
@@ -55,24 +54,24 @@ internal abstract class Shape : IShape
 
     public int Id => this.shapeId.Value();
 
-    public string Name => this.pShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
+    public string Name => this.PShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
 
     public bool Hidden
     {
         get
         {
-            var parsedHiddenValue = this.pShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
+            var parsedHiddenValue = this.PShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue is true;
         }
     }
 
-    public bool IsPlaceholder => this.pShapeTreeElement.Descendants<P.PlaceholderShape>().Any();
+    public bool IsPlaceholder => this.PShapeTreeElement.Descendants<P.PlaceholderShape>().Any();
 
     public PlaceholderType PlaceholderType
     {
         get
         {
-            var pPlaceholderShape = this.pShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
+            var pPlaceholderShape = this.PShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
             if (pPlaceholderShape == null)
             {
                 throw new SCException(
@@ -148,7 +147,7 @@ internal abstract class Shape : IShape
     {
         get
         {
-            const string pattern = @$"<{CustomDataElementName}>(.*)<\/{CustomDataElementName}>";
+            const string pattern = @$"<{"ctd"}>(.*)<\/{"ctd"}>";
 
 #if NETSTANDARD2_0
             var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
@@ -156,7 +155,7 @@ internal abstract class Shape : IShape
             var regex = new Regex(pattern, RegexOptions.NonBacktracking);
 #endif
 
-            var elementText = regex.Match(this.pShapeTreeElement.InnerXml).Groups[1];
+            var elementText = regex.Match(this.PShapeTreeElement.InnerXml).Groups[1];
             if (elementText.Value.Length == 0)
             {
                 return null;
@@ -168,8 +167,8 @@ internal abstract class Shape : IShape
         set
         {
             var customDataElement =
-                $@"<{CustomDataElementName}>{value}</{CustomDataElementName}>";
-            this.pShapeTreeElement.InnerXml += customDataElement;
+                $@"<{"ctd"}>{value}</{"ctd"}>";
+            this.PShapeTreeElement.InnerXml += customDataElement;
         }
     }
 
@@ -194,11 +193,11 @@ internal abstract class Shape : IShape
     {
         get
         {
-            var pSpPr = this.pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pSpPr = this.PShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
             var aTransform2D = pSpPr.Transform2D;
             if (aTransform2D == null)
             {
-                aTransform2D = new ReferencedPShape(this.sdkTypedOpenXmlPart, this.pShapeTreeElement).ATransform2D();
+                aTransform2D = new ReferencedPShape(this.SdkTypedOpenXmlPart, this.PShapeTreeElement).ATransform2D();
                 var angle2 = aTransform2D.Rotation!.Value; // rotation angle in 1/60,000th of a degree
                 return angle2 / 60000d;
             }
@@ -210,9 +209,9 @@ internal abstract class Shape : IShape
 
     public virtual bool Removeable => false;
     
-    public string SDKXPath => new XmlPath(this.pShapeTreeElement).XPath;
+    public string SDKXPath => new XmlPath(this.PShapeTreeElement).XPath;
     
-    public OpenXmlElement SDKOpenXmlElement => this.pShapeTreeElement.CloneNode(true);
+    public OpenXmlElement SDKOpenXmlElement => this.PShapeTreeElement.CloneNode(true);
 
     public string Text
     {
@@ -227,5 +226,5 @@ internal abstract class Shape : IShape
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
     
-    public virtual void Remove() => this.pShapeTreeElement.Remove();
+    public virtual void Remove() => this.PShapeTreeElement.Remove();
 }

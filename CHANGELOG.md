@@ -1,7 +1,8 @@
 # Changelog  
 
-## Version 0.55.0 - Unreleased
-🍀Added vertical text alignment support [#624](https://github.com/ShapeCrawler/ShapeCrawler/issues/624)
+## Version 0.55.0 - 2024-09-29
+🍀Added vertical text alignment support [#624](https://github.com/ShapeCrawler/ShapeCrawler/issues/624)  
+🍀Added table style support
 
 ## Version 0.54.2 - 2024-09-11
 🐞Fixed `Slides.AddEmptySlide()` [#658](https://github.com/ShapeCrawler/ShapeCrawler/issues/658)  

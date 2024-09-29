@@ -148,18 +148,7 @@ internal sealed class Table : CopyableShape, ITable
     {
         throw new NotImplementedException();
     }
-
-    private static bool CannotBeMerged(TableCell cell1, TableCell cell2)
-    {
-        if (cell1 == cell2)
-        {
-            // The cells are already merged
-            return true;
-        }
-
-        return false;
-    }
-
+    
     private void SetTableStyle(ITableStyle style)
     {
         this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = style.GUID;
@@ -172,7 +161,7 @@ internal sealed class Table : CopyableShape, ITable
         {
             var tableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
 
-            var style = CommonTableStyles.GetTableStyleByGUID(tableStyleId) !;
+            var style = CommonTableStyles.GetTableStyleByGuid(tableStyleId) !;
 
             // style ??= new TableStyle("Custom Style", tableStyleId);
             this.tableStyle = style;
