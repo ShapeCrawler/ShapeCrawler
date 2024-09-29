@@ -84,7 +84,6 @@ internal static class CommonTableStyles
         { "Dark Style 2 - Accent 5, Accent 6", TableStyle.DarkStyle2Accent5Accent6 }
     };
 
-
     /// <summary>
     ///     Get the style using its name.
     /// </summary>
