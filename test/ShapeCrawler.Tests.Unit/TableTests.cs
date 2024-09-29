@@ -34,7 +34,6 @@ public class TableTests : SCTest
 
 		// Act
 		table.TableStyle = TableStyle.ThemedStyle1Accent4;
-        SaveResult(pres);
 
 		// Assert
 		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
