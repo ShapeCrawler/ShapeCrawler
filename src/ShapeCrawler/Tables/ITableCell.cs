@@ -55,7 +55,7 @@ internal sealed class TableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.TextBox = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
+        this.TextBox = new TextBox(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);

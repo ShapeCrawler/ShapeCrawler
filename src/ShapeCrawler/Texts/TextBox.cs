@@ -6,21 +6,20 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed record TextFrame : ITextBox
+internal sealed record TextBox : ITextBox
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkTextBody;
 
     private TextVerticalAlignment? valignment;
 
-    internal TextFrame(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
+    internal TextBox(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTextBody = sdkTextBody;
@@ -228,13 +227,9 @@ internal sealed record TextFrame : ITextBox
         var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
             .OrderByDescending(x => x.Count())
             .First().First();
-        var font = popularPortion.Font;
+        var scFont = popularPortion.Font;
 
         var paint = new SKPaint();
-        paint.TextSize = new Points(font.Size).AsPixels();
-        var fontFamily = font.LatinName == "Calibri Light" ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
-            : font.LatinName;
-        paint.Typeface = SKTypeface.FromFamilyName(fontFamily);
         paint.IsAntialias = true;
 
         var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
@@ -242,33 +237,20 @@ internal sealed record TextFrame : ITextBox
         var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
-        var textRect = default(SKRect);
         var text = this.Text.ToUpper();
-        paint.MeasureText(text, ref textRect);
-        var textWidth = (decimal)textRect.Width;
-        var textHeight = (decimal)paint.TextSize;
+        var textWidth = new Text(text, scFont).Width;
+        var textHeight = scFont.Size;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
         this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
-        this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
+        this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!, scFont);
     }
 
     internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
     {
-        using var paint = new SKPaint();
-        paint.Color = SKColors.Black;
-        var firstPortion = this.Paragraphs.First().Portions.First();
-        paint.TextSize = (float)firstPortion.Font!.Size;
-        var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName);
-        paint.Typeface = typeFace;
-        float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);
-        float topMarginPx = (float)UnitConverter.CentimeterToPixel(this.TopMargin);
-        float fontHeightPx = (float)UnitConverter.PointToPixel(16);
-        float x = shapeX + leftMarginPx;
-        float y = shapeY + topMarginPx + fontHeightPx;
-        slideCanvas.DrawText(this.Text, x, y, paint);
+        throw new NotImplementedException();
     }
 
     private decimal GetLeftMargin()
@@ -358,22 +340,21 @@ internal sealed record TextFrame : ITextBox
         SKPaint paint,
         decimal lMarginPixel,
         decimal rMarginPixel,
-        TextFrame textFrame,
-        OpenXmlElement parent)
+        TextBox textBox,
+        OpenXmlElement parent,
+        ITextPortionFont font)
     {
-        if (!textFrame.TextWrapped)
+        if (!textBox.TextWrapped)
         {
-            var longerText = textFrame.Paragraphs
+            var longerText = textBox.Paragraphs
                 .Select(x => new { x.Text, x.Text.Length })
                 .OrderByDescending(x => x.Length)
                 .First().Text;
-            var paraTextRect = default(SKRect);
-            var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
-
-            // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
-            // 96/72=1.4
-            const double Scale = 1.4;
-            var newWidth = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
+            
+            var widthInPixels = new Text(longerText, font).Width;
+            
+            var newWidth = (int)(widthInPixels * (decimal)1.4) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
+                           + lMarginPixel + rMarginPixel;
             new ShapeSize(this.sdkTypedOpenXmlPart, parent).UpdateWidth(newWidth);
         }
     }
@@ -383,53 +364,59 @@ internal sealed record TextFrame : ITextBox
         var surface = SKSurface.Create(new SKImageInfo(shapeWidth, shapeHeight));
         var canvas = surface.Canvas;
 
-        var paint = new SKPaint();
-        var fontSize = font.Size;
-        paint.TextSize = (float)fontSize;
-        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
-        paint.IsAntialias = true;
+        var paint = new SKPaint
+        {
+            IsAntialias = true
+        };
+
+        var skFont = new SKFont
+        {
+            Size = (float)font.Size,
+            Typeface = SKTypeface.FromFamilyName(font.LatinName)
+        };
+
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
         var wordMaxY = shapeHeight - topBottomPadding;
 
         var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, shapeWidth - defaultPaddingSize, shapeHeight - defaultPaddingSize);
 
-        var spaceWidth = paint.MeasureText(" ");
+        var spaceWidth = skFont.MeasureText(" ");
 
         var wordX = rect.Left;
-        var wordY = rect.Top + paint.TextSize;
+        var wordY = rect.Top + skFont.Size;
 
         var words = text.Split(' ').ToList();
         for (var i = 0; i < words.Count;)
         {
             var word = words[i];
-            var wordWidth = paint.MeasureText(word);
+            var wordWidth = skFont.MeasureText(word);
             if (wordWidth <= rect.Right - wordX)
             {
-                canvas.DrawText(word, wordX, wordY, paint);
+                canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
                 wordX += wordWidth + spaceWidth;
             }
             else
             {
-                wordY += paint.FontSpacing;
+                wordY += skFont.Spacing;
                 wordX = rect.Left;
 
                 if (wordY > wordMaxY)
                 {
-                    if (paint.TextSize <= 5) // Min reduce font size
+                    if (skFont.Size <= 5) // Min reduce font size
                     {
                         break;
                     }
 
-                    paint.TextSize = --paint.TextSize;
+                    skFont.Size = --skFont.Size;
                     wordX = rect.Left;
-                    wordY = rect.Top + paint.TextSize;
+                    wordY = rect.Top + skFont.Size;
                     i = -1;
                 }
                 else
                 {
                     wordX += wordWidth + spaceWidth;
-                    canvas.DrawText(word, wordX, wordY, paint);
+                    canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
                 }
             }
 
@@ -437,11 +424,11 @@ internal sealed record TextFrame : ITextBox
         }
 
         const int dpi = 96;
-        var points = Math.Round(paint.TextSize * 72 / dpi, 0);
+        var points = Math.Round(skFont.Size * 72 / dpi, 0);
 
         return (int)points;
     }
-
+    
     private void UpdateShapeHeight(
         decimal textWidth,
         decimal currentBlockWidth,

@@ -124,7 +124,7 @@ internal sealed class Paragraph : IParagraph
 
             // Resize
             var sdkTextBody = this.aParagraph.Parent!;
-            var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
+            var textFrame = new TextBox(this.sdkTypedOpenXmlPart, sdkTextBody);
             textFrame.ResizeParentShape();
         }
     }
