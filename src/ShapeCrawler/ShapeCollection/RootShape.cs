@@ -1,7 +1,4 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
-using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;

@@ -25,7 +25,7 @@ internal readonly ref struct Text
             : this.font.LatinName;
         var skFont = new SKFont
         {
-            Size = new Points(font.Size).AsPixels(),
+            Size = new Points(this.font.Size).AsPixels(),
             Typeface = SKTypeface.FromFamilyName(fontFamily)
         };
         
