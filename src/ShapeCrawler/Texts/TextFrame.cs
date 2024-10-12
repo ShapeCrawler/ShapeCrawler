@@ -231,10 +231,6 @@ internal sealed record TextFrame : ITextBox
         var scFont = popularPortion.Font;
 
         var paint = new SKPaint();
-        // paint.TextSize = new Points(scFont.Size).AsPixels();
-        var fontFamily = scFont.LatinName == "Calibri Light" ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
-            : scFont.LatinName;
-        // paint.Typeface = SKTypeface.FromFamilyName(fontFamily);
         paint.IsAntialias = true;
 
         var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
@@ -242,11 +238,9 @@ internal sealed record TextFrame : ITextBox
         var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
-        // var textRect = default(SKRect);
         var text = this.Text.ToUpper();
-        // paint.MeasureText(text, ref textRect);
         var textWidth = new Text(text, scFont).Width;
-        var textHeight = (decimal)scFont.Size;
+        var textHeight = scFont.Size;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
@@ -357,9 +351,7 @@ internal sealed record TextFrame : ITextBox
                 .Select(x => new { x.Text, x.Text.Length })
                 .OrderByDescending(x => x.Length)
                 .First().Text;
-            // var paraTextRect = default(SKRect);
             
-            // var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
             var widthInPixels = new Text(longerText, font).Width;
             
             var newWidth = (int)(widthInPixels * (decimal)1.4) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
