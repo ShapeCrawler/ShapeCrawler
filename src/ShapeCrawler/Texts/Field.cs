@@ -74,7 +74,7 @@ internal sealed class Field : IParagraphPortion
 
         // Calculate alpha value if is defined in highlight node.
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
-        color.Alpha = Color.OPACITY / (100000 / aAlphaValue);
+        color.Alpha = Color.Opacity / (100000 / aAlphaValue);
 
         return color;
     }

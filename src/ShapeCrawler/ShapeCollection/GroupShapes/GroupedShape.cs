@@ -153,9 +153,9 @@ internal sealed class GroupedShape : IShape
     
     public bool Removeable => this.decoratedShape.Removeable;
     
-    public string SDKXPath => this.decoratedShape.SDKXPath;
+    public string SdkXPath => this.decoratedShape.SdkXPath;
     
-    public OpenXmlElement SDKOpenXmlElement => this.decoratedShape.SDKOpenXmlElement.CloneNode(true);
+    public OpenXmlElement SdkOpenXmlElement => this.decoratedShape.SdkOpenXmlElement.CloneNode(true);
 
     public string Text
     {

@@ -151,7 +151,7 @@ internal sealed class Table : CopyableShape, ITable
     
     private void SetTableStyle(ITableStyle style)
     {
-        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = style.GUID;
+        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = style.Guid;
         this.tableStyle = style;
     }
 

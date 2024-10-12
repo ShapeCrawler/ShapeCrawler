@@ -54,7 +54,7 @@ internal readonly record struct IndentFonts
             A.PresetColor? aPresetColor;
 
             // Try get color from <a:solidFill>
-            var aSolidFill = aDefRPr?.SDKASolidFill();
+            var aSolidFill = aDefRPr?.SdkASolidFill();
             if (aSolidFill != null)
             {
                 aRgbColorModelHex = aSolidFill.RgbColorModelHex!;

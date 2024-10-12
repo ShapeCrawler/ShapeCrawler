@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
 // ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents an image.
@@ -11,7 +13,7 @@ public interface IImage
     /// <summary>
     ///     Gets MIME type.
     /// </summary>
-    string MIME { get; }
+    string Mime { get; }
 
     /// <summary>
     ///     Gets file name of internal resource.

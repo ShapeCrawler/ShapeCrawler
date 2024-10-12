@@ -19,7 +19,7 @@ internal sealed class SlidePictureImage : IImage
         this.sdkImagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(aBlip.Embed!.Value!);
     }
 
-    public string MIME => this.sdkImagePart.ContentType;
+    public string Mime => this.sdkImagePart.ContentType;
 
     public string Name => Path.GetFileName(this.sdkImagePart.Uri.ToString());
 

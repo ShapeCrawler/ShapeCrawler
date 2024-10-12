@@ -1,5 +1,9 @@
 ﻿// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
+
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Placeholder types.
@@ -79,7 +83,7 @@ public enum PlaceholderType
     /// <summary>
     ///     OLEObject.
     /// </summary>
-    OLEObject,
+    OleObject,
 
     /// <summary>
     ///     Chart.

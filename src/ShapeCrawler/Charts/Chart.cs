@@ -31,25 +31,25 @@ internal sealed class Chart : Shape, IChart
         IReadOnlyList<ICategory> categories)
         : base(sdkTypedOpenXmlPart, pGraphicFrame)
     {
-        this.SDKChartPart = sdkChartPart;
-        this.SDKGraphicFrame = pGraphicFrame;
+        this.SdkChartPart = sdkChartPart;
+        this.SdkGraphicFrame = pGraphicFrame;
         this.Categories = categories;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.SDKPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        this.cXCharts = this.SDKPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        this.SdkPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cXCharts = this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pShapeProperties);
         this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pShapeProperties);
         this.SeriesList = new SeriesList(
             sdkChartPart,
-            this.SDKPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
+            this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
     
-    public P.GraphicFrame SDKGraphicFrame { get; }
+    public P.GraphicFrame SdkGraphicFrame { get; }
     
-    public ChartPart SDKChartPart { get; }
+    public ChartPart SdkChartPart { get; }
     
-    public C.PlotArea SDKPlotArea { get; }
+    public C.PlotArea SdkPlotArea { get; }
     
     public ChartType Type
     {
@@ -118,15 +118,15 @@ internal sealed class Chart : Shape, IChart
     
     public override bool Removeable => true;
     
-    public byte[] BookByteArray() => new ExcelBook(this.SDKChartPart).AsByteArray();
+    public byte[] BookByteArray() => new ExcelBook(this.SdkChartPart).AsByteArray();
     
-    public override void Remove() => this.SDKGraphicFrame.Remove();
+    public override void Remove() => this.SdkGraphicFrame.Remove();
     
-    private IAxesManager GetAxes() => new AxesManager(this.SDKPlotArea);
+    private IAxesManager GetAxes() => new AxesManager(this.SdkPlotArea);
 
     private string? GetTitleOrDefault()
     {
-        var cTitle = this.SDKChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -198,7 +198,7 @@ internal sealed class Chart : Shape, IChart
             return cachedPointValues;
         }
 
-        return new ExcelBook(this.SDKChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
+        return new ExcelBook(this.SdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
     }
 
     private OpenXmlElement? GetFirstSeries()

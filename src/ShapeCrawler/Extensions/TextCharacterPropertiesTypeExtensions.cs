@@ -4,7 +4,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class TextCharacterPropertiesTypeExtensions
 {
-    internal static A.SolidFill? SDKASolidFill(this A.TextCharacterPropertiesType aTextCharPropertyType)
+    internal static A.SolidFill? SdkASolidFill(this A.TextCharacterPropertiesType aTextCharPropertyType)
     {
         return aTextCharPropertyType.GetFirstChild<A.SolidFill>();
     }

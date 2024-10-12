@@ -4,7 +4,9 @@ using DocumentFormat.OpenXml.Packaging;
 using System.Threading.Tasks;
 #endif
 
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a slide.
@@ -34,7 +36,7 @@ public interface ISlide
     /// <summary>
     ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
     /// </summary>
-    SlidePart SDKSlidePart { get; }
+    SlidePart SdkSlidePart { get; }
     
     /// <summary>
     ///     Gets the shape collection.

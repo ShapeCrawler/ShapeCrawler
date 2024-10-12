@@ -435,7 +435,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
         var tableStyleId = new A.TableStyleId
-        { Text = style.GUID };
+        { Text = style.Guid };
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new A.TableGrid();
@@ -464,12 +464,7 @@ internal sealed class SlideShapes : ISlideShapes
 
     public void Remove(IShape shape)
     {
-        var removingShape = this.shapes.FirstOrDefault(sp => sp.Id == shape.Id);
-        if (removingShape == null)
-        {
-            throw new SCException("Shape is not found.");
-        }
-
+        var removingShape = this.shapes.FirstOrDefault(sp => sp.Id == shape.Id) ?? throw new SCException("Shape is not found.");
         removingShape.Remove();
     }
 
@@ -710,8 +705,7 @@ internal sealed class SlideShapes : ISlideShapes
             new A.NonVisualDrawingPropertiesExtensionList();
 
         A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension =
-            new A.NonVisualDrawingPropertiesExtension();
-        aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
+            new A.NonVisualDrawingPropertiesExtension { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
         A16.CreationId a16CreationId = new A16.CreationId();
 
@@ -736,8 +730,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         A.BlipExtensionList aBlipExtensionList = new A.BlipExtensionList();
 
-        A.BlipExtension aBlipExtension = new A.BlipExtension();
-        aBlipExtension.Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}";
+        A.BlipExtension aBlipExtension = new A.BlipExtension { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
 
         A14.UseLocalDpi a14UseLocalDpi = new A14.UseLocalDpi();
 
@@ -752,17 +745,16 @@ internal sealed class SlideShapes : ISlideShapes
 
         aBlipExtensionList.AppendChild(aBlipExtension);
 
-        aBlipExtension = new A.BlipExtension();
-        aBlipExtension.Uri = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}";
+        aBlipExtension = new A.BlipExtension { Uri = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}" };
 
-        var sVGBlip = new DocumentFormat.OpenXml.Office2019.Drawing.SVG.SVGBlip() { Embed = svgPartRId };
+        var svgBlip = new DocumentFormat.OpenXml.Office2019.Drawing.SVG.SVGBlip() { Embed = svgPartRId };
 
         // "http://schemas.microsoft.com/office/drawing/2016/SVG/main"
         var asvg = DocumentFormat.OpenXml.Linq.ASVG.asvg;
 
-        sVGBlip.AddNamespaceDeclaration(nameof(asvg), asvg.NamespaceName);
+        svgBlip.AddNamespaceDeclaration(nameof(asvg), asvg.NamespaceName);
 
-        aBlipExtension.AppendChild(sVGBlip);
+        aBlipExtension.AppendChild(svgBlip);
 
         aBlipExtensionList.AppendChild(aBlipExtension);
 

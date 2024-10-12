@@ -51,7 +51,7 @@ public class PictureTests : SCTest
         var image = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7").Image;
             
         // Act
-        var mimeType = image.MIME;
+        var mimeType = image.Mime;
             
         // Assert
         mimeType.Should().Be("image/png");
