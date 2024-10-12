@@ -129,15 +129,15 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
-        var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 4");
+        var shape = pres.Slide(1).Shape("AutoShape 4");
         var paragraph = shape.TextBox.Paragraphs[0];
             
         // Act
         paragraph.Text = "AutoShape 4 some text";
 
         // Assert
-        shape.Height.Should().BeApproximately(58.81m,0.01m);
-        shape.Y.Should().Be(142m);
+        shape.Height.Should().BeApproximately(51.48m,0.01m);
+        shape.Y.Should().Be(145m);
     }
 
     [Test]

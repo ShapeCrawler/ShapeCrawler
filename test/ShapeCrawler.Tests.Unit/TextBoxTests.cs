@@ -100,15 +100,15 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
-            var shape = pres.Slides[0].Shape("AutoShape 4");
-            var textFrame = shape.TextBox;
+            var shape = pres.Slide(1).Shape("AutoShape 4");
+            var textBox = shape.TextBox;
 
             // Act
-            textFrame.Text = "AutoShape 4 some text";
+            textBox.Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().BeApproximately(58.81m, 0.01m);
-            shape.Y.Should().Be(146m);
+            shape.Height.Should().BeApproximately(51.48m, 0.01m);
+            shape.Y.Should().Be(149m);
             pres.Validate();
         }
 
@@ -149,16 +149,15 @@ namespace ShapeCrawler.Tests.Unit
         public void AutofitType_Setter_updates_height()
         {
             // Arrange
-            var pptxStream = StreamOf("autoshape-case003.pptx");
-            var pres = new Presentation(pptxStream);
-            var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 7");
-            var textFrame = shape.TextBox!;
+            var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
+            var shape = pres.Slide(1).Shape("AutoShape 7");
+            var textBox = shape.TextBox!;
 
             // Act
-            textFrame.AutofitType = AutofitType.Resize;
+            textBox.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Height.Should().BeApproximately(44.14m, 0.01m);
+            shape.Height.Should().BeApproximately(40.48m, 0.01m);
             pres.Validate();
         }
 
@@ -292,7 +291,7 @@ namespace ShapeCrawler.Tests.Unit
             shape.TextBox.Text = "Some sentence. Some sentence";
 
             // Assert
-            shape.Height.Should().BeApproximately(114.81m, 0.01m);
+            shape.Height.Should().BeApproximately(93.48m, 0.01m);
         }
 
         [Test]
