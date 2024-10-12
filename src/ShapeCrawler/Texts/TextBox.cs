@@ -12,14 +12,14 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed record TextFrame : ITextBox
+internal sealed record TextBox : ITextBox
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkTextBody;
 
     private TextVerticalAlignment? valignment;
 
-    internal TextFrame(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
+    internal TextBox(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTextBody = sdkTextBody;
@@ -340,13 +340,13 @@ internal sealed record TextFrame : ITextBox
         SKPaint paint,
         decimal lMarginPixel,
         decimal rMarginPixel,
-        TextFrame textFrame,
+        TextBox textBox,
         OpenXmlElement parent,
         ITextPortionFont font)
     {
-        if (!textFrame.TextWrapped)
+        if (!textBox.TextWrapped)
         {
-            var longerText = textFrame.Paragraphs
+            var longerText = textBox.Paragraphs
                 .Select(x => new { x.Text, x.Text.Length })
                 .OrderByDescending(x => x.Length)
                 .First().Text;

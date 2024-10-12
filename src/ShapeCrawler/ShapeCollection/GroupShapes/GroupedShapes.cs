@@ -67,7 +67,7 @@ internal sealed record GroupedShapes : IShapes
                         new AutoShape(
                             this.sdkTypedOpenXmlPart,
                             pShape,
-                            new TextFrame(this.sdkTypedOpenXmlPart, pShape.TextBody)));
+                            new TextBox(this.sdkTypedOpenXmlPart, pShape.TextBody)));
                 }
                 else
                 {

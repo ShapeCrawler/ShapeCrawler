@@ -4,7 +4,7 @@ using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    public class TextFrameTests : SCTest
+    public class TextBoxTests : SCTest
     {
         [Test]
         public void Text_Getter_returns_text_of_table_Cell()

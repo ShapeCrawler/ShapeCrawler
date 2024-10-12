@@ -113,7 +113,7 @@ internal sealed class Shapes : IShapes
                             new AutoShape(
                                 this.sdkTypedOpenXmlPart,
                                 pShape,
-                                new TextFrame(
+                                new TextBox(
                                     this.sdkTypedOpenXmlPart, pShape.TextBody))));
                 }
                 else
