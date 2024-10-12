@@ -1,7 +1,9 @@
 ﻿using System;
 
 // ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Color.
@@ -26,7 +28,7 @@ public struct Color
     /// <summary>
     ///     Max opacity value, equivalent to 1.
     /// </summary>
-    internal const float OPACITY = 255;
+    internal const float Opacity = 255;
 
     private readonly int blue;
     private readonly int green;
@@ -87,16 +89,25 @@ public struct Color
     ///     Gets a value indicating whether the color is transparent.
     /// </summary>
     internal bool IsTransparent => this.Alpha == 0;
+    
+    /// <summary>
+    ///     Creates color hexadecimal code.
+    /// </summary>
+    public override string ToString()
+    {
+        // String representation ignores alpha value
+        return $"{this.R:X2}{this.G:X2}{this.B:X2}";
+    }
 
     /// <summary>
     ///     Creates color from Hex value.
     /// </summary>
     /// <param name="hex">Hex value.</param>
     /// <returns>Returns <see langword="true" /> if hex is a valid value. </returns>
-    public static Color FromHex(string hex)
+    internal static Color FromHex(string hex)
     {
         // We can try to parse:
-        // 3 or 6 chars without alpha (rgb): F01, FF0011,
+        // 3 or 6 chars without an alpha (rgb): F01, FF0011,
         // 4 or 8 chars with alpha (rgba): F01F, FF0011FF 
         // Ignores hex values starting with "#" character.
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex;
@@ -107,16 +118,7 @@ public struct Color
         // Creates a new instance
         return new(r, g, b, a);
     }
-
-    /// <summary>
-    ///     Creates color hexadecimal code.
-    /// </summary>
-    public override string ToString()
-    {
-        // String representation ignores alpha value
-        return $"{this.R:X2}{this.G:X2}{this.B:X2}";
-    }
-
+    
     /// <summary>
     ///     Returns a color of RGBA.
     /// </summary>

@@ -2,7 +2,9 @@
 using DocumentFormat.OpenXml.Packaging;
 
 // ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a Slide Layout.
@@ -95,5 +97,5 @@ internal sealed class SlideLayout : ISlideLayout
     
     public SlideLayoutType Type => TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
     
-    internal SlideLayoutPart SDKSlideLayoutPart() => this.sdkLayoutPart;
+    internal SlideLayoutPart SdkSlideLayoutPart() => this.sdkLayoutPart;
 }

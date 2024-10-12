@@ -164,7 +164,7 @@ internal sealed record TextBox : ITextBox
 
     public bool TextWrapped => this.IsTextWrapped();
 
-    public string SDKXPath => new XmlPath(this.sdkTextBody).XPath;
+    public string SdkXPath => new XmlPath(this.sdkTextBody).XPath;
 
     public TextVerticalAlignment VerticalAlignment
     {

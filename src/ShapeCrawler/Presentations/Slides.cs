@@ -87,10 +87,10 @@ internal sealed class Slides : ISlides
                     new P.GroupShapeProperties(new A.TransformGroup()))),
             new P.ColorMapOverride(new A.MasterColorMapping()));
         var layoutInternal = (SlideLayout)layout;
-        sdkSlidePart.AddPart(layoutInternal.SDKSlideLayoutPart(), "rId1");
+        sdkSlidePart.AddPart(layoutInternal.SdkSlideLayoutPart(), "rId1");
 
         // Copy layout placeholders
-        if (layoutInternal.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) // && layout.Type != SlideLayoutType.Blank) // if the layout is blank, no need to add placeholder
+        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) // && layout.Type != SlideLayoutType.Blank) // if the layout is blank, no need to add placeholder
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()
@@ -149,7 +149,7 @@ internal sealed class Slides : ISlides
         var sourceSlide = (Slide)slide;
         var sourcePresStream = new MemoryStream();
         var targetPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var sourceSlidePresDocument = sourceSlide.SDKPresentationDocument().Clone(sourcePresStream);
+        var sourceSlidePresDocument = sourceSlide.SdkPresentationDocument().Clone(sourcePresStream);
 
         var sourceSlidePresPart = sourceSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;

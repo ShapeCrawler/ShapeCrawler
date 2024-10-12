@@ -564,7 +564,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         var addedPictureImage = shapes.Last<IPicture>().Image!;
-        addedPictureImage.MIME.Should().Be("image/jpeg");
+        addedPictureImage.Mime.Should().Be("image/jpeg");
     }
     
     [Test]

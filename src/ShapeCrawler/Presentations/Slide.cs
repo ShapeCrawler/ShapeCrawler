@@ -30,18 +30,18 @@ internal sealed class Slide : ISlide
         ISlideLayout slideLayout,
         SlideSize slideSize)
     {
-        this.SDKSlidePart = sdkSlidePart;
+        this.SdkSlidePart = sdkSlidePart;
         this.slideSize = slideSize;
         this.backgroundImage = new Lazy<SlideBgImage>(() =>
             new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.SDKSlidePart, new ShapeCollection.Shapes(sdkSlidePart));
+        this.Shapes = new SlideShapes(this.SdkSlidePart, new ShapeCollection.Shapes(sdkSlidePart));
     }
 
     public ISlideLayout SlideLayout { get; }
     
-    public SlidePart SDKSlidePart { get; }
+    public SlidePart SdkSlidePart { get; }
 
     public ISlideShapes Shapes { get; }
 
@@ -61,18 +61,18 @@ internal sealed class Slide : ISlide
 
     public ITextBox? Notes => this.GetNotes();
 
-    public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && !this.SDKSlidePart.Slide.Show.Value;
+    public bool Hidden() => this.SdkSlidePart.Slide.Show is not null && !this.SdkSlidePart.Slide.Show.Value;
 
     public void Hide()
     {
-        if (this.SDKSlidePart.Slide.Show is null)
+        if (this.SdkSlidePart.Slide.Show is null)
         {
             var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
-            this.SDKSlidePart.Slide.SetAttribute(showAttribute);
+            this.SdkSlidePart.Slide.SetAttribute(showAttribute);
         }
         else
         {
-            this.SDKSlidePart.Slide.Show = false;
+            this.SdkSlidePart.Slide.Show = false;
         }
     }
     
@@ -148,7 +148,7 @@ internal sealed class Slide : ISlide
         }
     }
 
-    internal PresentationDocument SDKPresentationDocument() => (PresentationDocument)this.SDKSlidePart.OpenXmlPackage;
+    internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
 
     /// <summary>
     ///     Iterates group recursively and add all text boxes in the list.
@@ -175,7 +175,7 @@ internal sealed class Slide : ISlide
 
     private ITextBox? GetNotes()
     {
-        var notes = this.SDKSlidePart.NotesSlidePart;
+        var notes = this.SdkSlidePart.NotesSlidePart;
 
         if (notes is null)
         {
@@ -219,8 +219,8 @@ internal sealed class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = this.SDKSlidePart.NextRelationshipId();
-        NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
+        var rid = this.SdkSlidePart.NextRelationshipId();
+        NotesSlidePart notesSlidePart1 = this.SdkSlidePart.AddNewPart<NotesSlidePart>(rid);
         NotesSlide notesSlide = new NotesSlide(
             new CommonSlideData(
                 new ShapeTree(
@@ -243,9 +243,9 @@ internal sealed class Slide : ISlide
     
     private int ParseNumber()
     {
-        var sdkPresentationDocument = (PresentationDocument)this.SDKSlidePart.OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
         var presentationPart = sdkPresentationDocument.PresentationPart!;
-        var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
+        var currentSlidePartId = presentationPart.GetIdOfPart(this.SdkSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
         for (int i = 0; i < slideIdList.Count; i++)
@@ -268,7 +268,7 @@ internal sealed class Slide : ISlide
 
         var currentIndex = this.Number - 1;
         var destIndex = newSlideNumber - 1;
-        var sdkPresentationDocument = (PresentationDocument)this.SDKSlidePart.OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
         if (destIndex < 0 || currentIndex >= sdkPresentationDocument.PresentationPart!.SlideParts.Count() ||
             destIndex == currentIndex)
         {
@@ -331,7 +331,7 @@ internal sealed class Slide : ISlide
         Stream customXmlPartStream;
         if (this.sdkCustomXmlPart.Value == null)
         {
-            CustomXmlPart newSlideCustomXmlPart = this.SDKSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+            CustomXmlPart newSlideCustomXmlPart = this.SdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
             this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
         }
@@ -346,7 +346,7 @@ internal sealed class Slide : ISlide
 
     private CustomXmlPart? GetSldCustomXmlPart()
     {
-        foreach (CustomXmlPart customXmlPart in this.SDKSlidePart.CustomXmlParts)
+        foreach (CustomXmlPart customXmlPart in this.SdkSlidePart.CustomXmlParts)
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             string customXmlPartText = customXmlPartStream.ReadToEnd();

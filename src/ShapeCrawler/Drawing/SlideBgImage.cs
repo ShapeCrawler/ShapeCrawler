@@ -23,7 +23,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         this.sdkSlidePart = sdkSlidePart;
     }
 
-    public string MIME => this.ParseMIME();
+    public string Mime => this.ParseMime();
     
     public string Name => this.ParseName();
 
@@ -31,7 +31,7 @@ internal sealed class SlideBgImage : ISlideBgImage
     {
         var aBlip = this.ABlip();
         var imageParts = this.sdkSlidePart.ImageParts;
-        var sdkImagePart = this.SDKImagePartOrNull();
+        var sdkImagePart = this.SdkImagePartOrNull();
         var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
         if (isSharedImagePart)
         {
@@ -59,12 +59,7 @@ internal sealed class SlideBgImage : ISlideBgImage
     
     public byte[] AsByteArray()
     {
-        var sdkImagePart = this.SDKImagePartOrNull();
-        if (sdkImagePart == null)
-        {
-            throw new SCException(NotPresentedErrorMessage);
-        }
-        
+        var sdkImagePart = this.SdkImagePartOrNull() ?? throw new SCException(NotPresentedErrorMessage);
         var stream = sdkImagePart.GetStream();
         var mStream = new MemoryStream();
         var buffer = new byte[1024];
@@ -104,19 +99,14 @@ internal sealed class SlideBgImage : ISlideBgImage
         return aBlip;
     }
 
-    private string ParseMIME()
+    private string ParseMime()
     {
-        var sdkImagePart = this.SDKImagePartOrNull();
-        if (sdkImagePart == null)
-        {
-            throw new SCException(
+        var sdkImagePart = this.SdkImagePartOrNull() ?? throw new SCException(
                 $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.");
-        }
-
         return sdkImagePart.ContentType;
     }
 
-    private ImagePart? SDKImagePartOrNull()
+    private ImagePart? SdkImagePartOrNull()
     {
         var pBg = this.sdkSlidePart.Slide.CommonSlideData!.Background;
         if (pBg == null)
@@ -131,12 +121,7 @@ internal sealed class SlideBgImage : ISlideBgImage
 
     private string ParseName()
     {
-        var sdkImagePart = this.SDKImagePartOrNull();
-        if (sdkImagePart == null)
-        {
-            throw new SCException(NotPresentedErrorMessage);
-        }
-
+        var sdkImagePart = this.SdkImagePartOrNull() ?? throw new SCException(NotPresentedErrorMessage);
         return Path.GetFileName(sdkImagePart.Uri.ToString());
     }
 }

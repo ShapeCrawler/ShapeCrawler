@@ -209,9 +209,9 @@ internal abstract class Shape : IShape
 
     public virtual bool Removeable => false;
     
-    public string SDKXPath => new XmlPath(this.PShapeTreeElement).XPath;
+    public string SdkXPath => new XmlPath(this.PShapeTreeElement).XPath;
     
-    public OpenXmlElement SDKOpenXmlElement => this.PShapeTreeElement.CloneNode(true);
+    public OpenXmlElement SdkOpenXmlElement => this.PShapeTreeElement.CloneNode(true);
 
     public string Text
     {

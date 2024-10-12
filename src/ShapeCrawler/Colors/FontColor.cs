@@ -30,7 +30,7 @@ internal sealed class FontColor : IFontColor
     {
         get
         {
-            var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
+            var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
             if (aSolidFill != null)
             {
                 var pSlideMaster = this.sdkTypedOpenXmlPart switch
@@ -89,7 +89,7 @@ internal sealed class FontColor : IFontColor
                 SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
                 _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster
             };
-            var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
+            var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
             if (aSolidFill != null)
             {
                 var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
@@ -159,7 +159,7 @@ internal sealed class FontColor : IFontColor
         var aTextContainer = this.aText.Parent!;
         var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
 
-        var aSolidFill = aRunProperties.SDKASolidFill();
+        var aSolidFill = aRunProperties.SdkASolidFill();
         aSolidFill?.Remove();
 
         // All hex values are expected to be without hashtag.

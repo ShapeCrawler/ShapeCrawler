@@ -19,7 +19,7 @@ internal sealed class ShapeFillImage : IImage
         this.sdkImagePart = sdkImagePart;
     }
 
-    public string MIME => this.sdkImagePart.ContentType;
+    public string Mime => this.sdkImagePart.ContentType;
 
     public string Name => Path.GetFileName(this.sdkImagePart.Uri.ToString());
 

@@ -46,7 +46,7 @@ internal readonly struct NullTextFrame : ITextBox
 
     public bool TextWrapped => throw new Exception(Error);
     
-    public string SDKXPath => throw new Exception(Error);
+    public string SdkXPath => throw new Exception(Error);
 
     public TextVerticalAlignment VerticalAlignment 
     {

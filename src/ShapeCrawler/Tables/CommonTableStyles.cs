@@ -93,7 +93,7 @@ internal static class CommonTableStyles
         // Search through the dictionary for the matching GUID
         foreach (var value in Styles)
         {
-            if (value.Value.GUID.Equals(guid, StringComparison.OrdinalIgnoreCase))
+            if (value.Value.Guid.Equals(guid, StringComparison.OrdinalIgnoreCase))
             {
                 return value.Value;
             }

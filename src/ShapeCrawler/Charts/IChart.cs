@@ -4,7 +4,9 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a chart.
@@ -24,17 +26,17 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Presentation.GraphicFrame"/>.
     /// </summary>
-    public P.GraphicFrame SDKGraphicFrame { get; }
+    public P.GraphicFrame SdkGraphicFrame { get; }
     
     /// <summary>
     ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.ChartPart"/>.
     /// </summary>
-    public ChartPart SDKChartPart { get; }
+    public ChartPart SdkChartPart { get; }
     
     /// <summary>
     ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Drawing.Charts.PlotArea"/>.
     /// </summary>
-    public C.PlotArea SDKPlotArea { get; }
+    public C.PlotArea SdkPlotArea { get; }
     
     /// <summary>
     ///     Gets chart title.
@@ -47,7 +49,7 @@ public interface IChart : IShape
     bool HasCategories { get; }
 
     /// <summary>
-    ///     Gets collection of categories.
+    ///     Gets the collection of categories.
     /// </summary>
     public IReadOnlyList<ICategory> Categories { get; }
 

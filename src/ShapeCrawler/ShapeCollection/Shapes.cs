@@ -134,7 +134,7 @@ internal sealed class Shapes : IShapes
                         "http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
-                    var oleObject = new OLEObject(this.sdkTypedOpenXmlPart, pGraphicFrame);
+                    var oleObject = new OleObject(this.sdkTypedOpenXmlPart, pGraphicFrame);
                     shapeList.Add(oleObject);
                     continue;
                 }

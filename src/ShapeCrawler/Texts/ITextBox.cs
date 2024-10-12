@@ -1,8 +1,10 @@
 ﻿// ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a text frame.
+///     Represents a text box.
 /// </summary>
 public interface ITextBox
 {
@@ -27,22 +29,22 @@ public interface ITextBox
     AutofitType AutofitType { get; set; }
 
     /// <summary>
-    ///     Gets or sets left margin of text frame in centimeters.
+    ///     Gets or sets the left margin in centimeters.
     /// </summary>
     decimal LeftMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets right margin of text frame in centimeters.
+    ///     Gets or sets the right margin in centimeters.
     /// </summary>
     decimal RightMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets top margin of text frame in centimeters.
+    ///     Gets or sets the top margin in centimeters.
     /// </summary>
     decimal TopMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets bottom margin of text frame in centimeters.
+    ///     Gets or sets the bottom margin in centimeters.
     /// </summary>
     decimal BottomMargin { get; set; }
 
@@ -54,5 +56,5 @@ public interface ITextBox
     /// <summary>
     ///     Gets XPath.
     /// </summary>
-    public string SDKXPath { get; }
+    public string SdkXPath { get; }
 }

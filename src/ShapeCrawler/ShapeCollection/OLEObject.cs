@@ -5,11 +5,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
 
-internal sealed class OLEObject : Shape
+internal sealed class OleObject : Shape
 {
     private readonly P.GraphicFrame pGraphicFrame;
 
-    internal OLEObject(OpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
+    internal OleObject(OpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
         : base(sdkTypedOpenXmlPart, pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
@@ -17,7 +17,7 @@ internal sealed class OLEObject : Shape
         this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
     }
 
-    public override ShapeType ShapeType => ShapeType.OLEObject;
+    public override ShapeType ShapeType => ShapeType.OleObject;
 
     public override bool HasOutline => true;
     

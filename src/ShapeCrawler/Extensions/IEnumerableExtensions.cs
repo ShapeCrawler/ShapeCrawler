@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ShapeCrawler.Extensions;
 
-internal static class IEnumerableExtensions
+internal static class EnumerableExtensions
 {
     internal static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
     {
