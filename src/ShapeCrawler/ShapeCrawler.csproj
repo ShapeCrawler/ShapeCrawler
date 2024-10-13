@@ -13,11 +13,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageReleaseNotes>🍀Added vertical text alignment support [#624](https://github.com/ShapeCrawler/ShapeCrawler/issues/624)  
 🍀Added table style support</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <Title>ShapeCrawler</Title>
@@ -43,7 +41,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
     <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
-    <nullable>enable</nullable>
   </PropertyGroup>
 
   <ItemGroup>
