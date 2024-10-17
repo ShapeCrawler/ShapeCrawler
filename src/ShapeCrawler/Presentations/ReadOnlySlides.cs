@@ -4,7 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
 {
@@ -22,17 +22,17 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
     public IEnumerator<ISlide> GetEnumerator() => this.SlideList().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-    
+
     private List<Slide> SlideList()
     {
         if (!this.sdkSlideParts.Any())
         {
             return [];
         }
-        
+
         var sdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
         var sdkPresPart = sdkPresDocument.PresentationPart!;
-        int slidesCount = this.sdkSlideParts.Count();
+        var slidesCount = this.sdkSlideParts.Count();
         var slides = new List<Slide>(slidesCount);
         var pSlideIdList = sdkPresPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();
         for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)

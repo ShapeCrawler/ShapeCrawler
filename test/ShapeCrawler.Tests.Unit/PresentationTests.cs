@@ -88,7 +88,6 @@ public class PresentationTests : SCTest
     }
     
     [Test]
-    [Ignore("https://github.com/ShapeCrawler/ShapeCrawler/issues/749")]
     public void Slides_Count()
     {
         // Arrange

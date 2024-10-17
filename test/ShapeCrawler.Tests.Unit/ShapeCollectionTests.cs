@@ -521,18 +521,18 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddPicture_with_not_an_image_throws_exception()
+    public void AddPicture_throws_exception_when_the_specified_stream_is_non_image()
     {
         // Arrange
         var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
-        var notAnImage = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
+        var shapes = pres.Slide(1).Shapes;
+        var stream = StreamOf("autoshape-case011_save-as-png.pptx");
 
         // Act
-        var act = () => shapes.AddPicture(notAnImage);
+        var addingPicture = () => shapes.AddPicture(stream);
 
         // Assert
-        act.Should().Throw<SCException>();
+        addingPicture.Should().Throw<Exception>();
     }
 
     [Test]

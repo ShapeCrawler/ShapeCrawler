@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
 // ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a presentation document.

@@ -75,7 +75,7 @@ public interface ISlideShapes : IShapes
     /// <summary>
     ///     Adds picture.
     /// </summary>
-    void AddPicture(Stream imageStream);
+    void AddPicture(Stream image);
 
     /// <summary>
     ///     Adds Bar chart.

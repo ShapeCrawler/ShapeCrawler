@@ -17,7 +17,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed class Slide : ISlide
 {
@@ -36,11 +36,11 @@ internal sealed class Slide : ISlide
             new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.SdkSlidePart, new ShapeCollection.Shapes(sdkSlidePart));
+        this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart));
     }
 
     public ISlideLayout SlideLayout { get; }
-    
+
     public SlidePart SdkSlidePart { get; }
 
     public ISlideShapes Shapes { get; }
@@ -75,7 +75,7 @@ internal sealed class Slide : ISlide
             this.SdkSlidePart.Slide.Show = false;
         }
     }
-    
+
     public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
 
     public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
@@ -140,7 +140,7 @@ internal sealed class Slide : ISlide
         else
         {
             var paragraphs = notes.Paragraphs;
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 paragraphs.Add();
                 paragraphs[paragraphs.Count - 1].Text = line;
@@ -182,11 +182,11 @@ internal sealed class Slide : ISlide
             return null;
         }
 
-        var shapes = new ShapeCollection.Shapes(notes);
+        var shapes = new Shapes(notes);
         var notesPlaceholder = shapes
-            .FirstOrDefault(x => 
-                x.IsPlaceholder && 
-                x.IsTextHolder && 
+            .FirstOrDefault(x =>
+                x.IsPlaceholder &&
+                x.IsTextHolder &&
                 x.PlaceholderType == PlaceholderType.Text);
         return notesPlaceholder?.TextBox;
     }
@@ -194,7 +194,7 @@ internal sealed class Slide : ISlide
     private void AddNotesSlide(IEnumerable<string> lines)
     {
         // Build up the children of the text body element
-        var textBodyChildren = new List<OpenXmlElement>() 
+        var textBodyChildren = new List<OpenXmlElement>()
         {
             new BodyProperties(),
             new ListStyle()
@@ -204,24 +204,24 @@ internal sealed class Slide : ISlide
         textBodyChildren.AddRange(
             lines
                 .Select(line => new A.Paragraph(
-                    new A.ParagraphProperties(),
-                    new A.Run(
-                        new A.RunProperties(),
+                    new ParagraphProperties(),
+                    new Run(
+                        new RunProperties(),
                         new A.Text(line)),
-                    new A.EndParagraphRunProperties())));
+                    new EndParagraphRunProperties())));
 
         // Always add at least one paragraph, even if empty
         if (!lines.Any())
         {
             textBodyChildren.Add(
                 new A.Paragraph(
-                    new A.EndParagraphRunProperties()));
+                    new EndParagraphRunProperties()));
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
         var rid = this.SdkSlidePart.NextRelationshipId();
-        NotesSlidePart notesSlidePart1 = this.SdkSlidePart.AddNewPart<NotesSlidePart>(rid);
-        NotesSlide notesSlide = new NotesSlide(
+        var notesSlidePart1 = this.SdkSlidePart.AddNewPart<NotesSlidePart>(rid);
+        var notesSlide = new NotesSlide(
             new CommonSlideData(
                 new ShapeTree(
                     new P.NonVisualGroupShapeProperties(
@@ -236,11 +236,11 @@ internal sealed class Slide : ISlide
                             new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
                         new P.ShapeProperties(),
                         new P.TextBody(
-                            textBodyChildren)))),           
+                            textBodyChildren)))),
             new ColorMapOverride(new MasterColorMapping()));
         notesSlidePart1.NotesSlide = notesSlide;
     }
-    
+
     private int ParseNumber()
     {
         var sdkPresentationDocument = (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
@@ -248,7 +248,7 @@ internal sealed class Slide : ISlide
         var currentSlidePartId = presentationPart.GetIdOfPart(this.SdkSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
-        for (int i = 0; i < slideIdList.Count; i++)
+        for (var i = 0; i < slideIdList.Count; i++)
         {
             if (slideIdList[i].RelationshipId == currentSlidePartId)
             {
@@ -331,7 +331,7 @@ internal sealed class Slide : ISlide
         Stream customXmlPartStream;
         if (this.sdkCustomXmlPart.Value == null)
         {
-            CustomXmlPart newSlideCustomXmlPart = this.SdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+            var newSlideCustomXmlPart = this.SdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
             this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
         }
@@ -346,10 +346,10 @@ internal sealed class Slide : ISlide
 
     private CustomXmlPart? GetSldCustomXmlPart()
     {
-        foreach (CustomXmlPart customXmlPart in this.SdkSlidePart.CustomXmlParts)
+        foreach (var customXmlPart in this.SdkSlidePart.CustomXmlParts)
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
-            string customXmlPartText = customXmlPartStream.ReadToEnd();
+            var customXmlPartText = customXmlPartStream.ReadToEnd();
             if (customXmlPartText.StartsWith(
                     Constants.CustomDataElementName,
                     StringComparison.CurrentCulture))

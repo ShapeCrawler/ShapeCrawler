@@ -2,7 +2,7 @@
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed class SlideSize
 {
@@ -22,7 +22,7 @@ internal sealed class SlideSize
         var emu = UnitConverter.HorizontalPixelToEmu(pixels);
         this.pSlideSize.Cx = new Int32Value((int)emu);
     }
-    
+
     internal void UpdateHeight(decimal pixels)
     {
         var emu = UnitConverter.VerticalPixelToEmu(pixels);

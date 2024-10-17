@@ -6,6 +6,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -39,27 +40,25 @@ internal sealed class Slides : ISlides
     public void Remove(ISlide slide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var sdkPresentationDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var sdkPresentationPart = sdkPresentationDocument.PresentationPart!;
-        var pPresentation = sdkPresentationPart.Presentation;
+        var presDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
+        var presPart = presDocument.PresentationPart!;
+        var pPresentation = presPart.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
-        var removingSlideIndex = slide.Number - 1;
-        var removingSlideId = (P.SlideId)slideIdList.ChildElements[removingSlideIndex];
-        var removingSlideRelId = removingSlideId.RelationshipId!;
-
-        var sdkSectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
-        var removing = sdkSectionList?.Descendants<P14.SectionSlideIdListEntry>()
-            .FirstOrDefault(s => s.Id! == removingSlideId.Id!);
-        removing?.Remove();
+        var removingPSlideId = (P.SlideId)slideIdList.ChildElements[slide.Number - 1];
+        var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
+        var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
+            .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
+        removingSectionSlideIdListEntry?.Remove();
+        slideIdList.RemoveChild(removingPSlideId);
         pPresentation.Save();
 
-        slideIdList.RemoveChild(removingSlideId);
-        RemoveFromCustomShow(pPresentation, removingSlideRelId);
+        var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
+        new WrappedPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
-        var removingSlidePart = (SlidePart)sdkPresentationPart.GetPartById(removingSlideRelId!);
-        sdkPresentationPart.DeletePart(removingSlidePart);
+        var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
+        presPart.DeletePart(removingSlidePart);
 
-        sdkPresentationPart.Presentation.Save();
+        presPart.Presentation.Save();
     }
 
     public void AddEmptySlide(SlideLayoutType layoutType)
@@ -146,18 +145,18 @@ internal sealed class Slides : ISlides
 
     public void Add(ISlide slide)
     {
-        var sourceSlide = (Slide)slide;
-        var sourcePresStream = new MemoryStream();
+        var addingSlide = (Slide)slide;
+        var addingSlidePresStream = new MemoryStream();
         var targetPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var sourceSlidePresDocument = sourceSlide.SdkPresentationDocument().Clone(sourcePresStream);
+        var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
 
-        var sourceSlidePresPart = sourceSlidePresDocument.PresentationPart!;
+        var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        NormalizeLayouts(sourceSlidePart);
+        new WrappedSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
 
         var wrappedPresentationPart = new WrappedPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
@@ -186,26 +185,7 @@ internal sealed class Slides : ISlides
 
         return (P.TextBody)shape.TextBody.CloneNode(true);
     }
-
-    private static void NormalizeLayouts(SlidePart sourceSlidePart)
-    {
-        var sourceMasterPart = sourceSlidePart.SlideLayoutPart!.SlideMasterPart!;
-        var layoutParts = sourceMasterPart.SlideLayoutParts.ToList();
-        var layoutIdList = sourceMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
-        foreach (var layoutPart in layoutParts)
-        {
-            if (layoutPart == sourceSlidePart.SlideLayoutPart)
-            {
-                continue;
-            }
-
-            var id = sourceMasterPart.GetIdOfPart(layoutPart);
-            var layoutId = layoutIdList.First(x => x.RelationshipId == id);
-            layoutId.Remove();
-            sourceMasterPart.DeletePart(layoutPart);
-        }
-    }
-
+    
     private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
@@ -260,41 +240,7 @@ internal sealed class Slides : ISlides
 
         return ++currentId;
     }
-
-    private static void RemoveFromCustomShow(P.Presentation sdkPresentation, StringValue? removingSlideRelId)
-    {
-        if (sdkPresentation.CustomShowList == null)
-        {
-            return;
-        }
-
-        // Iterate through the list of custom shows
-        foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
-        {
-            if (customShow.SlideList == null)
-            {
-                continue;
-            }
-
-            // declares a link list of slide list entries
-            var slideListEntries = new LinkedList<P.SlideListEntry>();
-            foreach (P.SlideListEntry pSlideListEntry in customShow.SlideList.OfType<P.SlideListEntry>())
-            {
-                // finds the slide reference to remove from the custom show
-                if (pSlideListEntry.Id != null && pSlideListEntry.Id == removingSlideRelId)
-                {
-                    slideListEntries.AddLast(pSlideListEntry);
-                }
-            }
-
-            // Removes all references to the slide from the custom show
-            foreach (P.SlideListEntry slideListEntry in slideListEntries)
-            {
-                customShow.SlideList.RemoveChild(slideListEntry);
-            }
-        }
-    }
-
+    
     private static uint CreateId(P.SlideMasterIdList slideMasterIdList)
     {
         uint currentId = 0;
