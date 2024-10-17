@@ -97,7 +97,6 @@ public class PresentationTests : SCTest
 
         // Act
         slides.Remove(removingSlide);
-        SaveResult(pres);
         
         // Assert
         slides.Count.Should().Be(1);

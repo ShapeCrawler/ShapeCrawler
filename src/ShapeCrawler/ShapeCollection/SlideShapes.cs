@@ -120,13 +120,13 @@ internal sealed class SlideShapes : ISlideShapes
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
 
-    public void AddPicture(Stream imageStream)
+    public void AddPicture(Stream image)
     {
-        imageStream.Position = 0;
+        image.Position = 0;
         var imageCopy = new MemoryStream();
-        imageStream.CopyTo(imageCopy);
+        image.CopyTo(imageCopy);
         imageCopy.Position = 0;
-        imageStream.Position = 0;
+        image.Position = 0;
         using var skBitmap = SKBitmap.Decode(imageCopy);
 
         if (skBitmap != null)
@@ -151,7 +151,7 @@ internal sealed class SlideShapes : ISlideShapes
             var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
             var cyEmu = UnitConverter.VerticalPixelToEmu(height);
 
-            var pPicture = this.CreatePPicture(imageStream, "Picture");
+            var pPicture = this.CreatePPicture(image, "Picture");
 
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = xEmu;
@@ -164,15 +164,15 @@ internal sealed class SlideShapes : ISlideShapes
             SvgDocument doc;
             try
             {
-                doc = SvgDocument.Open<SvgDocument>(imageStream);
+                doc = SvgDocument.Open<SvgDocument>(image);
             }
             catch (SvgGdiPlusCannotBeLoadedException ex) 
             {
                 throw new SCException("An error occurred while attempting to use GDI+ functionality. If you use Linux, you need to install a library that provides GDI+ support. You can do this with the following command: sudo apt install -y libgdiplus", ex);
             }
 
-            imageStream.Position = 0;
-            this.AddPictureSvg(doc, imageStream);
+            image.Position = 0;
+            this.AddPictureSvg(doc, image);
         }
     }
 
