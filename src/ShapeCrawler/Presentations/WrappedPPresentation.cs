@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DocumentFormat.OpenXml;
+﻿using System.Linq;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal readonly ref struct WrappedPPresentation
 {
@@ -22,13 +19,13 @@ internal readonly ref struct WrappedPPresentation
             return;
         }
 
-        foreach (var customShow in pPresentation.CustomShowList.Elements<P.CustomShow>())
+        foreach (var pCustomShow in this.pPresentation.CustomShowList.Elements<P.CustomShow>())
         {
-            customShow.SlideList?
+            pCustomShow.SlideList?
                 .Elements<P.SlideListEntry>()
                 .Where(entry => entry.Id == slideIdRelationshipId)
                 .ToList()
-                .ForEach(entry => customShow.SlideList.RemoveChild(entry));
+                .ForEach(entry => pCustomShow.SlideList.RemoveChild(entry));
         }
     }
 }

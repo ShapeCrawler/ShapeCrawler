@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal readonly ref struct WrappedPresentationPart
 {
@@ -13,7 +13,7 @@ internal readonly ref struct WrappedPresentationPart
     {
         this.presentationPart = presentationPart;
     }
-    
+
     internal void AddSlidePart(SlidePart slidePart)
     {
         var rId = this.presentationPart.NextRelationshipId();

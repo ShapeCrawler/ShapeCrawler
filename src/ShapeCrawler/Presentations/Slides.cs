@@ -6,6 +6,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -144,18 +145,18 @@ internal sealed class Slides : ISlides
 
     public void Add(ISlide slide)
     {
-        var sourceSlide = (Slide)slide;
-        var sourcePresStream = new MemoryStream();
+        var addingSlide = (Slide)slide;
+        var addingSlidePresStream = new MemoryStream();
         var targetPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var sourceSlidePresDocument = sourceSlide.SdkPresentationDocument().Clone(sourcePresStream);
+        var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
 
-        var sourceSlidePresPart = sourceSlidePresDocument.PresentationPart!;
+        var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        NormalizeLayouts(sourceSlidePart);
+        new WrappedSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
 
         var wrappedPresentationPart = new WrappedPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
@@ -184,26 +185,7 @@ internal sealed class Slides : ISlides
 
         return (P.TextBody)shape.TextBody.CloneNode(true);
     }
-
-    private static void NormalizeLayouts(SlidePart sourceSlidePart)
-    {
-        var sourceMasterPart = sourceSlidePart.SlideLayoutPart!.SlideMasterPart!;
-        var layoutParts = sourceMasterPart.SlideLayoutParts.ToList();
-        var layoutIdList = sourceMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
-        foreach (var layoutPart in layoutParts)
-        {
-            if (layoutPart == sourceSlidePart.SlideLayoutPart)
-            {
-                continue;
-            }
-
-            var id = sourceMasterPart.GetIdOfPart(layoutPart);
-            var layoutId = layoutIdList.First(x => x.RelationshipId == id);
-            layoutId.Remove();
-            sourceMasterPart.DeletePart(layoutPart);
-        }
-    }
-
+    
     private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)

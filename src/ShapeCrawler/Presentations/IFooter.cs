@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+using ShapeCrawler.Presentations;
 
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents Header and Footer manager.

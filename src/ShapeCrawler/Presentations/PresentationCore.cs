@@ -10,7 +10,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 #endif
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed class PresentationCore
 {
@@ -117,7 +117,7 @@ internal sealed class PresentationCore
         }
 
         errors = errors.Except(removing);
-        
+
 #if NETSTANDARD2_0
         errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
 #else

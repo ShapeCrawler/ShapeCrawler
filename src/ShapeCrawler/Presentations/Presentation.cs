@@ -1,16 +1,19 @@
 ﻿using System.IO;
 using System.Reflection;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
 
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <inheritdoc cref="IPresentation"/>
 public sealed class Presentation : IPresentation
 {
     private IValidateable validateable;
-    
+
     /// <summary>
-    ///     Creates presentation from specified file path.
+    ///     Initializes a new instance of the <see cref="Presentation"/> class.
     /// </summary>
     public Presentation(string path)
     {
@@ -18,7 +21,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <summary>
-    ///     Creates presentation from specified stream.
+    ///     Initializes a new instance of the <see cref="Presentation"/> class.
     /// </summary>
     public Presentation(Stream stream)
     {
@@ -26,7 +29,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <summary>
-    ///     Creates a new presentation.
+    ///     Initializes a new instance of the <see cref="Presentation"/> class.
     /// </summary>
     public Presentation()
     {
