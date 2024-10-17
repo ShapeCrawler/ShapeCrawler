@@ -361,19 +361,15 @@ internal sealed record TextBox : ITextBox
 
     private static int GetAdjustedFontSize(string text, ITextPortionFont font, int shapeWidth, int shapeHeight)
     {
-        var surface = SKSurface.Create(new SKImageInfo(shapeWidth, shapeHeight));
+        using var surface = SKSurface.Create(new SKImageInfo(shapeWidth, shapeHeight));
         var canvas = surface.Canvas;
 
-        var paint = new SKPaint
-        {
-            IsAntialias = true
-        };
+        using var paint = new SKPaint();
+        paint.IsAntialias = true;
 
-        var skFont = new SKFont
-        {
-            Size = (float)font.Size,
-            Typeface = SKTypeface.FromFamilyName(font.LatinName)
-        };
+        using var skFont = new SKFont();
+        skFont.Size = (float)font.Size;
+        skFont.Typeface = SKTypeface.FromFamilyName(font.LatinName);
 
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
