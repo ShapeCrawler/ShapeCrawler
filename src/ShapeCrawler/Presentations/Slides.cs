@@ -51,9 +51,9 @@ internal sealed class Slides : ISlides
         var removing = sdkSectionList?.Descendants<P14.SectionSlideIdListEntry>()
             .FirstOrDefault(s => s.Id! == removingSlideId.Id!);
         removing?.Remove();
-        pPresentation.Save();
 
         slideIdList.RemoveChild(removingSlideId);
+        pPresentation.Save();
         RemoveFromCustomShow(pPresentation, removingSlideRelId);
 
         var removingSlidePart = (SlidePart)sdkPresentationPart.GetPartById(removingSlideRelId!);

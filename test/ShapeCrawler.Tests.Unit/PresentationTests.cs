@@ -88,7 +88,6 @@ public class PresentationTests : SCTest
     }
     
     [Test]
-    [Ignore("https://github.com/ShapeCrawler/ShapeCrawler/issues/749")]
     public void Slides_Count()
     {
         // Arrange
@@ -98,6 +97,7 @@ public class PresentationTests : SCTest
 
         // Act
         slides.Remove(removingSlide);
+        SaveResult(pres);
         
         // Assert
         slides.Count.Should().Be(1);
