@@ -81,7 +81,7 @@ namespace ShapeCrawler.Tests.Unit
         // It sometimes happens also for on NET 8.
 #if !NET472 && !NET48 
         [Test]
-        [Retry(2)]
+        [NonParallelizable]
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
