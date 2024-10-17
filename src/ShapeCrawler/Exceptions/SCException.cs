@@ -12,4 +12,11 @@ internal class SCException : Exception
         : base($"{message}{Environment.NewLine}{Environment.NewLine}If you have a question, feel free to report an issue https://github.com/ShapeCrawler/ShapeCrawler/issues")
     {
     }
+
+    internal SCException(string message, Exception innerException)
+        : base(
+            $"{message}{Environment.NewLine}{Environment.NewLine}If you have a question, feel free to report an issue https://github.com/ShapeCrawler/ShapeCrawler/issues",
+            innerException)
+    {
+    }
 }

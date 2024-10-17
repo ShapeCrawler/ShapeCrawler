@@ -161,16 +161,14 @@ internal sealed class SlideShapes : ISlideShapes
         }
         else
         {
-            // Not a bitmap, let's try it as an SVG
-            SvgDocument? doc;
+            SvgDocument doc;
             try
             {
                 doc = SvgDocument.Open<SvgDocument>(imageStream);
             }
-            catch
+            catch (SvgGdiPlusCannotBeLoadedException ex) 
             {
-                // Neither Bitmap nor SVG can load this, so that's an error
-                throw new SCException("Unable to decode the image from the supplied stream.");
+                throw new SCException("An error occurred while attempting to use GDI+ functionality. If you use Linux, you need to install a library that provides GDI+ support. You can do this with the following command: sudo apt install -y libgdiplus", ex);
             }
 
             imageStream.Position = 0;
