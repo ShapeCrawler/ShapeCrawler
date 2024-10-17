@@ -521,7 +521,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddPicture_throws_exception_if_the_specified_stream_is_non_image()
+    public void AddPicture_throws_exception_when_the_specified_stream_is_non_image()
     {
         // Arrange
         var pres = new Presentation();
