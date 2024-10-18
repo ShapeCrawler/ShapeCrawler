@@ -175,15 +175,7 @@ internal sealed class SlideShapes : ISlideShapes
             this.AddPictureSvg(doc, image);
         }
     }
-
-    public void AddBarChart(BarChartType barChartType)
-    {
-        var chartFactory = default(ChartGraphicFrameHandler);
-        var newPGraphicFrame = chartFactory.Create(this.sdkSlidePart);
-
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPGraphicFrame);
-    }
-
+    
     public void AddVideo(int x, int y, Stream stream)
     {
         var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;

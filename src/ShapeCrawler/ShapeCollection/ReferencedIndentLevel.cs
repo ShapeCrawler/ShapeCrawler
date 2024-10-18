@@ -81,69 +81,6 @@ internal readonly ref struct ReferencedIndentLevel
 
     private static A.LatinFont LayoutALatinFontOrNull() => throw new SCException("Not implemented.");
 
-    private static bool ReferencedPShape(
-        IEnumerable<P.Shape> layoutPShapes,
-        P.PlaceholderShape slidePh,
-        out P.Shape? referencedShape)
-    {
-        foreach (var layoutPShape in layoutPShapes)
-        {
-            var layoutPh = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>();
-            if (layoutPh == null)
-            {
-                continue;
-            }
-
-            if (slidePh.Index is not null && layoutPh.Index is not null &&
-                slidePh.Index == layoutPh.Index)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-
-            if (slidePh.Type == null || layoutPh.Type == null)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-
-            if (slidePh.Type == P.PlaceholderValues.Body &&
-                slidePh.Index is not null && layoutPh.Index is not null)
-            {
-                if (slidePh.Index == layoutPh.Index)
-                {
-                    referencedShape = layoutPShape;
-                    return true;
-                }
-            }
-
-            if (slidePh.Type == P.PlaceholderValues.Title && layoutPh.Type == P.PlaceholderValues.Title)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-
-            if (slidePh.Type == P.PlaceholderValues.CenteredTitle && layoutPh.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                referencedShape = layoutPShape;
-                return true;
-            }
-        }
-
-        var byType = layoutPShapes.FirstOrDefault(layoutPShape =>
-            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == slidePh.Type?.Value);
-        if (byType != null)
-        {
-            referencedShape = byType;
-            return true;
-        }
-
-        referencedShape = null;
-        return false;
-    }
-
     private ColorType? MasterOfSlideIndentColorType(P.Shape slidePShape, int indentLevel)
     {
         var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
@@ -161,25 +98,18 @@ internal readonly ref struct ReferencedIndentLevel
     /// <summary>
     ///     Tries to get referenced Placeholder Shape located on Slide Layout.
     /// </summary>
-    private P.Shape? ReferencedLayoutPShapeOrNullOf(P.Shape sourcePShape)
+    private P.Shape? ReferencedLayoutPShapeOrNull(P.Shape pShape)
     {
-        if (this.sdkOpenXmlPart is not SlidePart sdkSlidePart)
+        if (this.sdkOpenXmlPart is not SlidePart slidePart)
         {
             return null;
         }
 
-        var slidePh = sourcePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+        var pPlaceholder = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>() !;
+        var referencedLayoutPShape = new WrappedPShapeTree(slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(pPlaceholder);
 
-        var layoutPShapes =
-            sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
-
-        if (ReferencedPShape(layoutPShapes, slidePh, out var referencedPShape))
-        {
-            return referencedPShape;
-        }
-
-        return null;
+        return referencedLayoutPShape;
     }
 
     private P.Shape? ReferencedMasterPShapeOrNullOf(P.Shape pShape)
@@ -191,20 +121,17 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var masterPShapes = this.sdkOpenXmlPart switch
+        var slideOrLayoutPShapeTree = this.sdkOpenXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
-                .ShapeTree!.Elements<P.Shape>(),
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
+                .ShapeTree!,
             _ => ((SlideLayoutPart)this.sdkOpenXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
-                .ShapeTree!.Elements<P.Shape>()
+                .ShapeTree!
         };
 
-        if (ReferencedPShape(masterPShapes, pPlaceholderShape, out var referencedPShape))
-        {
-            return referencedPShape;
-        }
+        var referencedPShape = new WrappedPShapeTree(slideOrLayoutPShapeTree).ReferencedPShapeOrNull(pPlaceholderShape);
 
-        return null;
+        return referencedPShape;
     }
 
     private bool HexFromName(IndentFont? indentFont, out string? referencedShapeColorOrNull)
@@ -302,7 +229,7 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNullOf(pShape);
+        var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNull(pShape);
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         if (referencedLayoutPShape == null)
@@ -388,7 +315,7 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var referencedLayoutPShapeOrNull = this.ReferencedLayoutPShapeOrNullOf(slidePShape);
+        var referencedLayoutPShapeOrNull = this.ReferencedLayoutPShapeOrNull(slidePShape);
         var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
         if (referencedLayoutPShapeOrNull == null)
         {
@@ -425,7 +352,7 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNullOf(slidePShape);
+        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNull(slidePShape);
         if (refLayoutPShapeOfSlide == null)
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
@@ -474,7 +401,7 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNullOf(slidePShape);
+        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNull(slidePShape);
         if (refLayoutPShapeOfSlide == null)
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
@@ -545,7 +472,7 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var refLayoutPShape = this.ReferencedLayoutPShapeOrNullOf(pShape);
+        var refLayoutPShape = this.ReferencedLayoutPShapeOrNull(pShape);
         if (refLayoutPShape == null)
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);

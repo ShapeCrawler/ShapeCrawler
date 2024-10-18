@@ -47,4 +47,60 @@ internal readonly ref struct WrappedPShapeTree
             pShapeCopy.NonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
     }
+
+    public P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholder)
+    {
+        var pShapes = this.pShapeTree.Elements<P.Shape>();
+        foreach (var layoutPShape in pShapes)
+        {
+            var layoutPPlaceholder = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>();
+            if (layoutPPlaceholder == null)
+            {
+                continue;
+            }
+
+            if (pPlaceholder.Index is not null
+                && layoutPPlaceholder.Index is not null
+                && pPlaceholder.Index == layoutPPlaceholder.Index)
+            {
+                return layoutPShape;
+            }
+
+            if (pPlaceholder.Type == null || layoutPPlaceholder.Type == null)
+            {
+                return layoutPShape;
+            }
+
+            if (pPlaceholder.Type == P.PlaceholderValues.Body
+                && pPlaceholder.Index is not null
+                && layoutPPlaceholder.Index is not null)
+            {
+                if (pPlaceholder.Index == layoutPPlaceholder.Index)
+                {
+                    return layoutPShape;
+                }
+            }
+
+            if (pPlaceholder.Type == P.PlaceholderValues.Title && layoutPPlaceholder.Type == P.PlaceholderValues.Title)
+            {
+                return layoutPShape;
+            }
+
+            if (pPlaceholder.Type == P.PlaceholderValues.CenteredTitle && layoutPPlaceholder.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                return layoutPShape;
+            }
+        }
+
+        var byType = pShapes.FirstOrDefault(layoutPShape =>
+            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == pPlaceholder.Type?.Value);
+        if (byType != null)
+        {
+            return byType;
+        }
+
+        return null;
+    }
 }
