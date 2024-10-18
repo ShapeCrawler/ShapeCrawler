@@ -48,7 +48,7 @@ internal readonly ref struct WrappedPShapeTree
         }
     }
 
-    public P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholder)
+    internal P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholder)
     {
         var pShapes = this.pShapeTree.Elements<P.Shape>();
         foreach (var layoutPShape in pShapes)
