@@ -47,35 +47,9 @@ internal sealed record TextBox : ITextBox
             return sb.ToString();
         }
 
-        set
-        {
-            var paragraphs = this.Paragraphs.ToList();
-            var paragraphWithPortion = paragraphs.FirstOrDefault(p => p.Portions.Any());
-            if (paragraphWithPortion == null)
-            {
-                paragraphWithPortion = paragraphs.First();
-                paragraphWithPortion.Portions.AddText(value);
-            }
-            else
-            {
-                var removingParagraphs = paragraphs.Where(p => p != paragraphWithPortion);
-                foreach (var removingParagraph in removingParagraphs)
-                {
-                    removingParagraph.Remove();
-                }
-
-                paragraphWithPortion.Text = value;
-            }
-
-            if (this.AutofitType == AutofitType.Shrink)
-            {
-                this.ShrinkText(value, paragraphWithPortion);
-            }
-
-            this.ResizeParentShape();
-        }
+        set => this.SetText(value);
     }
-
+    
     public AutofitType AutofitType
     {
         get
@@ -215,7 +189,35 @@ internal sealed record TextBox : ITextBox
 
         this.valignment = alignmentValue;
     }
+    
+    private void SetText(string value)
+    {
+        var paragraphs = this.Paragraphs.ToList();
+        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
+        if (portionPara == null)
+        {
+            portionPara = paragraphs.First();
+            portionPara.Portions.AddText(value);
+        }
+        else
+        {
+            var removingParagraphs = paragraphs.Where(p => p != portionPara);
+            foreach (var removingParagraph in removingParagraphs)
+            {
+                removingParagraph.Remove();
+            }
 
+            portionPara.Text = value;
+        }
+
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkText(value, portionPara);
+        }
+
+        this.ResizeParentShape();
+    }
+    
     public void ResizeParentShape()
     {
         if (this.AutofitType != AutofitType.Resize)
@@ -229,8 +231,10 @@ internal sealed record TextBox : ITextBox
             .First().First();
         var scFont = popularPortion.Font;
 
-        var paint = new SKPaint();
-        paint.IsAntialias = true;
+        var paint = new SKPaint
+        {
+            IsAntialias = true
+        };
 
         var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
         var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
@@ -238,14 +242,14 @@ internal sealed record TextBox : ITextBox
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
         var text = this.Text.ToUpper();
-        var textWidth = new Text(text, scFont).Width;
+        var textWidth = new Text(text, scFont).PxWidth;
         var textHeight = scFont.Size;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
         this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
-        this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!, scFont);
+        this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!, scFont);
     }
 
     internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
@@ -324,20 +328,18 @@ internal sealed record TextBox : ITextBox
 
     private void ShrinkText(string newText, IParagraph baseParagraph)
     {
-        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font!.Size).OrderByDescending(x => x.Count())
-            .First().First();
-        var font = popularPortion.Font!;
-
-        var parent = this.sdkTextBody.Parent!;
-        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
-        var fontSize = GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
-
-        var paragraphInternal = (Paragraph)baseParagraph;
-        paragraphInternal.SetFontSize(fontSize);
+        var popularFont = baseParagraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size).OrderByDescending(x => x.Count())
+            .First().First().Font!;
+        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Parent!);
+        
+        var text = new Text(newText, popularFont);
+        text.FitInto(shapeSize.Width(), shapeSize.Height());
+        
+        var internalPara = (Paragraph)baseParagraph;
+        internalPara.SetFontSize((int)text.FontSize);
     }
 
     private void UpdateShapeWidthIfNeeded(
-        SKPaint paint,
         decimal lMarginPixel,
         decimal rMarginPixel,
         TextBox textBox,
@@ -351,78 +353,12 @@ internal sealed record TextBox : ITextBox
                 .OrderByDescending(x => x.Length)
                 .First().Text;
             
-            var widthInPixels = new Text(longerText, font).Width;
+            var widthInPixels = new Text(longerText, font).PxWidth;
             
             var newWidth = (int)(widthInPixels * (decimal)1.4) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
                            + lMarginPixel + rMarginPixel;
             new ShapeSize(this.sdkTypedOpenXmlPart, parent).UpdateWidth(newWidth);
         }
-    }
-
-    private static int GetAdjustedFontSize(string text, ITextPortionFont font, int shapeWidth, int shapeHeight)
-    {
-        using var surface = SKSurface.Create(new SKImageInfo(shapeWidth, shapeHeight));
-        var canvas = surface.Canvas;
-
-        using var paint = new SKPaint();
-        paint.IsAntialias = true;
-
-        using var skFont = new SKFont();
-        skFont.Size = (float)font.Size;
-        skFont.Typeface = SKTypeface.FromFamilyName(font.LatinName);
-
-        const int defaultPaddingSize = 10;
-        const int topBottomPadding = defaultPaddingSize * 2;
-        var wordMaxY = shapeHeight - topBottomPadding;
-
-        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, shapeWidth - defaultPaddingSize, shapeHeight - defaultPaddingSize);
-
-        var spaceWidth = skFont.MeasureText(" ");
-
-        var wordX = rect.Left;
-        var wordY = rect.Top + skFont.Size;
-
-        var words = text.Split(' ').ToList();
-        for (var i = 0; i < words.Count;)
-        {
-            var word = words[i];
-            var wordWidth = skFont.MeasureText(word);
-            if (wordWidth <= rect.Right - wordX)
-            {
-                canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
-                wordX += wordWidth + spaceWidth;
-            }
-            else
-            {
-                wordY += skFont.Spacing;
-                wordX = rect.Left;
-
-                if (wordY > wordMaxY)
-                {
-                    if (skFont.Size <= 5) // Min reduce font size
-                    {
-                        break;
-                    }
-
-                    skFont.Size = --skFont.Size;
-                    wordX = rect.Left;
-                    wordY = rect.Top + skFont.Size;
-                    i = -1;
-                }
-                else
-                {
-                    wordX += wordWidth + spaceWidth;
-                    canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
-                }
-            }
-
-            i++;
-        }
-
-        const int dpi = 96;
-        var points = Math.Round(skFont.Size * 72 / dpi, 0);
-
-        return (int)points;
     }
     
     private void UpdateShapeHeight(
