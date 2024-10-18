@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
@@ -175,15 +174,7 @@ internal sealed class SlideShapes : ISlideShapes
             this.AddPictureSvg(doc, image);
         }
     }
-
-    public void AddBarChart(BarChartType barChartType)
-    {
-        var chartFactory = default(ChartGraphicFrameHandler);
-        var newPGraphicFrame = chartFactory.Create(this.sdkSlidePart);
-
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPGraphicFrame);
-    }
-
+    
     public void AddVideo(int x, int y, Stream stream)
     {
         var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;

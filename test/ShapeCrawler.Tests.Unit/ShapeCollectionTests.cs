@@ -325,22 +325,7 @@ public class ShapeCollectionTests : SCTest
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
-
-    [Test, Ignore("Not implemented yet")]
-    public void AddBarChart_adds_Bar_Chart()
-    {
-        // Arrange
-        var pres = new Presentation();
-
-        // Act
-        pres.Slides[0].Shapes.AddBarChart(BarChartType.ClusteredBar);
-
-        // Assert
-        var barChart = pres.Slides[0].Shapes.Last();
-        barChart.Should().NotBeNull();
-        pres.Validate();
-    }
-
+    
     [Test]
     public void AddPicture_adds_svg_picture()
     {
