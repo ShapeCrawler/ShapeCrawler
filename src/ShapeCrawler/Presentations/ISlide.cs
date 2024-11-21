@@ -68,6 +68,9 @@ public interface ISlide
     /// </summary>
     ITable Table(string name);
     
+    /// <summary>
+    ///     Gets picture by name.
+    /// </summary>
     IPicture Picture(string picture);
     
     /// <summary>
@@ -82,7 +85,12 @@ public interface ISlide
     /// <returns> An instance of <see cref="IShape"/>.</returns>
     IShape Shape(string name);
 
-    IShape Shape<T>(string name) where T : IShape;
+    /// <summary>
+    ///     Returns shape with specified name.
+    /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
+    IShape Shape<T>(string name)
+        where T : IShape;
     
 #if DEBUG
     
