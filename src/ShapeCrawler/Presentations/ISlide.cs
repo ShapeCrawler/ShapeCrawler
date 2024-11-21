@@ -68,6 +68,8 @@ public interface ISlide
     /// </summary>
     ITable Table(string name);
     
+    IPicture Picture(string picture);
+    
     /// <summary>
     ///     Adds specified lines to the slide notes.
     /// </summary>
@@ -79,6 +81,8 @@ public interface ISlide
     /// <param name="name">Shape name.</param>
     /// <returns> An instance of <see cref="IShape"/>.</returns>
     IShape Shape(string name);
+
+    IShape Shape<T>(string name) where T : IShape;
     
 #if DEBUG
     

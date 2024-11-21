@@ -77,8 +77,10 @@ internal sealed class Slide : ISlide
     }
 
     public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
+    public IPicture Picture(string name) => this.Shapes.GetByName<IPicture>(name);
 
     public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
+    public IShape Shape<T>(string name) where T : IShape => this.Shapes.GetByName<T>(name);
 
     public void SaveAsPng(Stream stream)
     {
