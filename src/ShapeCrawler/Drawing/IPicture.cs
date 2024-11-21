@@ -16,4 +16,9 @@ public interface IPicture : IShape
     ///     Gets SVG content. Returns <see langword="null"/> if the picture is not SVG graphic.
     /// </summary>
     string? SvgContent { get; }
+
+    /// <summary>
+    ///     Sends the shape backward in the z-order.
+    /// </summary>
+    void SendToBack();
 }

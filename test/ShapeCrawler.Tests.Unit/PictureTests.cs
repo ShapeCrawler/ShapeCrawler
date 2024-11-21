@@ -162,4 +162,19 @@ public class PictureTests : SCTest
         // Assert
         act.Should().Throw<Exception>();
     }
+    
+    [Test]
+    public void SendToBack_sends_the_shape_backward_in_the_z_order()
+    {
+        // Arrange
+        var pre = new Presentation(StreamOf("pictures-case002.pptx"));
+        var shapes = pre.Slide(1).Shapes;
+        var picture = shapes.GetByName<IPicture>("Picture 2");
+
+        // Act
+        picture.SendToBack();
+        
+        // Assert
+        shapes[0].Name.Should().Be("Picture 2");
+    }
 }

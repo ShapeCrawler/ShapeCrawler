@@ -69,6 +69,11 @@ public interface ISlide
     ITable Table(string name);
     
     /// <summary>
+    ///     Gets picture by name.
+    /// </summary>
+    IPicture Picture(string picture);
+    
+    /// <summary>
     ///     Adds specified lines to the slide notes.
     /// </summary>
     void AddNotes(IEnumerable<string> lines);
@@ -79,6 +84,13 @@ public interface ISlide
     /// <param name="name">Shape name.</param>
     /// <returns> An instance of <see cref="IShape"/>.</returns>
     IShape Shape(string name);
+
+    /// <summary>
+    ///     Returns shape with specified name.
+    /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
+    IShape Shape<T>(string name)
+        where T : IShape;
     
 #if DEBUG
     

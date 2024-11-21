@@ -55,6 +55,14 @@ internal sealed class Picture : CopyableShape, IPicture
     public override bool Removeable => true;
    
     public override void Remove() => this.pPicture.Remove();
+    
+    public void SendToBack()
+    {
+        var parentPShapeTree = this.PShapeTreeElement.Parent!;
+        parentPShapeTree.RemoveChild(this.pPicture);
+        var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
+        pGrpSpPr.InsertAfterSelf(this.pPicture);
+    }
 
     internal override void CopyTo(
         int id, 
