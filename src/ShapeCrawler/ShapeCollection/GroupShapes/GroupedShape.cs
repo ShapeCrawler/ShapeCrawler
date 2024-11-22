@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -11,7 +10,7 @@ internal sealed class GroupedShape : IShape
     private readonly P.Shape pShape;
     private readonly AutoShape decoratedShape;
 
-    internal GroupedShape(OpenXmlPart sdkTypedOpenXmlPart, P.Shape pShape, AutoShape decoratedShape)
+    internal GroupedShape(P.Shape pShape, AutoShape decoratedShape)
     {
         this.pShape = pShape;
         this.decoratedShape = decoratedShape;
@@ -120,7 +119,13 @@ internal sealed class GroupedShape : IShape
     public int Id => this.decoratedShape.Id;
 
     public string Name => this.decoratedShape.Name;
-    
+
+    public string AltText
+    {
+        get => this.decoratedShape.AltText;
+        set => this.decoratedShape.AltText = value;
+    }
+
     public bool Hidden => this.decoratedShape.Hidden;
     
     public bool IsPlaceholder => this.decoratedShape.IsPlaceholder;

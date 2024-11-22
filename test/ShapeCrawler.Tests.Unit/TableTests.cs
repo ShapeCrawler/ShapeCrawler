@@ -869,4 +869,19 @@ public class TableTests : SCTest
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
     }
+    
+    [Test]
+    public void AltText_Setter_sets_alternative_text()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+
+        // Act
+        table.AltText = "Alt text";
+
+        // Assert
+        table.AltText.Should().Be("Alt text");
+        pres.Validate();
+    }
 }

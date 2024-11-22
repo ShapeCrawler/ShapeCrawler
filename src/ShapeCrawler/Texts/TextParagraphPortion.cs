@@ -118,11 +118,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 
     private void SetHyperlink(string? url)
     {
-        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
-        if (runProperties == null)
-        {
-            runProperties = new A.RunProperties();
-        }
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>() ?? new A.RunProperties();
 
         var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)

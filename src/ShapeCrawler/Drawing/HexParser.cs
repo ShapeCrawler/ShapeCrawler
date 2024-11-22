@@ -56,12 +56,7 @@ internal static class HexParser
 
     private static string? GetByThemeColorScheme(string schemeColor, P.SlideMaster pSlideMaster)
     {
-        var hex = GetThemeColorByString(schemeColor, pSlideMaster);
-
-        if (hex == null)
-        {
-            hex = GetThemeMappedColor(schemeColor, pSlideMaster);
-        }
+        var hex = GetThemeColorByString(schemeColor, pSlideMaster) ?? GetThemeMappedColor(schemeColor, pSlideMaster);
 
         return hex ?? null;
     }

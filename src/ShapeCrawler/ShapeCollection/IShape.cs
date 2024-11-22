@@ -31,6 +31,11 @@ public interface IShape : IPosition
     string Name { get; }
 
     /// <summary>
+    ///     Gets or sets the alternative text for the shape.
+    /// </summary>
+    string AltText { get; set; }
+
+    /// <summary>
     ///     Gets a value indicating whether the shape is hidden.
     /// </summary>
     bool Hidden { get; }

@@ -5,8 +5,9 @@ using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a paragraph bullet.
@@ -211,12 +212,7 @@ public sealed class Bullet // TODO: extract interface
             return null;
         }
 
-        A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
-        if (aCharBullet == null)
-        {
-            throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
-        }
-
+        A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>() ?? throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
         return aCharBullet.Char?.Value;
     }
 

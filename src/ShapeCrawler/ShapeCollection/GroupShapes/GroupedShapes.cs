@@ -62,7 +62,6 @@ internal sealed record GroupedShapes : IShapes
                 if (pShape.TextBody is not null)
                 {
                     shape = new GroupedShape(
-                        this.sdkTypedOpenXmlPart,
                         pShape,
                         new AutoShape(
                             this.sdkTypedOpenXmlPart,
@@ -72,7 +71,6 @@ internal sealed record GroupedShapes : IShapes
                 else
                 {
                     shape = new GroupedShape(
-                        this.sdkTypedOpenXmlPart,
                         pShape,
                         new AutoShape(this.sdkTypedOpenXmlPart, pShape));
                 }
