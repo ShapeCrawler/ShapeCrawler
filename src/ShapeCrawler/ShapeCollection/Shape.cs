@@ -202,6 +202,7 @@ internal abstract class Shape : IShape
                 {
                     return 0;
                 }
+
                 return aTransform2D.Rotation.Value / 60000d; // OpenXML rotation angles are stored in units of 1/60,000th of a degree
             }
             
