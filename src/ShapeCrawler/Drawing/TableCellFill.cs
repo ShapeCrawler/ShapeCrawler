@@ -128,11 +128,6 @@ internal class TableCellFill : IShapeFill
                 var hexColor = aRgbColorModelHex.Val!.ToString();
                 this.hexSolidColor = hexColor;
             }
-            else
-            {
-                // TODO: get hex color from scheme
-                var schemeColor = this.sdkASolidFill.SchemeColor;
-            }
 
             this.fillType = FillType.Solid;
         }

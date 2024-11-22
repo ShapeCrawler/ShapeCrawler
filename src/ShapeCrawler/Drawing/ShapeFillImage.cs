@@ -29,7 +29,11 @@ internal sealed class ShapeFillImage : IImage
             this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(x => x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
+#if NETSTANDARD2_0
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+#else
+            var rId = $"rId-{Guid.NewGuid().ToString("N")[..5]}";
+#endif
             this.sdkImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }

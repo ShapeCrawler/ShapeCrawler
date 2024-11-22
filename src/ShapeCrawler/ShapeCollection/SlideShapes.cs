@@ -185,7 +185,11 @@ internal sealed class SlideShapes : ISlideShapes
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
-        var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
+#if NETSTANDARD2_0
+        var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";      
+#else
+        var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
+#endif
         var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("video-image.bmp");
         imagePart.FeedData(imageStream);

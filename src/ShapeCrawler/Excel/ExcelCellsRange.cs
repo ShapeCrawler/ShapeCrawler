@@ -29,15 +29,22 @@ internal readonly record struct ExcelCellsRange
     internal List<string> Addresses()
     {
         this.Letter();
-
-        return this.tempList.ToList();
+#if NETSTANDARD2_0
+        return this.tempList.ToList();      
+#else
+        return [.. this.tempList];
+#endif
     }
 
     #region Private Methods
 
     private void Letter(int startIndex = 0)
     {
-        var letterCharacters = this.range.Substring(startIndex).TakeWhile(char.IsLetter);
+#if NETSTANDARD2_0
+        var letterCharacters = this.range.Substring(startIndex).TakeWhile(char.IsLetter);      
+#else
+        var letterCharacters = this.range[startIndex..].TakeWhile(char.IsLetter);
+#endif
         var letterStr = string.Concat(letterCharacters);
         var nextStart = startIndex + letterCharacters.Count();
 
@@ -86,7 +93,11 @@ internal readonly record struct ExcelCellsRange
 
     private int Digit(int startIndex)
     {
-        var digitChars = this.range.Substring(startIndex).TakeWhile(char.IsDigit);
+#if NETSTANDARD2_0
+        var digitChars = this.range.Substring(startIndex).TakeWhile(char.IsDigit);      
+#else
+        var digitChars = this.range[startIndex..].TakeWhile(char.IsDigit);
+#endif
         return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
     }
 

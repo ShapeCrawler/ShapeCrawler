@@ -35,7 +35,12 @@ internal sealed class SlideBgImage : ISlideBgImage
         var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
         if (isSharedImagePart)
         {
+#if NETSTANDARD2_0
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+#else
+            var rId = $"rId-{Guid.NewGuid().ToString("N")[..5]}";
+#endif
+            
             sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             aBlip.Embed!.Value = rId;
         }
@@ -88,8 +93,12 @@ internal sealed class SlideBgImage : ISlideBgImage
         {
             return pBg.BackgroundProperties!.Descendants<A.Blip>().First();    
         }
-        
-        var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+#if NETSTANDARD2_0
+        var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0,5)}";    
+#else
+        var rId = $"rId-{Guid.NewGuid().ToString("N")[..5]}";
+#endif
+      
         var aBlip = new A.Blip { Embed = rId };
         var pBackground = new P.Background(
             new P.BackgroundProperties(

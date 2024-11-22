@@ -107,8 +107,7 @@ internal sealed class Paragraph : IParagraph
             var textLines = value.Split(Environment.NewLine);
 #endif
 
-            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun);
-            basePortion.Text = textLines.First();
+            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun) { Text = textLines.First() };
 
             foreach (var textLine in textLines.Skip(1))
             {
