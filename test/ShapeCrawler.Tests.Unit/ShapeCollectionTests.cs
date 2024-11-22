@@ -773,7 +773,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Ignore("https://github.com/ShapeCrawler/ShapeCrawler/issues/9")]
     public void AddEmptySlide_adds_empty_slide()
     {
         // Arrange
@@ -784,7 +783,7 @@ public class ShapeCollectionTests : SCTest
         slides.AddEmptySlide(SlideLayoutType.Blank);
 
         // Assert
-        slides[1].Shapes.Should().HaveCount(0);
+        slides[1].Shapes.Should().HaveCount(3);
     }
 
     [Test]

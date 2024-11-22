@@ -198,12 +198,15 @@ internal abstract class Shape : IShape
             if (aTransform2D == null)
             {
                 aTransform2D = new ReferencedPShape(this.SdkTypedOpenXmlPart, this.PShapeTreeElement).ATransform2D();
-                var angle2 = aTransform2D.Rotation!.Value; // rotation angle in 1/60,000th of a degree
-                return angle2 / 60000d;
+                if (aTransform2D.Rotation is null)
+                {
+                    return 0;
+                }
+
+                return aTransform2D.Rotation.Value / 60000d; // OpenXML rotation angles are stored in units of 1/60,000th of a degree
             }
             
-            var angle = pSpPr.Transform2D!.Rotation!.Value; // rotation angle in 1/60,000th of a degree
-            return angle / 60000d;
+            return pSpPr.Transform2D!.Rotation!.Value / 60000d;
         }
     }
 

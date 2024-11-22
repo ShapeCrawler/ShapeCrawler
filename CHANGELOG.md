@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.56.1 - Unreleased
+🐞Fixed `Shape.Rotation` [#9](https://github.com/ShapeCrawler/ShapeCrawler/issues/9)  
+
 ## Version 0.56.0 - 2024-11-22
 🍀Added `IPicture.SendToBack()` [D-777](https://github.com/ShapeCrawler/ShapeCrawler/discussions/777)
 
