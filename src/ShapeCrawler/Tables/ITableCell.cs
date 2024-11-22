@@ -4,8 +4,9 @@ using ShapeCrawler.Tables;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a table cell.

@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using ShapeCrawler.Presentations;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed record PathPresentation : IValidateable
 {

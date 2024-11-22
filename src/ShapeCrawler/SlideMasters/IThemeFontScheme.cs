@@ -1,8 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a settings of theme font.

@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using ShapeCrawler.Drawing;
-
-// ReSharper disable once CheckNamespace
+﻿#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
+using System.Linq;
+using ShapeCrawler.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
 
 /// <summary>

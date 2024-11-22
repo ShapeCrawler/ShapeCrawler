@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Colors;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
@@ -10,8 +9,7 @@ using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler;
+namespace ShapeCrawler.Colors;
 
 internal sealed class FontColor : IFontColor
 {

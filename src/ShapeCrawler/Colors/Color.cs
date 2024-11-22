@@ -110,7 +110,7 @@ public struct Color
         // 3 or 6 chars without an alpha (rgb): F01, FF0011,
         // 4 or 8 chars with alpha (rgba): F01F, FF0011FF 
         // Ignores hex values starting with "#" character.
-        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex;
+        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
 
         // Parse value.
         (int r, int g, int b, float a) = ParseHexValue(value);

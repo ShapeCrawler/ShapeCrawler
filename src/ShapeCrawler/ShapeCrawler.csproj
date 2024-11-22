@@ -33,13 +33,13 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\ShapeCrawler.xml</DocumentationFile>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <RunAnalyzers>false</RunAnalyzers>
   </PropertyGroup>  
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
-    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -66,7 +66,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="3.1.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
     <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="3.1.1" />
     <PackageReference Include="SkiaSharp" Version="3.0.0-preview.4.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.0.0-preview.4.1" />

@@ -1,5 +1,6 @@
-﻿// ReSharper disable CheckNamespace
+﻿#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a portion of a paragraph.

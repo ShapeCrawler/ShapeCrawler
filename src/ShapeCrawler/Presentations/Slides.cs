@@ -6,12 +6,11 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed class Slides : ISlides
 {
