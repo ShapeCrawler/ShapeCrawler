@@ -95,7 +95,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.55.1 - 2024-10-18
-🐞Fixed `ISlides.Count` [#749](https://github.com/ShapeCrawler/ShapeCrawler/issues/749)  
+### Version 0.56.0 - 2024-11-22
+🍀Added `IPicture.SendToBack()` [D-777](https://github.com/ShapeCrawler/ShapeCrawler/discussions/777)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.

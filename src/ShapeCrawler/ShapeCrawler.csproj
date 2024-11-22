@@ -10,7 +10,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🐞Fixed `ISlides.Count` [#749](https://github.com/ShapeCrawler/ShapeCrawler/issues/749)  </PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added `IPicture.SendToBack()` [D-777](https://github.com/ShapeCrawler/ShapeCrawler/discussions/777)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
@@ -76,7 +76,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     </PackageReference>
     <PackageReference Include="Svg" Version="3.4.7" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
