@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -29,7 +28,7 @@ internal sealed class ShapeFillImage : IImage
             this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(x => x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
-            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+            var rId = new RelationshipId().New();
             this.sdkImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }

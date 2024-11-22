@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
@@ -55,6 +55,12 @@ internal abstract class Shape : IShape
     public int Id => this.shapeId.Value();
 
     public string Name => this.PShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
+    
+    public string AltText
+    {
+        get => this.PShapeTreeElement.NonVisualDrawingProperties().Description?.Value ?? string.Empty;
+        set => this.PShapeTreeElement.NonVisualDrawingProperties().Description = new StringValue(value);
+    }
 
     public bool Hidden
     {
@@ -71,13 +77,8 @@ internal abstract class Shape : IShape
     {
         get
         {
-            var pPlaceholderShape = this.PShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
-            if (pPlaceholderShape == null)
-            {
-                throw new SCException(
+            var pPlaceholderShape = this.PShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault() ?? throw new SCException(
                     $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
-            }
-            
             var pPlaceholderValue = pPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
@@ -140,7 +141,6 @@ internal abstract class Shape : IShape
         }
     } 
         
-
     public virtual Geometry GeometryType => Geometry.Rectangle;
 
     public string? CustomData

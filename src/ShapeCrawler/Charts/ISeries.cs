@@ -2,13 +2,14 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
-// ReSharper disable PossibleMultipleEnumeration
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a chart series.
@@ -59,12 +60,7 @@ internal sealed class Series : ISeries
 
     private string ParseName()
     {
-        var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference;
-        if (cStrRef == null)
-        {
-            throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
-        }
-
+        var cStrRef = (this.cSer.GetFirstChild<C.SeriesText>()?.StringReference) ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
         var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
 
         return fromCache ?? new ExcelBook(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();

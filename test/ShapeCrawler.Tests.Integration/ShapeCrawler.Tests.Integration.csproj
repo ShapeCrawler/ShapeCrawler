@@ -1,23 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-
         <IsPackable>false</IsPackable>
-
         <Configurations>Debug;Release</Configurations>
-
         <Platforms>AnyCPU</Platforms>
-
         <OutputType>Library</OutputType>
-        <LangVersion>11</LangVersion>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-      <TargetFramework>net8.0</TargetFramework>
+      <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
   
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-      <TargetFrameworks>net8.0;net472;net48</TargetFrameworks>
+      <TargetFrameworks>net9.0;net472;net48</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>

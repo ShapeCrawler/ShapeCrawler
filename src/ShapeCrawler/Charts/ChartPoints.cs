@@ -6,12 +6,10 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Excel;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler;
+namespace ShapeCrawler.Charts;
 
 internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 {

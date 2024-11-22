@@ -5,13 +5,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Excel;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
-// ReSharper disable PossibleMultipleEnumeration
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler;
+namespace ShapeCrawler.Charts;
 
 internal sealed class Categories : IReadOnlyList<ICategory>
 {
@@ -43,7 +40,7 @@ internal sealed class Categories : IReadOnlyList<ICategory>
             if (indexToCategory.Any())
             {
                 List<KeyValuePair<uint, ICategory>> descOrderedMains =
-                    indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
+                    [.. indexToCategory.OrderByDescending(kvp => kvp.Key)];
                 foreach (C.StringPoint cStrPoint in cStringPoints)
                 {
                     var index = cStrPoint.Index!.Value;

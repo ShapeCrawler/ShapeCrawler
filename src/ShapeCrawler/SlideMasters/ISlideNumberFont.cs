@@ -1,8 +1,9 @@
 ﻿using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a slide number font.

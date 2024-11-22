@@ -1,9 +1,8 @@
-﻿// ReSharper disable once CheckNamespace
+﻿using DocumentFormat.OpenXml;
 
-using DocumentFormat.OpenXml;
-
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a shape.
@@ -29,6 +28,11 @@ public interface IShape : IPosition
     ///     Gets name of the shape.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    ///     Gets or sets the alternative text for the shape.
+    /// </summary>
+    string AltText { get; set; }
 
     /// <summary>
     ///     Gets a value indicating whether the shape is hidden.

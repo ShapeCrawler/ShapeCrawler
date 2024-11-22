@@ -47,10 +47,8 @@ internal record ExcelSheet
             var xRow = xSheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
             var newXCell = new X.Cell
             {
-                CellReference = address
+                CellReference = address, DataType = new EnumValue<X.CellValues>(type), CellValue = new X.CellValue(value)
             };
-            newXCell.DataType = new EnumValue<X.CellValues>(type);
-            newXCell.CellValue = new X.CellValue(value);
 
             // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.
             X.Cell? refCell = null;

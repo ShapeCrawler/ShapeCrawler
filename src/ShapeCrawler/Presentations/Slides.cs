@@ -6,12 +6,11 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal sealed class Slides : ISlides
 {
@@ -139,7 +138,6 @@ internal sealed class Slides : ISlides
 
         this.Add(slide);
         int addedSlideIndex = this.Count - 1;
-        var d = this.readOnlySlides[addedSlideIndex];
         this.readOnlySlides[addedSlideIndex].Number = position;
     }
 
@@ -173,10 +171,7 @@ internal sealed class Slides : ISlides
         // Creates a new TextBody
         if (shape.TextBody is null)
         {
-            return new P.TextBody(new OpenXmlElement[]
-            {
-                new DocumentFormat.OpenXml.Drawing.Paragraph([new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties()])
-            })
+            return new P.TextBody(new DocumentFormat.OpenXml.Drawing.Paragraph([new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties()]))
             {
                 BodyProperties = new DocumentFormat.OpenXml.Drawing.BodyProperties(),
                 ListStyle = new DocumentFormat.OpenXml.Drawing.ListStyle(),

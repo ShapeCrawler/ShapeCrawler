@@ -11,8 +11,9 @@ using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a table on a slide.

@@ -6,8 +6,9 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.ShapeCollection;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a collection of presentation sections.

@@ -5,8 +5,9 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.ShapeCollection;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a shape containing video content.

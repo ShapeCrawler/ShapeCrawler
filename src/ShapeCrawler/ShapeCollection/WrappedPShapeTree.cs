@@ -28,7 +28,12 @@ internal readonly ref struct WrappedPShapeTree
         {
             var currentShapeCollectionSuffixes = existingShapeNames
                 .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
+#if NETSTANDARD2_0
                 .Select(c => c.Substring(copyName.Length))
+#else
+                .Select(c => c[copyName.Length..])
+#endif
+                
                 .ToArray();
 
             // We will try to check numeric suffixes only.

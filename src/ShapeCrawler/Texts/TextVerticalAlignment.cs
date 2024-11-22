@@ -1,6 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
-
+﻿#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
 /// <summary>
 ///     Text Vertical alignment.

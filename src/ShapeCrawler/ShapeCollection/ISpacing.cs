@@ -1,7 +1,8 @@
 ﻿using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable once CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a spacing of paragraph.
@@ -19,16 +20,9 @@ public interface ISpacing
     double? LineSpacingPoints { get; }
 }
 
-internal sealed class Spacing : ISpacing
+internal sealed class Spacing(Paragraph paragraph, A.Paragraph aParagraph): ISpacing
 {
-    private readonly Paragraph paragraph;
-    private readonly A.Paragraph aParagraph;
-
-    public Spacing(Paragraph paragraph, A.Paragraph aParagraph)
-    {
-        this.paragraph = paragraph;
-        this.aParagraph = aParagraph;
-    }
+    private readonly Paragraph paragraph = paragraph;
 
     public double? LineSpacingLines => this.GetLineSpacingLines();
 
@@ -36,7 +30,7 @@ internal sealed class Spacing : ISpacing
 
     private double? GetLineSpacingLines()
     {
-        var aLnSpc = this.aParagraph.ParagraphProperties!.LineSpacing;
+        var aLnSpc = aParagraph.ParagraphProperties!.LineSpacing;
         if (aLnSpc == null)
         {
             return 1;
@@ -53,7 +47,7 @@ internal sealed class Spacing : ISpacing
 
     private double? GetLineSpacingPoints()
     {
-        var aLnSpc = this.aParagraph.ParagraphProperties!.LineSpacing;
+        var aLnSpc = aParagraph.ParagraphProperties!.LineSpacing;
 
         var aSpcPts = aLnSpc?.SpacingPoints;
         if (aSpcPts != null)

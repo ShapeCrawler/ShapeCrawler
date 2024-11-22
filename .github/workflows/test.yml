@@ -6,10 +6,10 @@ on:
 
 jobs:
   test:
-    name: Test on .NET 8.0
+    name: Test on .NET 9.0
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4      
       
       - name: Test
-        run: dotnet test -c Release -f net8.0
+        run: dotnet test -c Release -f net9.0

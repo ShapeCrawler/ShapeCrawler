@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Colors;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
@@ -10,8 +9,7 @@ using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler;
+namespace ShapeCrawler.Colors;
 
 internal sealed class FontColor : IFontColor
 {
@@ -162,8 +160,12 @@ internal sealed class FontColor : IFontColor
         var aSolidFill = aRunProperties.SdkASolidFill();
         aSolidFill?.Remove();
 
-        // All hex values are expected to be without hashtag.
-        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex.Substring(1) : hex; // to skip '#'
+#if NETSTANDARD2_0
+        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex.Substring(1) : hex;
+#else
+        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
+#endif
+      
         var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);

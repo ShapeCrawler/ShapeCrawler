@@ -7,8 +7,9 @@ using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable CheckNamespace
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a paragraph.
@@ -106,8 +107,7 @@ internal sealed class Paragraph : IParagraph
             var textLines = value.Split(Environment.NewLine);
 #endif
 
-            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun);
-            basePortion.Text = textLines.First();
+            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun) { Text = textLines.First() };
 
             foreach (var textLine in textLines.Skip(1))
             {
