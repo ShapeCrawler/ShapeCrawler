@@ -15,16 +15,16 @@ internal sealed class SlideBgImage : ISlideBgImage
 {
     private const string NotPresentedErrorMessage =
         $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.";
-    
+
     private readonly SlidePart sdkSlidePart;
-    
+
     internal SlideBgImage(SlidePart sdkSlidePart)
     {
         this.sdkSlidePart = sdkSlidePart;
     }
 
     public string Mime => this.ParseMime();
-    
+
     public string Name => this.ParseName();
 
     public void Update(Stream stream)
@@ -35,12 +35,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
         if (isSharedImagePart)
         {
-#if NETSTANDARD2_0
-            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-#else
-            var rId = $"rId-{Guid.NewGuid().ToString("N")[..5]}";
-#endif
-            
+            var rId = new RelationshipId().New();
             sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             aBlip.Embed!.Value = rId;
         }
@@ -61,7 +56,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         byte[] sourceBytes = File.ReadAllBytes(file);
         this.Update(sourceBytes);
     }
-    
+
     public byte[] AsByteArray()
     {
         var sdkImagePart = this.SdkImagePartOrNull() ?? throw new SCException(NotPresentedErrorMessage);
@@ -91,14 +86,10 @@ internal sealed class SlideBgImage : ISlideBgImage
         var pBg = this.sdkSlidePart.Slide.CommonSlideData!.Background!;
         if (pBg != null)
         {
-            return pBg.BackgroundProperties!.Descendants<A.Blip>().First();    
+            return pBg.BackgroundProperties!.Descendants<A.Blip>().First();
         }
-#if NETSTANDARD2_0
-        var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0,5)}";    
-#else
-        var rId = $"rId-{Guid.NewGuid().ToString("N")[..5]}";
-#endif
-      
+
+        var rId = new RelationshipId().New();
         var aBlip = new A.Blip { Embed = rId };
         var pBackground = new P.Background(
             new P.BackgroundProperties(
@@ -111,7 +102,7 @@ internal sealed class SlideBgImage : ISlideBgImage
     private string ParseMime()
     {
         var sdkImagePart = this.SdkImagePartOrNull() ?? throw new SCException(
-                $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.");
+            $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.");
         return sdkImagePart.ContentType;
     }
 
@@ -122,7 +113,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         {
             return null;
         }
-        
+
         var aBlip = pBg.BackgroundProperties!.Descendants<A.Blip>().First();
 
         return (ImagePart)this.sdkSlidePart.GetPartById(aBlip.Embed!.Value!);
