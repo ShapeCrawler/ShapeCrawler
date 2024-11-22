@@ -152,6 +152,11 @@ internal sealed class Paragraph : IParagraph
                 }
             }
 
+            if (aTextAlignmentType is null)
+            {
+                return TextHorizontalAlignment.Center;
+            }
+
             if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Center)
             {
                 this.alignment = TextHorizontalAlignment.Center;

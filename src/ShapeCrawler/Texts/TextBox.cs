@@ -151,11 +151,11 @@ internal sealed record TextBox : ITextBox
 
             var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>();
 
-            if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Center)
+            if (aBodyPr!.Anchor?.Value == A.TextAnchoringTypeValues.Center)
             {
                 this.valignment = TextVerticalAlignment.Middle;
             }
-            else if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Bottom)
+            else if (aBodyPr.Anchor?.Value == A.TextAnchoringTypeValues.Bottom)
             {
                 this.valignment = TextVerticalAlignment.Bottom;
             }
