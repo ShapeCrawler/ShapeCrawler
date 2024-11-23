@@ -147,20 +147,6 @@ internal sealed class Table : CopyableShape, ITable
             new SaTableRow(aTableRow).InsertNewCellAfter(columnNumber);
         }
     }
-
-    private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
-    {
-        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
-        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
-
-        // Adjust existing column widths
-        foreach (var col in existingColumns)
-        {
-            col.Width = newColumnWidth;
-        }
-
-        return new A.GridColumn { Width = newColumnWidth };
-    }
     
     public void UpdateFill(string colorHex)
     {
@@ -210,6 +196,20 @@ internal sealed class Table : CopyableShape, ITable
     internal string ToJson()
     {
         throw new NotImplementedException();
+    }
+    
+    private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
+    {
+        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
+        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
+
+        // Adjust existing column widths
+        foreach (var col in existingColumns)
+        {
+            col.Width = newColumnWidth;
+        }
+
+        return new A.GridColumn { Width = newColumnWidth };
     }
     
     private void SetTableStyle(ITableStyle style)

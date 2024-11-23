@@ -21,11 +21,11 @@ internal readonly record struct SaTableRow
     
     internal void InsertNewCellAfter(int columnNumber)
     {
-        var cells = aTableRow.Elements<A.TableCell>().ToList();
+        var cells = this.aTableRow.Elements<A.TableCell>().ToList();
         var targetCell = cells[columnNumber - 1];
         var aTableCell = CreateNewATableCell();
      
-        aTableRow.InsertAfter(aTableCell, targetCell);
+        this.aTableRow.InsertAfter(aTableCell, targetCell);
     }
 
     private static A.TableCell CreateNewATableCell()
