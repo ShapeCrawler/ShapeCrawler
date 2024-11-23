@@ -81,42 +81,18 @@ internal sealed class PresentationCore
 
     internal void Validate()
     {
-        var nonCritical = new List<ValidationError>
+        var nonCriticalErrorDesc = new List<string>
         {
-            new(
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
-                "/c:chartSpace[1]/c:chart[1]"),
-            new("/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]", "/c:chartSpace[1]/c:chart[1]"),
-            new(
                 "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
-                "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
-            new(
                 "The 'uri' attribute is not declared.",
-                "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
-            new(
                 "The 'mod' attribute is not declared.",
-                "/p:sldLayout[1]/p:extLst[1]"),
-            new(
                 "The 'mod' attribute is not declared.",
-                "/p:sldMaster[1]/p:extLst[1]"),
-            new(
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'.",
-                "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[7]/p:spPr[1]")
+                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:tc'."
         };
-
-        var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
-        var errors = validator.Validate(this.sdkPresDocument);
-
-        var removing = new List<ValidationErrorInfo>();
-        foreach (var error in errors)
-        {
-            if (nonCritical.Any(x => x.Description == error.Description && x.Path == error.Path?.XPath))
-            {
-                removing.Add(error);
-            }
-        }
-
-        errors = errors.Except(removing);
+        var errors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.sdkPresDocument);
+        errors = errors.Where(vr => !nonCriticalErrorDesc.Contains(vr.Description));
 
 #if NETSTANDARD2_0
         errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();

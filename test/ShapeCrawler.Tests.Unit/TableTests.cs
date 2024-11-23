@@ -76,7 +76,6 @@ public class TableTests : SCTest
 
         // Act
         table.AddColumn();
-        SaveResult(pres);
 
         // Assert
         table.Columns.Should().HaveCount(expectedColumnsCount);

@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Presentations;
+﻿namespace ShapeCrawler;
 
 internal sealed record ValidationError
 {
