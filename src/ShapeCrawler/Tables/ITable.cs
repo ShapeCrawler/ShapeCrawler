@@ -120,41 +120,15 @@ internal sealed class Table : CopyableShape, ITable
 
     public void AddColumn()
     {
-        // Calculate width for new column (divide existing table width by number of columns + 1)
         var tableGrid = this.ATable.TableGrid!;
         var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
-        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
-        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
-
-        // Adjust existing column widths
-        foreach (var col in existingColumns)
-        {
-            col.Width = newColumnWidth;
-        }
-
-        // Add new grid column
-        var gridColumn = new A.GridColumn { Width = newColumnWidth };
+        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
+        
         tableGrid.Append(gridColumn);
 
-        // Add new cell to each row
         foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
         {
-            var tableCell = new A.TableCell();
-            var textBody = new A.TextBody();
-            var bodyProperties = new A.BodyProperties();
-            var listStyle = new A.ListStyle();
-            var paragraph = new A.Paragraph();
-            var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
-            
-            paragraph.Append(endParagraphRunProperties);
-            textBody.Append(bodyProperties);
-            textBody.Append(listStyle);
-            textBody.Append(paragraph);
-            
-            var tableCellProperties = new A.TableCellProperties();
-            tableCell.Append(textBody);
-            tableCell.Append(tableCellProperties);
-
+            var tableCell = this.CreateTableCell();
             aTableRow.Append(tableCell);
         }
     }
@@ -165,12 +139,21 @@ internal sealed class Table : CopyableShape, ITable
         var tableGrid = this.ATable.TableGrid!;
         var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
         
-        if (columnIndex < 0 || columnIndex >= existingColumns.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(columnIndex));
-        }
+        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
+        var targetColumn = existingColumns[columnIndex];
+        tableGrid.InsertAfter(gridColumn, targetColumn);
 
-        // Calculate width for new column (divide existing table width by number of columns + 1)
+        foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
+        {
+            var tableCell = this.CreateTableCell();
+            var cells = aTableRow.Elements<A.TableCell>().ToList();
+            var targetCell = cells[columnIndex];
+            aTableRow.InsertAfter(tableCell, targetCell);
+        }
+    }
+
+    private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
+    {
         var totalWidth = existingColumns.Sum(col => col.Width!.Value);
         var newColumnWidth = totalWidth / (existingColumns.Count + 1);
 
@@ -180,37 +163,28 @@ internal sealed class Table : CopyableShape, ITable
             col.Width = newColumnWidth;
         }
 
-        // Create new grid column
-        var gridColumn = new A.GridColumn { Width = newColumnWidth };
+        return new A.GridColumn { Width = newColumnWidth };
+    }
+
+    private A.TableCell CreateTableCell()
+    {
+        var tableCell = new A.TableCell();
+        var textBody = new A.TextBody();
+        var bodyProperties = new A.BodyProperties();
+        var listStyle = new A.ListStyle();
+        var paragraph = new A.Paragraph();
+        var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
         
-        // Insert after specified column
-        var targetColumn = existingColumns[columnIndex];
-        tableGrid.InsertAfter(gridColumn, targetColumn);
+        paragraph.Append(endParagraphRunProperties);
+        textBody.Append(bodyProperties);
+        textBody.Append(listStyle);
+        textBody.Append(paragraph);
+        
+        var tableCellProperties = new A.TableCellProperties();
+        tableCell.Append(textBody);
+        tableCell.Append(tableCellProperties);
 
-        // Add new cell to each row after the specified column
-        foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
-        {
-            var tableCell = new A.TableCell();
-            var textBody = new A.TextBody();
-            var bodyProperties = new A.BodyProperties();
-            var listStyle = new A.ListStyle();
-            var paragraph = new A.Paragraph();
-            var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
-            
-            paragraph.Append(endParagraphRunProperties);
-            textBody.Append(bodyProperties);
-            textBody.Append(listStyle);
-            textBody.Append(paragraph);
-            
-            var tableCellProperties = new A.TableCellProperties();
-            tableCell.Append(textBody);
-            tableCell.Append(tableCellProperties);
-
-            // Insert after the cell at columnNumber
-            var cells = aTableRow.Elements<A.TableCell>().ToList();
-            var targetCell = cells[columnIndex];
-            aTableRow.InsertAfter(tableCell, targetCell);
-        }
+        return tableCell;
     }
 
     public void UpdateFill(string colorHex)

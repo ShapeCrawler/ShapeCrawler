@@ -92,7 +92,6 @@ public class TableTests : SCTest
         // Act
         table.InsertColumnAfter(1);
         var cell = table.Cell(1, 2);
-        SaveResult(pres);
 
         // Assert
         cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
