@@ -56,7 +56,7 @@ public interface ITable : IShape
     void AddColumn();
 
     /// <summary>
-    ///     Adds a new column after the specified column number.
+    ///     Inserts a new column after the specified column.
     /// </summary>
     /// <param name="columnNumber">The column number after which to add the new column.</param>
     void InsertColumnAfter(int columnNumber);

@@ -83,7 +83,7 @@ public class TableTests : SCTest
     }
     
     [Test]
-    public void InsertColumnAfter_adds_column_after_specified_column_number()
+    public void InsertColumnAfter_inserts_column_after_the_specified_column_number()
     {
         // Arrange
         var pres = new Presentation(StreamOf("table-case001.pptx"));
