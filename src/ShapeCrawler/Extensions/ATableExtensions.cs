@@ -10,21 +10,8 @@ internal static class ATableExtensions
         var row = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
-            var tableCell = new A.TableCell();
-            var textBody = new A.TextBody();
-            var bodyProperties = new A.BodyProperties();
-            var listStyle = new A.ListStyle();
-            var paragraph = new A.Paragraph();
-            var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
-            paragraph.Append(endParagraphRunProperties);
-            textBody.Append(bodyProperties);
-            textBody.Append(listStyle);
-            textBody.Append(paragraph);
-            var tableCellProperties = new A.TableCellProperties();
-            tableCell.Append(textBody);
-            tableCell.Append(tableCellProperties);
-
-            row.Append(tableCell);
+            var aTableCell = new SATableCell().ATableCell();
+            row.Append(aTableCell);
         }
         
         aTable.Append(row);

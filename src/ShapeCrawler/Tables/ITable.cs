@@ -128,8 +128,8 @@ internal sealed class Table : CopyableShape, ITable
 
         foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
         {
-            var tableCell = this.CreateTableCell();
-            aTableRow.Append(tableCell);
+            var aTableCell = new SATableCell().ATableCell();
+            aTableRow.Append(aTableCell);
         }
     }
 
