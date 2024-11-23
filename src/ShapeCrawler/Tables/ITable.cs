@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -51,9 +51,25 @@ public interface ITable : IShape
     void RemoveColumnAt(int columnIndex);
 
     /// <summary>
+    ///     Adds a new column to the table.
+    /// </summary>
+    void AddColumn();
+
+    /// <summary>
+    ///     Inserts a new column after the specified column.
+    /// </summary>
+    /// <param name="columnNumber">The column number after which to add the new column.</param>
+    void InsertColumnAfter(int columnNumber);
+
+    /// <summary>
     ///     Updates table fill.
     /// </summary>
     void UpdateFill(string colorHex);
+
+    /// <summary>
+    ///     Gets table cell by row and column numbers.
+    /// </summary>
+    ITableCell Cell(int rowNumber, int columnNumber);
 }
 
 internal sealed class Table : CopyableShape, ITable
@@ -102,10 +118,42 @@ internal sealed class Table : CopyableShape, ITable
         }
     }
 
+    public void AddColumn()
+    {
+        var tableGrid = this.ATable.TableGrid!;
+        var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
+        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
+        
+        tableGrid.Append(gridColumn);
+
+        foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
+        {
+            new SaTableRow(aTableRow).AddNewCell();
+        }
+    }
+
+    public void InsertColumnAfter(int columnNumber)
+    {
+        var columnIndex = columnNumber - 1;
+        var tableGrid = this.ATable.TableGrid!;
+        var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
+        
+        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
+        var targetColumn = existingColumns[columnIndex];
+        tableGrid.InsertAfter(gridColumn, targetColumn);
+
+        foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
+        {
+            new SaTableRow(aTableRow).InsertNewCellAfter(columnNumber);
+        }
+    }
+    
     public void UpdateFill(string colorHex)
     {
         throw new NotImplementedException();
     }
+
+    public ITableCell Cell(int rowNumber, int columnNumber) => this.Rows[rowNumber - 1].Cells[columnNumber - 1];
 
     public void MergeCells(ITableCell cell1, ITableCell cell2)
     {
@@ -148,6 +196,20 @@ internal sealed class Table : CopyableShape, ITable
     internal string ToJson()
     {
         throw new NotImplementedException();
+    }
+    
+    private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
+    {
+        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
+        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
+
+        // Adjust existing column widths
+        foreach (var col in existingColumns)
+        {
+            col.Width = newColumnWidth;
+        }
+
+        return new A.GridColumn { Width = newColumnWidth };
     }
     
     private void SetTableStyle(ITableStyle style)

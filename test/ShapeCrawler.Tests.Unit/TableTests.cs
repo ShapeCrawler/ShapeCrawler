@@ -67,6 +67,38 @@ public class TableTests : SCTest
     }
     
     [Test]
+    public void AddColumn_adds_column()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+        var expectedColumnsCount = table.Columns.Count + 1;
+
+        // Act
+        table.AddColumn();
+
+        // Assert
+        table.Columns.Should().HaveCount(expectedColumnsCount);
+        pres.Validate();
+    }
+    
+    [Test]
+    public void InsertColumnAfter_inserts_column_after_the_specified_column_number()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+
+        // Act
+        table.InsertColumnAfter(1);
+        var cell = table.Cell(1, 2);
+
+        // Assert
+        cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
+        pres.Validate();
+    }
+    
+    [Test]
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
         // Arrange
