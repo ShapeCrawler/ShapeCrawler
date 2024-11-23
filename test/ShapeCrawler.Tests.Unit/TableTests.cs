@@ -83,6 +83,23 @@ public class TableTests : SCTest
     }
     
     [Test]
+    public void InsertColumnAfter_adds_column_after_specified_column_number()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+
+        // Act
+        table.InsertColumnAfter(1);
+        var cell = table.Cell(1, 2);
+        SaveResult(pres);
+
+        // Assert
+        cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
+        pres.Validate();
+    }
+    
+    [Test]
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
         // Arrange
