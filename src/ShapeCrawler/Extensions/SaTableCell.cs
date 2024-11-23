@@ -2,9 +2,9 @@
 
 namespace ShapeCrawler.Extensions;
 
-internal record struct SATableCell
+internal record struct SaTableCell
 {
-    internal A.TableCell ATableCell()
+    internal static A.TableCell ATableCell()
     {
         var tableCell = new A.TableCell();
         var textBody = new A.TextBody();

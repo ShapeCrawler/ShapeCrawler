@@ -128,7 +128,7 @@ internal sealed class Table : CopyableShape, ITable
 
         foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
         {
-            var aTableCell = new SATableCell().ATableCell();
+            var aTableCell = SaTableCell.ATableCell();
             aTableRow.Append(aTableCell);
         }
     }
@@ -145,10 +145,10 @@ internal sealed class Table : CopyableShape, ITable
 
         foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
         {
-            var tableCell = this.CreateTableCell();
+            var aTableCell = SaTableCell.ATableCell();
             var cells = aTableRow.Elements<A.TableCell>().ToList();
             var targetCell = cells[columnIndex];
-            aTableRow.InsertAfter(tableCell, targetCell);
+            aTableRow.InsertAfter(aTableCell, targetCell);
         }
     }
 
@@ -165,28 +165,7 @@ internal sealed class Table : CopyableShape, ITable
 
         return new A.GridColumn { Width = newColumnWidth };
     }
-
-    private A.TableCell CreateTableCell()
-    {
-        var tableCell = new A.TableCell();
-        var textBody = new A.TextBody();
-        var bodyProperties = new A.BodyProperties();
-        var listStyle = new A.ListStyle();
-        var paragraph = new A.Paragraph();
-        var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
-        
-        paragraph.Append(endParagraphRunProperties);
-        textBody.Append(bodyProperties);
-        textBody.Append(listStyle);
-        textBody.Append(paragraph);
-        
-        var tableCellProperties = new A.TableCellProperties();
-        tableCell.Append(textBody);
-        tableCell.Append(tableCellProperties);
-
-        return tableCell;
-    }
-
+    
     public void UpdateFill(string colorHex)
     {
         throw new NotImplementedException();

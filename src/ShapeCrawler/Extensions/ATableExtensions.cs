@@ -10,7 +10,7 @@ internal static class ATableExtensions
         var row = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
-            var aTableCell = new SATableCell().ATableCell();
+            var aTableCell = SaTableCell.ATableCell();
             row.Append(aTableCell);
         }
         
