@@ -95,7 +95,7 @@ internal sealed class PresentationCore
         sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrorDesc.Contains(errorInfo.Description));
 
 #if NETSTANDARD2_0
-        errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
+        sdkErrors = sdkErrors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
 #else
         sdkErrors = sdkErrors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
 #endif
