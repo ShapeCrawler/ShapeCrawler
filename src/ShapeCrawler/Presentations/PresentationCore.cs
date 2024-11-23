@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Exceptions;
+using A = DocumentFormat.OpenXml.Drawing;
 
 #if NETSTANDARD2_0
 using ShapeCrawler.Extensions;
@@ -91,18 +92,60 @@ internal sealed class PresentationCore
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'.",
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:tc'."
         };
-        var errors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.sdkPresDocument);
-        errors = errors.Where(vr => !nonCriticalErrorDesc.Contains(vr.Description));
+        var sdkErrors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.sdkPresDocument);
+        sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrorDesc.Contains(errorInfo.Description));
 
 #if NETSTANDARD2_0
         errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
 #else
-        errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
+        sdkErrors = sdkErrors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
 #endif
 
+        if (sdkErrors.Any())
+        {
+            throw new SCException("Presentation is invalid.");
+        }
+        
+        var errors = this.ValidateATableRows(this.sdkPresDocument);
         if (errors.Any())
         {
-            throw new SCException("Presentation is invalid. See the Errors property for details.");
+            throw new SCException("Presentation is invalid.");
+        }
+    }
+
+    private IEnumerable<string> ValidateATableRows(PresentationDocument presDocument)
+    {
+        var aTableRows = presDocument.PresentationPart!.SlideParts
+            .SelectMany(slidePart => slidePart.Slide.Descendants<A.TableRow>());
+
+        foreach (var aTableRow in aTableRows)
+        {
+            var aExtLst = aTableRow.GetFirstChild<A.ExtensionList>();
+            if (aExtLst != null)
+            {
+                var lastTableCellIndex = -1;
+                var extListIndex = -1;
+
+                // Find indices of last TableCell and ExtensionList
+                for (int i = 0; i < aTableRow.ChildElements.Count; i++)
+                {
+                    var element = aTableRow.ChildElements[i];
+                    if (element is A.TableCell)
+                    {
+                        lastTableCellIndex = i;
+                    }
+                    else if (element is A.ExtensionList)
+                    {
+                        extListIndex = i;
+                    }
+                }
+
+                // If ExtensionList appears before the last TableCell, yield the error
+                if (extListIndex < lastTableCellIndex)
+                {
+                    yield return "Invalid table row structure: ExtensionList element must appear after all TableCell elements in a TableRow";
+                }
+            }
         }
     }
 }

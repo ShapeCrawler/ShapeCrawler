@@ -118,19 +118,7 @@ internal sealed class Table : CopyableShape, ITable
         }
     }
 
-    public void AddColumn()
-    {
-        var tableGrid = this.ATable.TableGrid!;
-        var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
-        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
-        
-        tableGrid.Append(gridColumn);
-
-        foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
-        {
-            new SaTableRow(aTableRow).AddNewCell();
-        }
-    }
+    public void AddColumn() => this.InsertColumnAfter(this.Columns.Count);
 
     public void InsertColumnAfter(int columnNumber)
     {
