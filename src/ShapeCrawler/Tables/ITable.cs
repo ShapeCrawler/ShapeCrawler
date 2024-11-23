@@ -128,8 +128,7 @@ internal sealed class Table : CopyableShape, ITable
 
         foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
         {
-            var aTableCell = SaTableCell.ATableCell();
-            aTableRow.Append(aTableCell);
+            new SaTableRow(aTableRow).AddNewCell();
         }
     }
 
@@ -145,10 +144,7 @@ internal sealed class Table : CopyableShape, ITable
 
         foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
         {
-            var aTableCell = SaTableCell.ATableCell();
-            var cells = aTableRow.Elements<A.TableCell>().ToList();
-            var targetCell = cells[columnIndex];
-            aTableRow.InsertAfter(aTableCell, targetCell);
+            new SaTableRow(aTableRow).InsertNewCellAfter(columnNumber);
         }
     }
 

@@ -1,10 +1,34 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using System.Linq;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Extensions;
 
-internal record struct SaTableCell
+internal readonly record struct SaTableRow
 {
-    internal static A.TableCell ATableCell()
+    private readonly A.TableRow aTableRow;
+
+    internal SaTableRow(A.TableRow aTableRow)
+    {
+        this.aTableRow = aTableRow;
+    }
+    
+    internal void AddNewCell()
+    {
+        var tableCell = CreateNewATableCell();
+
+        this.aTableRow.Append(tableCell);
+    }
+    
+    internal void InsertNewCellAfter(int columnNumber)
+    {
+        var cells = aTableRow.Elements<A.TableCell>().ToList();
+        var targetCell = cells[columnNumber - 1];
+        var aTableCell = CreateNewATableCell();
+     
+        aTableRow.InsertAfter(aTableCell, targetCell);
+    }
+
+    private static A.TableCell CreateNewATableCell()
     {
         var tableCell = new A.TableCell();
         var textBody = new A.TextBody();
@@ -21,7 +45,6 @@ internal record struct SaTableCell
         var tableCellProperties = new A.TableCellProperties();
         tableCell.Append(textBody);
         tableCell.Append(tableCellProperties);
-
         return tableCell;
     }
 }

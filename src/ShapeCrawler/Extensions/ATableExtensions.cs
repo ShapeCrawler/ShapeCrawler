@@ -7,15 +7,14 @@ internal static class ATableExtensions
 {
     internal static A.TableRow AddRow(this A.Table aTable, int columnsCount)
     {
-        var row = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
+        var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
-            var aTableCell = SaTableCell.ATableCell();
-            row.Append(aTableCell);
+            new SaTableRow(aTableRow).AddNewCell();
         }
         
-        aTable.Append(row);
+        aTable.Append(aTableRow);
 
-        return row;
+        return aTableRow;
     }
 }
