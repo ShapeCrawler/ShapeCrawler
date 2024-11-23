@@ -89,8 +89,7 @@ internal sealed class PresentationCore
                 "The 'uri' attribute is not declared.",
                 "The 'mod' attribute is not declared.",
                 "The 'mod' attribute is not declared.",
-                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'.",
-                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:tc'."
+                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
         };
         var sdkErrors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.sdkPresDocument);
         sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrorDesc.Contains(errorInfo.Description));
