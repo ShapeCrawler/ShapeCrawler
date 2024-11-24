@@ -52,14 +52,14 @@ public class ParagraphPortionTests : SCTest
         var portion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
-        portion.Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";
+        portion.Link!.Url = "https://github.com/ShapeCrawler/ShapeCrawler";
 
         // Assert
         presentation.Save();
         presentation = new Presentation(pptxStream);
         autoShape = presentation.Slides[0].Shapes.GetByName<IShape>(shapeName);
         portion = autoShape.TextBox.Paragraphs[0].Portions[0];
-        portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
+        portion.Link.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
     
     [Test]
@@ -74,12 +74,29 @@ public class ParagraphPortionTests : SCTest
         var portion4 = textBox4.TextBox.Paragraphs[0].Portions[0];
 
         // Act
-        portion3.Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";
-        portion4.Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";
+        portion3.Link!.Url = "https://github.com/ShapeCrawler/ShapeCrawler";
+        portion4.Link!.Url = "https://github.com/ShapeCrawler/ShapeCrawler";
 
         // Assert
-        portion3.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
-        portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
+        portion3.Link.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
+        portion4.Link.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
+    }
+    
+    [Test]
+    public void Link_SlideNumber_Setter_sets_Slide_Hyperlink()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("autoshape-case018_rotation.pptx"));
+        var portion = pres.Slide(1).Shape("NoRotationTextBox").TextBox.Paragraphs[0].Portions[0];
+        
+        // Act
+        // portion.Link.SlideNumber = new Hyperlink() "slide://2";
+        portion.Link.SlideNumber = 2;
+        pres.SaveAs(@"c:\temp\result.pptx");
+
+        // Assert
+        portion.Link.SlideNumber.Should().Be(2);
+        pres.Validate();
     }
     
     [Test]
@@ -92,10 +109,10 @@ public class ParagraphPortionTests : SCTest
         var portion = shape.TextBox!.Paragraphs[0].Portions[0];
         
         // Act
-        portion.Hyperlink = "some.pptx";
+        portion.Link!.Url = "some.pptx";
         
         // Assert
-        portion.Hyperlink.Should().Be("some.pptx");
+        portion.Link.Should().Be("some.pptx");
     }
     
     [Test]
@@ -108,10 +125,10 @@ public class ParagraphPortionTests : SCTest
         var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act
-        portion.Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";
+        portion.Link!.Url = "https://github.com/ShapeCrawler/ShapeCrawler";
 
         // Assert
-        portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
+        portion.Link.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
         pres.Validate();
     }
 

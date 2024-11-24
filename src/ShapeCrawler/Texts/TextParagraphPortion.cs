@@ -1,9 +1,12 @@
-﻿using System;
+using System;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
@@ -11,6 +14,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly ResetableLazy<TextPortionFont> font;
+    private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Run aRun;
 
     internal TextParagraphPortion(OpenXmlPart sdkTypedOpenXmlPart, A.Run aRun)
@@ -21,6 +25,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.AText);
         this.font = new ResetableLazy<TextPortionFont>(() =>
             new TextPortionFont(this.sdkTypedOpenXmlPart, this.AText, textPortionSize));
+        this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }
 
     /// <inheritdoc/>
@@ -33,11 +38,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
     /// <inheritdoc/>
     public ITextPortionFont Font => this.font.Value;
 
-    public string? Hyperlink
-    {
-        get => this.GetHyperlink();
-        set => this.SetHyperlink(value);
-    }
+    public IHyperlink? Link => this.hyperlink.Value;
 
     public Color TextHighlightColor
     {
@@ -97,7 +98,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         this.AText.Text = text;
     }
 
-    private string? GetHyperlink()
+    private string? GetLink()
     {
         var runProperties = this.AText.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
@@ -115,21 +116,5 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 
         return hyperlinkRelationship.Uri.ToString();
     }
-
-    private void SetHyperlink(string? url)
-    {
-        var runProperties = this.AText.PreviousSibling<A.RunProperties>() ?? new A.RunProperties();
-
-        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
-        if (hyperlink == null)
-        {
-            hyperlink = new A.HyperlinkOnClick();
-            runProperties.Append(hyperlink);
-        }
-
-        var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = this.sdkTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
-
-        hyperlink.Id = addedHyperlinkRelationship.Id;
-    }
+    
 }

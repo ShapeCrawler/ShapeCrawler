@@ -17,11 +17,7 @@ internal sealed record ParagraphLineBreak : IParagraphPortion
 
     public ITextPortionFont? Font { get; }
 
-    public string? Hyperlink
-    {
-        get => null; 
-        set => throw new SCException("New Line portion does not support hyperlink.");
-    }
+    public IHyperlink? Link => null;
 
     public Color TextHighlightColor
     {
