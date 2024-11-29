@@ -10,7 +10,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🍀Added `IPicture.SendToBack()` [D-777](https://github.com/ShapeCrawler/ShapeCrawler/discussions/777)</PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added `IShape.AltText` [#13](https://github.com/ShapeCrawler/ShapeCrawler/issues/13)  
+🍀Added `ITable.AddColumn()` and `ITable.InsertColumnAfter()` [D-783](https://github.com/ShapeCrawler/ShapeCrawler/discussions/783)  
+🐞Fixed `Shape.Rotation` [#9](https://github.com/ShapeCrawler/ShapeCrawler/issues/9)  </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
