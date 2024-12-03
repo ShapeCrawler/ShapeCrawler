@@ -91,7 +91,6 @@ public class ParagraphPortionTests : SCTest
         
         // Act
         portion.Link!.SlideNumber = 2;
-        pres.SaveAs(@"c:\temp\result.pptx");
 
         // Assert
         portion.Link.SlideNumber.Should().Be(2);
