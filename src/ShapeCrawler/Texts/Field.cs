@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
@@ -9,15 +9,14 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class Field : IParagraphPortion
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly ResetableLazy<ITextPortionFont> font;
+    private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Field aField;
     private readonly PortionText portionText;
     private readonly A.Text? aText;
 
     internal Field(OpenXmlPart sdkTypedOpenXmlPart, A.Field aField)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aField.GetFirstChild<A.Text>();
         this.aField = aField;
 
@@ -28,6 +27,7 @@ internal sealed class Field : IParagraphPortion
         });
 
         this.portionText = new PortionText(this.aField);
+        this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aField.RunProperties!));
     }
 
     /// <inheritdoc/>
@@ -40,11 +40,7 @@ internal sealed class Field : IParagraphPortion
     /// <inheritdoc/>
     public ITextPortionFont Font => this.font.Value;
 
-    public string? Hyperlink
-    {
-        get => this.GetHyperlink();
-        set => this.SetHyperlink(value);
-    }
+    public IHyperlink Link => this.hyperlink.Value;
 
     public Color TextHighlightColor
     {
@@ -84,41 +80,5 @@ internal sealed class Field : IParagraphPortion
         var arPr = this.aText!.PreviousSibling<A.RunProperties>() ?? this.aText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight(color);
-    }
-
-    private string? GetHyperlink()
-    {
-        var runProperties = this.aText!.PreviousSibling<A.RunProperties>();
-        if (runProperties == null)
-        {
-            return null;
-        }
-
-        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
-        if (hyperlink == null)
-        {
-            return null;
-        }
-
-        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkTypedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
-
-        return hyperlinkRelationship.Uri.ToString();
-    }
-
-    private void SetHyperlink(string? url)
-    {
-        var runProperties = this.aText!.PreviousSibling<A.RunProperties>() ?? new A.RunProperties();
-
-        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
-        if (hyperlink == null)
-        {
-            hyperlink = new A.HyperlinkOnClick();
-            runProperties.Append(hyperlink);
-        }
-
-        var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = this.sdkTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
-
-        hyperlink.Id = addedHyperlinkRelationship.Id;
     }
 }

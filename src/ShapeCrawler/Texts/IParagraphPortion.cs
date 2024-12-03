@@ -1,6 +1,5 @@
 ﻿#pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a portion of a paragraph.
@@ -18,9 +17,9 @@ public interface IParagraphPortion
     ITextPortionFont? Font { get; }
 
     /// <summary>
-    ///     Gets or sets hypelink.
+    ///     Gets Hyperlink. Returns <see langword="null"/> if the portion type doesn't support hyperlink.
     /// </summary>
-    string? Hyperlink { get; set; }
+    IHyperlink? Link { get; }
 
     /// <summary>
     ///     Gets or sets Text Highlight Color. Returns Color.Transparent if no highlight present.
