@@ -104,7 +104,7 @@ public struct Color
     /// </summary>
     /// <param name="hex">Hex value.</param>
     /// <returns>Returns <see langword="true" /> if hex is a valid value. </returns>
-    internal static Color FromHex(string hex)
+    public static Color FromHex(string hex)
     {
 #if NETSTANDARD2_0
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex;
