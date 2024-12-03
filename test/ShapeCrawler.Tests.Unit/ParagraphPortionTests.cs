@@ -90,8 +90,7 @@ public class ParagraphPortionTests : SCTest
         var portion = pres.Slide(1).Shape("NoRotationTextBox").TextBox.Paragraphs[0].Portions[0];
         
         // Act
-        // portion.Link.SlideNumber = new Hyperlink() "slide://2";
-        portion.Link.SlideNumber = 2;
+        portion.Link!.SlideNumber = 2;
         pres.SaveAs(@"c:\temp\result.pptx");
 
         // Assert

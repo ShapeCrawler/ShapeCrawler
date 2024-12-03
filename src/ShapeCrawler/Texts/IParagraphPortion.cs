@@ -17,7 +17,7 @@ public interface IParagraphPortion
     ITextPortionFont? Font { get; }
 
     /// <summary>
-    ///     Gets Hyperlink. Returns <see langword="null"/> if the portion type doesn't suport hyperlink.
+    ///     Gets Hyperlink. Returns <see langword="null"/> if the portion type doesn't support hyperlink.
     /// </summary>
     IHyperlink? Link { get; }
 

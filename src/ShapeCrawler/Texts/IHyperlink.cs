@@ -1,5 +1,11 @@
-﻿using DocumentFormat.OpenXml.Drawing;
+﻿using System;
+using System.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
@@ -12,7 +18,7 @@ public interface IHyperlink
     ///     Gets or sets linked slide number. Returns <see langword="null"/> if hyperlink is not a slide link.
     /// </summary>
     int? SlideNumber { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets URL address. Returns <see langword="null"/> if hyperlink is not a URL link.
     /// </summary>
@@ -23,7 +29,7 @@ internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
 {
     public int? SlideNumber
     {
-        get => GetSlideNumber(); 
+        get => GetSlideNumber();
         set => SetSlideNumber(value);
     }
 
@@ -35,42 +41,59 @@ internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
         {
             throw new SCException("The specified slide number is null.");
         }
+
+        var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
+        if (hyperlink == null)
+        {
+            hyperlink = new A.HyperlinkOnClick();
+            aRunProperties.Append(hyperlink);
+        }
+
+        var parentXmlPart = aRunProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var presentation = ((PresentationDocument)parentXmlPart.OpenXmlPackage).PresentationPart!;
+        var slideId = presentation.Presentation.SlideIdList!.ChildElements
+            .OfType<P.SlideId>()
+            .ElementAtOrDefault(slideNumber.Value - 1)!;
+
+        // Get the target slide part
+        var targetSlidePart = (SlidePart)presentation.GetPartById(slideId.RelationshipId!);
+
+        // Add relationship from current slide to target slide
+        var currentSlidePart = (SlidePart)parentXmlPart;
+
+        // Add or reuse relationship to target slide
+        var relationship = currentSlidePart.GetIdOfPart(targetSlidePart);
+
+        hyperlink.Id = relationship;
+        hyperlink.Action = "ppaction://hlinksldjump";
     }
-    
+
     private void SetLink(string? address)
     {
         if (address is null)
         {
             throw new SCException("The specified link address is null.");
         }
-        
-        var runProperties = this.AText.PreviousSibling<A.RunProperties>() ?? new A.RunProperties();
 
-        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
+        var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
             hyperlink = new A.HyperlinkOnClick();
-            runProperties.Append(hyperlink);
+            aRunProperties.Append(hyperlink);
         }
-
-        if (address.StartsWith("slide://"))
-        {
-            AddSlideLink(address, hyperlink);
-        }
-        else
-        {
+            var partRoot = aRunProperties.Ancestors<OpenXmlPartRootElement>().First();
             var uri = new Uri(address, UriKind.RelativeOrAbsolute);
-            var addedHyperlinkRelationship = this.sdkTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
+            var addedHyperlinkRelationship = partRoot.OpenXmlPart!.AddHyperlinkRelationship(uri, true);
             hyperlink.Id = addedHyperlinkRelationship.Id;
             hyperlink.Action = null;
-        }
     }
-    
+
     private void AddSlideLink(string url, A.HyperlinkOnClick hyperlink)
     {
         // Handle inner slide hyperlink
         var slideNumber = int.Parse(url.Substring(8));
-        var presentation = ((PresentationDocument)this.sdkTypedOpenXmlPart.OpenXmlPackage).PresentationPart!;
+        var parentXmlPart = aRunProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var presentation = ((PresentationDocument)parentXmlPart.OpenXmlPackage).PresentationPart!;
         var slideId = presentation.Presentation.SlideIdList!.ChildElements
             .OfType<P.SlideId>()
             .ElementAtOrDefault(slideNumber - 1)!;
@@ -79,7 +102,7 @@ internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
         var targetSlidePart = (SlidePart)presentation.GetPartById(slideId.RelationshipId!);
 
         // Add relationship from current slide to target slide
-        var currentSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
+        var currentSlidePart = (SlidePart)parentXmlPart;
 
         // Add or reuse relationship to target slide
         var relationship = currentSlidePart.GetIdOfPart(targetSlidePart);
