@@ -91,20 +91,11 @@ public struct Color
     internal bool IsTransparent => this.Alpha == 0;
 
     /// <summary>
-    ///     Creates color hexadecimal code.
-    /// </summary>
-    public override string ToString()
-    {
-        // String representation ignores alpha value
-        return $"{this.R:X2}{this.G:X2}{this.B:X2}";
-    }
-
-    /// <summary>
     ///     Creates color from Hex value.
     /// </summary>
     /// <param name="hex">Hex value.</param>
     /// <returns>Returns <see langword="true" /> if hex is a valid value. </returns>
-    internal static Color FromHex(string hex)
+    public static Color FromHex(string hex)
     {
 #if NETSTANDARD2_0
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex;
@@ -116,7 +107,16 @@ public struct Color
 
         return new(r, g, b, a);
     }
-
+    
+    /// <summary>
+    ///     Creates color hexadecimal code.
+    /// </summary>
+    public override string ToString()
+    {
+        // String representation ignores alpha value
+        return $"{this.R:X2}{this.G:X2}{this.B:X2}";
+    }
+    
     /// <summary>
     ///     Returns a color of RGBA.
     /// </summary>
