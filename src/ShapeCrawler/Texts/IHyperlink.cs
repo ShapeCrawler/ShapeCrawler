@@ -3,11 +3,12 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a hyperlink.
@@ -15,33 +16,35 @@ namespace ShapeCrawler;
 public interface IHyperlink
 {
     /// <summary>
-    ///     Gets or sets linked slide number. Returns <see langword="null"/> if hyperlink is not a slide link.
+    ///     Gets the address to the existing File or Web Page.
     /// </summary>
-    int? SlideNumber { get; set; }
+    string? File { get; }
 
     /// <summary>
-    ///     Gets or sets URL address. Returns <see langword="null"/> if hyperlink is not a URL link.
+    ///     Gets the number of the linked slide.
     /// </summary>
-    string? Url { get; set; }
+    int? SlideNumber { get; }
+
+    /// <summary>
+    ///     Adds the address to the existing File or Web Page.
+    /// </summary>
+    void AddFile(string file);
+
+    /// <summary>
+    ///     Adds the link to the slide.
+    /// </summary>
+    /// <param name="slide">The number of the linking slide.</param>
+    void AddSlideNumber(int slide);
 }
 
-internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
+internal class Hyperlink(RunProperties aRunProperties): IHyperlink
 {
-    public int? SlideNumber
+    public int? SlideNumber => this.GetSlideNumberOrNull();
+
+    public string? File => this.GetFileOrNull();
+    
+    public void AddSlideNumber(int slide)
     {
-        get => GetSlideNumber();
-        set => SetSlideNumber(value);
-    }
-
-    public string? Url { get; set; }
-
-    private void SetSlideNumber(int? slideNumber)
-    {
-        if (slideNumber is null)
-        {
-            throw new SCException("The specified slide number is null.");
-        }
-
         var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
@@ -53,7 +56,7 @@ internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
         var presentation = ((PresentationDocument)parentXmlPart.OpenXmlPackage).PresentationPart!;
         var slideId = presentation.Presentation.SlideIdList!.ChildElements
             .OfType<P.SlideId>()
-            .ElementAtOrDefault(slideNumber.Value - 1)!;
+            .ElementAtOrDefault(slide - 1) !;
 
         // Get the target slide part
         var targetSlidePart = (SlidePart)presentation.GetPartById(slideId.RelationshipId!);
@@ -69,54 +72,41 @@ internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
         hyperlink.Action = "ppaction://hlinksldjump";
     }
 
-    private void SetLink(string? address)
+    public void AddFile(string file)
     {
-        if (address is null)
-        {
-            throw new SCException("The specified link address is null.");
-        }
-
         var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
             hyperlink = new A.HyperlinkOnClick();
             aRunProperties.Append(hyperlink);
         }
-            var partRoot = aRunProperties.Ancestors<OpenXmlPartRootElement>().First();
-            var uri = new Uri(address, UriKind.RelativeOrAbsolute);
-            var addedHyperlinkRelationship = partRoot.OpenXmlPart!.AddHyperlinkRelationship(uri, true);
-            hyperlink.Id = addedHyperlinkRelationship.Id;
-            hyperlink.Action = null;
+
+        var partRoot = aRunProperties.Ancestors<OpenXmlPartRootElement>().First();
+        var uri = new Uri(file, UriKind.RelativeOrAbsolute);
+        var addedHyperlinkRelationship = partRoot.OpenXmlPart!.AddHyperlinkRelationship(uri, true);
+        hyperlink.Id = addedHyperlinkRelationship.Id;
+        hyperlink.Action = null;
     }
 
-    private void AddSlideLink(string url, A.HyperlinkOnClick hyperlink)
-    {
-        // Handle inner slide hyperlink
-        var slideNumber = int.Parse(url.Substring(8));
-        var parentXmlPart = aRunProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var presentation = ((PresentationDocument)parentXmlPart.OpenXmlPackage).PresentationPart!;
-        var slideId = presentation.Presentation.SlideIdList!.ChildElements
-            .OfType<P.SlideId>()
-            .ElementAtOrDefault(slideNumber - 1)!;
-
-        // Get the target slide part
-        var targetSlidePart = (SlidePart)presentation.GetPartById(slideId.RelationshipId!);
-
-        // Add relationship from current slide to target slide
-        var currentSlidePart = (SlidePart)parentXmlPart;
-
-        // Add or reuse relationship to target slide
-        var relationship = currentSlidePart.GetIdOfPart(targetSlidePart);
-
-        hyperlink.Id = relationship;
-        hyperlink.Action = "ppaction://hlinksldjump";
-    }
-
-
-    private int? GetSlideNumber()
+    private string? GetFileOrNull()
     {
         var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
-        if (hyperlink == null || hyperlink.Action?.Value != "ppaction://hlinksldjump" || string.IsNullOrEmpty(hyperlink.Id))
+        if (hyperlink == null)
+        {
+            return null;
+        }
+
+        var parentXmlPart = aRunProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var hyperlinkRelationship = (HyperlinkRelationship)parentXmlPart.GetReferenceRelationship(hyperlink.Id!);
+
+        return hyperlinkRelationship.Uri.ToString();
+    }
+
+    private int? GetSlideNumberOrNull()
+    {
+        var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
+        if (hyperlink == null || hyperlink.Action?.Value != "ppaction://hlinksldjump" ||
+            string.IsNullOrEmpty(hyperlink.Id))
         {
             return null;
         }
