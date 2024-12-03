@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.58.0 - Unreleased
+🍀Added `IHyperlink.AddFile()` [#724](https://github.com/ShapeCrawler/ShapeCrawler/issues/724)  
+
 ## Version 0.57.0 - 2024-11-29
 🍀Added `IShape.AltText` [#13](https://github.com/ShapeCrawler/ShapeCrawler/issues/13)  
 🍀Added `ITable.AddColumn()` and `ITable.InsertColumnAfter()` [D-783](https://github.com/ShapeCrawler/ShapeCrawler/discussions/783)  
