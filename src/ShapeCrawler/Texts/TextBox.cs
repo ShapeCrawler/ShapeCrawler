@@ -225,12 +225,6 @@ internal sealed record TextBox : ITextBox
             return;
         }
 
-        var baseParagraph = this.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
-            .OrderByDescending(x => x.Count())
-            .First().First();
-        var scFont = popularPortion.Font;
-
         var paint = new SKPaint
         {
             IsAntialias = true
@@ -241,15 +235,37 @@ internal sealed record TextBox : ITextBox
         var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
-        var text = this.Text.ToUpper();
-        var textWidth = new Text(text, scFont).PxWidth;
-        var textHeight = scFont.Size;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
-        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
-        this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!, scFont);
+        decimal requiredHeight = 0;
+        foreach (var paragraph in this.Paragraphs)
+        {
+            var popularPortion = paragraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
+                .OrderByDescending(x => x.Count())
+                .First().First();
+            var scFont = popularPortion.Font;
+
+            var text = paragraph.Text.ToUpper();
+
+            var textWidth = new Text(text, scFont).PxWidth;
+            var textHeight = scFont.Size;
+
+            var requiredRowsCount = textWidth / currentBlockWidth;
+            var integerPart = (int)requiredRowsCount;
+            var fractionalPart = requiredRowsCount - integerPart;
+            if (fractionalPart > 0)
+            {
+                integerPart++;
+            }
+
+            requiredHeight += (integerPart * textHeight);
+            // requiredHeight += (integerPart * textHeight) + (decimal)SpacingBefore + (decimal) SpacingAfter;
+        }
+
+        this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
+        this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
     }
 
     internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
@@ -343,8 +359,7 @@ internal sealed record TextBox : ITextBox
         decimal lMarginPixel,
         decimal rMarginPixel,
         TextBox textBox,
-        OpenXmlElement parent,
-        ITextPortionFont font)
+        OpenXmlElement parent)
     {
         if (!textBox.TextWrapped)
         {
@@ -352,7 +367,13 @@ internal sealed record TextBox : ITextBox
                 .Select(x => new { x.Text, x.Text.Length })
                 .OrderByDescending(x => x.Length)
                 .First().Text;
-            
+
+            var baseParagraph = this.Paragraphs.First();
+            var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
+                .OrderByDescending(x => x.Count())
+                .First().First();
+            var font = popularPortion.Font;
+
             var widthInPixels = new Text(longerText, font).PxWidth;
             
             var newWidth = (int)(widthInPixels * (decimal)1.4) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
@@ -362,31 +383,16 @@ internal sealed record TextBox : ITextBox
     }
     
     private void UpdateShapeHeight(
-        decimal textWidth,
-        decimal currentBlockWidth,
         decimal textHeight,
         decimal tMarginPixel,
         decimal bMarginPixel,
         decimal currentBlockHeight,
         OpenXmlElement parent)
     {
-        var requiredRowsCount = textWidth / currentBlockWidth;
-        var integerPart = (int)requiredRowsCount;
-        var fractionalPart = requiredRowsCount - integerPart;
-        if (fractionalPart > 0)
-        {
-            integerPart++;
-        }
-
-        var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
+        var requiredHeight = textHeight + tMarginPixel + bMarginPixel;
         var newHeight = requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
         var position = new Position(this.sdkTypedOpenXmlPart, parent);
         var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         size.UpdateHeight(newHeight);
-
-        // We should raise the shape up by the amount which is half of the increased offset.
-        // PowerPoint does the same thing.
-        var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        position.UpdateY(position.Y() - yOffset);
     }
 }
