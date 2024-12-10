@@ -237,7 +237,6 @@ internal sealed record TextBox : ITextBox
 
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
-        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
         decimal requiredHeight = 0;
         foreach (var paragraph in this.Paragraphs)
@@ -264,7 +263,7 @@ internal sealed record TextBox : ITextBox
             // requiredHeight += (integerPart * textHeight) + (decimal)SpacingBefore + (decimal) SpacingAfter;
         }
 
-        this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
+        this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, this.sdkTextBody.Parent!);
         this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
     }
 
@@ -386,12 +385,10 @@ internal sealed record TextBox : ITextBox
         decimal textHeight,
         decimal tMarginPixel,
         decimal bMarginPixel,
-        decimal currentBlockHeight,
         OpenXmlElement parent)
     {
         var requiredHeight = textHeight + tMarginPixel + bMarginPixel;
         var newHeight = requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-        var position = new Position(this.sdkTypedOpenXmlPart, parent);
         var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         size.UpdateHeight(newHeight);
     }
