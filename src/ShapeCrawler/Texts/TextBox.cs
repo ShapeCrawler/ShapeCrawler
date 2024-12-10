@@ -258,7 +258,9 @@ internal sealed record TextBox : ITextBox
                 integerPart++;
             }
 
-            requiredHeight += (integerPart * textHeight);
+            requiredHeight += integerPart * textHeight;
+
+            // TODO
             // requiredHeight += (integerPart * textHeight) + (decimal)SpacingBefore + (decimal) SpacingAfter;
         }
 
