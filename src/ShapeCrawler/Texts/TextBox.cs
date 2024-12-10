@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Positions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -236,11 +237,18 @@ internal sealed record TextBox : ITextBox
 
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
+        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
         decimal requiredHeight = 0;
         foreach (var paragraph in this.Paragraphs)
         {
-            var popularPortion = paragraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
+            var paragraphPortion = paragraph.Portions.OfType<TextParagraphPortion>();
+            if (!paragraphPortion.Any())
+            {
+                continue;
+            }
+
+            var popularPortion = paragraphPortion.GroupBy(p => p.Font.Size)
                 .OrderByDescending(x => x.Count())
                 .First().First();
             var scFont = popularPortion.Font;
@@ -264,7 +272,7 @@ internal sealed record TextBox : ITextBox
             // requiredHeight += (integerPart * textHeight) + (decimal)SpacingBefore + (decimal) SpacingAfter;
         }
 
-        this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, this.sdkTextBody.Parent!);
+        this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
         this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
     }
 
@@ -386,11 +394,18 @@ internal sealed record TextBox : ITextBox
         decimal textHeight,
         decimal tMarginPixel,
         decimal bMarginPixel,
+        decimal currentBlockHeight,
         OpenXmlElement parent)
     {
         var requiredHeight = textHeight + tMarginPixel + bMarginPixel;
         var newHeight = requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+        var position = new Position(this.sdkTypedOpenXmlPart, parent);
         var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         size.UpdateHeight(newHeight);
+
+        // We should raise the shape up by the amount which is half of the increased offset.
+        // PowerPoint does the same thing.
+        var yOffset = (requiredHeight - currentBlockHeight) / 2;
+        position.UpdateY(position.Y() - yOffset);
     }
 }
