@@ -604,6 +604,24 @@ public class ShapeTests : SCTest
     }
 
     [Test]
+    public void CornerRadius_getter_returns_default_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddRoundedRectangle(10, 20, 100, 200);
+        var shape = shapes[0];
+
+        // Act
+        var actualRoundedness = shape.CornerRoundedness;
+
+        // Assert
+        // Rounded rectangles with no specified corner roundedness behave as if
+        // the value was set to 0.35.
+        actualRoundedness.Should().Be(0.35m);
+    }
+
+    [Test]
     public void CornerRadius_setter_sets_values()
     {
         // Arrange
