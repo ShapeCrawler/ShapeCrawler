@@ -156,15 +156,8 @@ internal abstract class Shape : IShape
                 return null;
             }
 
-            var avList = aPresetGeometry?.AdjustValueList;
-
-            if (avList is null)
-            {
-                // Is a round rectangle, but has no avList. 
-                // That's invalid data. Going to throw an exception so hopefully
-                // user reports this.
-                throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
-            }
+            // Throw if has no avList. That's invalid data. Would like to see a presenation which had this characteristic
+            var avList = aPresetGeometry?.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
@@ -176,14 +169,7 @@ internal abstract class Shape : IShape
             }
 
             var formula = sg?.Formula?.Value;
-            var val = formula?.Split(' ').Skip(1).SingleOrDefault();
-            if (val is null)
-            {
-                // Has a shape guide, but no formula or malformed formule
-                // That's invalid data. Going to throw an exception so hopefully
-                // user reports this.
-                throw new SCException($"AdjustValueList mal-formed formula: {formula ?? "null"}. Please file a GitHub issue.");
-            }
+            var val = formula?.Split(' ').Skip(1).SingleOrDefault() ?? throw new SCException($"AdjustValueList mal-formed formula: {formula ?? "null"}. Please file a GitHub issue.");
 
             if (!decimal.TryParse(val, out var dVal))
             {
@@ -196,6 +182,7 @@ internal abstract class Shape : IShape
             // Maximum roundedness is represented by the constant 50,000
             return dVal / 50000m;
         }
+        
         set
         {
             if (value is null)
@@ -211,15 +198,7 @@ internal abstract class Shape : IShape
                 throw new SCException("Not a rounded rectangle");
             }
 
-            var avList = aPresetGeometry?.AdjustValueList;
-
-            if (avList is null)
-            {
-                // Is a round rectangle, but has no avList. 
-                // That's invalid data. Going to throw an exception so hopefully
-                // user reports this.
-                throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
-            }
+            var avList = aPresetGeometry?.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
@@ -227,11 +206,7 @@ internal abstract class Shape : IShape
             {
                 // Has no shape guide. We need to create one
                 avList.AddChild(new A.ShapeGuide());
-                sg = avList.GetFirstChild<A.ShapeGuide>();
-                if (sg is null)
-                {
-                    throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
-                }
+                sg = avList.GetFirstChild<A.ShapeGuide>() ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
             }
 
             sg.Formula = new StringValue($"val {(int)(value * 50000m)}");
