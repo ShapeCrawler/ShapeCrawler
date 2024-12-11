@@ -166,7 +166,7 @@ internal abstract class Shape : IShape
                 throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
             }
 
-            var sg = avList?.GetFirstChild<A.ShapeGuide>();
+            var sg = avList.GetFirstChild<A.ShapeGuide>();
 
             if (sg is null)
             {
@@ -196,7 +196,46 @@ internal abstract class Shape : IShape
             // Maximum roundedness is represented by the constant 50,000
             return dVal / 50000m;
         }
-        set => throw new NotImplementedException();
+        set
+        {
+            if (value is null)
+            {
+                throw new SCException("Not allowed to set null roundedness. Try 0 to straighten the corner.");
+            }
+
+            var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
+            if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
+            {
+                // Not a rounded rectangle, so has no corner roundedness
+                throw new SCException("Not a rounded rectangle");
+            }
+
+            var avList = aPresetGeometry?.AdjustValueList;
+
+            if (avList is null)
+            {
+                // Is a round rectangle, but has no avList. 
+                // That's invalid data. Going to throw an exception so hopefully
+                // user reports this.
+                throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
+            }
+
+            var sg = avList.GetFirstChild<A.ShapeGuide>();
+
+            if (sg is null)
+            {
+                // Has no shape guide. We need to create one
+                avList.AddChild(new A.ShapeGuide());
+                sg = avList.GetFirstChild<A.ShapeGuide>();
+                if (sg is null)
+                {
+                    throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+                }
+            }
+
+            sg.Formula = new StringValue($"val {(int)(value * 50000m)}");
+        }
     }
 
     public string? CustomData

@@ -604,17 +604,19 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    [Explicit]
     public void CornerRadius_setter_sets_values()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRectangle(10, 20, 100, 200);
+        shapes.AddRoundedRectangle(10, 20, 100, 200);
         var shape = shapes[0];
 
         // Act
-        var expected = 0.25m;
+        // For most reliable test results, ensure the denominator of the decimal part of
+        // this value is a factor of 50,000. (e.g. here we use 1/10, which will save/load
+        // without loss of precision.)
+        var expected = 0.1m;
         shape.CornerRoundedness = expected;
 
         // Assert
