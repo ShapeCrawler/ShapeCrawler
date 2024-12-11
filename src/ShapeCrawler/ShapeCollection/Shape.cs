@@ -196,6 +196,7 @@ internal abstract class Shape : IShape
             // Maximum roundedness is represented by the constant 50,000
             return dVal / 50000m;
         }
+        set => throw new NotImplementedException();
     }
 
     public string? CustomData

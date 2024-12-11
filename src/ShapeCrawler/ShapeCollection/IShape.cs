@@ -63,7 +63,7 @@ public interface IShape : IPosition
     ///     Value 1.0 is the maximum roundedness: 1/2 length of shortest side
     ///     Value null indicates no roundedness OR default roundedness (0.35)
     /// </remarks>
-    decimal? CornerRoundedness { get; }
+    decimal? CornerRoundedness { get; set; }
 
     /// <summary>
     ///     Gets or sets custom data string for the shape.

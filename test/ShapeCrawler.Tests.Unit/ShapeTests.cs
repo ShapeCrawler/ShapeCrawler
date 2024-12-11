@@ -602,4 +602,22 @@ public class ShapeTests : SCTest
         // Assert
         actualRoundedness.Should().Be(expectedRoundedness);
     }
+
+    [Test]
+    [Explicit]
+    public void CornerRadius_setter_sets_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddRectangle(10, 20, 100, 200);
+        var shape = shapes[0];
+
+        // Act
+        var expected = 0.25m;
+        shape.CornerRoundedness = expected;
+
+        // Assert
+        shape.CornerRoundedness.Should().Be(expected);
+    }
 }
