@@ -157,7 +157,7 @@ internal abstract class Shape : IShape
             }
 
             // Throw if has no avList. That's invalid data. Would like to see a presenation which had this characteristic
-            var avList = aPresetGeometry?.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
+            var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
@@ -168,7 +168,7 @@ internal abstract class Shape : IShape
                 return 0.35m;
             }
 
-            var formula = sg?.Formula?.Value;
+            var formula = sg.Formula?.Value;
             var val = formula?.Split(' ').Skip(1).SingleOrDefault() ?? throw new SCException($"AdjustValueList mal-formed formula: {formula ?? "null"}. Please file a GitHub issue.");
 
             if (!decimal.TryParse(val, out var dVal))
@@ -198,7 +198,7 @@ internal abstract class Shape : IShape
                 throw new SCException("Not a rounded rectangle");
             }
 
-            var avList = aPresetGeometry?.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
+            var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
