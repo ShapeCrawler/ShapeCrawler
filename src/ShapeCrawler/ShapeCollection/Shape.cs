@@ -150,7 +150,11 @@ internal abstract class Shape : IShape
         {
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
-            if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
+            if (
+                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle
+                &&
+                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle
+            )
             {
                 // Not a rounded rectangle, so has no corner roundedness
                 return null;
@@ -159,6 +163,8 @@ internal abstract class Shape : IShape
             // Throw if has no avList. That's invalid data. Would like to see a presenation which had this characteristic
             var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
+            // For Round2SameRectangle, this assumes the first SG is the "top", which is the roundedness
+            // we care about in that case.
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
             if (sg is null)
