@@ -672,5 +672,6 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.CornerRoundedness.Should().Be(expected);
+        pres.Validate();
     }
 }

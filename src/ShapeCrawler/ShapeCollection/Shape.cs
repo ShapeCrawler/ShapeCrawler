@@ -153,8 +153,7 @@ internal abstract class Shape : IShape
             if (
                 aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle
                 &&
-                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle
-            )
+                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
             {
                 // Not a rounded rectangle, so has no corner roundedness
                 return null;
@@ -163,8 +162,7 @@ internal abstract class Shape : IShape
             // Throw if has no avList. That's invalid data. Would like to see a presenation which had this characteristic
             var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
-            // For Round2SameRectangle, this assumes the first SG is the "top", which is the roundedness
-            // we care about in that case.
+            // TODO: For Round2SameRectangle, we actually need the shapeguide named "adj1".
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
             if (sg is null)
@@ -198,28 +196,42 @@ internal abstract class Shape : IShape
 
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
+            var shapeType = aPresetGeometry?.Preset?.Value;
             if (
-                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle
+                shapeType != A.ShapeTypeValues.RoundRectangle
                 &&
-                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle
-            )
+                shapeType != A.ShapeTypeValues.Round2SameRectangle)
             {
                 // Not a rounded rectangle, so has no corner roundedness
                 throw new SCException("Not a rounded rectangle");
             }
 
-            var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
+            var avList = aPresetGeometry?.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
 
             var sg = avList.GetFirstChild<A.ShapeGuide>();
 
             if (sg is null)
             {
                 // Has no shape guide. We need to create one
-                avList.AddChild(new A.ShapeGuide());
-                sg = avList.GetFirstChild<A.ShapeGuide>() ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+                if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
+                {
+                    // TODO: Need test coverage for this path
+                    avList.AddChild(new A.ShapeGuide());
+                    sg = avList.GetFirstChild<A.ShapeGuide>() ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+                    sg.Name = "adj1";
+                    var sg2 = avList.AppendChild(new A.ShapeGuide()) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+                    sg2.Name = "adj2";
+                    sg2.Formula = "val 0";
+                }
+                else
+                {
+                    avList.AddChild(new A.ShapeGuide());
+                    sg = avList.GetFirstChild<A.ShapeGuide>() ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+                    sg.Name = "adj";
+                }
             }
 
-            sg.Formula = new StringValue($"val {(int)(value * 50000m)}");
+            sg!.Formula = new StringValue($"val {(int)(value * 50000m)}");
         }
     }
 
