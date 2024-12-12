@@ -639,6 +639,22 @@ public class ShapeTests : SCTest
     }
 
     [Test]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0.125-ish", "0.5")]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0.5")]
+    public void CornerRadius_setter_sets_values_for_top_rounded(IShape shape, string newRoundednessStr)
+    {
+        // Arrange
+        var expected = decimal.Parse(newRoundednessStr);
+
+        // Act
+        shape.CornerRoundedness = expected;
+
+        // Assert
+        var actualRoundedness = shape.CornerRoundedness;
+        actualRoundedness.Should().Be(expected);
+    }
+
+    [Test]
     public void CornerRadius_setter_sets_values()
     {
         // Arrange

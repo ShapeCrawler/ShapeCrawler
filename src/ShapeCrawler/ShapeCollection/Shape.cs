@@ -198,7 +198,11 @@ internal abstract class Shape : IShape
 
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
-            if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
+            if (
+                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle
+                &&
+                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle
+            )
             {
                 // Not a rounded rectangle, so has no corner roundedness
                 throw new SCException("Not a rounded rectangle");
