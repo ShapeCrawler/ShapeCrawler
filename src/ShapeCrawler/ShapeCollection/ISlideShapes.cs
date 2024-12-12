@@ -48,6 +48,11 @@ public interface ISlideShapes : IShapes
     void AddRoundedRectangle(int x, int y, int width, int height);
 
     /// <summary>
+    ///     Adds a new Rectangle: Top Corners Rounded. 
+    /// </summary>
+    void AddRounded2SameRectangle(int x, int y, int width, int height);
+
+    /// <summary>
     ///     Adds a line from XML.
     /// </summary>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>

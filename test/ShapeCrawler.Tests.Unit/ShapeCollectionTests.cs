@@ -626,6 +626,24 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddRounded2SameRectangle_adds_RoundedTop_Rectangle()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        shapes.AddRounded2SameRectangle(50, 60, 100, 70);
+
+        // Assert
+        var roundedRectangle = shapes.Last();
+        roundedRectangle.GeometryType.Should().Be(Geometry.Round2SameRectangle);
+        roundedRectangle.Name.Should().Be("Rectangle: Top Corners Rounded");
+        roundedRectangle.Outline.HexColor.Should().BeNull();
+        pres.Validate();
+    }
+
+    [Test]
     public void AddTable_adds_table()
     {
         // Arrange
