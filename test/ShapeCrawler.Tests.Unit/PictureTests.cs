@@ -196,4 +196,25 @@ public class PictureTests : SCTest
         // Assert
         actual.Should().Be(expected);
     }
+
+    [TestCase("0,0,0,0")]
+    [TestCase("0.3,0,0,0")]
+    [TestCase("0,0.4,0,0")]
+    [TestCase("0,0,0.5,0")]
+    [TestCase("0,0,0,0.7")]
+    [TestCase("0.1,0.2,0.3,0.5")]
+    public void Crop_setter_sets_expected_values(string expectedFrameStr)
+    {
+        // Arrange
+        var expected = CroppingFrame.Parse(expectedFrameStr);
+        var pres = new Presentation(StreamOf("059_crop-images.pptx"));
+        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("None");
+
+        // Act
+        picture.Crop = expected;
+
+        // Assert
+        var actual = picture.Crop;
+        actual.Should().Be(expected);
+    }
 }

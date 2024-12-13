@@ -72,5 +72,6 @@ public record CroppingFrame(decimal left, decimal right, decimal top, decimal bo
 
     private static decimal FromHundredThousandths(Int32Value? int32) => int32 is not null ? int32 / 100000m : 0;
 
-    private static Int32Value ToHundredThousandths(decimal input) => Convert.ToInt32(input * 100000m);
+    private static Int32Value? ToHundredThousandths(decimal input) => 
+        input == 0 ? null : Convert.ToInt32(input * 100000m);
 }
