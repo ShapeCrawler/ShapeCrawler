@@ -169,7 +169,7 @@ internal record ShapeFill : IShapeFill
             return FillType.Pattern;
         }
 
-        if (this.sdkTypedOpenXmlCompositeElement.Ancestors<P.Shape>().First().UseBackgroundFill is not null)
+        if (this.sdkTypedOpenXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
         {
             return FillType.SlideBackground;
         }

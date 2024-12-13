@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+
 #if DEBUG
 using System.Threading.Tasks;
 #endif
@@ -16,6 +18,7 @@ public interface ISlide
     /// <summary>
     ///     Gets background image.
     /// </summary>
+    [Obsolete("Background is deprecated, please use Fill instead.")]
     IImage? Background { get; }
 
     /// <summary>
