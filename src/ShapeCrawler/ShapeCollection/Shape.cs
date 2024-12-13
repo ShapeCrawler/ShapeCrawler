@@ -178,12 +178,12 @@ internal abstract class Shape : IShape
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                InjectCornerSizeIntoRoundRectangle(aPresetGeometry!, value ?? 0m);
+                InjectCornerSizeIntoRoundRectangle(aPresetGeometry!, value.Value);
             }
 
             if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                InjectCornerSizeIntoRound2SameRectangle(aPresetGeometry!, value ?? 0m);
+                InjectCornerSizeIntoRound2SameRectangle(aPresetGeometry!, value.Value);
             }
         }
     }
@@ -285,7 +285,7 @@ internal abstract class Shape : IShape
 
         var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
         var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
-        if (sgs.Count() == 0)
+        if (!sgs.Any())
         {
             // Has no shape guide. That means we're using the DEFAULT value, which is 0.35
             return 0.35m;
@@ -342,7 +342,7 @@ internal abstract class Shape : IShape
             throw new SCException($"Malformed rounded rectangle. Expected 2 shape guides, found {count}. Please file a GitHub issue.");
         }
 
-        var sg = sgs.Where(x => x.Name == "adj1").SingleOrDefault() ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`. Please file a GitHub issue.");
+        var sg = sgs.SingleOrDefault(x => x.Name == "adj1") ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`. Please file a GitHub issue.");
 
         return ExtractCornerSizeFromShapeGuide(sg);
     }
@@ -366,9 +366,12 @@ internal abstract class Shape : IShape
         {
             // Has no adj1 shape guide. We need to add an adj1/adj2 pair
             sg = avList.AppendChild(new A.ShapeGuide() { Name = "adj1" }) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
-            var _ = avList.AppendChild(new A.ShapeGuide() { Name = "adj2", Formula = "val 0" }) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+            if (avList.AppendChild(new A.ShapeGuide() { Name = "adj2", Formula = "val 0" }) is null)
+            {
+                throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+            }
         }
-
+    
         sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
     }
 
@@ -376,7 +379,14 @@ internal abstract class Shape : IShape
     {
         var formula = sg.Formula?.Value ?? throw new SCException("Malformed rounded rectangle. Shape guide has no formula. Please file a GitHub issue.");
 
-        var regex = new Regex("^val (?<value>[0-9]+)$");
+        var pattern = "^val (?<value>[0-9]+)$";
+
+#if NETSTANDARD2_0
+        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
+#else
+        var regex = new Regex(pattern, RegexOptions.NonBacktracking);
+#endif
+
         var match = regex.Match(formula);
         if (!match.Success)
         {
