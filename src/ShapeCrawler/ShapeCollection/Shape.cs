@@ -150,41 +150,19 @@ internal abstract class Shape : IShape
         {
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
-            if (
-                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle
-                &&
-                aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
+            var value = aPresetGeometry?.Preset?.Value;
+
+            if (value == A.ShapeTypeValues.RoundRectangle)
             {
-                // Not a rounded rectangle, so has no corner roundedness
-                return null;
+                return GetRoundRectangleCornerRoundedness(aPresetGeometry!);
             }
 
-            // Throw if has no avList. That's invalid data. Would like to see a presenation which had this characteristic
-            var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
-
-            // TODO: For Round2SameRectangle, we actually need the shapeguide named "adj1".
-            var sg = avList.GetFirstChild<A.ShapeGuide>();
-
-            if (sg is null)
+            if (value == A.ShapeTypeValues.Round2SameRectangle)
             {
-                // Has no shape guide. That means we're using the DEFAULT
-                // value, which is 0.35
-                return 0.35m;
+                return GetTopRoundRectangleCornerRoundedness(aPresetGeometry!);
             }
 
-            var formula = sg.Formula?.Value;
-            var val = formula?.Split(' ').Skip(1).SingleOrDefault() ?? throw new SCException($"AdjustValueList mal-formed formula: {formula ?? "null"}. Please file a GitHub issue.");
-
-            if (!decimal.TryParse(val, out var dVal))
-            {
-                // Has a shape guide, but formula is not decimal.
-                // That's invalid data. Going to throw an exception so hopefully
-                // user reports this.
-                throw new SCException($"AdjustValueList mal-formed formula value: {val}. Please file a GitHub issue.");
-            }
-
-            // Maximum roundedness is represented by the constant 50,000
-            return dVal / 50000m;
+            return null;
         }
         
         set
@@ -322,4 +300,70 @@ internal abstract class Shape : IShape
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
     
     public virtual void Remove() => this.PShapeTreeElement.Remove();
+
+    private static decimal? GetRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry)
+    {
+        if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
+        {
+            return null;
+        }
+
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var sgs = avList.Descendants<A.ShapeGuide>();        
+        if (sgs.Count() == 0)
+        {
+            // Has no shape guide. That means we're using the DEFAULT value, which is 0.35
+            return 0.35m;
+        }
+
+        if (sgs.Count() > 1)
+        {
+            throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
+        }
+
+        return GetCornerRoundednessFrom(sgs.Single());
+    }
+
+    private static decimal? GetTopRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry)
+    {
+        if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
+        {
+            return null;
+        }
+
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var sgs = avList.Descendants<A.ShapeGuide>();
+        var count = sgs.Count();
+        if (count == 0)
+        {
+            // Has no shape guide. That means we're using the DEFAULT value, which is 0.35
+            return 0.35m;
+        }
+
+        if (count != 2)
+        {
+            throw new SCException($"Malformed rounded rectangle. Expected 2 shape guides, found {count}. Please file a GitHub issue.");
+        }
+
+        var sg = sgs.Where(x => x.Name == "adj1").SingleOrDefault() ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`. Please file a GitHub issue.");
+
+        return GetCornerRoundednessFrom(sg);
+    }
+
+    private static decimal GetCornerRoundednessFrom(A.ShapeGuide sg)
+    {
+        var formula = sg.Formula?.Value ?? throw new SCException("Malformed rounded rectangle. Shape guide has no formula. Please file a GitHub issue.");
+
+        var regex = new Regex("^val (?<value>[0-9]+)$");
+        var match = regex.Match(formula);
+        if (!match.Success)
+        {
+            throw new SCException("Malformed rounded rectangle. Formula has no value. Please file a GitHub issue.");
+        }
+
+        var value = int.Parse(match.Groups["value"].Value);
+
+        return value / 50000m;
+    }
+
 }
