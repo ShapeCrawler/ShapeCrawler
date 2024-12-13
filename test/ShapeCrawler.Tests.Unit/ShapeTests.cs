@@ -594,7 +594,7 @@ public class ShapeTests : SCTest
     public void CornerRadius_getter_returns_values(IShape shape, string expectedRoundednessStr)
     {
         // Arrange
-        decimal? expectedRoundedness = string.IsNullOrEmpty(expectedRoundednessStr) ? null : decimal.Parse(expectedRoundednessStr);
+        var expectedRoundedness = decimal.Parse(expectedRoundednessStr);
 
         // Act
         var actualRoundedness = shape.CornerRoundedness;
@@ -616,9 +616,7 @@ public class ShapeTests : SCTest
         var actualRoundedness = shape.CornerRoundedness;
 
         // Assert
-        // Rounded rectangles with no specified corner roundedness behave as if
-        // the value was set to 0.35.
-        actualRoundedness.Should().Be(0.35m);
+        actualRoundedness.Should().Be(0.35m,"Rounded rectangles with no specified corner roundedness behave as if the value was set to 0.35.");
     }
 
     [Test]
@@ -629,7 +627,7 @@ public class ShapeTests : SCTest
     public void CornerRadius_getter_returns_values_for_top_rounded(IShape shape, string expectedRoundednessStr)
     {
         // Arrange
-        decimal? expectedRoundedness = string.IsNullOrEmpty(expectedRoundednessStr) ? null : decimal.Parse(expectedRoundednessStr);
+        var expectedRoundedness = decimal.Parse(expectedRoundednessStr);
 
         // Act
         var actualRoundedness = shape.CornerRoundedness;
