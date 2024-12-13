@@ -24,6 +24,7 @@ internal sealed class Slide : ISlide
     private readonly Lazy<SlideBgImage> backgroundImage;
     private readonly SlideSize slideSize;
     private Lazy<CustomXmlPart?> sdkCustomXmlPart;
+    private IShapeFill? fill = null;
 
     internal Slide(
         SlidePart sdkSlidePart,
@@ -65,30 +66,24 @@ internal sealed class Slide : ISlide
     { 
         get
         {
-            if (_Fill is null)
+            if (this.fill is null)
             {
-                var pcSld = this.SdkSlidePart.Slide.CommonSlideData;
-                if (pcSld is null)
-                {
-                    pcSld = this.SdkSlidePart.Slide.AppendChild<P.CommonSlideData>(new());
-                }
-                var pBg = pcSld.GetFirstChild<P.Background>();
-                if (pBg is null)
-                {
-                    pBg = pcSld.AppendChild<P.Background>(new());
-                }
-                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>();
-                if (pBgPr is null)
-                {
-                    pBgPr = pBg.AppendChild<P.BackgroundProperties>(new());
-                }
-                _Fill = new ShapeFill(this.SdkSlidePart, pBgPr);
+                var pcSld = this.SdkSlidePart.Slide.CommonSlideData
+                    ?? this.SdkSlidePart.Slide.AppendChild<P.CommonSlideData>(new());
 
+                // Background element needs to be first, else it gets ignored.
+                var pBg = pcSld.GetFirstChild<P.Background>()
+                    ?? pcSld.InsertAt<P.Background>(new(),0);
+
+                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>()
+                    ?? pBg.AppendChild<P.BackgroundProperties>(new());
+
+                this.fill = new ShapeFill(this.SdkSlidePart, pBgPr);
             }
-            return _Fill!;
+
+            return this.fill!;
         }
     }
-    private IShapeFill? _Fill = null;
 
     public bool Hidden() => this.SdkSlidePart.Slide.Show is not null && !this.SdkSlidePart.Slide.Show.Value;
 

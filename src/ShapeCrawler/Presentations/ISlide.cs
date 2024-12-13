@@ -49,15 +49,15 @@ public interface ISlide
     ITextBox? Notes { get; }
 
     /// <summary>
-    ///     List of all text frames on that slide.
-    /// </summary>
-    public IList<ITextBox> TextFrames();
-
-    /// <summary>
     ///     Gets the fill of the slide.
     /// </summary>
     IShapeFill Fill { get; }
     
+    /// <summary>
+    ///     List of all text frames on that slide.
+    /// </summary>
+    public IList<ITextBox> TextFrames();
+
     /// <summary>
     ///     Hides slide.
     /// </summary>
