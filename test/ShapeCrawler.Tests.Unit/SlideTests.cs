@@ -73,7 +73,7 @@ public class SlideTests : SCTest
         slide.Fill.SetPicture(bgImage);
 
         // Assert
-        slide.Background.Should().NotBeNull();
+        slide.Fill.Picture.Should().NotBeNull();
     }
 
     [Test]

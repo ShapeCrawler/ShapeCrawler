@@ -21,7 +21,6 @@ namespace ShapeCrawler.Presentations;
 
 internal sealed class Slide : ISlide
 {
-    private readonly Lazy<SlideBgImage> backgroundImage;
     private readonly SlideSize slideSize;
     private Lazy<CustomXmlPart?> sdkCustomXmlPart;
     private IShapeFill? fill = null;
@@ -33,8 +32,6 @@ internal sealed class Slide : ISlide
     {
         this.SdkSlidePart = sdkSlidePart;
         this.slideSize = slideSize;
-        this.backgroundImage = new Lazy<SlideBgImage>(() =>
-            new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart));
@@ -51,8 +48,6 @@ internal sealed class Slide : ISlide
         get => this.ParseNumber();
         set => this.UpdateNumber(value);
     }
-
-    public IImage? Background => this.backgroundImage.Value;
 
     public string? CustomData
     {
