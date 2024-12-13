@@ -319,6 +319,34 @@ internal sealed class SlideShapes : ISlideShapes
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
     }
 
+    public void AddTopCornersRoundedRectangle(int x, int y, int width, int height)
+    {
+        var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle-rounded-corners.xml");
+        var sdkPShape = new P.Shape(xml);
+        sdkPShape
+            .GetFirstChild<P.ShapeProperties>() !
+            .GetFirstChild<A.PresetGeometry>() !
+            .Preset!
+            .Value = A.ShapeTypeValues.Round2SameRectangle;
+
+        sdkPShape
+            .GetFirstChild<P.NonVisualShapeProperties>() !
+            .GetFirstChild<P.NonVisualDrawingProperties>() !
+            .Name = "Rectangle: Top Corners Rounded";
+
+        var position = new Position(this.sdkSlidePart, sdkPShape);
+        position.UpdateX(x);
+        position.UpdateY(y);
+
+        var size = new ShapeSize(this.sdkSlidePart, sdkPShape);
+        size.UpdateWidth(width);
+        size.UpdateHeight(height);
+
+        new ShapeId(sdkPShape).Update(this.NextShapeId());
+
+        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
+    }
+
     public void AddLine(string xml)
     {
         var newPConnectionShape = new P.ConnectionShape(xml);

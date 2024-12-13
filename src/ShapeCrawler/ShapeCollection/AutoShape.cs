@@ -66,7 +66,12 @@ internal sealed class AutoShape : CopyableShape
                 {
                     return Geometry.RoundRectangle;
                 }
-                
+
+                if(aPresetGeometry.Preset!.Value == A.ShapeTypeValues.Round2SameRectangle)
+                {
+                    return Geometry.Round2SameRectangle;
+                }
+
                 var name = aPresetGeometry.Preset!.ToString();
                 if (name == "rect")
                 {

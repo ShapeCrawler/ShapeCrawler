@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -166,6 +167,12 @@ internal sealed class GroupedShape : IShape
     {
         get => this.TextBox.Text;
         set => this.TextBox.Text = value;
+    }
+
+    public decimal? CornerSize
+    {
+        get => null;
+        set => throw new NotImplementedException();
     }
 
     public void Remove() => this.decoratedShape.Remove();
