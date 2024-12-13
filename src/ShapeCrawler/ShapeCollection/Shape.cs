@@ -150,14 +150,14 @@ internal abstract class Shape : IShape
         {
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
-            var value = aPresetGeometry?.Preset?.Value;
+            var shapeType = aPresetGeometry?.Preset?.Value;
 
-            if (value == A.ShapeTypeValues.RoundRectangle)
+            if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
                 return GetRoundRectangleCornerRoundedness(aPresetGeometry!);
             }
 
-            if (value == A.ShapeTypeValues.Round2SameRectangle)
+            if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
                 return GetTopRoundRectangleCornerRoundedness(aPresetGeometry!);
             }
@@ -175,41 +175,16 @@ internal abstract class Shape : IShape
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
             var shapeType = aPresetGeometry?.Preset?.Value;
-            if (
-                shapeType != A.ShapeTypeValues.RoundRectangle
-                &&
-                shapeType != A.ShapeTypeValues.Round2SameRectangle)
+
+            if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                // Not a rounded rectangle, so has no corner roundedness
-                throw new SCException("Not a rounded rectangle");
+                SetRoundRectangleCornerRoundedness(aPresetGeometry!, value ?? 0m);
             }
 
-            var avList = aPresetGeometry?.AdjustValueList ?? throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
-
-            var sg = avList.GetFirstChild<A.ShapeGuide>();
-
-            if (sg is null)
+            if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                // Has no shape guide. We need to create one
-                if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
-                {
-                    // TODO: Need test coverage for this path
-                    avList.AddChild(new A.ShapeGuide());
-                    sg = avList.GetFirstChild<A.ShapeGuide>() ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
-                    sg.Name = "adj1";
-                    var sg2 = avList.AppendChild(new A.ShapeGuide()) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
-                    sg2.Name = "adj2";
-                    sg2.Formula = "val 0";
-                }
-                else
-                {
-                    avList.AddChild(new A.ShapeGuide());
-                    sg = avList.GetFirstChild<A.ShapeGuide>() ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
-                    sg.Name = "adj";
-                }
+                SetTopRoundRectangleCornerRoundedness(aPresetGeometry!, value ?? 0m);
             }
-
-            sg!.Formula = new StringValue($"val {(int)(value * 50000m)}");
         }
     }
 
@@ -309,7 +284,7 @@ internal abstract class Shape : IShape
         }
 
         var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
-        var sgs = avList.Descendants<A.ShapeGuide>();        
+        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
         if (sgs.Count() == 0)
         {
             // Has no shape guide. That means we're using the DEFAULT value, which is 0.35
@@ -322,6 +297,28 @@ internal abstract class Shape : IShape
         }
 
         return GetCornerRoundednessFrom(sgs.Single());
+    }
+
+    private static void SetRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry, decimal value)
+    {
+        if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
+        {
+            return;
+        }
+
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
+        if (sgs.Count() > 1)
+        {
+            throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
+        }
+
+        // Will add a shape guide if there isn't already one
+        var sg = sgs.SingleOrDefault()
+            ?? avList.AppendChild(new A.ShapeGuide() { Name = "adj" }) 
+            ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+
+        sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
     }
 
     private static decimal? GetTopRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry)
@@ -348,6 +345,31 @@ internal abstract class Shape : IShape
         var sg = sgs.Where(x => x.Name == "adj1").SingleOrDefault() ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`. Please file a GitHub issue.");
 
         return GetCornerRoundednessFrom(sg);
+    }
+
+    private static void SetTopRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry, decimal value)
+    {
+        if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
+        {
+            return;
+        }
+
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj1");
+        if (sgs.Count() > 1)
+        {
+            throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
+        }
+
+        var sg = sgs.SingleOrDefault();
+        if (sg is null)
+        {
+            // Has no adj1 shape guide. We need to add an adj1/adj2 pair
+            sg = avList.AppendChild(new A.ShapeGuide() { Name = "adj1" }) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+            var _ = avList.AppendChild(new A.ShapeGuide() { Name = "adj2", Formula = "val 0" }) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+        }
+
+        sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
     }
 
     private static decimal GetCornerRoundednessFrom(A.ShapeGuide sg)
