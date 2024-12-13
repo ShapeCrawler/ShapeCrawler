@@ -91,6 +91,20 @@ public class SlideTests : SCTest
     }
 
     [Test]
+    public void Fill_SolidColor_gets_existing_fill()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("058_bg-fill.pptx"));
+        var slide = pres.Slides[0];
+
+        // Act
+        var actual = slide.Fill.Color;
+
+        // Assert
+        actual.Should().Be("E6BB90");
+    }
+
+    [Test]
     public void Fill_SolidColor_sets_fill()
     {
         // Arrange
@@ -99,6 +113,23 @@ public class SlideTests : SCTest
         var expected = "ABCDEF";
 
         // Act
+        slide.Fill.SetColor(expected);
+
+        // Assert
+        var actual = slide.Fill.Color;
+        actual.Should().Be(expected);
+    }
+
+    [Test]
+    public void Fill_SolidColor_twice_sets_fill()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var expected = "ABCDEF";
+
+        // Act
+        slide.Fill.SetColor("123456");
         slide.Fill.SetColor(expected);
 
         // Assert
