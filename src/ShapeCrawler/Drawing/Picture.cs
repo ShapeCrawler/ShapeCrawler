@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -8,7 +7,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -56,16 +54,6 @@ internal sealed class Picture : CopyableShape, IPicture
     public override IShapeFill Fill { get; }
     
     public override bool Removeable => true;
-   
-    public override void Remove() => this.pPicture.Remove();
-    
-    public void SendToBack()
-    {
-        var parentPShapeTree = this.PShapeTreeElement.Parent!;
-        parentPShapeTree.RemoveChild(this.pPicture);
-        var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
-        pGrpSpPr.InsertAfterSelf(this.pPicture);
-    }
 
     public CroppingFrame Crop
     {
@@ -77,20 +65,9 @@ internal sealed class Picture : CopyableShape, IPicture
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>();
 
-            if (aSrcRect is null)
-            {
-                return new CroppingFrame(0,0,0,0);
-            }
-
-            decimal fromHundredThousandths(Int32Value? int32) => int32 is not null ? int32 / 100000m : 0;
-
-            return new CroppingFrame(
-                fromHundredThousandths(aSrcRect.Left),
-                fromHundredThousandths(aSrcRect.Right),
-                fromHundredThousandths(aSrcRect.Top),
-                fromHundredThousandths(aSrcRect.Bottom)
-            );
+            return CroppingFrame.FromSourceRectangle(aSrcRect);
         }
+        
         set
         {
             var pic = this.pPicture;
@@ -98,38 +75,21 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? throw new SCException("Malformed image has no blip fill");
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>()
-                ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip);
+                ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
+                ?? throw new SCException("Failed to add source rectangle");
 
-            Int32Value toHundredThousandths(decimal input) => Convert.ToInt32( input * 100000m );
- 
-            aSrcRect.Left = toHundredThousandths(value.left);
-            aSrcRect.Right = toHundredThousandths(value.right);
-            aSrcRect.Top = toHundredThousandths(value.top);
-            aSrcRect.Bottom = toHundredThousandths(value.bottom);
+            value.UpdateSourceRectangle(aSrcRect);
         }
     }
-
-    internal decimal[]? GetCroppingFrameForTesting()
+   
+    public override void Remove() => this.pPicture.Remove();
+    
+    public void SendToBack()
     {
-        var aBlipFill = this.aBlip.GetFirstChild<A.BlipFill>()
-            ?? throw new SCException("Malformed image has no blip fill");
-
-        var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>();
-
-        if (aSrcRect is null)
-        {
-            return null;
-        }
-
-        decimal toHorizontalPixels(Int32Value? int32) => int32 is not null ? new Emus(int32).AsHorizontalPixels() : 0;
-        decimal toVerticalPixels(Int32Value? int32) => int32 is not null ? new Emus(int32).AsVerticalPixels() : 0;
-
-        return [ 
-            toHorizontalPixels(aSrcRect.Left), 
-            toHorizontalPixels(aSrcRect.Right),
-            toVerticalPixels(aSrcRect.Top),
-            toVerticalPixels(aSrcRect.Bottom)
-        ];
+        var parentPShapeTree = this.PShapeTreeElement.Parent!;
+        parentPShapeTree.RemoveChild(this.pPicture);
+        var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
+        pGrpSpPr.InsertAfterSelf(this.pPicture);
     }
 
     internal override void CopyTo(

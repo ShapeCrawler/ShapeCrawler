@@ -22,7 +22,7 @@ public interface IPicture : IShape
     /// <summary>
     ///     Gets or sets the cropping frame for this image.
     /// </summary>
-    CroppingFrame Crop { get; set;}
+    CroppingFrame Crop { get; set; }
 
     /// <summary>
     ///     Sends the shape backward in the z-order.
