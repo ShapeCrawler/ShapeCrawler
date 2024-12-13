@@ -319,7 +319,7 @@ internal sealed class SlideShapes : ISlideShapes
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
     }
 
-    public void AddRounded2SameRectangle(int x, int y, int width, int height)
+    public void AddTopCornersRoundedRectangle(int x, int y, int width, int height)
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle-rounded-corners.xml");
         var sdkPShape = new P.Shape(xml);
@@ -345,8 +345,6 @@ internal sealed class SlideShapes : ISlideShapes
         new ShapeId(sdkPShape).Update(this.NextShapeId());
 
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
-
-
     }
 
     public void AddLine(string xml)

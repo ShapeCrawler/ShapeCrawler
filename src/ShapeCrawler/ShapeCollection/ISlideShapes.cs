@@ -50,7 +50,7 @@ public interface ISlideShapes : IShapes
     /// <summary>
     ///     Adds a new Rectangle: Top Corners Rounded. 
     /// </summary>
-    void AddRounded2SameRectangle(int x, int y, int width, int height);
+    void AddTopCornersRoundedRectangle(int x, int y, int width, int height);
 
     /// <summary>
     ///     Adds a line from XML.

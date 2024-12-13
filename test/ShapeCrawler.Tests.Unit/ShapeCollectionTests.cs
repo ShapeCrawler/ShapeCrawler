@@ -633,7 +633,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
 
         // Act
-        shapes.AddRounded2SameRectangle(50, 60, 100, 70);
+        shapes.AddTopCornersRoundedRectangle(50, 60, 100, 70);
 
         // Assert
         var roundedRectangle = shapes.Last();
