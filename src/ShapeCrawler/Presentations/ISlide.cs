@@ -54,6 +54,11 @@ public interface ISlide
     public IList<ITextBox> TextFrames();
 
     /// <summary>
+    ///     Gets the fill of the slide.
+    /// </summary>
+    IShapeFill Fill { get; }
+    
+    /// <summary>
     ///     Hides slide.
     /// </summary>
     void Hide();

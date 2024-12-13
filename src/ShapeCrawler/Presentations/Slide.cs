@@ -61,6 +61,35 @@ internal sealed class Slide : ISlide
 
     public ITextBox? Notes => this.GetNotes();
 
+    public IShapeFill Fill 
+    { 
+        get
+        {
+            if (_Fill is null)
+            {
+                var pcSld = this.SdkSlidePart.Slide.CommonSlideData;
+                if (pcSld is null)
+                {
+                    pcSld = this.SdkSlidePart.Slide.AppendChild<P.CommonSlideData>(new());
+                }
+                var pBg = pcSld.GetFirstChild<P.Background>();
+                if (pBg is null)
+                {
+                    pBg = pcSld.AppendChild<P.Background>(new());
+                }
+                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>();
+                if (pBgPr is null)
+                {
+                    pBgPr = pBg.AppendChild<P.BackgroundProperties>(new());
+                }
+                _Fill = new ShapeFill(this.SdkSlidePart, pBgPr);
+
+            }
+            return _Fill!;
+        }
+    }
+    private IShapeFill? _Fill = null;
+
     public bool Hidden() => this.SdkSlidePart.Slide.Show is not null && !this.SdkSlidePart.Slide.Show.Value;
 
     public void Hide()

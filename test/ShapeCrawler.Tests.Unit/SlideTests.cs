@@ -91,6 +91,22 @@ public class SlideTests : SCTest
     }
 
     [Test]
+    public void Fill_SolidColor_sets_fill()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var expected = "ABCDEF";
+
+        // Act
+        slide.Fill.SetColor(expected);
+
+        // Assert
+        var actual = slide.Fill.Color;
+        actual.Should().Be(expected);
+    }
+
+    [Test]
     public void CustomData_ReturnsData_WhenCustomDataWasAssigned()
     {
         // Arrange
