@@ -169,7 +169,7 @@ internal sealed class GroupedShape : IShape
         set => this.TextBox.Text = value;
     }
 
-    public decimal? CornerRoundedness
+    public decimal? CornerSize
     {
         get => null;
         set => throw new NotImplementedException();

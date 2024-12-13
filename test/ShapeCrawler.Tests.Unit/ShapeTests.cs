@@ -591,20 +591,20 @@ public class ShapeTests : SCTest
     [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round X", "0.35")]
     [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 1", "1.0")]
     [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.75", "0.61112")]
-    public void CornerRadius_getter_returns_values(IShape shape, string expectedRoundednessStr)
+    public void CornerSize_getter_returns_values(IShape shape, string expectedSizeStr)
     {
         // Arrange
-        var expectedRoundedness = decimal.Parse(expectedRoundednessStr);
+        var expectedSize = decimal.Parse(expectedSizeStr);
 
         // Act
-        var actualRoundedness = shape.CornerRoundedness;
+        var actualSize = shape.CornerSize;
 
         // Assert
-        actualRoundedness.Should().Be(expectedRoundedness);
+        actualSize.Should().Be(expectedSize);
     }
 
     [Test]
-    public void CornerRadius_getter_returns_default_values()
+    public void CornerSize_getter_returns_default_values()
     {
         // Arrange
         var pres = new Presentation();
@@ -613,10 +613,10 @@ public class ShapeTests : SCTest
         var shape = shapes[0];
 
         // Act
-        var actualRoundedness = shape.CornerRoundedness;
+        var actualSize = shape.CornerSize;
 
         // Assert
-        actualRoundedness.Should().Be(0.35m,"Rounded rectangles with no specified corner roundedness behave as if the value was set to 0.35.");
+        actualSize.Should().Be(0.35m,"Rounded rectangles with no specified corner size behave as if the value was set to 0.35.");
     }
 
     [Test]
@@ -624,36 +624,36 @@ public class ShapeTests : SCTest
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded X", "0.35")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 1", "1")]
-    public void CornerRadius_getter_returns_values_for_top_rounded(IShape shape, string expectedRoundednessStr)
+    public void CornerSize_getter_returns_values_for_top_rounded(IShape shape, string expectedSizeStr)
     {
         // Arrange
-        var expectedRoundedness = decimal.Parse(expectedRoundednessStr);
+        var expectedSize = decimal.Parse(expectedSizeStr);
 
         // Act
-        var actualRoundedness = shape.CornerRoundedness;
+        var actualSize = shape.CornerSize;
 
         // Assert
-        actualRoundedness.Should().Be(expectedRoundedness);
+        actualSize.Should().Be(expectedSize);
     }
 
     [Test]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0.125-ish", "0.5")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0.5")]
-    public void CornerRadius_setter_sets_values_for_top_rounded(IShape shape, string newRoundednessStr)
+    public void CornerSize_setter_sets_values_for_top_rounded(IShape shape, string expectedSizeStr)
     {
         // Arrange
-        var expected = decimal.Parse(newRoundednessStr);
+        var expectedSize = decimal.Parse(expectedSizeStr);
 
         // Act
-        shape.CornerRoundedness = expected;
+        shape.CornerSize = expectedSize;
 
         // Assert
-        var actualRoundedness = shape.CornerRoundedness;
-        actualRoundedness.Should().Be(expected);
+        var actualSize = shape.CornerSize;
+        actualSize.Should().Be(expectedSize);
     }
 
     [Test]
-    public void CornerRadius_setter_sets_values()
+    public void CornerSize_setter_sets_values()
     {
         // Arrange
         var pres = new Presentation();
@@ -666,10 +666,10 @@ public class ShapeTests : SCTest
         // this value is a factor of 50,000. (e.g. here we use 1/10, which will save/load
         // without loss of precision.)
         var expected = 0.1m;
-        shape.CornerRoundedness = expected;
+        shape.CornerSize = expected;
 
         // Assert
-        shape.CornerRoundedness.Should().Be(expected);
+        shape.CornerSize.Should().Be(expected);
         pres.Validate();
     }
 }

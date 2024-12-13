@@ -55,15 +55,14 @@ public interface IShape : IPosition
     Geometry GeometryType { get; }
 
     /// <summary>
-    ///     Gets or sets the degree of roundedness of the corners in this shape. Range: 0.0-1.0.
+    ///     Gets or sets the size of the corners in this shape. Range: 0.0-1.0.
     /// </summary>
     /// <remarks>
     ///     Applicable only to rounded rectangle geometry.
     ///     Value 0.0 makes shape appear as a regular rectangle with no corners.
-    ///     Value 1.0 is the maximum roundedness: 1/2 length of shortest side.
-    ///     Value null indicates no roundedness OR default roundedness (0.35).
+    ///     Value 1.0 is the maximum size of a corner: 1/2 length of shortest side.
     /// </remarks>
-    decimal? CornerRoundedness { get; set; }
+    decimal? CornerSize { get; set; }
 
     /// <summary>
     ///     Gets or sets custom data string for the shape.

@@ -144,7 +144,7 @@ internal abstract class Shape : IShape
         
     public virtual Geometry GeometryType => Geometry.Rectangle;
 
-    public decimal? CornerRoundedness
+    public decimal? CornerSize
     {
         get
         {
@@ -154,12 +154,12 @@ internal abstract class Shape : IShape
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                return GetRoundRectangleCornerRoundedness(aPresetGeometry!);
+                return ExtractCornerSizeFromRoundRectangle(aPresetGeometry!);
             }
 
             if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                return GetTopRoundRectangleCornerRoundedness(aPresetGeometry!);
+                return ExtractCornerSizeFromRound2SameRectangle(aPresetGeometry!);
             }
 
             return null;
@@ -169,7 +169,7 @@ internal abstract class Shape : IShape
         {
             if (value is null)
             {
-                throw new SCException("Not allowed to set null roundedness. Try 0 to straighten the corner.");
+                throw new SCException("Not allowed to set null size. Try 0 to straighten the corner.");
             }
 
             var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
@@ -178,12 +178,12 @@ internal abstract class Shape : IShape
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                SetRoundRectangleCornerRoundedness(aPresetGeometry!, value ?? 0m);
+                InjectCornerSizeIntoRoundRectangle(aPresetGeometry!, value ?? 0m);
             }
 
             if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                SetTopRoundRectangleCornerRoundedness(aPresetGeometry!, value ?? 0m);
+                InjectCornerSizeIntoRound2SameRectangle(aPresetGeometry!, value ?? 0m);
             }
         }
     }
@@ -276,7 +276,7 @@ internal abstract class Shape : IShape
     
     public virtual void Remove() => this.PShapeTreeElement.Remove();
 
-    private static decimal? GetRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry)
+    private static decimal? ExtractCornerSizeFromRoundRectangle(A.PresetGeometry aPresetGeometry)
     {
         if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
         {
@@ -296,10 +296,10 @@ internal abstract class Shape : IShape
             throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
         }
 
-        return GetCornerRoundednessFrom(sgs.Single());
+        return ExtractCornerSizeFromShapeGuide(sgs.Single());
     }
 
-    private static void SetRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry, decimal value)
+    private static void InjectCornerSizeIntoRoundRectangle(A.PresetGeometry aPresetGeometry, decimal value)
     {
         if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
         {
@@ -321,7 +321,7 @@ internal abstract class Shape : IShape
         sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
     }
 
-    private static decimal? GetTopRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry)
+    private static decimal? ExtractCornerSizeFromRound2SameRectangle(A.PresetGeometry aPresetGeometry)
     {
         if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
         {
@@ -344,10 +344,10 @@ internal abstract class Shape : IShape
 
         var sg = sgs.Where(x => x.Name == "adj1").SingleOrDefault() ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`. Please file a GitHub issue.");
 
-        return GetCornerRoundednessFrom(sg);
+        return ExtractCornerSizeFromShapeGuide(sg);
     }
 
-    private static void SetTopRoundRectangleCornerRoundedness(A.PresetGeometry aPresetGeometry, decimal value)
+    private static void InjectCornerSizeIntoRound2SameRectangle(A.PresetGeometry aPresetGeometry, decimal value)
     {
         if (aPresetGeometry.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
         {
@@ -372,7 +372,7 @@ internal abstract class Shape : IShape
         sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
     }
 
-    private static decimal GetCornerRoundednessFrom(A.ShapeGuide sg)
+    private static decimal ExtractCornerSizeFromShapeGuide(A.ShapeGuide sg)
     {
         var formula = sg.Formula?.Value ?? throw new SCException("Malformed rounded rectangle. Shape guide has no formula. Please file a GitHub issue.");
 
