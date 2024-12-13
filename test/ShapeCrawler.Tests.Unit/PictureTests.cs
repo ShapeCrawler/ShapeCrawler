@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 // ReSharper disable TooManyChainedReferences
@@ -176,5 +178,22 @@ public class PictureTests : SCTest
         
         // Assert
         shapes[0].Name.Should().Be("Picture 2");
+    }
+
+    [Test]
+    [SlideShape("059_crop-images.pptx", 1, "None", "0,0,0,0")]
+    [SlideShape("059_crop-images.pptx", 1, "Top 0.33", "0,0,0.33333,0")]
+    [SlideShape("059_crop-images.pptx", 1, "Left 0.5", "0.5005,0,0,0")]
+    [SlideShape("059_crop-images.pptx", 1, "Bottom 0.66", "0,0,-0.00001,0.66667")]
+    public void Crop_getter_gets_expected_values(IShape shape, string expectedFrameStr)
+    {
+        // Arrange
+        var expected = CroppingFrame.Parse(expectedFrameStr);
+
+        // Act
+        var actual = shape.As<Picture>().Crop;
+
+        // Assert
+        actual.Should().Be(expected);
     }
 }
