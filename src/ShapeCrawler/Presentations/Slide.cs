@@ -21,9 +21,9 @@ namespace ShapeCrawler.Presentations;
 
 internal sealed class Slide : ISlide
 {
-    private readonly Lazy<SlideBgImage> backgroundImage;
     private readonly SlideSize slideSize;
     private Lazy<CustomXmlPart?> sdkCustomXmlPart;
+    private IShapeFill? fill = null;
 
     internal Slide(
         SlidePart sdkSlidePart,
@@ -32,8 +32,6 @@ internal sealed class Slide : ISlide
     {
         this.SdkSlidePart = sdkSlidePart;
         this.slideSize = slideSize;
-        this.backgroundImage = new Lazy<SlideBgImage>(() =>
-            new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart));
@@ -51,8 +49,6 @@ internal sealed class Slide : ISlide
         set => this.UpdateNumber(value);
     }
 
-    public IImage? Background => this.backgroundImage.Value;
-
     public string? CustomData
     {
         get => this.GetCustomData();
@@ -60,6 +56,29 @@ internal sealed class Slide : ISlide
     }
 
     public ITextBox? Notes => this.GetNotes();
+
+    public IShapeFill Fill 
+    { 
+        get
+        {
+            if (this.fill is null)
+            {
+                var pcSld = this.SdkSlidePart.Slide.CommonSlideData
+                    ?? this.SdkSlidePart.Slide.AppendChild<P.CommonSlideData>(new());
+
+                // Background element needs to be first, else it gets ignored.
+                var pBg = pcSld.GetFirstChild<P.Background>()
+                    ?? pcSld.InsertAt<P.Background>(new(),0);
+
+                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>()
+                    ?? pBg.AppendChild<P.BackgroundProperties>(new());
+
+                this.fill = new ShapeFill(this.SdkSlidePart, pBgPr);
+            }
+
+            return this.fill!;
+        }
+    }
 
     public bool Hidden() => this.SdkSlidePart.Slide.Show is not null && !this.SdkSlidePart.Slide.Show.Value;
 

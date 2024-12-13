@@ -44,11 +44,11 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void Background_SetImage_updates_background()
+    public void Fill_Picture_Update_updates_background()
     {
         // Arrange
         var pre = new Presentation(StreamOf("009_table.pptx"));
-        var backgroundImage = pre.Slides[0].Background;
+        var backgroundImage = pre.Slides[0].Fill.Picture;
         var image = StreamOf("png image-2.png");
         var bytesBefore = backgroundImage.AsByteArray();
 
@@ -61,7 +61,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void Background_SetImage_updates_background_of_new_slide()
+    public void Fill_SetPicture_sets_background_of_new_slide()
     {
         // Arrange
         var pres = new Presentation();
@@ -70,24 +70,71 @@ public class SlideTests : SCTest
         var bgImage = StreamOf("png image-2.png");
 
         // Act
-        slide.Background.Update(bgImage);
+        slide.Fill.SetPicture(bgImage);
 
         // Assert
-        slide.Background.Should().NotBeNull();
+        slide.Fill.Picture.Should().NotBeNull();
     }
 
     [Test]
-    public void Background_AsByteArray_throws_exception_slide_doesnt_have_background()
+    public void Fill_Picture_AsByteArray_throws_exception_slide_doesnt_have_background()
     {
         // Arrange
         var pres = new Presentation(StreamOf("009_table.pptx"));
         var slide = pres.Slides[1];
 
         // Act
-        var act = () => slide.Background.AsByteArray();
+        var act = () => slide.Fill.Picture.AsByteArray();
 
         // Assert
         act.Should().Throw<Exception>();
+    }
+
+    [Test]
+    public void Fill_SolidColor_gets_existing_fill()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("058_bg-fill.pptx"));
+        var slide = pres.Slides[0];
+
+        // Act
+        var actual = slide.Fill.Color;
+
+        // Assert
+        actual.Should().Be("E6BB90");
+    }
+
+    [Test]
+    public void Fill_SolidColor_sets_fill()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var expected = "ABCDEF";
+
+        // Act
+        slide.Fill.SetColor(expected);
+
+        // Assert
+        var actual = slide.Fill.Color;
+        actual.Should().Be(expected);
+    }
+
+    [Test]
+    public void Fill_SolidColor_twice_sets_fill()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var expected = "ABCDEF";
+
+        // Act
+        slide.Fill.SetColor("123456");
+        slide.Fill.SetColor(expected);
+
+        // Assert
+        var actual = slide.Fill.Color;
+        actual.Should().Be(expected);
     }
 
     [Test]
