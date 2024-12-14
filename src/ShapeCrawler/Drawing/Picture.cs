@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -79,6 +80,25 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? throw new SCException("Failed to add source rectangle");
 
             value.UpdateSourceRectangle(aSrcRect);
+        }
+    }
+    
+    public decimal Transparency
+    {
+        get
+        {
+            var aAlphaModFix = aBlip.GetFirstChild<A.AlphaModulationFixed>();
+            var amount = aAlphaModFix?.Amount?.Value ?? 0;
+            return 1m - amount / 100000m;
+        }
+
+        set
+        {
+            var aAlphaModFix = aBlip.GetFirstChild<A.AlphaModulationFixed>()
+                ?? aBlip.AppendChild<A.AlphaModulationFixed>(new())
+                ?? throw new SCException("Failed to add AlphaModFix");
+
+            aAlphaModFix.Amount = Convert.ToInt32((1m - value) * 100000m);
         }
     }
    

@@ -25,6 +25,11 @@ public interface IPicture : IShape
     CroppingFrame Crop { get; set; }
 
     /// <summary>
+    ///     Gets or sets the transparency for this image. Range is 0.0 (fully opaque, default) to 0.1 (fully transparent)
+    /// </summary>
+    decimal Transparency { get; set; }
+
+    /// <summary>
     ///     Sends the shape backward in the z-order.
     /// </summary>
     void SendToBack();
