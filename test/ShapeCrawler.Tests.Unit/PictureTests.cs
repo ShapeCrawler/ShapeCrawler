@@ -228,8 +228,8 @@ public class PictureTests : SCTest
     {
         // Arrange
         var expected = decimal.Parse(expectedStr);
-        var pres = new Presentation(StreamOf("059_crop-images.pptx"));
-        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("None");
+        var pres = new Presentation(StreamOf("060_picture-transparency.pptx"));
+        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("50%");
 
         // Act
         picture.Transparency = expected;
