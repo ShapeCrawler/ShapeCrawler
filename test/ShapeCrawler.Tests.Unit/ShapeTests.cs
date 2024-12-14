@@ -672,4 +672,50 @@ public class ShapeTests : SCTest
         shape.CornerSize.Should().Be(expected);
         pres.Validate();
     }
+    
+    [Test]
+    public void Name_Setter_sets_shape_name()
+    {
+        // Arrange
+        var pptx = StreamOf("006_1 slides.pptx");
+        var pres = new Presentation(pptx);
+        var stream = new MemoryStream();
+        var shape = pres.Slides[0].Shapes.GetByName("Shape 1");
+
+        // Act
+        shape.Name = "New Name";
+
+        // Assert
+        pres.SaveAs(stream);
+        pres = new Presentation(stream);
+        shape = pres.Slides[0].Shapes.GetByName("New Name");
+        shape.Name.Should().Be("New Name");
+        pres.Validate();
+    }
+    
+    [Test]
+    public void Name_Setter_sets_grouped_shape_name()
+    {
+        // Arrange
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
+        var stream = new MemoryStream();
+        var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
+        var shape1 = groupShape.Shapes.GetByName("Shape 1");
+        var shape2 = groupShape.Shapes.GetByName("Shape 2");
+
+        // Act
+        groupShape.Name = "New Group Name";
+
+        // Assert
+        pres.SaveAs(stream);
+        pres = new Presentation(stream);
+        groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("New Group Name");
+        shape1 = groupShape.Shapes.GetByName("Shape 1");
+        shape2 = groupShape.Shapes.GetByName("Shape 2");
+        groupShape.Name.Should().Be("New Group Name");
+        shape1.Name.Should().Be("Shape 1");
+        shape2.Name.Should().Be("Shape 2");
+        pres.Validate();
+    }
 }
