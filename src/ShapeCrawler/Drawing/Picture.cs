@@ -88,7 +88,7 @@ internal sealed class Picture : CopyableShape, IPicture
         get
         {
             var aAlphaModFix = aBlip.GetFirstChild<A.AlphaModulationFixed>();
-            var amount = aAlphaModFix?.Amount?.Value ?? 0;
+            var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
             return 1m - amount / 100000m;
         }
 

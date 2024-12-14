@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Drawing;
@@ -191,7 +192,7 @@ public class PictureTests : SCTest
         var expected = CroppingFrame.Parse(expectedFrameStr);
 
         // Act
-        var actual = shape.As<Picture>().Crop;
+        var actual = shape.As<IPicture>().Crop;
 
         // Assert
         actual.Should().Be(expected);
@@ -235,6 +236,24 @@ public class PictureTests : SCTest
 
         // Assert
         var actual = picture.Transparency;
+        actual.Should().Be(expected);
+    }
+
+    [Test]
+    [SlideShape("060_picture-transparency.pptx", 1, "0%", "0")]
+    [SlideShape("060_picture-transparency.pptx", 1, "20%", "0.2")]
+    [SlideShape("060_picture-transparency.pptx", 1, "50%", "0.5")]
+    [SlideShape("060_picture-transparency.pptx", 1, "80%", "0.8")]
+    [SlideShape("060_picture-transparency.pptx", 1, "100%", "1")]
+    public void Transparency_getter_gets_expected_values(IShape shape, string expectedStr)
+    {
+        // Arrange
+        var expected = decimal.Parse(expectedStr);
+
+        // Act
+        var actual = shape.As<IPicture>().Transparency;
+
+        // Assert
         actual.Should().Be(expected);
     }
 }

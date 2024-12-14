@@ -202,6 +202,8 @@
     <EmbeddedResource Include="Assets\tables-case001.pptx" />
     <None Remove="Assets\059_crop-images.pptx" />
     <EmbeddedResource Include="Assets\059_crop-images.pptx" />
+    <None Remove="Assets\060_picture-transparency.pptx" />
+    <EmbeddedResource Include="Assets\060_picture-transparency.pptx" />
     <None Remove="Assets\images\png image-1.png" />
     <EmbeddedResource Include="Assets\images\png image-1.png" />
     <None Remove="Assets\images\png image-2.png" />
