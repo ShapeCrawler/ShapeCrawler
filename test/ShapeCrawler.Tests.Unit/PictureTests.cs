@@ -224,10 +224,9 @@ public class PictureTests : SCTest
     [TestCase("1")]
     [TestCase("0.2")]
     [TestCase("0.5")]
-    public void Transparency_setter_sets_expected_values(string expectedStr)
+    public void Transparency_setter_sets_expected_values(decimal expected)
     {
         // Arrange
-        var expected = decimal.Parse(expectedStr);
         var pres = new Presentation(StreamOf("060_picture-transparency.pptx"));
         var picture = pres.Slides[0].Shapes.GetByName<IPicture>("50%");
 
