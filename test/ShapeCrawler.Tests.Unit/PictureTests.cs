@@ -221,9 +221,9 @@ public class PictureTests : SCTest
 
     [Explicit]
     [TestCase("0")]
-    [TestCase("1")]
-    [TestCase("0.2")]
-    [TestCase("0.5")]
+    [TestCase("100")]
+    [TestCase("20")]
+    [TestCase("50")]
     public void Transparency_setter_sets_expected_values(decimal expected)
     {
         // Arrange
@@ -240,10 +240,10 @@ public class PictureTests : SCTest
 
     [Test]
     [SlideShape("060_picture-transparency.pptx", 1, "0%", "0")]
-    [SlideShape("060_picture-transparency.pptx", 1, "20%", "0.2")]
-    [SlideShape("060_picture-transparency.pptx", 1, "50%", "0.5")]
-    [SlideShape("060_picture-transparency.pptx", 1, "80%", "0.8")]
-    [SlideShape("060_picture-transparency.pptx", 1, "100%", "1")]
+    [SlideShape("060_picture-transparency.pptx", 1, "20%", "20")]
+    [SlideShape("060_picture-transparency.pptx", 1, "50%", "50")]
+    [SlideShape("060_picture-transparency.pptx", 1, "80%", "80")]
+    [SlideShape("060_picture-transparency.pptx", 1, "100%", "100")]
     public void Transparency_getter_gets_expected_values(IShape shape, string expectedStr)
     {
         // Arrange
