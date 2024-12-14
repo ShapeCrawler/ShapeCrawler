@@ -95,7 +95,7 @@ internal sealed class Picture : CopyableShape, IPicture
         set
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>()
-                ?? this.aBlip.AppendChild<A.AlphaModulationFixed>(new())
+                ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(),0)
                 ?? throw new SCException("Failed to add AlphaModFix");
 
             aAlphaModFix.Amount = Convert.ToInt32((1m - value) * 100000m);
