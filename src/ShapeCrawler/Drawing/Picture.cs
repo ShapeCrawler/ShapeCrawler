@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -53,6 +54,33 @@ internal sealed class Picture : CopyableShape, IPicture
     public override IShapeFill Fill { get; }
     
     public override bool Removeable => true;
+
+    public CroppingFrame Crop
+    {
+        get
+        {
+            var pic = this.pPicture;
+            var aBlipFill = pic.BlipFill
+                ?? throw new SCException("Malformed image has no blip fill");
+
+            var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>();
+
+            return CroppingFrame.FromSourceRectangle(aSrcRect);
+        }
+        
+        set
+        {
+            var pic = this.pPicture;
+            var aBlipFill = pic.BlipFill
+                ?? throw new SCException("Malformed image has no blip fill");
+
+            var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>()
+                ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
+                ?? throw new SCException("Failed to add source rectangle");
+
+            value.UpdateSourceRectangle(aSrcRect);
+        }
+    }
    
     public override void Remove() => this.pPicture.Remove();
     
