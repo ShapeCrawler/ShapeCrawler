@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -10,22 +11,21 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class ShapeGeometry : IShapeGeometry
 {
-    private readonly OpenXmlElement sdkPShapeTreeElement;
+    private readonly P.ShapeProperties pShapeProperties;
 
-    internal ShapeGeometry(OpenXmlElement sdkPShapeTreeElement)
+    internal ShapeGeometry(P.ShapeProperties pShapeProperties)
     {
-        this.sdkPShapeTreeElement = sdkPShapeTreeElement;
+        this.pShapeProperties = pShapeProperties;
     }
 
     public Geometry GeometryType 
     { 
         get
         {
-            var aPresetGeometry = this.APresetGeometry();
-            var preset = aPresetGeometry?.Preset;
+            var preset = this.APresetGeometry?.Preset;
             if (preset is null)
             {
-                if (this.PShapeProperties().OfType<A.CustomGeometry>().Any())
+                if (this.pShapeProperties.OfType<A.CustomGeometry>().Any())
                 {
                     return Geometry.Custom;
                 }
@@ -33,21 +33,57 @@ internal sealed class ShapeGeometry : IShapeGeometry
             else
             {                
                 var name = preset.ToString()?.ToLowerInvariant().Replace("rect", "rectangle");
-                Enum.TryParse(name, true, out Geometry geometryType);
-                return geometryType;    
+                if (!Enum.TryParse(name, true, out Geometry geometryType))
+                {
+                    throw new SCException($"Unable to parse {name}");
+                }
+
+                return geometryType;
             }
             
             return Geometry.Rectangle;
         }
         
-        set => throw new System.NotImplementedException(); 
+        set
+        {
+            if (value == Geometry.Custom)
+            {
+                throw new NotImplementedException("Can't set custom geometry");
+            }
+
+            var aPresetGeometry = this.APresetGeometry;
+            if (aPresetGeometry?.Preset is null && this.pShapeProperties.OfType<A.CustomGeometry>().Any())
+            {
+                throw new NotImplementedException("Can't set new geometry on a shape with custom geometry");
+            }
+
+            aPresetGeometry ??= this.pShapeProperties.InsertAt<A.PresetGeometry>(new(), 0)
+                ?? throw new SCException("Unable to add new preset geometry");
+
+            var name = value.ToString().Replace("Rectangle", "Rect");
+
+#if NETSTANDARD2_0
+            var camelName = char.ToLowerInvariant(name[0]) + name.Substring(1);
+#else
+            var camelName = char.ToLowerInvariant(name[0]) + name[1..];
+#endif
+
+            var newPreset = new ShapeTypeValues(camelName);
+
+            if (!(newPreset as IEnumValue).IsValid)
+            {
+                throw new SCException($"Invalid preset value {camelName}");
+            }
+        
+            aPresetGeometry.Preset = new ShapeTypeValues(camelName);
+        }
     }
 
     public decimal? CornerSize
     {
         get
         {
-            var shapeType = this.APresetGeometry()?.Preset?.Value;
+            var shapeType = this.APresetGeometry?.Preset?.Value;
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
@@ -69,7 +105,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 throw new SCException("Not allowed to set null size. Try 0 to straighten the corner.");
             }
 
-            var shapeType = this.APresetGeometry()?.Preset?.Value;
+            var shapeType = this.APresetGeometry?.Preset?.Value;
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
@@ -82,6 +118,8 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
         }
     }
+
+    private A.PresetGeometry? APresetGeometry => this.pShapeProperties.GetFirstChild<A.PresetGeometry>();
 
     private static decimal ExtractCornerSizeFromShapeGuide(A.ShapeGuide sg)
     {
@@ -108,7 +146,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
     private decimal? ExtractCornerSizeFromRoundRectangle()
     {
-        var aPresetGeometry = this.APresetGeometry();
+        var aPresetGeometry = this.APresetGeometry;
         if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
         {
             return null;
@@ -132,7 +170,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
     private void InjectCornerSizeIntoRoundRectangle(decimal value)
     {
-        var aPresetGeometry = this.APresetGeometry();
+        var aPresetGeometry = this.APresetGeometry;
         if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
         {
             return;
@@ -155,7 +193,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
     private decimal? ExtractCornerSizeFromRound2SameRectangle()
     {
-        var aPresetGeometry = this.APresetGeometry();
+        var aPresetGeometry = this.APresetGeometry;
         if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
         {
             return null;
@@ -182,7 +220,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
     private void InjectCornerSizeIntoRound2SameRectangle(decimal value)
     {
-        var aPresetGeometry = this.APresetGeometry();
+        var aPresetGeometry = this.APresetGeometry;
         if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
         {
             return;
@@ -207,15 +245,5 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
     
         sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
-    }
-
-    private A.PresetGeometry? APresetGeometry()
-    {
-        return this.PShapeProperties().GetFirstChild<A.PresetGeometry>();
-    }
-
-    private P.ShapeProperties PShapeProperties()
-    {
-        return this.sdkPShapeTreeElement.Descendants<P.ShapeProperties>().First();
     }
 }

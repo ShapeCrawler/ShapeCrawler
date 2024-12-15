@@ -32,7 +32,7 @@ internal sealed class AutoShape : CopyableShape
         this.pShape = pShape;
         this.Outline = new SlideShapeOutline(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
         this.Fill = new ShapeFill(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
-        this.shapeGeometry = new ShapeGeometry(pShape);
+        this.shapeGeometry = new ShapeGeometry(pShape.Descendants<P.ShapeProperties>().First());
     }
 
     public override bool HasOutline => true;

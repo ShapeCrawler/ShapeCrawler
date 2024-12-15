@@ -672,4 +672,21 @@ public class ShapeTests : SCTest
         shape.CornerSize.Should().Be(expected);
         pres.Validate();
     }
+
+    [Test]
+    public void Geometry_setter_sets_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddRectangle(50, 60, 100, 70);
+        var shape = shapes.Last();
+
+        // Act
+        shape.GeometryType = Geometry.RoundRectangle;
+
+        // Assert
+        shape.GeometryType.Should().Be(Geometry.RoundRectangle);
+        pres.Validate();
+    }
 }
