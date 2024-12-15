@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
@@ -11,6 +12,20 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class ShapeGeometry : IShapeGeometry
 {
+    private static readonly Dictionary<Geometry, ShapeTypeValues> GeometryToShapeTypeValuesMap = new()
+    {
+        { Geometry.RoundedRectangle, A.ShapeTypeValues.RoundRectangle },
+        { Geometry.SingleCornerRoundedRectangle, A.ShapeTypeValues.Round1Rectangle },
+        { Geometry.TopCornersRoundedRectangle, A.ShapeTypeValues.Round2SameRectangle },
+        { Geometry.DiagonalCornersRoundedRectangle, A.ShapeTypeValues.Round2DiagonalRectangle },
+        { Geometry.UTurnArrow, A.ShapeTypeValues.UTurnArrow },
+        { Geometry.LineInverse, A.ShapeTypeValues.LineInverse },
+        { Geometry.RightTriangle, A.ShapeTypeValues.RightTriangle },
+    };
+    
+    private static readonly Dictionary<ShapeTypeValues, Geometry> ShapeTypeValuesToGeometryMap 
+        = GeometryToShapeTypeValuesMap.ToDictionary(x => x.Value, x => x.Key);
+
     private readonly P.ShapeProperties pShapeProperties;
 
     internal ShapeGeometry(P.ShapeProperties pShapeProperties)
@@ -36,17 +51,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
             else
             {
-                var presetString = preset.ToString();
-                var name = presetString switch
+                if (!ShapeTypeValuesToGeometryMap.TryGetValue(preset, out Geometry geometryType))
                 {
-                    "lineInv" => "LineInverse",
-                    "rtTriangle" => "RightTriangle",
-                    null => throw new SCException("Malformed preset: null"),
-                    _ => presetString.ToLowerInvariant().Replace("rect", "rectangle").Replace("diag", "diagonal")
-                };
-                if (!Enum.TryParse(name, true, out Geometry geometryType))
-                {
-                    throw new SCException($"Unable to parse {name}");
+                    var presetString = preset!.ToString() !;
+                    var name = presetString.ToLowerInvariant().Replace("rect", "rectangle").Replace("diag", "diagonal");
+                    if (!Enum.TryParse(name, true, out geometryType))
+                    {
+                        throw new SCException($"Unable to parse {name}");
+                    }
                 }
 
                 return geometryType;
@@ -69,28 +81,19 @@ internal sealed class ShapeGeometry : IShapeGeometry
             aPresetGeometry ??= this.pShapeProperties.InsertAt<A.PresetGeometry>(new(), 0)
                 ?? throw new SCException("Unable to add new preset geometry");
 
-            var name = value switch
+            if (!GeometryToShapeTypeValuesMap.TryGetValue(value, out var newPreset))
             {
-                Geometry.UTurnArrow => ((IEnumValue)A.ShapeTypeValues.UTurnArrow).Value,
-                Geometry.LineInverse => ((IEnumValue)A.ShapeTypeValues.LineInverse).Value,
-                Geometry.RightTriangle => ((IEnumValue)A.ShapeTypeValues.RightTriangle).Value,
-                _ => value.ToString().Replace("Rectangle", "Rect").Replace("Diagonal", "Diag")
-            };
-            
-#if NETSTANDARD2_0
-            var camelName = char.ToLowerInvariant(name[0]) + name.Substring(1);
-#else
-            var camelName = char.ToLowerInvariant(name[0]) + name[1..];
-#endif
-
-            var newPreset = new ShapeTypeValues(camelName);
+                var name = value.ToString().Replace("Rectangle", "Rect").Replace("Diagonal", "Diag");
+                var camelName = ToCamelCaseInvariant(name);        
+                newPreset = new ShapeTypeValues(camelName);
+            }
 
             if (!(newPreset as IEnumValue).IsValid)
             {
-                throw new SCException($"Invalid preset value {camelName}");
+                throw new SCException($"Invalid preset value {newPreset}");
             }
-        
-            aPresetGeometry.Preset = new ShapeTypeValues(camelName);
+
+            aPresetGeometry.Preset = newPreset;
 
             // Presets have different expectations of an adjusted value lists, so changing the
             // preset means we must remove any existing adjustments, and create a new empty one
@@ -140,6 +143,25 @@ internal sealed class ShapeGeometry : IShapeGeometry
     }
 
     private A.PresetGeometry? APresetGeometry => this.pShapeProperties.GetFirstChild<A.PresetGeometry>();
+
+    private static string ToCamelCaseInvariant(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        if (value.Length == 1)
+        {
+            return value.ToLowerInvariant();
+        }
+
+#if NETSTANDARD2_0
+        return char.ToLowerInvariant(value[0]) + value.Substring(1);
+#else
+        return char.ToLowerInvariant(value[0]) + value[1..];
+#endif
+    }
 
     private static decimal ExtractCornerSizeFromShapeGuide(A.ShapeGuide sg)
     {

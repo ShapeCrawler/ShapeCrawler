@@ -610,7 +610,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddShape(10, 20, 100, 200, Geometry.RoundRectangle);
+        shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
 
         // Act
@@ -659,7 +659,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddShape(10, 20, 100, 200, Geometry.RoundRectangle);
+        shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
 
         // Act
@@ -674,15 +674,15 @@ public class ShapeTests : SCTest
         pres.Validate();
     }
 
-    [TestCase("RoundRectangle")]
+    [TestCase("RoundedRectangle")]
     [TestCase("Triangle")]
     [TestCase("Diamond")]
     [TestCase("Parallelogram")]
     [TestCase("Trapezoid")]
     [TestCase("NonIsoscelesTrapezoid")]
-    [TestCase("Round2DiagonalRectangle")]
-    [TestCase("Round2SameRectangle")]
-    [TestCase("Round1Rectangle")]
+    [TestCase("DiagonalCornersRoundedRectangle")]
+    [TestCase("TopCornersRoundedRectangle")]
+    [TestCase("SingleCornerRoundedRectangle")]
     [TestCase("UTurnArrow")]
     [TestCase("LineInverse")]
     [TestCase("RightTriangle")]
@@ -727,11 +727,11 @@ public class ShapeTests : SCTest
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
-        shape.GeometryType = Geometry.RoundRectangle;
+        shape.GeometryType = Geometry.RoundedRectangle;
         shape.CornerSize = 1;
 
         // Act
-        shape.GeometryType = Geometry.Round2SameRectangle;
+        shape.GeometryType = Geometry.TopCornersRoundedRectangle;
 
         // Assert
         shape.CornerSize.Should().Be(0.35m,"Default unadjusted corner size is 0.35");
