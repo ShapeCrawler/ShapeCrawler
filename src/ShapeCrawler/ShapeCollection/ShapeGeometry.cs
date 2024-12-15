@@ -55,10 +55,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 {
                     var presetString = preset!.ToString() !;
                     var name = presetString.ToLowerInvariant().Replace("rect", "rectangle").Replace("diag", "diagonal");
-                    if (!Enum.TryParse(name, true, out geometryType))
-                    {
-                        throw new SCException($"Unable to parse {name}");
-                    }
+                    return (Geometry)Enum.Parse(typeof(Geometry), name, true);
                 }
 
                 return geometryType;
