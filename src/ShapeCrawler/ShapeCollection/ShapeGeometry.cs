@@ -29,6 +29,10 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 {
                     return Geometry.Custom;
                 }
+                else
+                {
+                    return Geometry.Rectangle;
+                }
             }
             else
             {                
@@ -39,9 +43,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 }
 
                 return geometryType;
-            }
-            
-            return Geometry.Rectangle;
+            }            
         }
         
         set
@@ -76,6 +78,11 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
         
             aPresetGeometry.Preset = new ShapeTypeValues(camelName);
+
+            // Presets have different expectations of an adjusted value lists, so changing the
+            // preset means we must remove any existing adjustments, and create a new empty one
+            aPresetGeometry.RemoveAllChildren<A.AdjustValueList>();
+            aPresetGeometry.AppendChild<A.AdjustValueList>(new());
         }
     }
 

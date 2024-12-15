@@ -689,4 +689,22 @@ public class ShapeTests : SCTest
         shape.GeometryType.Should().Be(Geometry.RoundRectangle);
         pres.Validate();
     }
+
+    [Test]
+    public void Geometry_setter_resets_old_adjustments()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddRectangle(50, 60, 100, 70);
+        var shape = shapes.Last();
+        shape.GeometryType = Geometry.RoundRectangle;
+        shape.CornerSize = 1;
+
+        // Act
+        shape.GeometryType = Geometry.Round2SameRectangle;
+
+        // Assert
+        shape.CornerSize.Should().Be(0.35m,"Default unadjusted corner size is 0.35");
+    }
 }
