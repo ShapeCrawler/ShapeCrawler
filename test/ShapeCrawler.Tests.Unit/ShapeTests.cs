@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
+using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -688,6 +689,22 @@ public class ShapeTests : SCTest
         // Assert
         shape.GeometryType.Should().Be(Geometry.RoundRectangle);
         pres.Validate();
+    }
+
+    [Test]
+    public void Geometry_setter_wont_set_custom()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddRectangle(50, 60, 100, 70);
+        var shape = shapes.Last();
+
+        // Act
+        var act = () => shape.GeometryType = Geometry.Custom;
+
+        // Assert
+        act.Should().Throw<SCException>("Custom geometry cannot be set");
     }
 
     [Test]

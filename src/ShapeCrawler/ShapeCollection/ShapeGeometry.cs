@@ -50,13 +50,13 @@ internal sealed class ShapeGeometry : IShapeGeometry
         {
             if (value == Geometry.Custom)
             {
-                throw new NotImplementedException("Can't set custom geometry");
+                throw new SCException("Can't set custom geometry");
             }
 
             var aPresetGeometry = this.APresetGeometry;
             if (aPresetGeometry?.Preset is null && this.pShapeProperties.OfType<A.CustomGeometry>().Any())
             {
-                throw new NotImplementedException("Can't set new geometry on a shape with custom geometry");
+                throw new SCException("Can't set new geometry on a shape with custom geometry");
             }
 
             aPresetGeometry ??= this.pShapeProperties.InsertAt<A.PresetGeometry>(new(), 0)
