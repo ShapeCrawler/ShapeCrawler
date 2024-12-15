@@ -39,7 +39,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
         set => this.decoratedShape.GeometryType = value;
     }
 
-    public override decimal? CornerSize {
+    public override decimal CornerSize {
         get => this.decoratedShape.CornerSize;
         set => this.decoratedShape.CornerSize = value;
     }

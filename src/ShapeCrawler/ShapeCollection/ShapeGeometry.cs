@@ -102,7 +102,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
     }
 
-    public decimal? CornerSize
+    public decimal CornerSize
     {
         get
         {
@@ -118,26 +118,21 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 return this.ExtractCornerSizeFromRound2SameRectangle();
             }
 
-            return null;
+            return 0;
         }
         
         set
         {
-            if (value is null)
-            {
-                throw new SCException("Not allowed to set null size. Try 0 to straighten the corner.");
-            }
-
             var shapeType = this.APresetGeometry?.Preset?.Value;
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                this.InjectCornerSizeIntoRoundRectangle(value.Value);
+                this.InjectCornerSizeIntoRoundRectangle(value);
             }
 
             if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                this.InjectCornerSizeIntoRound2SameRectangle(value.Value);
+                this.InjectCornerSizeIntoRound2SameRectangle(value);
             }
         }
     }
@@ -183,28 +178,28 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
         var value = int.Parse(match.Groups["value"].Value);
 
-        return value / 50000m;
+        return value / 500m;
     }
 
-    private decimal? ExtractCornerSizeFromRoundRectangle()
+    private decimal ExtractCornerSizeFromRoundRectangle()
     {
         var aPresetGeometry = this.APresetGeometry;
         if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
         {
-            return null;
+            return 0;
         }
 
-        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList.");
         var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
         if (!sgs.Any())
         {
-            // Has no shape guide. That means we're using the DEFAULT value, which is 0.35
-            return 0.35m;
+            // Has no shape guide. That means we're using the DEFAULT value, which is 35
+            return 35m;
         }
 
         if (sgs.Count() > 1)
         {
-            throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
+            throw new SCException("Malformed rounded rectangle. Has multiple shape guides.");
         }
 
         return ExtractCornerSizeFromShapeGuide(sgs.Single());
@@ -218,11 +213,11 @@ internal sealed class ShapeGeometry : IShapeGeometry
             return;
         }
 
-        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList.");
         var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
         if (sgs.Count() > 1)
         {
-            throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
+            throw new SCException("Malformed rounded rectangle. Has multiple shape guides.");
         }
 
         // Will add a shape guide if there isn't already one
@@ -230,32 +225,32 @@ internal sealed class ShapeGeometry : IShapeGeometry
             ?? avList.AppendChild(new A.ShapeGuide() { Name = "adj" }) 
             ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
 
-        sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
+        sg.Formula = new StringValue($"val {(int)(value * 500m)}");        
     }
 
-    private decimal? ExtractCornerSizeFromRound2SameRectangle()
+    private decimal ExtractCornerSizeFromRound2SameRectangle()
     {
         var aPresetGeometry = this.APresetGeometry;
         if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
         {
-            return null;
+            return 0;
         }
 
-        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList.");
         var sgs = avList.Descendants<A.ShapeGuide>();
         var count = sgs.Count();
         if (count == 0)
         {
-            // Has no shape guide. That means we're using the DEFAULT value, which is 0.35
-            return 0.35m;
+            // Has no shape guide. That means we're using the DEFAULT value, which is 35
+            return 35m;
         }
 
         if (count != 2)
         {
-            throw new SCException($"Malformed rounded rectangle. Expected 2 shape guides, found {count}. Please file a GitHub issue.");
+            throw new SCException($"Malformed rounded rectangle. Expected 2 shape guides, found {count}.");
         }
 
-        var sg = sgs.SingleOrDefault(x => x.Name == "adj1") ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`. Please file a GitHub issue.");
+        var sg = sgs.SingleOrDefault(x => x.Name == "adj1") ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`");
 
         return ExtractCornerSizeFromShapeGuide(sg);
     }
@@ -268,11 +263,11 @@ internal sealed class ShapeGeometry : IShapeGeometry
             return;
         }
 
-        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList. Please file a GitHub issue.");
+        var avList = aPresetGeometry.AdjustValueList ?? throw new SCException("Malformed rounded rectangle. Missing AdjustValueList.");
         var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj1");
         if (sgs.Count() > 1)
         {
-            throw new SCException("Malformed rounded rectangle. Has multiple shape guides. Please file a GitHub issue.");
+            throw new SCException("Malformed rounded rectangle. Has multiple shape guides.");
         }
 
         var sg = sgs.SingleOrDefault();
@@ -286,6 +281,6 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
         }
     
-        sg.Formula = new StringValue($"val {(int)(value * 50000m)}");        
+        sg.Formula = new StringValue($"val {(int)(value * 500m)}");        
     }
 }

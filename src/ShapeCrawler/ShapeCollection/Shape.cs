@@ -147,9 +147,9 @@ internal abstract class Shape : IShape
         set => throw new SCException("Changing geometry of this shape is not supported");
     }
      
-    public virtual decimal? CornerSize
+    public virtual decimal CornerSize
     {
-        get => null;
+        get => 0;
         set => throw new SCException("Changing corner size of this shape is not supported");
     }
 

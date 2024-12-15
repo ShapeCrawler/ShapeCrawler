@@ -13,15 +13,12 @@ public interface IShapeGeometry
     Geometry GeometryType { get; set; }
 
     /// <summary>
-    ///     Gets or sets the size of the corners in this shape. Range: 0.0-1.0.
+    ///     Gets or sets the size of the corners in this shape. Range: 0-100.
     /// </summary>
     /// <remarks>
-    ///     Applicable only to rounded rectangle geometry.
-    ///     Value 0.0 makes shape appear as a regular rectangle with no corners.
-    ///     Value 1.0 is the maximum size of a corner: 1/2 length of shortest side.
-    ///     
-    ///     TODO: Move to 0-100 range, following the other similar props.
-    ///     TODO: Remove null. '0' is a square corner universally.
+    ///     Applicable only to rounded rectangle and top corners rounded geometry.
+    ///     Value 0 makes shape appear as a regular rectangle with no corners.
+    ///     Value 100 is the maximum size of a corner: 1/2 length of shortest side.
     /// </remarks>
-    decimal? CornerSize { get; set; }
+    decimal CornerSize { get; set; }
 }

@@ -137,7 +137,7 @@ internal sealed class GroupedShape : IShape
         set => this.decoratedShape.GeometryType = value;
     }
 
-    public decimal? CornerSize {
+    public decimal CornerSize {
         get => this.decoratedShape.CornerSize;
         set => this.decoratedShape.CornerSize = value;
     }

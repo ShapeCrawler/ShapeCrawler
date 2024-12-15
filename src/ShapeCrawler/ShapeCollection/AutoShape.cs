@@ -52,7 +52,7 @@ internal sealed class AutoShape : CopyableShape
         set => this.shapeGeometry.GeometryType = value;
     }
 
-    public override decimal? CornerSize {
+    public override decimal CornerSize {
         get => this.shapeGeometry.CornerSize;
         set => this.shapeGeometry.CornerSize = value;
     }
