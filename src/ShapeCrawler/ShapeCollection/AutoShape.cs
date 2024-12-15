@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
@@ -13,6 +11,8 @@ namespace ShapeCrawler.ShapeCollection;
 internal sealed class AutoShape : CopyableShape
 {
     private readonly P.Shape pShape;
+
+    private readonly ShapeGeometry shapeGeometry;
 
     internal AutoShape(
         OpenXmlPart sdkTypedOpenXmlPart,
@@ -32,6 +32,7 @@ internal sealed class AutoShape : CopyableShape
         this.pShape = pShape;
         this.Outline = new SlideShapeOutline(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
         this.Fill = new ShapeFill(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.shapeGeometry = new ShapeGeometry(pShape);
     }
 
     public override bool HasOutline => true;
@@ -46,44 +47,14 @@ internal sealed class AutoShape : CopyableShape
     
     public override bool Removeable => true;
 
-    public override Geometry GeometryType
-    {
-        get
-        {
-            var spPr = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
-            var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
+    public override Geometry GeometryType {
+        get => this.shapeGeometry.GeometryType;
+        set => this.shapeGeometry.GeometryType = value;
+    }
 
-            if (aPresetGeometry == null)
-            {
-                if (spPr.OfType<A.CustomGeometry>().Any())
-                {
-                    return Geometry.Custom;
-                }
-            }
-            else
-            {
-                if(aPresetGeometry.Preset!.Value == A.ShapeTypeValues.RoundRectangle)
-                {
-                    return Geometry.RoundRectangle;
-                }
-
-                if(aPresetGeometry.Preset!.Value == A.ShapeTypeValues.Round2SameRectangle)
-                {
-                    return Geometry.Round2SameRectangle;
-                }
-
-                var name = aPresetGeometry.Preset!.ToString();
-                if (name == "rect")
-                {
-                    return Geometry.Rectangle;
-                }
-
-                Enum.TryParse(name, true, out Geometry geometryType);
-                return geometryType;    
-            }
-            
-            return Geometry.Rectangle;
-        }
+    public override decimal? CornerSize {
+        get => this.shapeGeometry.CornerSize;
+        set => this.shapeGeometry.CornerSize = value;
     }
 
     public override void Remove() => this.pShape.Remove();
