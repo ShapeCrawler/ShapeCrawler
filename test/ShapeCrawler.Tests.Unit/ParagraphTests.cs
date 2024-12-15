@@ -13,7 +13,7 @@ public class ParagraphTests : SCTest
     {
         // Act
         var pres = new Presentation();
-        pres.Slides[0].Shapes.AddRectangle(100,100, 500, 100);
+        pres.Slides[0].Shapes.AddShape(100,100, 500, 100);
         var addedShape = (IShape)pres.Slides[0].Shapes.Last();
         addedShape.TextBox!.Paragraphs.Add();
         var paragraph = addedShape.TextBox.Paragraphs.Last();
@@ -146,7 +146,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
-        slide.Shapes.AddRectangle(10, 10, 10, 10);
+        slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = (IShape)slide.Shapes.Last();
         var paragraph = addedShape.TextBox!.Paragraphs[0];
 

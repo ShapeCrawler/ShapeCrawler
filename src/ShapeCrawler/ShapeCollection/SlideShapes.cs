@@ -283,28 +283,14 @@ internal sealed class SlideShapes : ISlideShapes
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
     }
 
-    public void AddRectangle(int x, int y, int width, int height)
+    public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
         var sdkPShape = new P.Shape(xml);
 
-        var position = new Position(this.sdkSlidePart, sdkPShape);
-        position.UpdateX(x);
-        position.UpdateY(y);
-
-        var size = new ShapeSize(this.sdkSlidePart, sdkPShape);
-        size.UpdateWidth(width);
-        size.UpdateHeight(height);
-
-        new ShapeId(sdkPShape).Update(this.NextShapeId());
-
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
-    }
-
-    public void AddRoundedRectangle(int x, int y, int width, int height)
-    {
-        var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle-rounded-corners.xml");
-        var sdkPShape = new P.Shape(xml);
+        var cNvPr = sdkPShape.Descendants<P.NonVisualDrawingProperties>().FirstOrDefault()
+            ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
+        cNvPr.Name = geometry.ToString();
 
         var position = new Position(this.sdkSlidePart, sdkPShape);
         position.UpdateX(x);
@@ -314,33 +300,9 @@ internal sealed class SlideShapes : ISlideShapes
         size.UpdateWidth(width);
         size.UpdateHeight(height);
 
-        new ShapeId(sdkPShape).Update(this.NextShapeId());
-
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
-    }
-
-    public void AddTopCornersRoundedRectangle(int x, int y, int width, int height)
-    {
-        var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle-rounded-corners.xml");
-        var sdkPShape = new P.Shape(xml);
-        sdkPShape
-            .GetFirstChild<P.ShapeProperties>() !
-            .GetFirstChild<A.PresetGeometry>() !
-            .Preset!
-            .Value = A.ShapeTypeValues.Round2SameRectangle;
-
-        sdkPShape
-            .GetFirstChild<P.NonVisualShapeProperties>() !
-            .GetFirstChild<P.NonVisualDrawingProperties>() !
-            .Name = "Rectangle: Top Corners Rounded";
-
-        var position = new Position(this.sdkSlidePart, sdkPShape);
-        position.UpdateX(x);
-        position.UpdateY(y);
-
-        var size = new ShapeSize(this.sdkSlidePart, sdkPShape);
-        size.UpdateWidth(width);
-        size.UpdateHeight(height);
+        var spPr = sdkPShape.GetFirstChild<P.ShapeProperties>()
+            ?? throw new SCException("Malformed shape: No shape properties");
+        new ShapeGeometry(spPr) { GeometryType = geometry };
 
         new ShapeId(sdkPShape).Update(this.NextShapeId());
 

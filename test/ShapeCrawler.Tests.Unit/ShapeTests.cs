@@ -610,7 +610,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRoundedRectangle(10, 20, 100, 200);
+        shapes.AddShape(10, 20, 100, 200, Geometry.RoundRectangle);
         var shape = shapes[0];
 
         // Act
@@ -659,7 +659,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRoundedRectangle(10, 20, 100, 200);
+        shapes.AddShape(10, 20, 100, 200, Geometry.RoundRectangle);
         var shape = shapes[0];
 
         // Act
@@ -692,7 +692,7 @@ public class ShapeTests : SCTest
         var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRectangle(50, 60, 100, 70);
+        shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
 
         // Act
@@ -709,7 +709,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRectangle(50, 60, 100, 70);
+        shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
 
         // Act
@@ -725,7 +725,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRectangle(50, 60, 100, 70);
+        shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
         shape.GeometryType = Geometry.RoundRectangle;
         shape.CornerSize = 1;

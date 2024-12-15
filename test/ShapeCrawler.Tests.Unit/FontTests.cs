@@ -14,7 +14,7 @@ public class FontTests : SCTest
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
-        slide.Shapes.AddRectangle(10, 10, 10, 10);
+        slide.Shapes.AddShape(10, 10, 10, 10);
         var rectangle = slide.Shapes.Last();
         rectangle.TextBox.Paragraphs[0].Portions.AddText("test");
         var font = rectangle.TextBox!.Paragraphs[0].Portions[0].Font;
