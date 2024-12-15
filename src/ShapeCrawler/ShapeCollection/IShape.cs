@@ -23,11 +23,11 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets identifier of the shape.
     /// </summary>
     int Id { get; }
-
+    
     /// <summary>
-    ///     Gets name of the shape.
+    ///    Gets or sets the name of the shape.
     /// </summary>
-    string Name { get; }
+    string Name { get; set; }
 
     /// <summary>
     ///     Gets or sets the alternative text for the shape.

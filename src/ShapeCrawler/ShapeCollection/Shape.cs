@@ -54,8 +54,12 @@ internal abstract class Shape : IShape
 
     public int Id => this.shapeId.Value();
 
-    public string Name => this.PShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
-    
+    public string Name
+    {
+        get => this.PShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
+        set => this.PShapeTreeElement.NonVisualDrawingProperties().Name = new StringValue(value);
+    }
+
     public string AltText
     {
         get => this.PShapeTreeElement.NonVisualDrawingProperties().Description?.Value ?? string.Empty;

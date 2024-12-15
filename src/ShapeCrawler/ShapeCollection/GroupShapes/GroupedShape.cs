@@ -118,7 +118,11 @@ internal sealed class GroupedShape : IShape
 
     public int Id => this.decoratedShape.Id;
 
-    public string Name => this.decoratedShape.Name;
+    public string Name
+    {
+        get => this.decoratedShape.Name;
+        set => this.decoratedShape.Name = value;
+    }
 
     public string AltText
     {
