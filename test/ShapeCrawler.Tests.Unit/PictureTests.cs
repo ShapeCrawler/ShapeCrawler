@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Drawing;
@@ -191,7 +192,7 @@ public class PictureTests : SCTest
         var expected = CroppingFrame.Parse(expectedFrameStr);
 
         // Act
-        var actual = shape.As<Picture>().Crop;
+        var actual = shape.As<IPicture>().Crop;
 
         // Assert
         actual.Should().Be(expected);
@@ -215,6 +216,43 @@ public class PictureTests : SCTest
 
         // Assert
         var actual = picture.Crop;
+        actual.Should().Be(expected);
+    }
+
+    [Explicit]
+    [TestCase("0")]
+    [TestCase("100")]
+    [TestCase("20")]
+    [TestCase("50")]
+    public void Transparency_setter_sets_expected_values(decimal expected)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("060_picture-transparency.pptx"));
+        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("50%");
+
+        // Act
+        picture.Transparency = expected;
+
+        // Assert
+        var actual = picture.Transparency;
+        actual.Should().Be(expected);
+    }
+
+    [Test]
+    [SlideShape("060_picture-transparency.pptx", 1, "0%", "0")]
+    [SlideShape("060_picture-transparency.pptx", 1, "20%", "20")]
+    [SlideShape("060_picture-transparency.pptx", 1, "50%", "50")]
+    [SlideShape("060_picture-transparency.pptx", 1, "80%", "80")]
+    [SlideShape("060_picture-transparency.pptx", 1, "100%", "100")]
+    public void Transparency_getter_gets_expected_values(IShape shape, string expectedStr)
+    {
+        // Arrange
+        var expected = decimal.Parse(expectedStr);
+
+        // Act
+        var actual = shape.As<IPicture>().Transparency;
+
+        // Assert
         actual.Should().Be(expected);
     }
 }
