@@ -302,7 +302,8 @@ internal sealed class SlideShapes : ISlideShapes
 
         var spPr = sdkPShape.GetFirstChild<P.ShapeProperties>()
             ?? throw new SCException("Malformed shape: No shape properties");
-        new ShapeGeometry(spPr) { GeometryType = geometry };
+        var shapeGeometry = new ShapeGeometry(spPr);
+        shapeGeometry.UpdateGeometry(geometry);
 
         new ShapeId(sdkPShape).Update(this.NextShapeId());
 

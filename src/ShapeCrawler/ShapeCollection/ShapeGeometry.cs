@@ -138,6 +138,11 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
     private A.PresetGeometry? APresetGeometry => this.pShapeProperties.GetFirstChild<A.PresetGeometry>();
 
+    internal void UpdateGeometry(Geometry type)
+    {
+        this.GeometryType = type;
+    }
+
     private static string ToCamelCaseInvariant(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
