@@ -32,23 +32,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
             else
             {                
-                // TODO: Reconsider these two clauses. I think they will be picked up fine by the enum tryparse below.
-                if(preset.Value == A.ShapeTypeValues.RoundRectangle)
-                {
-                    return Geometry.RoundRectangle;
-                }
-
-                if(preset.Value == A.ShapeTypeValues.Round2SameRectangle)
-                {
-                    return Geometry.Round2SameRectangle;
-                }
-
-                var name = preset.ToString();
-                if (name == "rect")
-                {
-                    return Geometry.Rectangle;
-                }
-
+                var name = preset.ToString()?.ToLowerInvariant().Replace("rect", "rectangle");
                 Enum.TryParse(name, true, out Geometry geometryType);
                 return geometryType;    
             }
