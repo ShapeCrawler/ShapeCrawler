@@ -35,8 +35,15 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 }
             }
             else
-            {                
-                var name = preset.ToString()?.ToLowerInvariant().Replace("rect", "rectangle").Replace("diag", "diagonal");
+            {
+                var presetString = preset.ToString();
+                var name = presetString switch
+                {
+                    "lineInv" => "LineInverse",
+                    "rtTriangle" => "RightTriangle",
+                    null => throw new SCException("Malformed preset: null"),
+                    _ => presetString.ToLowerInvariant().Replace("rect", "rectangle").Replace("diag", "diagonal")
+                };
                 if (!Enum.TryParse(name, true, out Geometry geometryType))
                 {
                     throw new SCException($"Unable to parse {name}");
@@ -62,8 +69,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
             aPresetGeometry ??= this.pShapeProperties.InsertAt<A.PresetGeometry>(new(), 0)
                 ?? throw new SCException("Unable to add new preset geometry");
 
-            var name = value.ToString().Replace("Rectangle", "Rect").Replace("Diagonal", "Diag");
-
+            var name = value switch
+            {
+                Geometry.UTurnArrow => ((IEnumValue)A.ShapeTypeValues.UTurnArrow).Value,
+                Geometry.LineInverse => ((IEnumValue)A.ShapeTypeValues.LineInverse).Value,
+                Geometry.RightTriangle => ((IEnumValue)A.ShapeTypeValues.RightTriangle).Value,
+                _ => value.ToString().Replace("Rectangle", "Rect").Replace("Diagonal", "Diag")
+            };
+            
 #if NETSTANDARD2_0
             var camelName = char.ToLowerInvariant(name[0]) + name.Substring(1);
 #else

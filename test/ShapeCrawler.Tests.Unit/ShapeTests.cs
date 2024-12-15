@@ -683,6 +683,9 @@ public class ShapeTests : SCTest
     [TestCase("Round2DiagonalRectangle")]
     [TestCase("Round2SameRectangle")]
     [TestCase("Round1Rectangle")]
+    [TestCase("UTurnArrow")]
+    [TestCase("LineInverse")]
+    [TestCase("RightTriangle")]
     public void Geometry_setter_sets_values(string expectedStr)
     {
         // Arrange
