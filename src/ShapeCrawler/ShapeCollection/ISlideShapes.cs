@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using ShapeCrawler.Tables;
 
 #pragma warning disable IDE0130
@@ -45,11 +46,13 @@ public interface ISlideShapes : IShapes
     /// <summary>
     ///     Adds a new Rectangle: Rounded Corners. 
     /// </summary>
+    [Obsolete("Add a normal rectangle then change the geometry")]
     void AddRoundedRectangle(int x, int y, int width, int height);
 
     /// <summary>
     ///     Adds a new Rectangle: Top Corners Rounded. 
     /// </summary>
+    [Obsolete("Add a normal rectangle then change the geometry")]
     void AddTopCornersRoundedRectangle(int x, int y, int width, int height);
 
     /// <summary>
