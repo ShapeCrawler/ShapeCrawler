@@ -674,20 +674,29 @@ public class ShapeTests : SCTest
         pres.Validate();
     }
 
-    [Test]
-    public void Geometry_setter_sets_values()
+    [TestCase("RoundRectangle")]
+    [TestCase("Triangle")]
+    [TestCase("Diamond")]
+    [TestCase("Parallelogram")]
+    [TestCase("Trapezoid")]
+    [TestCase("NonIsoscelesTrapezoid")]
+    [TestCase("Round2DiagonalRectangle")]
+    [TestCase("Round2SameRectangle")]
+    [TestCase("Round1Rectangle")]
+    public void Geometry_setter_sets_values(string expectedStr)
     {
         // Arrange
+        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddRectangle(50, 60, 100, 70);
         var shape = shapes.Last();
 
         // Act
-        shape.GeometryType = Geometry.RoundRectangle;
+        shape.GeometryType = expected;
 
         // Assert
-        shape.GeometryType.Should().Be(Geometry.RoundRectangle);
+        shape.GeometryType.Should().Be(expected);
         pres.Validate();
     }
 
