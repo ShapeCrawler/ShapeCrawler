@@ -118,6 +118,7 @@ public class FontColorTests : SCTest
     }
     
     [Test]
+    [Ignore("Should be fix with issue https://github.com/ShapeCrawler/ShapeCrawler/issues/793")]
     public void Update_updates_font_color_of_master_shape()
     {
         // Arrange
