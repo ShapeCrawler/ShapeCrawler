@@ -7,7 +7,7 @@ namespace ShapeCrawler.Drawing;
 ///     The portion within an image which is visible. 
 /// </summary>
 /// <remarks>
-///     Values are a fraction of the whole image, e.g. `0.25` means that 25% of the image is removed
+///     Values are a percentage of the whole image, e.g. `25` means that 25% of the image is removed
 ///     on the given edge.
 ///     An image which is fully visible will have 0 for all values.
 /// </remarks>

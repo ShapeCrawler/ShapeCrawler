@@ -153,10 +153,10 @@ internal sealed class Picture : CopyableShape, IPicture
     /// <param name="aSrcRect">Rectangle to be updated with our values.</param>
     private static void ApplyCropToSourceRectangle(CroppingFrame frame, A.SourceRectangle aSrcRect)
     {
-        aSrcRect.Left = ToHundredThousandths(frame.left);
-        aSrcRect.Right = ToHundredThousandths(frame.right);
-        aSrcRect.Top = ToHundredThousandths(frame.top);
-        aSrcRect.Bottom = ToHundredThousandths(frame.bottom);        
+        aSrcRect.Left = ToThousandths(frame.left);
+        aSrcRect.Right = ToThousandths(frame.right);
+        aSrcRect.Top = ToThousandths(frame.top);
+        aSrcRect.Bottom = ToThousandths(frame.bottom);        
     }
 
     /// <summary>
@@ -172,17 +172,17 @@ internal sealed class Picture : CopyableShape, IPicture
         }
 
         return new CroppingFrame(
-            FromHundredThousandths(aSrcRect.Left),
-            FromHundredThousandths(aSrcRect.Right),
-            FromHundredThousandths(aSrcRect.Top),
-            FromHundredThousandths(aSrcRect.Bottom));
+            FromThousandths(aSrcRect.Left),
+            FromThousandths(aSrcRect.Right),
+            FromThousandths(aSrcRect.Top),
+            FromThousandths(aSrcRect.Bottom));
     }
 
-    private static decimal FromHundredThousandths(Int32Value? int32) => 
-        int32 is not null ? int32 / 100000m : 0;
+    private static decimal FromThousandths(Int32Value? int32) => 
+        int32 is not null ? int32 / 1000m : 0;
 
-    private static Int32Value? ToHundredThousandths(decimal input) => 
-        input == 0 ? null : Convert.ToInt32(input * 100000m);
+    private static Int32Value? ToThousandths(decimal input) => 
+        input == 0 ? null : Convert.ToInt32(input * 1000m);
 
     private string? GetSvgContent()
     {

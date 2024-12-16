@@ -183,9 +183,9 @@ public class PictureTests : SCTest
 
     [Test]
     [SlideShape("059_crop-images.pptx", 1, "None", "0,0,0,0")]
-    [SlideShape("059_crop-images.pptx", 1, "Top 0.33", "0,0,0.33333,0")]
-    [SlideShape("059_crop-images.pptx", 1, "Left 0.5", "0.5005,0,0,0")]
-    [SlideShape("059_crop-images.pptx", 1, "Bottom 0.66", "0,0,-0.00001,0.66667")]
+    [SlideShape("059_crop-images.pptx", 1, "Top 0.33", "0,0,33.333,0")]
+    [SlideShape("059_crop-images.pptx", 1, "Left 0.5", "50.05,0,0,0")]
+    [SlideShape("059_crop-images.pptx", 1, "Bottom 0.66", "0,0,-0.001,66.667")]
     public void Crop_getter_gets_expected_values(IShape shape, string expectedFrameStr)
     {
         // Arrange
@@ -199,11 +199,11 @@ public class PictureTests : SCTest
     }
 
     [TestCase("0,0,0,0")]
-    [TestCase("0.3,0,0,0")]
-    [TestCase("0,0.4,0,0")]
-    [TestCase("0,0,0.5,0")]
-    [TestCase("0,0,0,0.7")]
-    [TestCase("0.1,0.2,0.3,0.5")]
+    [TestCase("30,0,0,0")]
+    [TestCase("0,40,0,0")]
+    [TestCase("0,0,50,0")]
+    [TestCase("0,0,0,70")]
+    [TestCase("10,20,30,50")]
     public void Crop_setter_sets_expected_values(string expectedFrameStr)
     {
         // Arrange
