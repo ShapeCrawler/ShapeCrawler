@@ -219,6 +219,40 @@ public class PictureTests : SCTest
         actual.Should().Be(expected);
     }
 
+    [Test]
+    [SlideShape("059_crop-images.pptx", 1, "None", "Rectangle")]
+    [SlideShape("059_crop-images.pptx", 1, "RoundedRectangle", "RoundedRectangle")]
+    [SlideShape("059_crop-images.pptx", 1, "TopCornersRoundedRectangle", "TopCornersRoundedRectangle")]
+    [SlideShape("059_crop-images.pptx", 1, "Star5", "Star5")]
+    public void Picture_geometry_getter_gets_expected_values(IShape shape, string expectedStr)
+    {
+        // Arrange
+        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+
+        // Act
+        var actual = shape.As<IPicture>().GeometryType;
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Test]
+    [SlideShape("059_crop-images.pptx", 1, "None", "0")]
+    [SlideShape("059_crop-images.pptx", 1, "RoundedRectangle", "33.104")]
+    [SlideShape("059_crop-images.pptx", 1, "TopCornersRoundedRectangle", "32.87")]
+    [SlideShape("059_crop-images.pptx", 1, "Star5", "0")]
+    public void Picture_corner_size_getter_gets_expected_values(IShape shape, string expectedStr)
+    {
+        // Arrange
+        var expected = decimal.Parse(expectedStr);
+
+        // Act
+        var actual = shape.As<IPicture>().CornerSize;
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
     [Explicit]
     [TestCase("0")]
     [TestCase("100")]
