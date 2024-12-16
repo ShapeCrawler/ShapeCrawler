@@ -122,7 +122,7 @@ public class FontColorTests : SCTest
     public void Update_updates_font_color_of_master_shape()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("font-color.pptx"));
+        var pres = new Presentation(StreamOf("061_font-color.pptx"));
         var fontColor = pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         
         // Act
@@ -130,7 +130,7 @@ public class FontColorTests : SCTest
         
         // Assert
         pres.SaveAs("result.pptx");
-        // Open the result.pptx in PowerPoint and check the color of the TextBox 1. It should be green.
+        // Open result.pptx in PowerPoint and check the color of the TextBox 1. It should be green.
         
         // TODO: add assertion
     }
