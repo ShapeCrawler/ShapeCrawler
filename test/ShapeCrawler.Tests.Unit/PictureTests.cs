@@ -253,6 +253,37 @@ public class PictureTests : SCTest
         actual.Should().Be(expected);
     }
 
+    [TestCase("RoundedRectangle")]
+    [TestCase("Triangle")]
+    [TestCase("Diamond")]
+    [TestCase("Parallelogram")]
+    [TestCase("Trapezoid")]
+    [TestCase("NonIsoscelesTrapezoid")]
+    [TestCase("DiagonalCornersRoundedRectangle")]
+    [TestCase("TopCornersRoundedRectangle")]
+    [TestCase("SingleCornerRoundedRectangle")]
+    [TestCase("UTurnArrow")]
+    [TestCase("LineInverse")]
+    [TestCase("RightTriangle")]
+    public void Picture_geometry_setter_sets_expected_values(string expectedStr)
+    {
+        // Arrange
+        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        image.Position = 0;
+        shapes.AddPicture(image);
+        var picture = (IPicture)shapes.Last().As<IPicture>();
+
+        // Act
+        picture.GeometryType = expected;
+
+        // Assert
+        picture.GeometryType.Should().Be(expected);
+        pres.Validate();
+    }
+
     [Explicit]
     [TestCase("0")]
     [TestCase("100")]
