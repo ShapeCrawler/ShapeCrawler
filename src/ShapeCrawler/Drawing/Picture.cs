@@ -18,6 +18,7 @@ internal sealed class Picture : CopyableShape, IPicture
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
+    private readonly ShapeGeometry shapeGeometry;
 
     internal Picture(
         OpenXmlPart sdkTypedOpenXmlPart,
@@ -36,14 +37,23 @@ internal sealed class Picture : CopyableShape, IPicture
         this.blipEmbed = aBlip.Embed!;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
         this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
+        this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
     }
 
     public IImage Image { get; }
    
     public string? SvgContent => this.GetSvgContent();
     
-    public override Geometry GeometryType => Geometry.Rectangle;
-    
+    public override Geometry GeometryType {
+        get => this.shapeGeometry.GeometryType;
+        set => this.shapeGeometry.GeometryType = value;
+    }
+
+    public override decimal CornerSize {
+        get => this.shapeGeometry.CornerSize;
+        set => this.shapeGeometry.CornerSize = value;
+    }
+
     public override ShapeType ShapeType => ShapeType.Picture;
     
     public override bool HasOutline => true;
