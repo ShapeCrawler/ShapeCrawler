@@ -76,7 +76,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>();
 
-            return CroppingFrame.FromSourceRectangle(aSrcRect);
+            return CroppingFrameFromSourceRectangle(aSrcRect);
         }
         
         set
@@ -89,7 +89,7 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
                 ?? throw new SCException("Failed to add source rectangle");
 
-            value.UpdateSourceRectangle(aSrcRect);
+            ApplyCropToSourceRectangle(value,aSrcRect);
         }
     }
     
@@ -145,7 +145,45 @@ internal sealed class Picture : CopyableShape, IPicture
         var copy = this.PShapeTreeElement.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
-    
+
+    /// <summary>
+    ///     Set the cropping frame values onto the supplied source rectangle.
+    /// </summary>
+    /// <param name="frame">Source values to get cropping values.</param>
+    /// <param name="aSrcRect">Rectangle to be updated with our values.</param>
+    private static void ApplyCropToSourceRectangle(CroppingFrame frame, A.SourceRectangle aSrcRect)
+    {
+        aSrcRect.Left = ToHundredThousandths(frame.left);
+        aSrcRect.Right = ToHundredThousandths(frame.right);
+        aSrcRect.Top = ToHundredThousandths(frame.top);
+        aSrcRect.Bottom = ToHundredThousandths(frame.bottom);        
+    }
+
+    /// <summary>
+    ///     Convert a source rectangle to a cropping frame.
+    /// </summary>
+    /// <param name="aSrcRect">Source rectangle which contains the needed frame.</param>
+    /// <returns>Resulting frame.</returns>
+    private static CroppingFrame CroppingFrameFromSourceRectangle(A.SourceRectangle? aSrcRect)
+    {
+        if (aSrcRect is null)
+        {
+            return new CroppingFrame(0,0,0,0);
+        }
+
+        return new CroppingFrame(
+            FromHundredThousandths(aSrcRect.Left),
+            FromHundredThousandths(aSrcRect.Right),
+            FromHundredThousandths(aSrcRect.Top),
+            FromHundredThousandths(aSrcRect.Bottom));
+    }
+
+    private static decimal FromHundredThousandths(Int32Value? int32) => 
+        int32 is not null ? int32 / 100000m : 0;
+
+    private static Int32Value? ToHundredThousandths(decimal input) => 
+        input == 0 ? null : Convert.ToInt32(input * 100000m);
+
     private string? GetSvgContent()
     {
         var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
