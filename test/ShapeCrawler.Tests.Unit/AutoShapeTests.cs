@@ -13,7 +13,7 @@ public class AutoShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRectangle(10, 20, 30, 40);
+        shapes.AddShape(10, 20, 30, 40);
         var rtSlideShape = (IRootShape)shapes.Single();
 
         // Act

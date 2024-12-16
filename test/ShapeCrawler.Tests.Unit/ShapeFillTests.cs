@@ -142,7 +142,7 @@ public class ShapeFillTests : SCTest
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
-        slide.Shapes.AddRectangle(0, 0, 100, 100);
+        slide.Shapes.AddShape(0, 0, 100, 100);
         var shape = slide.Shapes.Last();
 
         // Act

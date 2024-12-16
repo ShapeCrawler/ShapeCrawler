@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
+using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -584,13 +585,13 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.25", "0.20834")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 2 Round 0.25", "0.20834")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 3 Round 0.25", "0.20834")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0", "0.0")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round X", "0.35")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 1", "1.0")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.75", "0.61112")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.25", "20.834")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 2 Round 0.25", "20.834")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 3 Round 0.25", "20.834")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0", "0")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round X", "35")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 1", "100")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.75", "61.112")]
     public void CornerSize_getter_returns_values(IShape shape, string expectedSizeStr)
     {
         // Arrange
@@ -609,21 +610,21 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRoundedRectangle(10, 20, 100, 200);
+        shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
 
         // Act
         var actualSize = shape.CornerSize;
 
         // Assert
-        actualSize.Should().Be(0.35m,"Rounded rectangles with no specified corner size behave as if the value was set to 0.35.");
+        actualSize.Should().Be(35m,"Rounded rectangles with no specified corner size behave as if the value was set to 35.");
     }
 
     [Test]
-    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0.125-ish", "0.1229")]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0.125-ish", "12.29")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0")]
-    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded X", "0.35")]
-    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 1", "1")]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded X", "35")]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 1", "100")]
     public void CornerSize_getter_returns_values_for_top_rounded(IShape shape, string expectedSizeStr)
     {
         // Arrange
@@ -658,7 +659,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        shapes.AddRoundedRectangle(10, 20, 100, 200);
+        shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
 
         // Act
@@ -671,6 +672,69 @@ public class ShapeTests : SCTest
         // Assert
         shape.CornerSize.Should().Be(expected);
         pres.Validate();
+    }
+
+    [TestCase("RoundedRectangle")]
+    [TestCase("Triangle")]
+    [TestCase("Diamond")]
+    [TestCase("Parallelogram")]
+    [TestCase("Trapezoid")]
+    [TestCase("NonIsoscelesTrapezoid")]
+    [TestCase("DiagonalCornersRoundedRectangle")]
+    [TestCase("TopCornersRoundedRectangle")]
+    [TestCase("SingleCornerRoundedRectangle")]
+    [TestCase("UTurnArrow")]
+    [TestCase("LineInverse")]
+    [TestCase("RightTriangle")]
+    public void Geometry_setter_sets_values(string expectedStr)
+    {
+        // Arrange
+        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70);
+        var shape = shapes.Last();
+
+        // Act
+        shape.GeometryType = expected;
+
+        // Assert
+        shape.GeometryType.Should().Be(expected);
+        pres.Validate();
+    }
+
+    [Test]
+    public void Geometry_setter_wont_set_custom()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70);
+        var shape = shapes.Last();
+
+        // Act
+        var act = () => shape.GeometryType = Geometry.Custom;
+
+        // Assert
+        act.Should().Throw<SCException>("Custom geometry cannot be set");
+    }
+
+    [Test]
+    public void Geometry_setter_resets_old_adjustments()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70);
+        var shape = shapes.Last();
+        shape.GeometryType = Geometry.RoundedRectangle;
+        shape.CornerSize = 100;
+
+        // Act
+        shape.GeometryType = Geometry.TopCornersRoundedRectangle;
+
+        // Assert
+        shape.CornerSize.Should().Be(35m,"Default unadjusted corner size is 35");
     }
     
     [Test]

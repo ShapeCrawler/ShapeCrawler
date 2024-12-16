@@ -40,17 +40,7 @@ public interface ISlideShapes : IShapes
     /// <summary>
     ///     Adds a new Rectangle shape.
     /// </summary>
-    void AddRectangle(int x, int y, int width, int height);
-
-    /// <summary>
-    ///     Adds a new Rectangle: Rounded Corners. 
-    /// </summary>
-    void AddRoundedRectangle(int x, int y, int width, int height);
-
-    /// <summary>
-    ///     Adds a new Rectangle: Top Corners Rounded. 
-    /// </summary>
-    void AddTopCornersRoundedRectangle(int x, int y, int width, int height);
+    void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle);
 
     /// <summary>
     ///     Adds a line from XML.

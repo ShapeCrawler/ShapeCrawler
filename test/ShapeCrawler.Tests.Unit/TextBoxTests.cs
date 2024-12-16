@@ -137,7 +137,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             var pres = new Presentation();
             var shapes = pres.Slides[0].Shapes;
-            shapes.AddRectangle(50, 60, 100, 70);
+            shapes.AddShape(50, 60, 100, 70);
             var textFrame = shapes.Last().TextBox;
 
             // Act

@@ -55,8 +55,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EmbeddedResource Include="Resources\new-rectangle.xml" />
     <None Remove="Resources\new-line.xml" />
     <EmbeddedResource Include="Resources\new-line.xml" />
-    <None Remove="Resources\new-rectangle-rounded-corners.xml" />
-    <EmbeddedResource Include="Resources\new-rectangle-rounded-corners.xml" />
   </ItemGroup>
 
   <ItemGroup>

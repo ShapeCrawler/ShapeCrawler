@@ -34,7 +34,15 @@ internal sealed class RootShape : CopyableShape, IRootShape
     
     public override ITextBox TextBox => this.decoratedShape.TextBox;
     
-    public override Geometry GeometryType => this.decoratedShape.GeometryType;
+    public override Geometry GeometryType {
+        get => this.decoratedShape.GeometryType;
+        set => this.decoratedShape.GeometryType = value;
+    }
+
+    public override decimal CornerSize {
+        get => this.decoratedShape.CornerSize;
+        set => this.decoratedShape.CornerSize = value;
+    }
 
     public override decimal X
     {
