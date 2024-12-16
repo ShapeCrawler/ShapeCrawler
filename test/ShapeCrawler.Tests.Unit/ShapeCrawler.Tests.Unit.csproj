@@ -230,6 +230,8 @@
     <EmbeddedResource Include="Assets\images\jpeg image.jpg" />
     <None Remove="Assets\images\jpeg image-500w.jpg" />
     <EmbeddedResource Include="Assets\images\jpeg image-500w.jpg" />
+    <None Remove="Assets\061_font-color.pptx" />
+    <EmbeddedResource Include="Assets\061_font-color.pptx" />
   </ItemGroup>
 
 </Project>

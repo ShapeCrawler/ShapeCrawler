@@ -80,7 +80,7 @@ public class FontColorTests : SCTest
     }
 
     [Test]
-    public void ColorType_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
+    public void Type_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
     {
         // Arrange
         var pres = new Presentation(StreamOf("014.pptx"));
@@ -99,27 +99,45 @@ public class FontColorTests : SCTest
     [SlideQueryPortion("001.pptx", 1, 3, 1,  1)]
     [SlideQueryPortion("001.pptx", 3, 4, 1,  1)]
     [SlideQueryPortion("001.pptx", 5, 5, 1,  1)]
-    public void SetColorHex_updates_font_color(IPresentation pres, TestPortionQuery portionQuery)
+    public void Update_updates_font_color(IPresentation pres, TestPortionQuery portionQuery)
     {
         // Arrange
         var mStream = new MemoryStream();
-        var color = portionQuery.Get(pres).Font!.Color;
+        var fontColor = portionQuery.Get(pres).Font!.Color;
 
         // Act
-        color.Update("#008000");
+        fontColor.Update("#008000");
 
         // Assert
-        color.Hex.Should().Be("008000");
+        fontColor.Hex.Should().Be("008000");
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        color = portionQuery.Get(pres).Font!.Color;
-        color.Hex.Should().Be("008000");
+        fontColor = portionQuery.Get(pres).Font!.Color;
+        fontColor.Hex.Should().Be("008000");
+    }
+    
+    [Test]
+    [Ignore("Should be fix with issue https://github.com/ShapeCrawler/ShapeCrawler/issues/793")]
+    public void Update_updates_font_color_of_master_shape()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("061_font-color.pptx"));
+        var fontColor = pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
+        
+        // Act
+        fontColor.Update("#007F00");
+        
+        // Assert
+        pres.SaveAs("result.pptx");
+        // Open result.pptx in PowerPoint and check the color of the TextBox 1. It should be green.
+        
+        // TODO: add assertion
     }
     
     [Test]
     [MasterPortion("autoshape-case001.pptx", "AutoShape 1", 1,  1)]
-    public void SetColorHex_updates_font_color_of_master(IPresentation pres, TestPortionQuery portionQuery)
+    public void Update_updates_font_color_of_master(IPresentation pres, TestPortionQuery portionQuery)
     {
         // Arrange
         var mStream = new MemoryStream();
@@ -168,4 +186,5 @@ public class FontColorTests : SCTest
         // Assert
         colorHex.Should().Be(expectedColorHex);
     }
+    
 }
