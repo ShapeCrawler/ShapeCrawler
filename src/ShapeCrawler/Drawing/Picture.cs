@@ -99,6 +99,9 @@ internal sealed class Picture : CopyableShape, IPicture
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>();
             var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
+
+            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
+            // Dividing by 1000 to get a percent value
             return 100m - amount / 1000m;
         }
 
@@ -108,6 +111,8 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(),0)
                 ?? throw new SCException("Failed to add AlphaModFix");
 
+            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
+            // Multiplying by 1000 to get a per cent mille value to store
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
@@ -178,9 +183,19 @@ internal sealed class Picture : CopyableShape, IPicture
             FromThousandths(aSrcRect.Bottom));
     }
 
+    /// <summary>
+    ///     Convert a value from 'per cent mille' (thousandths of a percent) to percent.
+    /// </summary>
+    /// <param name="int32">Per cent mille value.</param>
+    /// <returns>Percent value.</returns>
     private static decimal FromThousandths(Int32Value? int32) => 
         int32 is not null ? int32 / 1000m : 0;
 
+    /// <summary>
+    ///     Convert a value from percentto 'per cent mille' (thousandths of a percent).
+    /// </summary>
+    /// <param name="input">Percent value.</param>
+    /// <returns>Per cent mille value.</returns>
     private static Int32Value? ToThousandths(decimal input) => 
         input == 0 ? null : Convert.ToInt32(input * 1000m);
 
