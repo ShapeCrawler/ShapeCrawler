@@ -284,24 +284,22 @@ public class PictureTests : SCTest
 
     [TestCase("RoundedRectangle")]
     [TestCase("TopCornersRoundedRectangle")]
-    public void Picture_corner_size_setter_sets_expected_values(string geometryStr)
+    public void CornerSize_Setter_sets_corner_size(string geometryName)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-1.svg");
-        image.Position = 0;
+        var image = StreamOf("test-vector-image-1.svg");
         shapes.AddPicture(image);
         var picture = shapes.Last().As<IPicture>();
-        var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryStr);
+        var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryName);
         picture.GeometryType = geometry;
-        var expected = 10m;
 
         // Act
-        picture.CornerSize = expected;
+        picture.CornerSize = 10m;
 
         // Assert
-        picture.CornerSize.Should().Be(expected);
+        picture.CornerSize.Should().Be(10m);
         pres.Validate();
     }
 
