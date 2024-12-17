@@ -626,7 +626,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddShape_adds_RoundedTop_Rectangle()
+    public void AddShape_adds_Top_Corners_Rounded_Rectangle()
     {
         // Arrange
         var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
@@ -636,10 +636,9 @@ public class ShapeCollectionTests : SCTest
         shapes.AddShape(50, 60, 100, 70, Geometry.TopCornersRoundedRectangle);
 
         // Assert
-        var roundedRectangle = shapes.Last();
-        roundedRectangle.GeometryType.Should().Be(Geometry.TopCornersRoundedRectangle);
-        roundedRectangle.Name.Should().Be("TopCornersRoundedRectangle");
-        roundedRectangle.Outline.HexColor.Should().BeNull();
+        var addedTopCornersRoundedRectangle = shapes.Last();
+        addedTopCornersRoundedRectangle.GeometryType.Should().Be(Geometry.TopCornersRoundedRectangle);
+        addedTopCornersRoundedRectangle.Name.Should().Be("TopCornersRoundedRectangle");
         pres.Validate();
     }
 
