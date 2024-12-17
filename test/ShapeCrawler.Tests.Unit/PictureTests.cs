@@ -241,16 +241,14 @@ public class PictureTests : SCTest
     [SlideShape("059_crop-images.pptx", 1, "RoundedRectangle", "33.104")]
     [SlideShape("059_crop-images.pptx", 1, "TopCornersRoundedRectangle", "32.87")]
     [SlideShape("059_crop-images.pptx", 1, "Star5", "0")]
-    public void Picture_corner_size_getter_gets_expected_values(IShape shape, string expectedStr)
+    public void CornerSize_Getter_returns_corner_size_in_percentages(IShape shape, string expectedCornerSizeStr)
     {
         // Arrange
-        var expected = decimal.Parse(expectedStr);
+        var expectedCornerSize = decimal.Parse(expectedCornerSizeStr);
+        var picture = shape.As<IPicture>();
 
-        // Act
-        var actual = shape.As<IPicture>().CornerSize;
-
-        // Assert
-        actual.Should().Be(expected);
+        // Act-Assert
+        picture.CornerSize.Should().Be(expectedCornerSize);
     }
 
     [TestCase("RoundedRectangle")]

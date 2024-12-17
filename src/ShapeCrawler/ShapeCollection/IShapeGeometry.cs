@@ -13,7 +13,7 @@ public interface IShapeGeometry
     Geometry GeometryType { get; set; }
 
     /// <summary>
-    ///     Gets or sets the size of the corners in this shape. Range: 0-100.
+    ///     Gets or sets the corner size in percentages.
     /// </summary>
     /// <remarks>
     ///     Applicable only to rounded rectangle and top corners rounded geometry.
