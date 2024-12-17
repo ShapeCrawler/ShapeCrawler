@@ -91,33 +91,30 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void Fill_SolidColor_gets_existing_fill()
+    public void Fill_Color_gets_returns_solid_color_of_slide_background()
     {
         // Arrange
         var pres = new Presentation(StreamOf("058_bg-fill.pptx"));
-        var slide = pres.Slides[0];
+        var slideFill = pres.Slide(1).Fill;
+        var orange = "E6BB90";
 
-        // Act
-        var actual = slide.Fill.Color;
-
-        // Assert
-        actual.Should().Be("E6BB90");
+        // Act-Assert
+        slideFill.Color.Should().Be(orange);
     }
 
     [Test]
-    public void Fill_SolidColor_sets_fill()
+    public void Fill_SetColor_sets_solid_color_for_slide_background()
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
-        var expected = "ABCDEF";
+        var slideFill = pres.Slide(1).Fill;
+        var green = "00ff00";
 
         // Act
-        slide.Fill.SetColor(expected);
+        slideFill.SetColor(green);
 
         // Assert
-        var actual = slide.Fill.Color;
-        actual.Should().Be(expected);
+        slideFill.Color.Should().Be(green);
     }
 
     [Test]
