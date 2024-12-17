@@ -18,6 +18,7 @@ internal sealed class Picture : CopyableShape, IPicture
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
+    private readonly ShapeGeometry shapeGeometry;
 
     internal Picture(
         OpenXmlPart sdkTypedOpenXmlPart,
@@ -36,14 +37,23 @@ internal sealed class Picture : CopyableShape, IPicture
         this.blipEmbed = aBlip.Embed!;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
         this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
+        this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
     }
 
     public IImage Image { get; }
    
     public string? SvgContent => this.GetSvgContent();
     
-    public override Geometry GeometryType => Geometry.Rectangle;
-    
+    public override Geometry GeometryType {
+        get => this.shapeGeometry.GeometryType;
+        set => this.shapeGeometry.GeometryType = value;
+    }
+
+    public override decimal CornerSize {
+        get => this.shapeGeometry.CornerSize;
+        set => this.shapeGeometry.CornerSize = value;
+    }
+
     public override ShapeType ShapeType => ShapeType.Picture;
     
     public override bool HasOutline => true;
@@ -66,7 +76,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>();
 
-            return CroppingFrame.FromSourceRectangle(aSrcRect);
+            return CroppingFrameFromSourceRectangle(aSrcRect);
         }
         
         set
@@ -79,7 +89,7 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
                 ?? throw new SCException("Failed to add source rectangle");
 
-            value.UpdateSourceRectangle(aSrcRect);
+            ApplyCropToSourceRectangle(value,aSrcRect);
         }
     }
     
@@ -89,6 +99,9 @@ internal sealed class Picture : CopyableShape, IPicture
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>();
             var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
+
+            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
+            // Dividing by 1000 to get a percent value
             return 100m - amount / 1000m;
         }
 
@@ -98,6 +111,8 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(),0)
                 ?? throw new SCException("Failed to add AlphaModFix");
 
+            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
+            // Multiplying by 1000 to get a per cent mille value to store
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
@@ -135,7 +150,55 @@ internal sealed class Picture : CopyableShape, IPicture
         var copy = this.PShapeTreeElement.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
-    
+
+    /// <summary>
+    ///     Set the cropping frame values onto the supplied source rectangle.
+    /// </summary>
+    /// <param name="frame">Source values to get cropping values.</param>
+    /// <param name="aSrcRect">Rectangle to be updated with our values.</param>
+    private static void ApplyCropToSourceRectangle(CroppingFrame frame, A.SourceRectangle aSrcRect)
+    {
+        aSrcRect.Left = ToThousandths(frame.Left);
+        aSrcRect.Right = ToThousandths(frame.Right);
+        aSrcRect.Top = ToThousandths(frame.Top);
+        aSrcRect.Bottom = ToThousandths(frame.Bottom);        
+    }
+
+    /// <summary>
+    ///     Convert a source rectangle to a cropping frame.
+    /// </summary>
+    /// <param name="aSrcRect">Source rectangle which contains the needed frame.</param>
+    /// <returns>Resulting frame.</returns>
+    private static CroppingFrame CroppingFrameFromSourceRectangle(A.SourceRectangle? aSrcRect)
+    {
+        if (aSrcRect is null)
+        {
+            return new CroppingFrame(0,0,0,0);
+        }
+
+        return new CroppingFrame(
+            FromThousandths(aSrcRect.Left),
+            FromThousandths(aSrcRect.Right),
+            FromThousandths(aSrcRect.Top),
+            FromThousandths(aSrcRect.Bottom));
+    }
+
+    /// <summary>
+    ///     Convert a value from 'per cent mille' (thousandths of a percent) to percent.
+    /// </summary>
+    /// <param name="int32">Per cent mille value.</param>
+    /// <returns>Percent value.</returns>
+    private static decimal FromThousandths(Int32Value? int32) => 
+        int32 is not null ? int32 / 1000m : 0;
+
+    /// <summary>
+    ///     Convert a value from percentto 'per cent mille' (thousandths of a percent).
+    /// </summary>
+    /// <param name="input">Percent value.</param>
+    /// <returns>Per cent mille value.</returns>
+    private static Int32Value? ToThousandths(decimal input) => 
+        input == 0 ? null : Convert.ToInt32(input * 1000m);
+
     private string? GetSvgContent()
     {
         var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
