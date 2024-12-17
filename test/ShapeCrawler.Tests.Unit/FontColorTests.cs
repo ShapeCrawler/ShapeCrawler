@@ -1,3 +1,6 @@
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Vml;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -122,6 +125,7 @@ public class FontColorTests : SCTest
     public void Update_updates_font_color_of_master_shape()
     {
         // Arrange
+        var mStream = new MemoryStream();
         var pres = new Presentation(StreamOf("061_font-color.pptx"));
         var fontColor = pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         
@@ -129,10 +133,9 @@ public class FontColorTests : SCTest
         fontColor.Update("#007F00");
         
         // Assert
-        pres.SaveAs("result.pptx");
-        // Open result.pptx in PowerPoint and check the color of the TextBox 1. It should be green.
-        
-        // TODO: add assertion
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be("007F00");
     }
     
     [Test]
