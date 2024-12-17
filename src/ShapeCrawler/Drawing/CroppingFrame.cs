@@ -11,11 +11,11 @@ namespace ShapeCrawler.Drawing;
 ///     on the given edge.
 ///     An image which is fully visible will have 0 for all values.
 /// </remarks>
-/// <param name="left">Portion of image along left edge of source picture which will not be displayed.</param>
-/// <param name="right">Portion of image along right edge of source picture source picture which will not be displayed.</param>
-/// <param name="top">Portion of image from top edge of source picture source picture which will not be displayed.</param>
-/// <param name="bottom">Portion of image from bottom edge of source picture source picture which will not be displayed.</param>
-public readonly record struct CroppingFrame(decimal left, decimal right, decimal top, decimal bottom)
+/// <param name="Left">Percentage of image along left edge of source picture which will not be displayed.</param>
+/// <param name="Right">Percentage of image along right edge of source picture source picture which will not be displayed.</param>
+/// <param name="Top">Percentage of image from top edge of source picture source picture which will not be displayed.</param>
+/// <param name="Bottom">Percentage of image from bottom edge of source picture source picture which will not be displayed.</param>
+public readonly record struct CroppingFrame(decimal Left, decimal Right, decimal Top, decimal Bottom)
 {
     /// <summary>
     ///     Parse a string value into a cropping frame.
