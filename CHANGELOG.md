@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.58.0 - Unreleased
+## Version 0.58.0 - 2024-12-18
 🍀Added `IHyperlink.AddFile()` [#724](https://github.com/ShapeCrawler/ShapeCrawler/issues/724)  
 🍀Added `IPicture.CornerSize` [#707](https://github.com/ShapeCrawler/ShapeCrawler/issues/707)  
 🍀Added `ISlide.Fill` [#797](https://github.com/ShapeCrawler/ShapeCrawler/issues/797)  
