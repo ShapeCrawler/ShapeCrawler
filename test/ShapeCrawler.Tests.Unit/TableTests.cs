@@ -952,4 +952,25 @@ public class TableTests : SCTest
         table.TableStyleOptions.HasLastColumn.Should().Be(hasLastColumn);
         table.TableStyleOptions.HasBandedColumns.Should().Be(hasBandedColumns);
     }
+    
+    [Test]
+    public void Table_creation_has_tableStyleOptions_default_options()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 3, 2);
+        var table = slide.Shapes.Last() as ITable;
+
+        // Act
+        var options = table.TableStyleOptions;
+
+        // Assert
+        options.HasHeaderRow.Should().BeTrue();
+        options.HasTotalRow.Should().BeFalse();
+        options.HasBandedRows.Should().BeTrue();
+        options.HasFirstColumn.Should().BeFalse();
+        options.HasLastColumn.Should().BeFalse();
+        options.HasBandedColumns.Should().BeFalse();
+    }
 }
