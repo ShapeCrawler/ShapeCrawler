@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml.Drawing;
+
 namespace ShapeCrawler.Tables;
 
 /// <summary>
@@ -6,69 +8,81 @@ namespace ShapeCrawler.Tables;
 public interface ITableStyleOptions
 {
     /// <summary>
-    ///     Gets a value indicating whether table has header row.
+    ///     Gets or sets a value indicating whether table has header row.
     /// </summary>
-    public bool HasHeaderRow { get; }
+    public bool HasHeaderRow { get; set; }
     
     /// <summary>
-    ///     Gets a value indicating whether table has total row.
+    ///     Gets or sets a value indicating whether table has total row.
     /// </summary>
-    public bool HasTotalRow { get; }
+    public bool HasTotalRow { get; set; }
     
     /// <summary>
-    ///     Gets a value indicating whether table has banded rows.
+    ///     Gets or sets a value indicating whether table has banded rows.
     /// </summary>
-    public bool HasBandedRows { get; }
+    public bool HasBandedRows { get; set; }
     
     /// <summary>
-    ///     Gets a value indicating whether table has first column.
+    ///     Gets or sets a value indicating whether table has first column.
     /// </summary>
-    public bool HasFirstColumn { get; }
+    public bool HasFirstColumn { get; set; }
     
     /// <summary>
-    ///     Gets a value indicating whether table has last column.
+    ///     Gets or sets a value indicating whether table has last column.
     /// </summary>
-    public bool HasLastColumn { get; }
+    public bool HasLastColumn { get; set; }
     
     /// <summary>
-    ///     Gets a value indicating whether table has banded columns.
+    ///     Gets or sets a value indicating whether table has banded columns.
     /// </summary>
-    public bool HasBandedColumns { get; }
+    public bool HasBandedColumns { get; set; }
 }
 
 /// <summary>
 ///    Represents table style options.
 /// </summary>
-/// <param name="hasHeaderRow"></param>
-/// <param name="hasTotalRow"></param>
-/// <param name="hasBandedRows"></param>
-/// <param name="hasFirstColumn"></param>
-/// <param name="hasLastColumn"></param>
-/// <param name="hasBandedColumns"></param>
-public class TableStyleOptions(
-    bool hasHeaderRow = false,
-    bool hasTotalRow = false,
-    bool hasBandedRows = false,
-    bool hasFirstColumn = false,
-    bool hasLastColumn = false,
-    bool hasBandedColumns = false)
+internal sealed class TableStyleOptions(TableProperties tableProperties)
     : ITableStyleOptions
 {
     /// <inheritdoc/>
-    public bool HasHeaderRow { get; } = hasHeaderRow;
-    
+    public bool HasHeaderRow
+    {
+        get => tableProperties.FirstRow?.Value ?? false;
+        set => tableProperties.FirstRow = value;
+    }
+
     /// <inheritdoc/>
-    public bool HasTotalRow { get; } = hasTotalRow;
-    
+    public bool HasTotalRow
+    {
+        get => tableProperties.LastRow?.Value ?? false;
+        set => tableProperties.LastRow = value;
+    }
+
     /// <inheritdoc/>
-    public bool HasBandedRows { get; } = hasBandedRows;
-    
+    public bool HasBandedRows
+    {
+        get => tableProperties.BandRow?.Value ?? false;
+        set => tableProperties.BandRow = value;
+    }
+
     /// <inheritdoc/>
-    public bool HasFirstColumn { get; } = hasFirstColumn;
-    
+    public bool HasFirstColumn
+    {
+        get => tableProperties.FirstColumn?.Value ?? false;
+        set => tableProperties.FirstColumn = value;
+    }
+
     /// <inheritdoc/>
-    public bool HasLastColumn { get; } = hasLastColumn;
-    
+    public bool HasLastColumn
+    {
+        get => tableProperties.LastColumn?.Value ?? false;
+        set => tableProperties.LastColumn = value;
+    }
+
     /// <inheritdoc/>
-    public bool HasBandedColumns { get; } = hasBandedColumns;
+    public bool HasBandedColumns
+    {
+        get => tableProperties.BandColumn?.Value ?? false;
+        set => tableProperties.BandColumn = value;
+    }
 }

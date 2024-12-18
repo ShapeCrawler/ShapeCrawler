@@ -36,9 +36,9 @@ public interface ITable : IShape
     ITableStyle TableStyle { get; set; }
 
     /// <summary>
-    ///    Gets or sets the table style options.
+    ///    Gets the table style options.
     /// </summary>
-    ITableStyleOptions TableStyleOptions { get; set; }
+    ITableStyleOptions TableStyleOptions { get; }
 
     /// <summary>
     ///     Gets cell by row and column indexes.
@@ -81,13 +81,13 @@ internal sealed class Table : CopyableShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
-    private ITableStyleOptions? tableStyleOptions;
 
     internal Table(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
         : base(sdkTypedOpenXmlPart, pShapeTreeElement)
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
         this.Rows = new TableRows(sdkTypedOpenXmlPart, this.pGraphicFrame);
+        this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
 
     public override ShapeType ShapeType => ShapeType.Table;
@@ -102,11 +102,7 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
     
-    public ITableStyleOptions TableStyleOptions
-    {
-        get => this.GetTableStyleOptions();
-        set => this.SetTableStyleOptions(value);
-    }
+    public ITableStyleOptions TableStyleOptions { get; init; }
 
     public override bool Removeable => true;
 
@@ -232,43 +228,6 @@ internal sealed class Table : CopyableShape, ITable
 
         return this.tableStyle;
     }
-    
-    private void SetTableStyleOptions(ITableStyleOptions options)
-    {
-        this.ATable.TableProperties!.FirstRow = new BooleanValue(options.HasHeaderRow);
-        this.ATable.TableProperties!.FirstColumn = new BooleanValue(options.HasFirstColumn);
-        this.ATable.TableProperties!.LastRow = new BooleanValue(options.HasTotalRow);
-        this.ATable.TableProperties!.LastColumn = new BooleanValue(options.HasLastColumn);
-        this.ATable.TableProperties!.BandRow = new BooleanValue(options.HasBandedRows);
-        this.ATable.TableProperties!.BandColumn = new BooleanValue(options.HasBandedColumns);
-        
-        this.tableStyleOptions = options;
-    }
-    
-    private ITableStyleOptions GetTableStyleOptions()
-    {
-        if (this.tableStyleOptions is null)
-        {
-            var tableProperties = this.ATable.TableProperties!;
-            var hasHeaderRow = tableProperties.FirstRow?.Value ?? false;
-            var hasTotalRow = tableProperties.LastRow?.Value ?? false;
-            var hasBandedRows = tableProperties.BandRow?.Value ?? false;
-            var hasFirstColumn = tableProperties.FirstColumn?.Value ?? false;
-            var hasLastColumn = tableProperties.LastColumn?.Value ?? false;
-            var hasBandedColumns = tableProperties.BandColumn?.Value ?? false;
-
-            this.tableStyleOptions = new TableStyleOptions(
-                hasHeaderRow,
-                hasTotalRow,
-                hasBandedRows,
-                hasFirstColumn,
-                hasLastColumn,
-                hasBandedColumns);
-        }
-        
-        return this.tableStyleOptions;
-    }
-    
 
     private void RemoveRowIfNeeded()
     {

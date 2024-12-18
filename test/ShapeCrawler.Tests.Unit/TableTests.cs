@@ -919,11 +919,11 @@ public class TableTests : SCTest
     
     [Test]
     [TestCase(true, false, false, false, false, false)]
-    [TestCase(true, true, false, false, false, false)]
-    [TestCase(true, false, true, false, false, false)]
-    [TestCase(true, false, false, true, false, false)]
-    [TestCase(true, false, false, false, true, false)]
-    [TestCase(true, false, false, false, true, true)]
+    [TestCase(false, true, false, false, false, false)]
+    [TestCase(false, false, true, false, false, false)]
+    [TestCase(false, false, false, true, false, false)]
+    [TestCase(false, false, false, false, true, false)]
+    [TestCase(false, false, false, false, false, true)]
     public void TableStyleOptions_setter_set_table_style_options(bool hasHeaderRow, bool hasTotalRow, bool hasBandedRows, bool hasFirstColumn, bool hasLastColumn, bool hasBandedColumns)
     {
         // Arrange
@@ -934,7 +934,12 @@ public class TableTests : SCTest
         var table = slide.Shapes.Last() as ITable;
 
         // Act
-        table.TableStyleOptions = new TableStyleOptions(hasHeaderRow, hasTotalRow, hasBandedRows, hasFirstColumn, hasLastColumn, hasBandedColumns);
+        table.TableStyleOptions.HasHeaderRow = hasHeaderRow;
+        table.TableStyleOptions.HasTotalRow = hasTotalRow;
+        table.TableStyleOptions.HasBandedRows = hasBandedRows;
+        table.TableStyleOptions.HasFirstColumn = hasFirstColumn;
+        table.TableStyleOptions.HasLastColumn = hasLastColumn;
+        table.TableStyleOptions.HasBandedColumns = hasBandedColumns;
 
         // Assert
         pres.SaveAs(mStream);
