@@ -731,8 +731,7 @@ public class ShapeTests : SCTest
     public void Name_Setter_sets_shape_name()
     {
         // Arrange
-        var pptx = StreamOf("006_1 slides.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf("006_1 slides.pptx"));
         var stream = new MemoryStream();
         var shape = pres.Slides[0].Shapes.GetByName("Shape 1");
 
