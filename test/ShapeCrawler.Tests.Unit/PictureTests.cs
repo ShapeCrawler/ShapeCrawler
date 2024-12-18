@@ -186,16 +186,14 @@ public class PictureTests : SCTest
     [SlideShape("059_crop-images.pptx", 1, "Top 0.33", "0,0,33.333,0")]
     [SlideShape("059_crop-images.pptx", 1, "Left 0.5", "50.05,0,0,0")]
     [SlideShape("059_crop-images.pptx", 1, "Bottom 0.66", "0,0,-0.001,66.667")]
-    public void Crop_getter_gets_expected_values(IShape shape, string expectedFrameStr)
+    public void Crop_Getter_returns_crop(IShape shape, string expectedCropStr)
     {
         // Arrange
-        var expected = CroppingFrame.Parse(expectedFrameStr);
+        var expectedCrop = CroppingFrame.Parse(expectedCropStr);
+        var picture = shape.As<IPicture>();
 
-        // Act
-        var actual = shape.As<IPicture>().Crop;
-
-        // Assert
-        actual.Should().Be(expected);
+        // Act-Assert
+        picture.Crop.Should().Be(expectedCrop);
     }
 
     [TestCase("0,0,0,0")]
@@ -204,19 +202,18 @@ public class PictureTests : SCTest
     [TestCase("0,0,50,0")]
     [TestCase("0,0,0,70")]
     [TestCase("10,20,30,50")]
-    public void Crop_setter_sets_expected_values(string expectedFrameStr)
+    public void Crop_Setter_sets_crop(string newCropStr)
     {
         // Arrange
-        var expected = CroppingFrame.Parse(expectedFrameStr);
         var pres = new Presentation(StreamOf("059_crop-images.pptx"));
-        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("None");
+        var newCrop = CroppingFrame.Parse(newCropStr);
+        var picture = pres.Slide(1).Picture("None");
 
         // Act
-        picture.Crop = expected;
+        picture.Crop = newCrop;
 
         // Assert
-        var actual = picture.Crop;
-        actual.Should().Be(expected);
+        picture.Crop.Should().Be(newCrop);
     }
 
     [Test]
