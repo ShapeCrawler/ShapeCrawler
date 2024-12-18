@@ -916,4 +916,35 @@ public class TableTests : SCTest
         table.AltText.Should().Be("Alt text");
         pres.Validate();
     }
+    
+    [Test]
+    [TestCase(true, false, false, false, false, false)]
+    [TestCase(true, true, false, false, false, false)]
+    [TestCase(true, false, true, false, false, false)]
+    [TestCase(true, false, false, true, false, false)]
+    [TestCase(true, false, false, false, true, false)]
+    [TestCase(true, false, false, false, true, true)]
+    public void TableStyleOptions_setter_set_table_style_options(bool hasHeaderRow, bool hasTotalRow, bool hasBandedRows, bool hasFirstColumn, bool hasLastColumn, bool hasBandedColumns)
+    {
+        // Arrange
+        var mStream = new MemoryStream();
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 3, 2);
+        var table = slide.Shapes.Last() as ITable;
+
+        // Act
+        table.TableStyleOptions = new TableStyleOptions(hasHeaderRow, hasTotalRow, hasBandedRows, hasFirstColumn, hasLastColumn, hasBandedColumns);
+
+        // Assert
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        table = pres.Slides[0].Shapes.Last() as ITable;
+        table.TableStyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);
+        table.TableStyleOptions.HasTotalRow.Should().Be(hasTotalRow);
+        table.TableStyleOptions.HasBandedRows.Should().Be(hasBandedRows);
+        table.TableStyleOptions.HasFirstColumn.Should().Be(hasFirstColumn);
+        table.TableStyleOptions.HasLastColumn.Should().Be(hasLastColumn);
+        table.TableStyleOptions.HasBandedColumns.Should().Be(hasBandedColumns);
+    }
 }
