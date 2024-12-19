@@ -43,4 +43,6 @@ internal sealed record PathPresentation : IValidateable
     public ISlide Slide(int number) => this.presentationCore.Slides[number - 1];
 
     public IFooter Footer => this.presentationCore.Footer;
+
+    public IFileProperties FileProperties => this.presentationCore.FileProperties;
 }

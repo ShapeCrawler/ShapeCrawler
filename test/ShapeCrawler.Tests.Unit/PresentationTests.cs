@@ -482,4 +482,67 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
+
+    [Test]
+    public void Properties_getter_returns_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = DateTime.Parse("2023-07-09 13:28:40");
+
+        // Act-Assert
+        pres.FileProperties.Created.Should().Be(expectedCreated);
+        pres.FileProperties.Title.Should().Be("PowerPoint Presentation");
+    }
+
+    [Test]
+    public void Properties_setter_sets_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
+
+        // Act
+        pres.FileProperties.Title = "Properties_setter_sets_values";
+        pres.FileProperties.Created = expectedCreated;
+        
+        // Assert
+        pres.FileProperties.Created.Should().Be(expectedCreated);
+        pres.FileProperties.Title.Should().Be("Properties_setter_sets_values");
+    }
+
+    [Test]
+    public void Properties_setter_survives_round_trip()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
+        pres.FileProperties.Title = "Properties_setter_survives_round_trip";
+        pres.FileProperties.Created = expectedCreated;
+
+        // Act
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Created.Should().Be(expectedCreated);
+        loadedPres.FileProperties.Title.Should().Be("Properties_setter_survives_round_trip");
+    }
+
+    [Test]
+    public void Properties_from_stream_getter_returns_values()
+    {
+        var pptx = StreamOf("059_crop-images.pptx");
+        var pres = new Presentation(pptx);
+
+        var expectedModified = DateTime.Parse("2024-12-16 9:11:58");
+
+        // Act-Assert
+        pres.FileProperties.Modified.Should().Be(expectedModified);
+        pres.FileProperties.Title.Should().Be("");
+        pres.FileProperties.Revision.Should().Be("7");
+        pres.FileProperties.Description.Should().BeNull();
+    }
 }
