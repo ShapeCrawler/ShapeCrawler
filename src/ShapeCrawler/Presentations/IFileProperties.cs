@@ -7,6 +7,9 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents the core properties of the presentation file.
 /// </summary>
+/// <remarks>
+///     These properties are not related to the presentation itself, but rather the containing file.
+/// </remarks>
 public interface IFileProperties
 {
     /// <summary>
