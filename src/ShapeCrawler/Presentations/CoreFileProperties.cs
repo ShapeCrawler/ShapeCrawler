@@ -6,6 +6,7 @@ namespace ShapeCrawler.Presentations;
 internal class FileProperties: IFileProperties
 {
     private readonly DocumentFormat.OpenXml.Packaging.IPackageProperties sdkPackageProperties;
+
     internal FileProperties(CoreFilePropertiesPart sdkPart)
     {
         this.sdkPackageProperties = sdkPart.OpenXmlPackage.PackageProperties;
@@ -13,97 +14,97 @@ internal class FileProperties: IFileProperties
 
     public string? Creator
     {
-        get => sdkPackageProperties.Creator;
-        set => sdkPackageProperties.Creator = value;
+        get => this.sdkPackageProperties.Creator;
+        set => this.sdkPackageProperties.Creator = value;
     }
 
     public string? Category 
     {
-        get => sdkPackageProperties.Category;
-        set => sdkPackageProperties.Category = value;
+        get => this.sdkPackageProperties.Category;
+        set => this.sdkPackageProperties.Category = value;
     }
     
     public string? ContentType 
     {
-        get => sdkPackageProperties.ContentType;
-        set => sdkPackageProperties.ContentType = value;
+        get => this.sdkPackageProperties.ContentType;
+        set => this.sdkPackageProperties.ContentType = value;
     }
     
     public string? ContentStatus 
     {
-        get => sdkPackageProperties.ContentStatus;
-        set => sdkPackageProperties.ContentStatus = value;
+        get => this.sdkPackageProperties.ContentStatus;
+        set => this.sdkPackageProperties.ContentStatus = value;
     }
     
     public DateTime? Created 
     {
-        get => sdkPackageProperties.Created;
-        set => sdkPackageProperties.Created = value;
+        get => this.sdkPackageProperties.Created;
+        set => this.sdkPackageProperties.Created = value;
     }
     
     public string? Description 
     {
-        get => sdkPackageProperties.Description;
-        set => sdkPackageProperties.Description = value;
+        get => this.sdkPackageProperties.Description;
+        set => this.sdkPackageProperties.Description = value;
     }
     
     public string? Identifier 
     {
-        get => sdkPackageProperties.Identifier;
-        set => sdkPackageProperties.Identifier = value;
+        get => this.sdkPackageProperties.Identifier;
+        set => this.sdkPackageProperties.Identifier = value;
     }
     
     public string? Keywords 
     {
-        get => sdkPackageProperties.Keywords;
-        set => sdkPackageProperties.Keywords = value;
+        get => this.sdkPackageProperties.Keywords;
+        set => this.sdkPackageProperties.Keywords = value;
     }
     
     public string? Language 
     {
-        get => sdkPackageProperties.Language;
-        set => sdkPackageProperties.Language = value;
+        get => this.sdkPackageProperties.Language;
+        set => this.sdkPackageProperties.Language = value;
     }
     
     public string? LastModifiedBy 
     {
-        get => sdkPackageProperties.LastModifiedBy;
-        set => sdkPackageProperties.LastModifiedBy = value;
+        get => this.sdkPackageProperties.LastModifiedBy;
+        set => this.sdkPackageProperties.LastModifiedBy = value;
     }
     
     public DateTime? LastPrinted 
     {
-        get => sdkPackageProperties.LastPrinted;
-        set => sdkPackageProperties.LastPrinted = value;
+        get => this.sdkPackageProperties.LastPrinted;
+        set => this.sdkPackageProperties.LastPrinted = value;
     }
     
     public DateTime? Modified 
     {
-        get => sdkPackageProperties.Modified;
-        set => sdkPackageProperties.Modified = value;
+        get => this.sdkPackageProperties.Modified;
+        set => this.sdkPackageProperties.Modified = value;
     }
     
     public string? Revision 
     {
-        get => sdkPackageProperties.Revision;
-        set => sdkPackageProperties.Revision = value;
+        get => this.sdkPackageProperties.Revision;
+        set => this.sdkPackageProperties.Revision = value;
     }
     
     public string? Subject 
     {
-        get => sdkPackageProperties.Subject;
-        set => sdkPackageProperties.Subject = value;
+        get => this.sdkPackageProperties.Subject;
+        set => this.sdkPackageProperties.Subject = value;
     }
     
     public string? Title 
     {
-        get => sdkPackageProperties.Title;
-        set => sdkPackageProperties.Title = value;
+        get => this.sdkPackageProperties.Title;
+        set => this.sdkPackageProperties.Title = value;
     }
     
     public string? Version 
     {
-        get => sdkPackageProperties.Version;
-        set => sdkPackageProperties.Version = value;
+        get => this.sdkPackageProperties.Version;
+        set => this.sdkPackageProperties.Version = value;
     }    
 }
