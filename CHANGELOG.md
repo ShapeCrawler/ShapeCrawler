@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.59.0 - Unreleased
+🍀Added `ITable.TableStyleOptions` [#817](https://github.com/ShapeCrawler/ShapeCrawler/issues/655)  
+
 ## Version 0.58.0 - 2024-12-18
 🍀Added `IHyperlink.AddFile()` [#724](https://github.com/ShapeCrawler/ShapeCrawler/issues/724)  
 🍀Added `IPicture.CornerSize` [#707](https://github.com/ShapeCrawler/ShapeCrawler/issues/707)  
