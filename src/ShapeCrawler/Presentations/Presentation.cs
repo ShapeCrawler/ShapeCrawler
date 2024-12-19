@@ -65,6 +65,9 @@ public sealed class Presentation : IPresentation
     public IFooter Footer => this.validateable.Footer;
     
     /// <inheritdoc />
+    public IFileProperties FileProperties => this.validateable.FileProperties;
+
+    /// <inheritdoc />
     public void Save() => this.validateable.Save();
     
     /// <inheritdoc />

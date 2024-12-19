@@ -482,4 +482,16 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
+
+    [Test]
+    public void Properties_getter_returns_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = DateTime.Parse("2023-07-09 13:28:40");
+
+        // Act-Assert
+        pres.FileProperties.Created.Should().Be(expectedCreated);
+        pres.FileProperties.Title.Should().Be("PowerPoint Presentation");
+    }
 }

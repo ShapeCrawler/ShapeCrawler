@@ -36,6 +36,8 @@ internal sealed class StreamPresentation : IValidateable
 
     public IFooter Footer => this.presentationCore.Footer;
 
+    public IFileProperties FileProperties => this.presentationCore.FileProperties;
+
     public ISlide Slide(int number) => this.presentationCore.Slides[number - 1];
 
     public byte[] AsByteArray() => this.presentationCore.AsByteArray();
