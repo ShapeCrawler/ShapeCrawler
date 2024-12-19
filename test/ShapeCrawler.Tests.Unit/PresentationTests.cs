@@ -496,6 +496,23 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Properties_setter_sets_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
+
+        // Act
+        pres.FileProperties.Title = "Properties_setter_sets_values";
+        pres.FileProperties.Created = expectedCreated;
+        
+        // Assert
+
+        pres.FileProperties.Created.Should().Be(expectedCreated);
+        pres.FileProperties.Title.Should().Be("Properties_setter_sets_values");
+    }
+
+    [Test]
     public void Properties_from_stream_getter_returns_values()
     {
         var pptx = StreamOf("059_crop-images.pptx");
