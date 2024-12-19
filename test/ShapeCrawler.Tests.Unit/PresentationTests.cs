@@ -507,9 +507,28 @@ public class PresentationTests : SCTest
         pres.FileProperties.Created = expectedCreated;
         
         // Assert
-
         pres.FileProperties.Created.Should().Be(expectedCreated);
         pres.FileProperties.Title.Should().Be("Properties_setter_sets_values");
+    }
+
+    [Test]
+    public void Properties_setter_survives_round_trip()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
+        pres.FileProperties.Title = "Properties_setter_survives_round_trip";
+        pres.FileProperties.Created = expectedCreated;
+
+        // Act
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Created.Should().Be(expectedCreated);
+        loadedPres.FileProperties.Title.Should().Be("Properties_setter_survives_round_trip");
     }
 
     [Test]
