@@ -1,5 +1,9 @@
 using System;
 
+#pragma warning disable IDE0130
+namespace ShapeCrawler;
+#pragma warning restore IDE0130
+
 /// <summary>
 ///     Represents the core properties of the presentation file.
 /// </summary>
