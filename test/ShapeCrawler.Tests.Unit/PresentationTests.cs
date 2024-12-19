@@ -494,4 +494,19 @@ public class PresentationTests : SCTest
         pres.FileProperties.Created.Should().Be(expectedCreated);
         pres.FileProperties.Title.Should().Be("PowerPoint Presentation");
     }
+
+    [Test]
+    public void Properties_from_stream_getter_returns_values()
+    {
+        var pptx = StreamOf("059_crop-images.pptx");
+        var pres = new Presentation(pptx);
+
+        var expectedModified = DateTime.Parse("2024-12-16 9:11:58");
+
+        // Act-Assert
+        pres.FileProperties.Modified.Should().Be(expectedModified);
+        pres.FileProperties.Title.Should().Be("");
+        pres.FileProperties.Revision.Should().Be("7");
+        pres.FileProperties.Description.Should().BeNull();
+    }
 }
