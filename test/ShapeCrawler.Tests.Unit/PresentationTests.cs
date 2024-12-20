@@ -546,6 +546,6 @@ public class PresentationTests : SCTest
         pres.FileProperties.Modified.Should().Be(expectedModified);
         pres.FileProperties.Title.Should().Be("");
         pres.FileProperties.RevisionNumber.Should().Be(7);
-        pres.FileProperties.Description.Should().BeNull();
+        pres.FileProperties.Comments.Should().BeNull();
     }
 }

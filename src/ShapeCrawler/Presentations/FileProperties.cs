@@ -1,5 +1,4 @@
 using System;
-using System.IO.Pipelines;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Presentations;
@@ -13,13 +12,13 @@ internal class FileProperties: IFileProperties
         this.sdkPackageProperties = sdkPart.OpenXmlPackage.PackageProperties;
     }
 
-    public string? Creator
+    public string? Author
     {
         get => this.sdkPackageProperties.Creator;
         set => this.sdkPackageProperties.Creator = value;
     }
 
-    public string? Category 
+    public string? Categories 
     {
         get => this.sdkPackageProperties.Category;
         set => this.sdkPackageProperties.Category = value;
@@ -43,7 +42,7 @@ internal class FileProperties: IFileProperties
         set => this.sdkPackageProperties.Created = value;
     }
     
-    public string? Description 
+    public string? Comments 
     {
         get => this.sdkPackageProperties.Description;
         set => this.sdkPackageProperties.Description = value;
@@ -55,7 +54,7 @@ internal class FileProperties: IFileProperties
         set => this.sdkPackageProperties.Identifier = value;
     }
     
-    public string? Keywords 
+    public string? Tags 
     {
         get => this.sdkPackageProperties.Keywords;
         set => this.sdkPackageProperties.Keywords = value;
@@ -90,7 +89,7 @@ internal class FileProperties: IFileProperties
         get
         {
             var revision = this.sdkPackageProperties.Revision;
-            if (string.IsNullOrWhiteSpace(revision) || ! int.TryParse(revision, out var result))
+            if (string.IsNullOrWhiteSpace(revision) || !int.TryParse(revision, out var result))
             {
                 return null;
             }

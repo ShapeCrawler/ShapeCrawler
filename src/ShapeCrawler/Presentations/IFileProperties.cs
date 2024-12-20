@@ -13,14 +13,12 @@ namespace ShapeCrawler;
 public interface IFileProperties
 {
     /// <summary>
-    ///     Gets or sets the category.
+    ///     Gets or sets the categories.
     /// </summary>
-    string? Category { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the type of content represented, generally defined by a specific use and intended audience. Example values include "Whitepaper", "Security Bulletin", and "Exam". (This property is distinct from MIME content types as defined in RFC 2045.)
-    /// </summary>
-    string? ContentType  { get; set; }
+    /// <remarks>
+    ///     The method to delimit categories is not specified.
+    /// </remarks>
+    string? Categories { get; set; }
 
     /// <summary>
     ///     Gets or sets the status of the content. Example values include "Draft", "Reviewed", and "Final".
@@ -36,26 +34,27 @@ public interface IFileProperties
     /// <summary>
     ///     Gets or sets the primary creator. The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.
     /// </summary>
-    string? Creator { get; set; }
+    string? Author { get; set; }
 
     /// <summary>
     ///     Gets or sets the description or abstract of the contents.
     /// </summary>
-    string? Description { get; set; }
+    string? Comments { get; set; }
 
     /// <summary>
-    ///     Gets or sets a unique identifier.
+    ///     Gets or sets a delimited set of keywords (tags) to support searching and indexing. This is typically a list of terms that are not available elsewhere in the properties.
     /// </summary>
-    string? Identifier { get; set; }
-
-    /// <summary>
-    ///     Gets or sets a delimited set of keywords to support searching and indexing. This is typically a list of terms that are not available elsewhere in the properties.
-    /// </summary>
-    string? Keywords { get; set; }
+    /// <remarks>
+    ///     The delimeter to use is not specified.
+    /// </remarks>
+    string? Tags { get; set; }
 
     /// <summary>
     ///     Gets or sets the primary language of the package content. The language tag is composed of one or more parts: A primary language subtag and a (possibly empty) series of subsequent subtags, for example, "EN-US". These values MUST follow the convention specified in RFC 3066.
     /// </summary>
+    /// <remarks>
+    ///     Show in File Explorer, but not in PowerPoint client.
+    /// </remarks>
     string? Language { get; set; }
 
     /// <summary>
@@ -76,6 +75,9 @@ public interface IFileProperties
     /// <summary>
     ///     Gets or sets the revision number. This value indicates the number of saves or revisions. The application is responsible for updating this value after each revision.
     /// </summary>
+    /// <remarks>
+    ///     Show in File Explorer, but not in PowerPoint client.
+    /// </remarks>
     int? RevisionNumber { get; set; }
 
     /// <summary>
