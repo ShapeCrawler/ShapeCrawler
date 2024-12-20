@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -488,7 +489,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var expectedCreated = DateTime.Parse("2023-07-09 13:28:40");
+        var expectedCreated = DateTime.Parse("2023-07-09T20:28:40Z", CultureInfo.InvariantCulture);
 
         // Act-Assert
         pres.FileProperties.Created.Should().Be(expectedCreated);
@@ -537,7 +538,7 @@ public class PresentationTests : SCTest
         var pptx = StreamOf("059_crop-images.pptx");
         var pres = new Presentation(pptx);
 
-        var expectedModified = DateTime.Parse("2024-12-16 9:11:58");
+        var expectedModified = DateTime.Parse("2024-12-16T17:11:58Z", CultureInfo.InvariantCulture);
 
         // Act-Assert
         pres.FileProperties.Modified.Should().Be(expectedModified);
