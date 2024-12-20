@@ -520,6 +520,7 @@ public class PresentationTests : SCTest
         var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
         pres.FileProperties.Title = "Properties_setter_survives_round_trip";
         pres.FileProperties.Created = expectedCreated;
+        pres.FileProperties.RevisionNumber = 100;
 
         // Act
         var stream = new MemoryStream();
@@ -530,6 +531,7 @@ public class PresentationTests : SCTest
         // Assert
         loadedPres.FileProperties.Created.Should().Be(expectedCreated);
         loadedPres.FileProperties.Title.Should().Be("Properties_setter_survives_round_trip");
+        pres.FileProperties.RevisionNumber.Should().Be(100);
     }
 
     [Test]
@@ -543,7 +545,7 @@ public class PresentationTests : SCTest
         // Act-Assert
         pres.FileProperties.Modified.Should().Be(expectedModified);
         pres.FileProperties.Title.Should().Be("");
-        pres.FileProperties.Revision.Should().Be("7");
+        pres.FileProperties.RevisionNumber.Should().Be(7);
         pres.FileProperties.Description.Should().BeNull();
     }
 }

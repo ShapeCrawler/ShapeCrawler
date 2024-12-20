@@ -1,4 +1,5 @@
 using System;
+using System.IO.Pipelines;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Presentations;
@@ -84,10 +85,21 @@ internal class FileProperties: IFileProperties
         set => this.sdkPackageProperties.Modified = value;
     }
     
-    public string? Revision 
+    public int? RevisionNumber 
     {
-        get => this.sdkPackageProperties.Revision;
-        set => this.sdkPackageProperties.Revision = value;
+        get
+        {
+            var revision = this.sdkPackageProperties.Revision;
+            if (string.IsNullOrWhiteSpace(revision) || ! int.TryParse(revision, out var result))
+            {
+                return null;
+            }
+            else
+            {
+                return result;
+            }
+        }
+        set => this.sdkPackageProperties.Revision = value?.ToString();
     }
     
     public string? Subject 

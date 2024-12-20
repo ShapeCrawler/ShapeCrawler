@@ -76,7 +76,7 @@ public interface IFileProperties
     /// <summary>
     ///     Gets or sets the revision number. This value indicates the number of saves or revisions. The application is responsible for updating this value after each revision.
     /// </summary>
-    string? Revision { get; set; }
+    int? RevisionNumber { get; set; }
 
     /// <summary>
     ///     Gets or sets the topic of the contents.
