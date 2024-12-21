@@ -36,6 +36,14 @@ public interface IPresentationProperties
     ///     Gets Header and Footer manager.
     /// </summary>
     IFooter Footer { get; }
+
+    /// <summary>
+    ///     Gets the proeprties of the file.
+    /// </summary>
+    /// <remarks>
+    ///     These properties are not presentation-specific.
+    /// </remarks>
+    IFileProperties FileProperties { get; }
     
     /// <summary>
     ///     Returns slide with specified number.

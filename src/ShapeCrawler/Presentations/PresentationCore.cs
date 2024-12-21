@@ -24,12 +24,13 @@ internal sealed class PresentationCore
         stream.Write(bytes, 0, bytes.Length);
         stream.Position = 0;
         this.sdkPresDocument = PresentationDocument.Open(stream, true);
-        var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
+        var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;    
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
         this.Sections = new Sections(this.sdkPresDocument);
         this.Slides = new Slides(this.sdkPresDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.FileProperties = new(this.sdkPresDocument.CoreFilePropertiesPart!);
     }
 
     internal PresentationCore(Stream stream)
@@ -42,6 +43,7 @@ internal sealed class PresentationCore
         this.Slides = new Slides(this.sdkPresDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.FileProperties = new(this.sdkPresDocument.CoreFilePropertiesPart!);
     }
 
     internal ISlides Slides { get; }
@@ -64,13 +66,20 @@ internal sealed class PresentationCore
 
     internal IFooter Footer { get; }
 
+    internal FileProperties FileProperties { get; }
+
     internal void CopyTo(string path)
     {
+        this.FileProperties.Modified = Presentation.TimeProvider.UtcNow;
         var cloned = this.sdkPresDocument.Clone(path);
         cloned.Dispose();
     }
 
-    internal void CopyTo(Stream stream) => this.sdkPresDocument.Clone(stream);
+    internal void CopyTo(Stream stream)
+    {
+        this.FileProperties.Modified = Presentation.TimeProvider.UtcNow;
+        this.sdkPresDocument.Clone(stream);
+    }
 
     internal byte[] AsByteArray()
     {
