@@ -554,5 +554,26 @@ public class PresentationTests : SCTest
 
         // Assert
         loadedPres.FileProperties.Created.Should().Be(expectedCreated);
-    }   
+    }
+
+    [Test]
+    public void Save_sets_created_date()
+    {
+        // Arrange
+        var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
+        Presentation.TimeProvider = new FakeTimeProvider(expectedCreated);
+        var pres = new Presentation();
+
+        var expectedModified = DateTime.Parse("2024-02-02T15:30:45Z", CultureInfo.InvariantCulture);
+        Presentation.TimeProvider = new FakeTimeProvider(expectedModified);
+        var stream = new MemoryStream();
+
+        // Act
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Modified.Should().Be(expectedModified);
+    } 
 }

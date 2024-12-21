@@ -70,11 +70,16 @@ internal sealed class PresentationCore
 
     internal void CopyTo(string path)
     {
+        FileProperties.Modified = Presentation.TimeProvider.UtcNow;
         var cloned = this.sdkPresDocument.Clone(path);
         cloned.Dispose();
     }
 
-    internal void CopyTo(Stream stream) => this.sdkPresDocument.Clone(stream);
+    internal void CopyTo(Stream stream)
+    {
+        FileProperties.Modified = Presentation.TimeProvider.UtcNow;
+        this.sdkPresDocument.Clone(stream);
+    }
 
     internal byte[] AsByteArray()
     {

@@ -68,7 +68,7 @@ public sealed class Presentation : IPresentation
     /// <inheritdoc />
     public IFileProperties FileProperties => this.validateable.FileProperties;
 
-    internal static ITimeProvider TimeProvider { private get; set; } = new SystemTimeProvider();
+    internal static ITimeProvider TimeProvider { get; set; } = new SystemTimeProvider();
 
     /// <inheritdoc />
     public void Save() => this.validateable.Save();
