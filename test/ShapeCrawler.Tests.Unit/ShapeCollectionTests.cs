@@ -569,6 +569,25 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
+    [Ignore("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/809")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("008.pptx"));
+        var shapes = pres.Slide(1).Shapes;
+        var image = StreamOf("png image-1.png");
+        
+        // Act
+        shapes.AddPicture(image);
+        shapes.AddPicture(image);
+        
+        // Assert
+        pres.SaveAs("output.pptx");
+        // Check the folder output.pptx/ppt/media. This folder should contain only one image file.
+        // TODO: Add assertion
+    }
+    
+    [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
