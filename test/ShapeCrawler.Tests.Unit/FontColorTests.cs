@@ -121,7 +121,6 @@ public class FontColorTests : SCTest
     }
     
     [Test]
-    [Ignore("Should be fix with issue https://github.com/ShapeCrawler/ShapeCrawler/issues/793")]
     public void Update_updates_font_color_of_master_shape()
     {
         // Arrange
@@ -135,6 +134,7 @@ public class FontColorTests : SCTest
         // Assert
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
+        pres.Validate();
         pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be("007F00");
     }
     

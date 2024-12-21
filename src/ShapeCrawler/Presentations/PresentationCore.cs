@@ -99,13 +99,13 @@ internal sealed class PresentationCore
 #else
         sdkErrors = sdkErrors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
 #endif
-
         if (sdkErrors.Any())
         {
             throw new SCException("Presentation is invalid.");
         }
         
         var errors = this.ValidateATableRows(this.sdkPresDocument);
+        errors = errors.Concat(this.ValidateASolidFill(this.sdkPresDocument));
         if (errors.Any())
         {
             throw new SCException("Presentation is invalid.");
@@ -144,6 +144,25 @@ internal sealed class PresentationCore
                 {
                     yield return "Invalid table row structure: ExtensionList element must appear after all TableCell elements in a TableRow";
                 }
+            }
+        }
+    }
+    
+    private IEnumerable<string> ValidateASolidFill(PresentationDocument presDocument)
+    {
+        var aText = presDocument.PresentationPart!.SlideParts
+            .SelectMany(slidePart => slidePart.Slide.Descendants<A.Text>());
+        aText = aText.Concat(presDocument.PresentationPart!.SlideMasterParts
+            .SelectMany(slidePart => slidePart.SlideMaster.Descendants<A.Text>())).ToList();
+
+        foreach (var text in aText)
+        {
+            var runProperties = text.Parent!.GetFirstChild<A.RunProperties>();
+            
+            if ((runProperties?.Descendants<A.SolidFill>()?.Any() ?? false) 
+                && runProperties.ChildElements.Take(2).All(x => x is not A.SolidFill))
+            {
+                yield return $"Invalid solid fill structure: SolidFill element must be index 0";
             }
         }
     }
