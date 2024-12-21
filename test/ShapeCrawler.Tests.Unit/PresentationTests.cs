@@ -557,6 +557,20 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Create_sets_modified_date()
+    {
+        // Arrange
+        var expectedModified = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
+        Presentation.TimeProvider = new FakeTimeProvider(expectedModified);
+
+        // Act
+        var pres = new Presentation();
+
+        // Assert
+        pres.FileProperties.Modified.Should().Be(expectedModified);
+    }
+
+    [Test]
     public void Save_sets_created_date()
     {
         // Arrange
