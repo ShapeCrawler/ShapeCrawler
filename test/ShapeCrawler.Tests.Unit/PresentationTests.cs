@@ -1,6 +1,7 @@
 using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -485,18 +486,6 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Properties_getter_returns_values()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var expectedCreated = DateTime.Parse("2023-07-09T20:28:40Z", CultureInfo.InvariantCulture);
-
-        // Act-Assert
-        pres.FileProperties.Created.Should().Be(expectedCreated);
-        pres.FileProperties.Title.Should().Be("PowerPoint Presentation");
-    }
-
-    [Test]
     public void Properties_setter_sets_values()
     {
         // Arrange
@@ -548,4 +537,22 @@ public class PresentationTests : SCTest
         pres.FileProperties.RevisionNumber.Should().Be(7);
         pres.FileProperties.Comments.Should().BeNull();
     }
+
+    [Test]
+    public void Create_sets_created_date()
+    {
+        // Arrange
+        var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
+        Presentation.TimeProvider = new FakeTimeProvider(expectedCreated);
+
+        // Act
+        var pres = new Presentation();
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Created.Should().Be(expectedCreated);
+    }   
 }
