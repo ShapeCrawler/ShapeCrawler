@@ -97,12 +97,7 @@ public struct Color
     /// <returns>Returns <see langword="true" /> if hex is a valid value. </returns>
     public static Color FromHex(string hex)
     {
-#if NETSTANDARD2_0
-        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex;
-#else
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
-#endif
-
         (int r, int g, int b, float a) = ParseHexValue(value);
 
         return new(r, g, b, a);
