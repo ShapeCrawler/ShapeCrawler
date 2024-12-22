@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #if NETSTANDARD2_0
@@ -70,14 +71,14 @@ internal sealed class PresentationCore
 
     internal void CopyTo(string path)
     {
-        this.FileProperties.Modified = Presentation.TimeProvider.UtcNow;
+        this.FileProperties.Modified = ShapeCrawlerInternal.TimeProvider.UtcNow;
         var cloned = this.sdkPresDocument.Clone(path);
         cloned.Dispose();
     }
 
     internal void CopyTo(Stream stream)
     {
-        this.FileProperties.Modified = Presentation.TimeProvider.UtcNow;
+        this.FileProperties.Modified = ShapeCrawlerInternal.TimeProvider.UtcNow;
         this.sdkPresDocument.Clone(stream);
     }
 

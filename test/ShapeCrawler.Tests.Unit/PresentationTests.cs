@@ -490,7 +490,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Local);
 
         // Act
         pres.FileProperties.Title = "Properties_setter_sets_values";
@@ -506,7 +506,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5);
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Local);
         pres.FileProperties.Title = "Properties_setter_survives_round_trip";
         pres.FileProperties.Created = expectedCreated;
         pres.FileProperties.RevisionNumber = 100;
@@ -543,7 +543,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
-        Presentation.TimeProvider = new FakeTimeProvider(expectedCreated);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedCreated);
 
         // Act
         var pres = new Presentation();
@@ -561,7 +561,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var expectedModified = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
-        Presentation.TimeProvider = new FakeTimeProvider(expectedModified);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedModified);
 
         // Act
         var pres = new Presentation();
@@ -575,11 +575,11 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
-        Presentation.TimeProvider = new FakeTimeProvider(expectedCreated);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedCreated);
         var pres = new Presentation();
 
         var expectedModified = DateTime.Parse("2024-02-02T15:30:45Z", CultureInfo.InvariantCulture);
-        Presentation.TimeProvider = new FakeTimeProvider(expectedModified);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedModified);
         var stream = new MemoryStream();
 
         // Act
