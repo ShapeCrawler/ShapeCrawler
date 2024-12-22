@@ -10,7 +10,7 @@ namespace ShapeCrawler.Texts;
 internal sealed class TextParagraphPortion : IParagraphPortion
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly ResetableLazy<TextPortionFont> font;
+    private readonly Lazy<TextPortionFont> font;
     private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Run aRun;
 
@@ -20,7 +20,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         this.AText = aRun.Text!;
         this.aRun = aRun;
         var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.AText);
-        this.font = new ResetableLazy<TextPortionFont>(() =>
+        this.font = new Lazy<TextPortionFont>(() =>
             new TextPortionFont(this.sdkTypedOpenXmlPart, this.AText, textPortionSize));
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }

@@ -9,7 +9,7 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class Field : IParagraphPortion
 {
-    private readonly ResetableLazy<ITextPortionFont> font;
+    private readonly Lazy<ITextPortionFont> font;
     private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Field aField;
     private readonly PortionText portionText;
@@ -20,7 +20,7 @@ internal sealed class Field : IParagraphPortion
         this.aText = aField.GetFirstChild<A.Text>();
         this.aField = aField;
 
-        this.font = new ResetableLazy<ITextPortionFont>(() =>
+        this.font = new Lazy<ITextPortionFont>(() =>
         {
             var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.aText!);
             return new TextPortionFont(sdkTypedOpenXmlPart, this.aText!, textPortionSize);
