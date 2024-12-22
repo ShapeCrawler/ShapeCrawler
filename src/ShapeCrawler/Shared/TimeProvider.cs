@@ -20,12 +20,3 @@ internal class SystemTimeProvider: ITimeProvider
 {
     DateTime ITimeProvider.UtcNow => DateTime.UtcNow;
 }
-
-/// <summary>
-/// Provides a faked time which can be controlled by unit tests.
-/// </summary>
-/// <param name="fakeTime">Fake time to return when asked.</param>
-internal class FakeTimeProvider(DateTime fakeTime): ITimeProvider
-{
-    DateTime ITimeProvider.UtcNow => fakeTime;
-}
