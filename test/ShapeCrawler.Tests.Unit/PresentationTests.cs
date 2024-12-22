@@ -571,7 +571,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Save_sets_created_date()
+    public void SaveAs_sets_file_property_Modified()
     {
         // Arrange
         var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
