@@ -2,7 +2,6 @@ using System;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
