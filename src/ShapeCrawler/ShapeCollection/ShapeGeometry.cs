@@ -155,11 +155,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
             return value.ToLowerInvariant();
         }
 
-#if NETSTANDARD2_0
-        return char.ToLowerInvariant(value[0]) + value.Substring(1);
-#else
         return char.ToLowerInvariant(value[0]) + value[1..];
-#endif
     }
 
     private static decimal ExtractCornerSizeFromShapeGuide(A.ShapeGuide sg)
