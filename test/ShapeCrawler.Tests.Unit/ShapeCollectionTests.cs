@@ -399,6 +399,37 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesPres1 = pres.Slides[0].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+        shapesPres1.AddPicture(image);
+        var streamRoundTrip = new MemoryStream();
+        pres.SaveAs(streamRoundTrip);
+        var presLoaded = new Presentation(streamRoundTrip);
+
+        // Act
+        var shapesPres2 = presLoaded.Slides[0].Shapes;
+        shapesPres2.AddPicture(image);
+
+        // Assert
+        pres.SaveAs("AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation.pptx");
+
+        // Using DocumentFormat.Xml to spelunk the presentation file
+        // TODO: DRY into helper method. Repeats with raster image test of the same kind
+        var streamVerify = new MemoryStream();
+        presLoaded.SaveAs(streamVerify);
+        streamVerify.Position = 0;
+        var checkXml = PresentationDocument.Open(streamVerify, true);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(2); // One for the vector and one for the auto-generated raster
+    }
+
+
+    [Test]
     public void AddPicture_sets_valid_svg_content()
     {
         // Arrange
