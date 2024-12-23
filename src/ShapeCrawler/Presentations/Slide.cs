@@ -28,13 +28,14 @@ internal sealed class Slide : ISlide
     internal Slide(
         SlidePart sdkSlidePart,
         ISlideLayout slideLayout,
-        SlideSize slideSize)
+        SlideSize slideSize,
+        MediaCollection mediaCollection)
     {
         this.SdkSlidePart = sdkSlidePart;
         this.slideSize = slideSize;
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart));
+        this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart), mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }

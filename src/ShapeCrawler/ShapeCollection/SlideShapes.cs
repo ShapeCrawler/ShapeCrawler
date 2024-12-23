@@ -6,12 +6,12 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
@@ -30,12 +30,13 @@ internal sealed class SlideShapes : ISlideShapes
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
     private readonly IShapes shapes;
-    private readonly Dictionary<string, string> imagePartsByHash = [];
+    private readonly MediaCollection mediaCollection;
 
-    internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes)
+    internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes, MediaCollection mediaCollection)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.shapes = shapes;
+        this.mediaCollection = mediaCollection;
     }
 
     public int Count => this.shapes.Count;
@@ -523,15 +524,6 @@ internal sealed class SlideShapes : ISlideShapes
         };
     }
 
-    private static string ComputeFileHash(Stream fileStream)
-    {
-        using var sha512 = SHA512.Create();
-        var hash = sha512.ComputeHash(fileStream);
-        fileStream.Position = 0;
-
-        return System.Convert.ToBase64String(hash);
-    }
-
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
@@ -575,20 +567,52 @@ internal sealed class SlideShapes : ISlideShapes
         return $"Table {maxOrder + 1}";
     }
 
+    private bool TryGetImageRId(string hash, out string imgPartRId)
+    {
+        if (this.mediaCollection.TryGetImagePart(hash, out var imagePart))
+        {
+            // Image already exists in the presentation sofar.
+            // Do we have a reference to it on this slide?
+            var found = this.sdkSlidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
+            if (found.Any())
+            {
+                // Yes, we already have a relationship with this part on this slide
+                // So use that relationship ID
+                imgPartRId = this.sdkSlidePart.GetIdOfPart(imagePart);
+            }
+            else
+            {
+                // No, so let's create a relationship to it
+                imgPartRId = this.sdkSlidePart.CreateRelationshipToPart(imagePart);
+            }
+
+            return true;
+        }
+        else
+        {
+            // Sorry, you'll need to create a new image part
+            imgPartRId = string.Empty;
+            return false;
+        }
+    }
+
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
         var mStream = new MemoryStream();
         imageStream.CopyTo(mStream);
 
-        var hash = ComputeFileHash(mStream);
-        if (!this.imagePartsByHash.TryGetValue(hash, out var imgPartRId))
+        var hash = MediaCollection.ComputeFileHash(mStream);
+
+        // Does this part already exist in the presentation?
+        if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
+            // No, let's create it!
             imgPartRId = this.sdkSlidePart.NextRelationshipId();
             var mime = Mime(mStream);
             var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
             imageStream.Position = 0;
             imagePart.FeedData(imageStream);
-            this.imagePartsByHash[hash] = imgPartRId;
+            this.mediaCollection.SetImagePart(hash,imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -677,14 +701,17 @@ internal sealed class SlideShapes : ISlideShapes
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
     {
         // The SVG Blip contains the vector data
-        var svgHash = ComputeFileHash(svgStream);
-        if (!this.imagePartsByHash.TryGetValue(svgHash, out var svgPartRId))
+        var svgHash = MediaCollection.ComputeFileHash(svgStream);
+
+        // Does this part already exist in the presentation?
+        if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
             svgPartRId = this.sdkSlidePart.NextRelationshipId();
             var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
+
             svgStream.Position = 0;
             svgPart.FeedData(svgStream);
-            this.imagePartsByHash[svgHash] = svgPartRId;
+            this.mediaCollection.SetImagePart(svgHash,svgPart);
         }
 
         // TODO: This is now a mess. No reason to be rasterizing an SVG image a second time
@@ -692,16 +719,20 @@ internal sealed class SlideShapes : ISlideShapes
         // and look up the rasterized image if the SVG image already exists.
 
         // The A.Blip contains a raster representation of the vector image
-        var imgHash = ComputeFileHash(rasterStream);
-        if (!this.imagePartsByHash.TryGetValue(imgHash, out var imgPartRId))
+        var imgHash = MediaCollection.ComputeFileHash(rasterStream);
+        if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
             imgPartRId = this.sdkSlidePart.NextRelationshipId();
             var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+
             rasterStream.Position = 0;
             imagePart.FeedData(rasterStream);
-            this.imagePartsByHash[imgHash] = imgPartRId;
+            this.mediaCollection.SetImagePart(imgHash,imagePart);
         }
 
+        // We need to track images at two levels. At the presentation level, we need to know
+        // which PART contains this image. At the slide level, we need to know what relationsihp
+        // ID we are using to represent it.
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties

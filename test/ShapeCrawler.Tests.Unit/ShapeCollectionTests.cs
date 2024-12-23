@@ -386,14 +386,17 @@ public class ShapeCollectionTests : SCTest
         shapesSlide1.AddPicture(image);
         shapesSlide2.AddPicture(image);
 
+        // Assert
+        pres.SaveAs("AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides.pptx");
+
         // Using DocumentFormat.Xml to spelunk the presentation file
         // TODO: DRY into helper method. Repeats with raster image test of the same kind
         var stream = new MemoryStream();
         pres.SaveAs(stream);
         stream.Position = 0;
         var checkXml = PresentationDocument.Open(stream, true);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
-        imageParts.Length.Should().Be(2);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(2);
     }
 
     [Test]
@@ -641,7 +644,38 @@ public class ShapeCollectionTests : SCTest
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
     }
-    
+
+
+    [Test]
+    [Explicit("Fails. Image parts needs to be tracked at a higher level, not in a single shape collection.")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+
+        var image = StreamOf("png image-1.png");
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        pres.SaveAs("AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides.pptx");
+
+        // Using DocumentFormat.Xml to spelunk the presentation file
+        // TODO: DRY into helper method. Repeats with raster image test of the same kind
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var checkXml = PresentationDocument.Open(stream, true);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+
+        
     [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {
