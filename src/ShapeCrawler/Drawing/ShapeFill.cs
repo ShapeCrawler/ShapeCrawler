@@ -187,6 +187,8 @@ internal record ShapeFill : IShapeFill
         {
             (var rId,_) = this.sdkTypedOpenXmlPart.AddImagePart(image,"image/png");
 
+            // This could be refactored to DRY vs SlideShapes.CreatePPicture.
+            // In the process, the image could be de-duped also.
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
             aStretch.Append(new A.FillRectangle());
