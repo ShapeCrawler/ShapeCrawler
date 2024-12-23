@@ -361,11 +361,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Using DocumentFormat.Xml to spelunk the presentation file
-        // TODO: DRY into helper method. Repeats with raster image test of the same kind
-        var stream = new MemoryStream();
-        pres.SaveAs(stream);
-        stream.Position = 0;
-        var checkXml = PresentationDocument.Open(stream, true);
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(2);
     }
@@ -389,11 +385,7 @@ public class ShapeCollectionTests : SCTest
         pres.SaveAs("AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides.pptx");
 
         // Using DocumentFormat.Xml to spelunk the presentation file
-        // TODO: DRY into helper method. Repeats with raster image test of the same kind
-        var stream = new MemoryStream();
-        pres.SaveAs(stream);
-        stream.Position = 0;
-        var checkXml = PresentationDocument.Open(stream, true);
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(2);
     }
@@ -407,9 +399,7 @@ public class ShapeCollectionTests : SCTest
         var shapesPres1 = pres.Slides[0].Shapes;
         var image = StreamOf("test-vector-image-1.svg");
         shapesPres1.AddPicture(image);
-        var streamRoundTrip = new MemoryStream();
-        pres.SaveAs(streamRoundTrip);
-        var presLoaded = new Presentation(streamRoundTrip);
+        var presLoaded = SaveAndOpenPresentation(pres);
 
         // Act
         var shapesPres2 = presLoaded.Slides[0].Shapes;
@@ -419,11 +409,7 @@ public class ShapeCollectionTests : SCTest
         pres.SaveAs("AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation.pptx");
 
         // Using DocumentFormat.Xml to spelunk the presentation file
-        // TODO: DRY into helper method. Repeats with raster image test of the same kind
-        var streamVerify = new MemoryStream();
-        presLoaded.SaveAs(streamVerify);
-        streamVerify.Position = 0;
-        var checkXml = PresentationDocument.Open(streamVerify, true);
+        var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(2); // One for the vector and one for the auto-generated raster
     }
@@ -667,10 +653,7 @@ public class ShapeCollectionTests : SCTest
         // Check the folder output.pptx/ppt/media. This folder should contain only one image file.
 
         // Using DocumentFormat.Xml to spelunk the presentation file
-        var stream = new MemoryStream();
-        pres.SaveAs(stream);
-        stream.Position = 0;
-        var checkXml = PresentationDocument.Open(stream, true);
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
     }
@@ -694,11 +677,7 @@ public class ShapeCollectionTests : SCTest
         pres.SaveAs("AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides.pptx");
 
         // Using DocumentFormat.Xml to spelunk the presentation file
-        // TODO: DRY into helper method. Repeats with raster image test of the same kind
-        var stream = new MemoryStream();
-        pres.SaveAs(stream);
-        stream.Position = 0;
-        var checkXml = PresentationDocument.Open(stream, true);
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(1);
     }
@@ -712,9 +691,7 @@ public class ShapeCollectionTests : SCTest
         var shapesPres1 = pres.Slides[0].Shapes;
         var image = StreamOf("png image-1.png");
         shapesPres1.AddPicture(image);
-        var streamRoundTrip = new MemoryStream();
-        pres.SaveAs(streamRoundTrip);
-        var presLoaded = new Presentation(streamRoundTrip);
+        var presLoaded = SaveAndOpenPresentation(pres);
 
         // Act
         var shapesPres2 = presLoaded.Slides[0].Shapes;
@@ -724,11 +701,7 @@ public class ShapeCollectionTests : SCTest
         pres.SaveAs("AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation.pptx");
 
         // Using DocumentFormat.Xml to spelunk the presentation file
-        // TODO: DRY into helper method. Repeats with raster image test of the same kind
-        var streamVerify = new MemoryStream();
-        presLoaded.SaveAs(streamVerify);
-        streamVerify.Position = 0;
-        var checkXml = PresentationDocument.Open(streamVerify, true);
+        var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(1);
     }
