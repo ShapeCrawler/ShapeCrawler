@@ -50,7 +50,7 @@ internal class TableCellFill : IShapeFill
         }
         else
         {
-            var rId = this.sdkTypedOpenXmlPart.AddImagePart(image);
+            (var rId,_) = this.sdkTypedOpenXmlPart.AddImagePart(image, "image/png");
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
