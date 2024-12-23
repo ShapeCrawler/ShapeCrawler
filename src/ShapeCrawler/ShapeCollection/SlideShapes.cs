@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -29,6 +30,7 @@ internal sealed class SlideShapes : ISlideShapes
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
     private readonly IShapes shapes;
+    private readonly Dictionary<string, string> imagePartsByHash = [];
 
     internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes)
     {
@@ -566,13 +568,23 @@ internal sealed class SlideShapes : ISlideShapes
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var imgPartRId = this.sdkSlidePart.NextRelationshipId();
         var mStream = new MemoryStream();
         imageStream.CopyTo(mStream);
-        var mime = Mime(mStream);
-        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
-        imageStream.Position = 0;
-        imagePart.FeedData(imageStream);
+
+        using var sha512 = SHA512.Create();
+        var hash = sha512.ComputeHash(mStream);
+        var base64Hash = System.Convert.ToBase64String(hash);
+        mStream.Position = 0;
+
+        if (!this.imagePartsByHash.TryGetValue(base64Hash, out var imgPartRId))
+        {
+            imgPartRId = this.sdkSlidePart.NextRelationshipId();
+            var mime = Mime(mStream);
+            var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
+            imageStream.Position = 0;
+            imagePart.FeedData(imageStream);
+            this.imagePartsByHash[base64Hash] = imgPartRId;
+        }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();

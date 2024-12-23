@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
@@ -569,7 +570,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Ignore("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/809")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
     {
         // Arrange
@@ -580,11 +580,18 @@ public class ShapeCollectionTests : SCTest
         // Act
         shapes.AddPicture(image);
         shapes.AddPicture(image);
-        
+
         // Assert
         pres.SaveAs("output.pptx");
         // Check the folder output.pptx/ppt/media. This folder should contain only one image file.
-        // TODO: Add assertion
+
+        // Using DocumentFormat.Xml to spelunk the presentation file
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var checkXml = PresentationDocument.Open(stream, true);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
+        imageParts.Length.Should().Be(1);
     }
     
     [Test]
