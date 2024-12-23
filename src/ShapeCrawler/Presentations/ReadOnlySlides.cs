@@ -57,7 +57,6 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
         foreach(var imagePart in imageParts)
         {
             using var stream = imagePart.GetStream();
-            stream.Position = 0;
             var hash = MediaCollection.ComputeFileHash(stream);
             if (!this.mediaCollection.TryGetImagePart(hash, out var _))
             {
