@@ -360,10 +360,11 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
         shapes.AddPicture(image);
 
-        // Using DocumentFormat.Xml to spelunk the presentation file
+        // Assert
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(2);
+        SavePresentationFile(pres);
     }
 
     [Test]
@@ -382,12 +383,10 @@ public class ShapeCollectionTests : SCTest
         shapesSlide2.AddPicture(image);
 
         // Assert
-        pres.SaveAs("AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides.pptx");
-
-        // Using DocumentFormat.Xml to spelunk the presentation file
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(2);
+        SavePresentationFile(pres);
     }
 
     [Test]
@@ -406,14 +405,11 @@ public class ShapeCollectionTests : SCTest
         shapesPres2.AddPicture(image);
 
         // Assert
-        pres.SaveAs("AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation.pptx");
-
-        // Using DocumentFormat.Xml to spelunk the presentation file
         var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(2); // One for the vector and one for the auto-generated raster
+        SavePresentationFile(pres);
     }
-
 
     [Test]
     public void AddPicture_sets_valid_svg_content()
@@ -649,14 +645,11 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        pres.SaveAs("output.pptx");
-        // Check the folder output.pptx/ppt/media. This folder should contain only one image file.
-
-        // Using DocumentFormat.Xml to spelunk the presentation file
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
-    }
+        SavePresentationFile(pres);
+   }
 
     [Test]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
@@ -674,12 +667,10 @@ public class ShapeCollectionTests : SCTest
         shapesSlide2.AddPicture(image);
 
         // Assert
-        pres.SaveAs("AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides.pptx");
-
-        // Using DocumentFormat.Xml to spelunk the presentation file
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(1);
+        SavePresentationFile(pres);
     }
 
     [Test]
@@ -694,16 +685,14 @@ public class ShapeCollectionTests : SCTest
         var presLoaded = SaveAndOpenPresentation(pres);
 
         // Act
-        var shapesPres2 = presLoaded.Slides[0].Shapes;
+        var shapesPres2 = presLoaded.Slides[1].Shapes;
         shapesPres2.AddPicture(image);
 
         // Assert
-        pres.SaveAs("AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation.pptx");
-
-        // Using DocumentFormat.Xml to spelunk the presentation file
         var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(1);
+        SavePresentationFile(presLoaded);
     }
 
     [Test]
