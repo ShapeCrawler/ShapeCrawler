@@ -474,8 +474,13 @@ internal sealed class SlideShapes : ISlideShapes
 
     private static string Mime(Stream imageStream)
     {
-        imageStream.Seek(0, SeekOrigin.Begin);
-        using var codec = SKCodec.Create(imageStream);
+        var mStream = new MemoryStream();
+        imageStream.CopyTo(mStream);
+        mStream.Position = 0;
+
+        // Note that the below disposes the underlying stream, which we typically don't want
+        // ergo, we do this on a copied memory stream.
+        using var codec = SKCodec.Create(mStream);
         var mime = codec.EncodedFormat switch
         {
             SKEncodedImageFormat.Jpeg => "image/jpeg",
@@ -598,20 +603,14 @@ internal sealed class SlideShapes : ISlideShapes
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var mStream = new MemoryStream();
-        imageStream.CopyTo(mStream);
-
-        var hash = MediaCollection.ComputeFileHash(mStream);
+        var hash = MediaCollection.ComputeFileHash(imageStream);
 
         // Does this part already exist in the presentation?
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             // No, let's create it!
-            imgPartRId = this.sdkSlidePart.NextRelationshipId();
-            var mime = Mime(mStream);
-            var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
-            imageStream.Position = 0;
-            imagePart.FeedData(imageStream);
+            var mimeType = Mime(imageStream);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream,mimeType);
             this.mediaCollection.SetImagePart(hash,imagePart);
         }
 
@@ -702,37 +701,24 @@ internal sealed class SlideShapes : ISlideShapes
     {
         // The SVG Blip contains the vector data
         var svgHash = MediaCollection.ComputeFileHash(svgStream);
-
-        // Does this part already exist in the presentation?
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
-            svgPartRId = this.sdkSlidePart.NextRelationshipId();
-            var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
-
-            svgStream.Position = 0;
-            svgPart.FeedData(svgStream);
+            (svgPartRId, var svgPart) = this.sdkSlidePart.AddImagePart(svgStream,"image/svg+xml");
             this.mediaCollection.SetImagePart(svgHash,svgPart);
         }
 
-        // TODO: This is now a mess. No reason to be rasterizing an SVG image a second time
-        // if it already exists!! Instead, move the rasterizing here (and make own method),
-        // and look up the rasterized image if the SVG image already exists.
+        // There is a possible optimization here. If we've previously in this session rasterized
+        // this SVG, we could look up the rasterized image by reference to its vector image so
+        // we wouldn't have to rasterize it every time.
 
         // The A.Blip contains a raster representation of the vector image
         var imgHash = MediaCollection.ComputeFileHash(rasterStream);
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
-            imgPartRId = this.sdkSlidePart.NextRelationshipId();
-            var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-
-            rasterStream.Position = 0;
-            imagePart.FeedData(rasterStream);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(rasterStream,"image/png");
             this.mediaCollection.SetImagePart(imgHash,imagePart);
         }
 
-        // We need to track images at two levels. At the presentation level, we need to know
-        // which PART contains this image. At the slide level, we need to know what relationsihp
-        // ID we are using to represent it.
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties

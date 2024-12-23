@@ -403,12 +403,12 @@ public class ShapeCollectionTests : SCTest
         // Act
         var shapesPres2 = presLoaded.Slides[0].Shapes;
         shapesPres2.AddPicture(image);
+        SavePresentationFile(presLoaded);
 
         // Assert
         var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(2); // One for the vector and one for the auto-generated raster
-        SavePresentationFile(pres);
     }
 
     [Test]
