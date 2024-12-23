@@ -371,7 +371,6 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit("Fails. Image parts needs to be tracked at a higher level, not in a single shape collection.")]
     public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
     {
         // Arrange
@@ -645,9 +644,7 @@ public class ShapeCollectionTests : SCTest
         imageParts.Length.Should().Be(1);
     }
 
-
     [Test]
-    [Explicit("Fails. Image parts needs to be tracked at a higher level, not in a single shape collection.")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
     {
         // Arrange
