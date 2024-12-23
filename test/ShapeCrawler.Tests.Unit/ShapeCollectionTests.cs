@@ -349,6 +349,29 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+        shapes.AddPicture(image);
+
+        // Using DocumentFormat.Xml to spelunk the presentation file
+        // TODO: DRY into helper method. Repeats with raster image test of the same kind
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var checkXml = PresentationDocument.Open(stream, true);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
+        imageParts.Length.Should().Be(2);
+    }
+
+    [Test]
     public void AddPicture_sets_valid_svg_content()
     {
         // Arrange

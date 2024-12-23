@@ -523,6 +523,15 @@ internal sealed class SlideShapes : ISlideShapes
         };
     }
 
+    private static string ComputeFileHash(Stream fileStream)
+    {
+        using var sha512 = SHA512.Create();
+        var hash = sha512.ComputeHash(fileStream);
+        fileStream.Position = 0;
+
+        return System.Convert.ToBase64String(hash);
+    }
+
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
@@ -571,19 +580,15 @@ internal sealed class SlideShapes : ISlideShapes
         var mStream = new MemoryStream();
         imageStream.CopyTo(mStream);
 
-        using var sha512 = SHA512.Create();
-        var hash = sha512.ComputeHash(mStream);
-        var base64Hash = System.Convert.ToBase64String(hash);
-        mStream.Position = 0;
-
-        if (!this.imagePartsByHash.TryGetValue(base64Hash, out var imgPartRId))
+        var hash = ComputeFileHash(mStream);
+        if (!this.imagePartsByHash.TryGetValue(hash, out var imgPartRId))
         {
             imgPartRId = this.sdkSlidePart.NextRelationshipId();
             var mime = Mime(mStream);
             var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
             imageStream.Position = 0;
             imagePart.FeedData(imageStream);
-            this.imagePartsByHash[base64Hash] = imgPartRId;
+            this.imagePartsByHash[hash] = imgPartRId;
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -671,17 +676,31 @@ internal sealed class SlideShapes : ISlideShapes
 
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
     {
-        // The A.Blip contains a raster representation of the vector image
-        var imgPartRId = this.sdkSlidePart.NextRelationshipId();
-        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-        rasterStream.Position = 0;
-        imagePart.FeedData(rasterStream);
-
         // The SVG Blip contains the vector data
-        var svgPartRId = this.sdkSlidePart.NextRelationshipId();
-        var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
-        svgStream.Position = 0;
-        svgPart.FeedData(svgStream);
+        var svgHash = ComputeFileHash(svgStream);
+        if (!this.imagePartsByHash.TryGetValue(svgHash, out var svgPartRId))
+        {
+            svgPartRId = this.sdkSlidePart.NextRelationshipId();
+            var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
+            svgStream.Position = 0;
+            svgPart.FeedData(svgStream);
+            this.imagePartsByHash[svgHash] = svgPartRId;
+        }
+
+        // TODO: This is now a mess. No reason to be rasterizing an SVG image a second time
+        // if it already exists!! Instead, move the rasterizing here (and make own method),
+        // and look up the rasterized image if the SVG image already exists.
+
+        // The A.Blip contains a raster representation of the vector image
+        var imgHash = ComputeFileHash(rasterStream);
+        if (!this.imagePartsByHash.TryGetValue(imgHash, out var imgPartRId))
+        {
+            imgPartRId = this.sdkSlidePart.NextRelationshipId();
+            var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            rasterStream.Position = 0;
+            imagePart.FeedData(rasterStream);
+            this.imagePartsByHash[imgHash] = imgPartRId;
+        }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();
