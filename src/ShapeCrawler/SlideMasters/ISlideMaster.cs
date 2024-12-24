@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -50,14 +49,14 @@ public interface ISlideMaster
 
 internal sealed class SlideMaster : ISlideMaster
 {
-    private readonly ResetableLazy<SlideLayouts> layouts;
+    private readonly Lazy<SlideLayouts> layouts;
     private readonly Lazy<MasterSlideNumber?> slideNumber;
     private readonly SlideMasterPart sdkSlideMasterPart;
 
     internal SlideMaster(SlideMasterPart sdkSlideMasterPart)
     {
         this.sdkSlideMasterPart = sdkSlideMasterPart;
-        this.layouts = new ResetableLazy<SlideLayouts>(() => new SlideLayouts(this.sdkSlideMasterPart));
+        this.layouts = new Lazy<SlideLayouts>(() => new SlideLayouts(this.sdkSlideMasterPart));
         this.slideNumber = new Lazy<MasterSlideNumber?>(this.CreateSlideNumber);
         this.Shapes = new ShapeCollection.Shapes(this.sdkSlideMasterPart);
     }

@@ -605,7 +605,7 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void CornerSize_getter_returns_default_values()
+    public void CornerSize_Getter_corner_size()
     {
         // Arrange
         var pres = new Presentation();
@@ -613,11 +613,8 @@ public class ShapeTests : SCTest
         shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
 
-        // Act
-        var actualSize = shape.CornerSize;
-
-        // Assert
-        actualSize.Should().Be(35m,"Rounded rectangles with no specified corner size behave as if the value was set to 35.");
+        // Act-Assert
+        shape.CornerSize.Should().Be(35m,"Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
     }
 
     [Test]
@@ -625,16 +622,13 @@ public class ShapeTests : SCTest
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded X", "35")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 1", "100")]
-    public void CornerSize_getter_returns_values_for_top_rounded(IShape shape, string expectedSizeStr)
+    public void CornerSize_Getter_returns_corner_size_for_Top_Rounded_Rectangle(IShape shape, string expectedCornerSizeStr)
     {
         // Arrange
-        var expectedSize = decimal.Parse(expectedSizeStr);
+        var expectedCornerSize = decimal.Parse(expectedCornerSizeStr);
 
-        // Act
-        var actualSize = shape.CornerSize;
-
-        // Assert
-        actualSize.Should().Be(expectedSize);
+        // Act-Assert
+        shape.CornerSize.Should().Be(expectedCornerSize);
     }
 
     [Test]
@@ -654,7 +648,7 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void CornerSize_setter_sets_values()
+    public void CornerSize_Setter_sets_corner_size()
     {
         // Arrange
         var pres = new Presentation();
@@ -663,14 +657,10 @@ public class ShapeTests : SCTest
         var shape = shapes[0];
 
         // Act
-        // For most reliable test results, ensure the denominator of the decimal part of
-        // this value is a factor of 50,000. (e.g. here we use 1/10, which will save/load
-        // without loss of precision.)
-        var expected = 0.1m;
-        shape.CornerSize = expected;
+        shape.CornerSize = 0.1m;
 
         // Assert
-        shape.CornerSize.Should().Be(expected);
+        shape.CornerSize.Should().Be(0.1m);
         pres.Validate();
     }
 
@@ -741,8 +731,7 @@ public class ShapeTests : SCTest
     public void Name_Setter_sets_shape_name()
     {
         // Arrange
-        var pptx = StreamOf("006_1 slides.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf("006_1 slides.pptx"));
         var stream = new MemoryStream();
         var shape = pres.Slides[0].Shapes.GetByName("Shape 1");
 

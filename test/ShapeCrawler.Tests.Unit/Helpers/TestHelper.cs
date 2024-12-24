@@ -1,7 +1,4 @@
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 

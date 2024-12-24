@@ -342,11 +342,7 @@ internal sealed class Slide : ISlide
         var customXmlPartStream = this.sdkCustomXmlPart.Value.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
-#if NET9_0
         return raw[Constants.CustomDataElementName.Length..];
-#else
-        return raw.Substring(Constants.CustomDataElementName.Length);
-#endif
     }
 
     private void SetCustomData(string? value)
