@@ -36,6 +36,11 @@ public interface ITable : IShape
     ITableStyle TableStyle { get; set; }
 
     /// <summary>
+    ///    Gets the table style options.
+    /// </summary>
+    ITableStyleOptions TableStyleOptions { get; }
+
+    /// <summary>
     ///     Gets cell by row and column indexes.
     /// </summary>
     ITableCell this[int rowIndex, int columnIndex] { get; }
@@ -82,6 +87,7 @@ internal sealed class Table : CopyableShape, ITable
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
         this.Rows = new TableRows(sdkTypedOpenXmlPart, this.pGraphicFrame);
+        this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
 
     public override ShapeType ShapeType => ShapeType.Table;
@@ -95,6 +101,8 @@ internal sealed class Table : CopyableShape, ITable
         get => this.GetTableStyle();
         set => this.SetTableStyle(value);
     }
+    
+    public ITableStyleOptions TableStyleOptions { get; init; }
 
     public override bool Removeable => true;
 

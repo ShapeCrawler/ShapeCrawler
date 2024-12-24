@@ -143,7 +143,7 @@ public enum Geometry
     SingleCornerRoundedRectangle,
 
     /// <summary>
-    ///     Round2SameRectangle
+    ///     Top Corners Rounded Rectangle.
     /// </summary>
     TopCornersRoundedRectangle,
 

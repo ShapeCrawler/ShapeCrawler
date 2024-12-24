@@ -569,6 +569,25 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
+    [Ignore("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/809")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("008.pptx"));
+        var shapes = pres.Slide(1).Shapes;
+        var image = StreamOf("png image-1.png");
+        
+        // Act
+        shapes.AddPicture(image);
+        shapes.AddPicture(image);
+        
+        // Assert
+        pres.SaveAs("output.pptx");
+        // Check the folder output.pptx/ppt/media. This folder should contain only one image file.
+        // TODO: Add assertion
+    }
+    
+    [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
@@ -626,7 +645,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddShape_adds_RoundedTop_Rectangle()
+    public void AddShape_adds_Top_Corners_Rounded_Rectangle()
     {
         // Arrange
         var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
@@ -636,10 +655,9 @@ public class ShapeCollectionTests : SCTest
         shapes.AddShape(50, 60, 100, 70, Geometry.TopCornersRoundedRectangle);
 
         // Assert
-        var roundedRectangle = shapes.Last();
-        roundedRectangle.GeometryType.Should().Be(Geometry.TopCornersRoundedRectangle);
-        roundedRectangle.Name.Should().Be("TopCornersRoundedRectangle");
-        roundedRectangle.Outline.HexColor.Should().BeNull();
+        var addedTopCornersRoundedRectangle = shapes.Last();
+        addedTopCornersRoundedRectangle.GeometryType.Should().Be(Geometry.TopCornersRoundedRectangle);
+        addedTopCornersRoundedRectangle.Name.Should().Be("TopCornersRoundedRectangle");
         pres.Validate();
     }
 

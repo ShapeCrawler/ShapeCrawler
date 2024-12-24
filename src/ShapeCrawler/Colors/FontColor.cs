@@ -159,13 +159,7 @@ internal sealed class FontColor : IFontColor
 
         var aSolidFill = aRunProperties.SdkASolidFill();
         aSolidFill?.Remove();
-
-#if NETSTANDARD2_0
-        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex.Substring(1) : hex;
-#else
         hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
-#endif
-      
         var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);

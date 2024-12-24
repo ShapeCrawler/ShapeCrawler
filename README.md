@@ -51,14 +51,14 @@ var text = shape.TextBox!.Text;
 
 ### Create presentation
 
-```c#
+```C#
 // create a new presentation
 var pres = new Presentation();
 
 var shapes = pres.Slides[0].Shapes;
 
 // add new shape
-shapes.AddRectangle(x: 50, y: 60, width: 100, height: 70);
+shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
 var addedShape = shapes.Last();
 
 addedShape.TextBox!.Text = "Hello World!";
@@ -95,9 +95,10 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.57.0 - 2024-11-29
-🍀Added `IShape.AltText` [#13](https://github.com/ShapeCrawler/ShapeCrawler/issues/13)  
-🍀Added `ITable.AddColumn()` and `ITable.InsertColumnAfter()` [D-783](https://github.com/ShapeCrawler/ShapeCrawler/discussions/783)  
-🐞Fixed `Shape.Rotation` [#9](https://github.com/ShapeCrawler/ShapeCrawler/issues/9)  
+### Version 0.58.0 - 2024-12-18
+🍀Added `IHyperlink.AddFile()` [#724](https://github.com/ShapeCrawler/ShapeCrawler/issues/724)  
+🍀Added `IPicture.CornerSize` [#707](https://github.com/ShapeCrawler/ShapeCrawler/issues/707)  
+🍀Added `ISlide.Fill` [#797](https://github.com/ShapeCrawler/ShapeCrawler/issues/797)  
+🍀Added setter for `IShape.Name` [#802](https://github.com/ShapeCrawler/ShapeCrawler/issues/802)  
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.

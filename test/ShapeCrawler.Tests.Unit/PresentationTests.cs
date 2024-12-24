@@ -1,5 +1,7 @@
+using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -482,4 +484,110 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
+
+    [Test]
+    public void Properties_setter_sets_values()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Local);
+
+        // Act
+        pres.FileProperties.Title = "Properties_setter_sets_values";
+        pres.FileProperties.Created = expectedCreated;
+        
+        // Assert
+        pres.FileProperties.Created.Should().Be(expectedCreated);
+        pres.FileProperties.Title.Should().Be("Properties_setter_sets_values");
+    }
+
+    [Test]
+    public void Properties_setter_survives_round_trip()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Local);
+        pres.FileProperties.Title = "Properties_setter_survives_round_trip";
+        pres.FileProperties.Created = expectedCreated;
+        pres.FileProperties.RevisionNumber = 100;
+
+        // Act
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Created.Should().Be(expectedCreated);
+        loadedPres.FileProperties.Title.Should().Be("Properties_setter_survives_round_trip");
+        pres.FileProperties.RevisionNumber.Should().Be(100);
+    }
+
+    [Test]
+    public void Properties_from_stream_getter_returns_values()
+    {
+        var pptx = StreamOf("059_crop-images.pptx");
+        var pres = new Presentation(pptx);
+
+        var expectedModified = DateTime.Parse("2024-12-16T17:11:58Z", CultureInfo.InvariantCulture);
+
+        // Act-Assert
+        pres.FileProperties.Modified.Should().Be(expectedModified);
+        pres.FileProperties.Title.Should().Be("");
+        pres.FileProperties.RevisionNumber.Should().Be(7);
+        pres.FileProperties.Comments.Should().BeNull();
+    }
+
+    [Test]
+    public void Create_sets_created_date()
+    {
+        // Arrange
+        var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedCreated);
+
+        // Act
+        var pres = new Presentation();
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Created.Should().Be(expectedCreated);
+    }
+
+    [Test]
+    public void Create_sets_modified_date()
+    {
+        // Arrange
+        var expectedModified = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedModified);
+
+        // Act
+        var pres = new Presentation();
+
+        // Assert
+        pres.FileProperties.Modified.Should().Be(expectedModified);
+    }
+
+    [Test]
+    public void SaveAs_sets_file_property_Modified()
+    {
+        // Arrange
+        var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedCreated);
+        var pres = new Presentation();
+
+        var expectedModified = DateTime.Parse("2024-02-02T15:30:45Z", CultureInfo.InvariantCulture);
+        ShapeCrawlerInternal.TimeProvider = new FakeTimeProvider(expectedModified);
+        var stream = new MemoryStream();
+
+        // Act
+        pres.SaveAs(stream);
+        stream.Position = 0;
+        var loadedPres = new Presentation(stream);
+
+        // Assert
+        loadedPres.FileProperties.Modified.Should().Be(expectedModified);
+    } 
 }
