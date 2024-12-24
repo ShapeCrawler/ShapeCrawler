@@ -674,7 +674,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit("Fails. WIP")]
+    [Explicit("Fails. Hopeful future improvement.")]
     public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
     {
         // Arrange
