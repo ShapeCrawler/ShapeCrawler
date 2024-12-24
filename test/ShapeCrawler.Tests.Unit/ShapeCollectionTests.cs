@@ -674,6 +674,28 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    [Explicit("Fails. WIP")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var slide = pres.Slides[0];
+        var shapesSlide1 = slide.Shapes;
+        var image = StreamOf("png image-1.png");
+        shapesSlide1.AddPicture(image);
+
+        // Act
+        pres.Slides.Add(slide);
+        SavePresentationFile(pres);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+
+    [Test]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
