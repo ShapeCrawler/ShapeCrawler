@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ShapeCrawler.Exceptions;
@@ -167,14 +166,15 @@ internal sealed class SlideShapes : ISlideShapes
 
             if (imageMagick.Height > 500 || imageMagick.Width > 500)
             {
-                imageMagick.Resize(imageMagick.Width < 500 ? imageMagick.Width : 500,
+                imageMagick.Resize(
+                    imageMagick.Width < 500 ? imageMagick.Width : 500,
                     imageMagick.Height < 500 ? imageMagick.Height : 500);
             }
 
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
-            var pPicture = CreatePPictureSvg(rasterStream, image, "Picture");
+            var pPicture = this.CreatePPictureSvg(rasterStream, image, "Picture");
             
             // Fix up the sizes
             var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
