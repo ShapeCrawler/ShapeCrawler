@@ -290,6 +290,28 @@ public class FontTests : SCTest
         // Assert
         font.LatinName.Should().Be("Time New Roman");
     }
+
+    [Test]
+    [Explicit("Fails. Reported as Issue #828")]
+    public void LatinName_Setter_only_sets_current_shape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(10,20,30,40);
+        var shape1 = shapes.Last();
+        shapes.AddShape(100,20,30,40);
+        var shape2 = shapes.Last();
+        shape1.TextBox!.Text = "Shape 1";
+        shape1.TextBox!.Paragraphs[0].Portions[0].Font.LatinName = "Segoe UI Semibold";
+
+        // Act
+        shape2.TextBox!.Text = "Shape 2";
+        shape2.TextBox!.Paragraphs[0].Portions[0].Font.LatinName = "Aptos";
+
+        // Assert
+        shape1.TextBox!.Paragraphs[0].Portions[0].Font.LatinName.Should().Be("Segoe UI Semibold");
+    }
     
     [Test]
     public void LatinName_Setter_sets_font_for_the_latin_characters_of_table_cell()
