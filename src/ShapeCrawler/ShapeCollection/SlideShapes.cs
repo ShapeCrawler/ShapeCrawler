@@ -163,6 +163,7 @@ internal sealed class SlideShapes : ISlideShapes
         {
             using var imageMagick = new MagickImage(image);
             imageMagick.Format = MagickFormat.Png;
+            imageMagick.Density = new Density(384, 384, DensityUnit.PixelsPerInch);
 
             if (imageMagick.Height > 500 || imageMagick.Width > 500)
             {

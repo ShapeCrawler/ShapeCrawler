@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using FluentAssertions;
+using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -388,6 +389,28 @@ public class ShapeCollectionTests : SCTest
         pres.Validate();
     }
 
+    //Test that add picture with svg content is saved at a dpi of 384
+    [Test]
+    public void AddPicture_svg_should_have_dpi_384()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+
+        var png = new MagickImageInfo(picture.Image!.AsByteArray());
+        var density = png.Density!.ChangeUnits(DensityUnit.PixelsPerInch);
+        density.X.Should().BeApproximately(384, 0.1);
+        density.Y.Should().BeApproximately(384, 0.1);
+    }
+    
     [Test]
     public void AddPicture_svg_with_text_matches_reference()
     {
