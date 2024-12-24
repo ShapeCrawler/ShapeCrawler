@@ -482,8 +482,8 @@ public class ShapeCollectionTests : SCTest
         // These values are the actual extent of drawings on the test image, which is what
         // we'll be using since the image has no explicit dimensions of any form
         var picture = (IPicture)shapes.Last();
-        picture.Height.Should().Be(91);
-        picture.Width.Should().BeApproximately(277.96m,0.01m);
+        picture.Height.Should().Be(90);
+        picture.Width.Should().BeApproximately(276m,0.01m);
         pres.Validate();
     }
 

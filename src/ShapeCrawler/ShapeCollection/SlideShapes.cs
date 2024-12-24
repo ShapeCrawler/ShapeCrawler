@@ -8,7 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
+using ImageMagick;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
@@ -160,21 +162,33 @@ internal sealed class SlideShapes : ISlideShapes
         }
         else
         {
-            SvgDocument doc;
-            try
+            using var imageMagick = new MagickImage(image);
+            imageMagick.Format = MagickFormat.Png;
+
+            if (imageMagick.Height > 500 || imageMagick.Width > 500)
             {
-                doc = SvgDocument.Open<SvgDocument>(image);
-            }
-            catch (SvgGdiPlusCannotBeLoadedException ex) 
-            {
-                throw new SCException("An error occurred while attempting to use GDI+ functionality. If you use Linux, you need to install a library that provides GDI+ support. You can do this with the following command: sudo apt install -y libgdiplus", ex);
+                imageMagick.Resize(imageMagick.Width < 500 ? imageMagick.Width : 500,
+                    imageMagick.Height < 500 ? imageMagick.Height : 500);
             }
 
+            using var rasterStream = new MemoryStream();
+            imageMagick.Write(rasterStream);
             image.Position = 0;
-            this.AddPictureSvg(doc, image);
+            var pPicture = CreatePPictureSvg(rasterStream, image, "Picture");
+            
+            // Fix up the sizes
+            var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
+            var yEmu = UnitConverter.VerticalPixelToEmu(100m);
+            var cxEmu = UnitConverter.HorizontalPixelToEmu(imageMagick.Width);
+            var cyEmu = UnitConverter.VerticalPixelToEmu(imageMagick.Height);
+            var transform2D = pPicture.ShapeProperties!.Transform2D!;
+            transform2D.Offset!.X = xEmu;
+            transform2D.Offset!.Y = yEmu;
+            transform2D.Extents!.Cx = cxEmu;
+            transform2D.Extents!.Cy = cyEmu;
         }
     }
-    
+
     public void AddVideo(int x, int y, Stream stream)
     {
         var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
