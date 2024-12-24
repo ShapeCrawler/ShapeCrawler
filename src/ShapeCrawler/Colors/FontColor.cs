@@ -163,7 +163,7 @@ internal sealed class FontColor : IFontColor
         var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);
-        aRunProperties.Append(aSolidFill);
+        aRunProperties.InsertAt(aSolidFill, 0);
     }
 
     #endregion Public APIs
