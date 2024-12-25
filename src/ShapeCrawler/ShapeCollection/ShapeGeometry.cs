@@ -136,6 +136,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the geometry adjustments. Work in progress!! 
+    /// </summary>
+    internal decimal[] Adjustments
+    {
+        get => ExtractAdjustmentsFromShapeGuide();
+    }
+
     private A.PresetGeometry? APresetGeometry => this.pShapeProperties.GetFirstChild<A.PresetGeometry>();
 
     internal void UpdateGeometry(Geometry type)
@@ -181,6 +189,29 @@ internal sealed class ShapeGeometry : IShapeGeometry
         return value / 500m;
     }
 
+    private static decimal ExtractAdjustmentFromShapeGuide(A.ShapeGuide sg)
+    {
+        var formula = sg.Formula?.Value ?? throw new SCException("Malformed geometry. Shape guide has no formula.");
+
+        var pattern = "^val (?<value>[0-9]+)$";
+
+#if NETSTANDARD2_0
+        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
+#else
+        var regex = new Regex(pattern, RegexOptions.NonBacktracking);
+#endif
+
+        var match = regex.Match(formula);
+        if (!match.Success)
+        {
+            throw new SCException("Malformed geometry. Formula has no value.");
+        }
+
+        var value = int.Parse(match.Groups["value"].Value);
+
+        return value / 500m;
+    }
+
     private decimal ExtractCornerSizeFromRoundRectangle()
     {
         var aPresetGeometry = this.APresetGeometry;
@@ -190,7 +221,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
 
         var avList = aPresetGeometry.AdjustValueList 
-        ?? throw new SCException();
+            ?? throw new SCException();
         var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
         if (!sgs.Any())
         {
@@ -204,6 +235,35 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
 
         return ExtractCornerSizeFromShapeGuide(sgs.Single());
+    }
+
+    private decimal[] ExtractAdjustmentsFromShapeGuide()
+    {
+        var aPresetGeometry = this.APresetGeometry;
+        if (aPresetGeometry?.Preset is null)
+        {
+            return [];
+        }
+
+        var avList = aPresetGeometry.AdjustValueList 
+            ?? throw new SCException();
+        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
+        if (sgs.Count() > 1)
+        {
+            throw new SCException("Malformed geometry. Has multiple single shape guides.");
+        }
+        if (sgs.Any())
+        {
+            return [ ExtractAdjustmentFromShapeGuide(sgs.Single()) ];
+        }
+
+        sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name?.Value?.StartsWith("adj") ?? false);
+        if (sgs.Any())
+        {
+            return [ .. sgs.Select(x => ExtractAdjustmentFromShapeGuide(x)) ];
+        }
+
+        return [];
     }
 
     private void InjectCornerSizeIntoRoundRectangle(decimal value)

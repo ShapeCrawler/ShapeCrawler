@@ -2,6 +2,8 @@
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
+using System.Text.Json;
+using ShapeCrawler.ShapeCollection;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -614,7 +616,7 @@ public class ShapeTests : SCTest
         var shape = shapes[0];
 
         // Act-Assert
-        shape.CornerSize.Should().Be(35m,"Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
+        shape.CornerSize.Should().Be(35m, "Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
     }
 
     [Test]
@@ -679,7 +681,7 @@ public class ShapeTests : SCTest
     public void Geometry_setter_sets_values(string expectedStr)
     {
         // Arrange
-        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+        var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
@@ -724,9 +726,9 @@ public class ShapeTests : SCTest
         shape.GeometryType = Geometry.TopCornersRoundedRectangle;
 
         // Assert
-        shape.CornerSize.Should().Be(35m,"Default unadjusted corner size is 35");
+        shape.CornerSize.Should().Be(35m, "Default unadjusted corner size is 35");
     }
-    
+
     [Test]
     public void Name_Setter_sets_shape_name()
     {
@@ -745,7 +747,7 @@ public class ShapeTests : SCTest
         shape.Name.Should().Be("New Name");
         pres.Validate();
     }
-    
+
     [Test]
     public void Name_Setter_sets_grouped_shape_name()
     {
@@ -764,5 +766,21 @@ public class ShapeTests : SCTest
         groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("New Group Name");
         groupShape.Name.Should().Be("New Group Name");
         pres.Validate();
+    }
+
+
+    [Test]
+    [SlideShape("062_shape-adjustments.pptx", 1, "Triangle", "[200]")]
+    public void Adjustments_getter_returns_values(IShape shape, string expectedAdjustmentsJson)
+    {
+        // Arrange
+        var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
+        var autoShape = shape as RootShape;
+
+        // Act
+        var actualAdjustments = autoShape.ShapeGeometry.Adjustments;
+
+        // Assert
+        actualAdjustments.Should().BeEquivalentTo(expectedAdjustments);
     }
 }
