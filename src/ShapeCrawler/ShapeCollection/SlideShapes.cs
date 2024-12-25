@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Xml;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
@@ -14,9 +13,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tables;
-using ShapeCrawler.Units;
 using SkiaSharp;
-using Svg;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
@@ -128,11 +125,15 @@ internal sealed class SlideShapes : ISlideShapes
         imageCopy.Position = 0;
         image.Position = 0;
         using var skBitmap = SKBitmap.Decode(imageCopy);
+        
+        int height;
+        int width;
+        P.Picture pPicture;
 
         if (skBitmap != null)
         {
-            var height = skBitmap.Height;
-            var width = skBitmap.Width;
+            height = skBitmap.Height;
+            width = skBitmap.Width;
 
             if (height > 500)
             {
@@ -145,25 +146,19 @@ internal sealed class SlideShapes : ISlideShapes
                 width = 500;
                 height = (int)(width * skBitmap.Height / (decimal)skBitmap.Width);
             }
-
-            var xEmu = UnitConverter.HorizontalPixelToEmu(100);
-            var yEmu = UnitConverter.VerticalPixelToEmu(100);
-            var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
-            var cyEmu = UnitConverter.VerticalPixelToEmu(height);
-
-            var pPicture = this.CreatePPicture(image, "Picture");
-
-            var transform2D = pPicture.ShapeProperties!.Transform2D!;
-            transform2D.Offset!.X = xEmu;
-            transform2D.Offset!.Y = yEmu;
-            transform2D.Extents!.Cx = cxEmu;
-            transform2D.Extents!.Cy = cyEmu;
+            
+            pPicture = this.CreatePPicture(image, "Picture");
         }
         else
         {
+            if (!HasDimensionsSvg(image))
+            {
+                throw new SCException("SVG image must have width and height or viewbox attributes.");
+            }
+            
+            image.Position = 0;
             using var imageMagick = new MagickImage(image);
             imageMagick.Format = MagickFormat.Png;
-            imageMagick.Density = new Density(384, 384, DensityUnit.PixelsPerInch);
 
             if (imageMagick.Height > 500 || imageMagick.Width > 500)
             {
@@ -171,23 +166,26 @@ internal sealed class SlideShapes : ISlideShapes
                     imageMagick.Width < 500 ? imageMagick.Width : 500,
                     imageMagick.Height < 500 ? imageMagick.Height : 500);
             }
+            
+            height = (int)imageMagick.Height;
+            width = (int)imageMagick.Width;
 
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
-            var pPicture = this.CreatePPictureSvg(rasterStream, image, "Picture");
-            
-            // Fix up the sizes
-            var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
-            var yEmu = UnitConverter.VerticalPixelToEmu(100m);
-            var cxEmu = UnitConverter.HorizontalPixelToEmu(imageMagick.Width);
-            var cyEmu = UnitConverter.VerticalPixelToEmu(imageMagick.Height);
-            var transform2D = pPicture.ShapeProperties!.Transform2D!;
-            transform2D.Offset!.X = xEmu;
-            transform2D.Offset!.Y = yEmu;
-            transform2D.Extents!.Cx = cxEmu;
-            transform2D.Extents!.Cy = cyEmu;
+            pPicture = this.CreatePPictureSvg(rasterStream, image, "Picture");
         }
+        
+        // Fix up the sizes
+        var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
+        var yEmu = UnitConverter.VerticalPixelToEmu(100m);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
+        var transform2D = pPicture.ShapeProperties!.Transform2D!;
+        transform2D.Offset!.X = xEmu;
+        transform2D.Offset!.Y = yEmu;
+        transform2D.Extents!.Cx = cxEmu;
+        transform2D.Extents!.Cy = cyEmu;
     }
 
     public void AddVideo(int x, int y, Stream stream)
@@ -484,6 +482,23 @@ internal sealed class SlideShapes : ISlideShapes
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
+    private static bool HasDimensionsSvg(Stream svgStream)
+    {
+        var xmlReader = XmlReader.Create(svgStream);
+
+        if (!xmlReader.ReadToDescendant("svg"))
+        {
+            return false;
+        }
+        
+        if (xmlReader.GetAttribute("width") != null && xmlReader.GetAttribute("height") != null)
+        {
+            return true;
+        }
+        
+        return xmlReader.GetAttribute("viewBox") != null;
+    }
+
     private static string Mime(Stream imageStream)
     {
         imageStream.Seek(0, SeekOrigin.Begin);
@@ -498,42 +513,6 @@ internal sealed class SlideShapes : ISlideShapes
         };
 
         return mime;
-    }
-
-    private static SizeF GetSvgPixelSize(SvgDocument image)
-    {
-        // Default base size come from viewbox if specified, else use the raw
-        // image bounds
-        var bounds =
-            (image.ViewBox.Width > 0 && image.ViewBox.Height > 0)
-                ? new SizeF(width: image.ViewBox.Width, height: image.ViewBox.Height)
-                : new SizeF(width: image.Bounds.Width, height: image.Bounds.Height);
-
-        return new SizeF()
-        {
-            Width = image.Width.Type switch
-            {
-                SvgUnitType.Percentage => bounds.Width * image.Width.Value / 100.0f,
-                SvgUnitType.User or
-                    SvgUnitType.Pixel => image.Width.Value,
-                SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Width.Value),
-                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Width.Value),
-                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Width.Value / 10.0f),
-                SvgUnitType.Point => new Points(image.Width.Value).AsPixels(),
-                _ => throw new NotImplementedException()
-            },
-            Height = image.Height.Type switch
-            {
-                SvgUnitType.Percentage => bounds.Height * image.Height.Value / 100.0f,
-                SvgUnitType.User or
-                    SvgUnitType.Pixel => image.Height.Value,
-                SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Height.Value),
-                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Height.Value),
-                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Height.Value / 10.0f),
-                SvgUnitType.Point => new Points(image.Height.Value).AsPixels(),
-                _ => throw new NotImplementedException()
-            }
-        };
     }
 
     private (int, string) GenerateIdAndName()
@@ -627,49 +606,6 @@ internal sealed class SlideShapes : ISlideShapes
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         return pPicture;
-    }
-
-    private void AddPictureSvg(SvgDocument image, Stream svgStream)
-    {
-        // Determine intrinsic size in 
-        var size = GetSvgPixelSize(image);
-
-        // Ensure image size is not inserted at an unreasonable size
-        // See Issue #683 Large-dimension SVG files lead to error opening in PowerPoint
-        //
-        // Ideally, we'd want to use the slide dimensions itself. However, not sure how we get that
-        // here, so will use a fixed "safe" size
-        if (size.Height > 500.0f)
-        {
-            size.Height = 500.0f;
-            size.Width = size.Height * image.Width.Value / image.Height.Value;
-        }
-
-        if (size.Width > 500.0f)
-        {
-            size.Width = 500.0f;
-            size.Height = size.Width * image.Height.Value / image.Width.Value;
-        }
-
-        // Rasterize image at intrinsic size
-        var bitmap = image.Draw((int)size.Width, (int)size.Height);
-        var rasterStream = new MemoryStream();
-        bitmap.Save(rasterStream, ImageFormat.Png);
-        rasterStream.Position = 0;
-
-        // Create the picture
-        var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
-
-        // Fix up the sizes
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100m);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu((decimal)size.Width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu((decimal)size.Height);
-        var transform2D = pPicture.ShapeProperties!.Transform2D!;
-        transform2D.Offset!.X = xEmu;
-        transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = cxEmu;
-        transform2D.Extents!.Cy = cyEmu;
     }
 
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)

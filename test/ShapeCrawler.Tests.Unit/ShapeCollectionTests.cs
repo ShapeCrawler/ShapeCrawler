@@ -490,7 +490,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddPicture_adds_svg_picture_no_dimensions()
+    public void AddPicture_errors_adding_svg_picture_no_dimensions()
     {
         // Arrange
         var pres = new Presentation();
@@ -499,15 +499,10 @@ public class ShapeCollectionTests : SCTest
         image.Position = 0;
 
         // Act
-        shapes.AddPicture(image);
+        var act = () => shapes.AddPicture(image);
 
         // Assert
-        // These values are the actual extent of drawings on the test image, which is what
-        // we'll be using since the image has no explicit dimensions of any form
-        var picture = (IPicture)shapes.Last();
-        picture.Height.Should().Be(90);
-        picture.Width.Should().BeApproximately(276m,0.01m);
-        pres.Validate();
+        act.Should().Throw<SCException>();
     }
 
     [Test]
