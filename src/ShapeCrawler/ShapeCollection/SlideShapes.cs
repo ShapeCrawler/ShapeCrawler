@@ -160,15 +160,13 @@ internal sealed class SlideShapes : ISlideShapes
             using var imageMagick = new MagickImage(image);
             imageMagick.Format = MagickFormat.Png;
 
-            if (imageMagick.Height > 500 || imageMagick.Width > 500)
+            width = imageMagick.Width < 500 ? (int)imageMagick.Width : 500;
+            height = imageMagick.Height < 500 ? (int)imageMagick.Height : 500;
+
+            if (width > 500 || height > 500)
             {
-                imageMagick.Resize(
-                    imageMagick.Width < 500 ? imageMagick.Width : 500,
-                    imageMagick.Height < 500 ? imageMagick.Height : 500);
+                imageMagick.Resize((uint)width, (uint)height);
             }
-            
-            height = (int)imageMagick.Height;
-            width = (int)imageMagick.Width;
 
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
