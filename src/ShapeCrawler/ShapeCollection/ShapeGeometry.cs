@@ -231,18 +231,34 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
     private void InjectSingleAdjustmentToShapeGuide(decimal[] values)
     {
-        var avList = this.APresetGeometry?.AdjustValueList 
-            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
-
         if (values.Length != 1)
         {
             throw new SCException("This geometry supports a single adjustment value.");
         }
 
-        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
+        Inject("adj", values[0]);
+    }
+
+    private void InjectMultipleAdjustmentsIntoShapeGuide(decimal[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            Inject($"adj{i + 1}", values[i]);
+        }
+    }
+
+    private void Inject(string name, decimal value)
+    {
+        var avList = this.APresetGeometry?.AdjustValueList 
+            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
+
+        var sgs = avList
+            .Descendants<A.ShapeGuide>()
+            .Where(x => x.Name == name);
+
         if (sgs.Count() > 1)
         {
-            throw new SCException("Malformed rounded rectangle. Has multiple shape guides.");
+            throw new SCException($"Malformed geometry. Has multiple {name} shape guides.");
         }
 
         // Will add a shape guide if there isn't already one
@@ -250,29 +266,6 @@ internal sealed class ShapeGeometry : IShapeGeometry
             ?? avList.AppendChild(new A.ShapeGuide() { Name = "adj" }) 
             ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
 
-        sg.Formula = new StringValue($"val {(int)(values[0] * 500m)}");        
-    }
-
-    private void InjectMultipleAdjustmentsIntoShapeGuide(decimal[] values)
-    {
-        var avList = this.APresetGeometry?.AdjustValueList 
-            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
-
-        for (int i = 0; i < values.Length; i++)
-        {
-            var name = $"adj{i + 1}";
-
-            var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == name);
-            if (sgs.Count() > 1)
-            {
-                throw new SCException($"Malformed rounded rectangle. Has multiple {name} shape guides.");
-            }
-
-            var sg = sgs.SingleOrDefault()
-                ?? avList.AppendChild(new A.ShapeGuide() { Name = name }) 
-                ?? throw new SCException($"Failed attempting to add {name} shape guide to AdjustValueList");
-            
-                sg.Formula = new StringValue($"val {(int)(values[i] * 500m)}");
-        }
+        sg.Formula = new StringValue($"val {(int)(value * 500m)}");        
     }
 }
