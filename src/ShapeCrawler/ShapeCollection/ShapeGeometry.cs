@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -34,6 +36,10 @@ internal sealed class ShapeGeometry : IShapeGeometry
         { Geometry.SingleCornerRoundedRectangle, 1 },
         { Geometry.TopCornersRoundedRectangle, 2 },
         { Geometry.DiagonalCornersRoundedRectangle, 2 },
+        { Geometry.Snip1Rectangle, 1 },
+        { Geometry.Snip2DiagonalRectangle, 2 },
+        { Geometry.Snip2SameRectangle, 2 },
+        { Geometry.SnipRoundRectangle, 2 },
     };
 
     private readonly P.ShapeProperties pShapeProperties;
@@ -113,45 +119,26 @@ internal sealed class ShapeGeometry : IShapeGeometry
     {
         get
         {
-            var shapeType = this.APresetGeometry?.Preset?.Value;
             var adjustments = this.Adjustments;
-
-            if (shapeType == A.ShapeTypeValues.RoundRectangle)
+            return (this.GeometryType, adjustments.Length) switch
             {
-                return adjustments.Length switch
-                {
-                    0 => 35,
-                    1 => adjustments[0],
-                    _ => throw new SCException("Malformed Geometry")
-                };
-            }
-
-            if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
-            {
-                return adjustments.Length switch
-                {
-                    0 => 35,
-                    2 => adjustments[0],
-                    _ => throw new SCException("Malformed Geometry")
-                };
-            }
-
-            return 0;
+                (Geometry.RoundedRectangle, 0) or 
+                (Geometry.TopCornersRoundedRectangle, 0) => 35,
+                (Geometry.RoundedRectangle, _) or 
+                (Geometry.TopCornersRoundedRectangle, _) => adjustments[0],
+                _ => 0
+            };
         }
         
         set
         {
-            var shapeType = this.APresetGeometry?.Preset?.Value;
-
-            if (shapeType == A.ShapeTypeValues.RoundRectangle)
+            var geometryType = this.GeometryType;
+            this.Adjustments = geometryType switch
             {
-                Adjustments = [value];
-            }
-
-            if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
-            {
-                Adjustments = [value,0];
-            }
+                Geometry.RoundedRectangle => [value],
+                Geometry.TopCornersRoundedRectangle => [value,0],
+                _ => throw new SCException($"{geometryType} does not support {nameof(CornerSize)}")
+            };
         }
     }
 
@@ -162,9 +149,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
     {
         get => ExtractAdjustmentsFromShapeGuide();
         set {
-            if (GeometryToNumberOfAdjustmentsMap.TryGetValue(GeometryType, out var adjustments))
+            if (GeometryToNumberOfAdjustmentsMap.TryGetValue(GeometryType, out var numAdjustments))
             {
-                if (adjustments == 1)
+                if (value.Length > numAdjustments)
+                {
+                    throw new SCException($"{GeometryType} only supports {numAdjustments} adjustments");
+                }
+
+                if (numAdjustments == 1)
                 {
                     this.InjectSingleAdjustmentToShapeGuide(value);
                 }
@@ -173,7 +165,10 @@ internal sealed class ShapeGeometry : IShapeGeometry
                     this.InjectMultipleAdjustmentsIntoShapeGuide(value);
                 }
             }
-            // else this geometry does not support making adjustments
+            else
+            {
+                throw new SCException($"{GeometryType} does not support adjustments");
+            }
         }
     }
 

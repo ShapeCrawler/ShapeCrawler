@@ -821,7 +821,11 @@ public class ShapeTests : SCTest
     [TestCase("RoundedRectangle", "[20]")]
     [TestCase("TopCornersRoundedRectangle", "[30,40]")]
     [TestCase("DiagonalCornersRoundedRectangle", "[50,60]")]
-    [TestCase("SingleCornerRoundedRectangle", "[70]")]    
+    [TestCase("SingleCornerRoundedRectangle", "[70]")]
+    [TestCase("SnipRoundRectangle", "[20,80]")]
+    [TestCase("Snip1Rectangle", "[10]")]
+    [TestCase("Snip2SameRectangle", "[75,25]")]
+    [TestCase("Snip2DiagonalRectangle", "[40,10]")]
     public void Adjustments_setter_sets_values(string geometryStr, string expectedAdjustmentsJson)
     {
         // Arrange
