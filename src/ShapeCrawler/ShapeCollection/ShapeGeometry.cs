@@ -28,6 +28,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
     private static readonly Dictionary<ShapeTypeValues, Geometry> ShapeTypeValuesToGeometryMap 
         = GeometryToShapeTypeValuesMap.ToDictionary(x => x.Value, x => x.Key);
 
+    private static readonly Dictionary<Geometry, int> GeometryToNumberOfAdjustmentsMap = new()
+    {
+        { Geometry.RoundedRectangle, 1 },
+        { Geometry.SingleCornerRoundedRectangle, 1 },
+        { Geometry.TopCornersRoundedRectangle, 2 },
+        { Geometry.DiagonalCornersRoundedRectangle, 2 },
+    };
+
     private readonly P.ShapeProperties pShapeProperties;
 
     internal ShapeGeometry(P.ShapeProperties pShapeProperties)
@@ -137,12 +145,12 @@ internal sealed class ShapeGeometry : IShapeGeometry
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                this.InjectCornerSizeIntoRoundRectangle(value);
+                Adjustments = [value];
             }
 
             if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                this.InjectCornerSizeIntoRound2SameRectangle(value);
+                Adjustments = [value,0];
             }
         }
     }
@@ -153,6 +161,20 @@ internal sealed class ShapeGeometry : IShapeGeometry
     internal decimal[] Adjustments
     {
         get => ExtractAdjustmentsFromShapeGuide();
+        set {
+            if (GeometryToNumberOfAdjustmentsMap.TryGetValue(GeometryType, out var adjustments))
+            {
+                if (adjustments == 1)
+                {
+                    this.InjectSingleAdjustmentToShapeGuide(value);
+                }
+                else
+                {
+                    this.InjectMultipleAdjustmentsIntoShapeGuide(value);
+                }
+            }
+            // else this geometry does not support making adjustments
+        }
     }
 
     private A.PresetGeometry? APresetGeometry => this.pShapeProperties.GetFirstChild<A.PresetGeometry>();
@@ -212,16 +234,16 @@ internal sealed class ShapeGeometry : IShapeGeometry
             ?? throw new SCException("Malformed geometry.");
     }
 
-    private void InjectCornerSizeIntoRoundRectangle(decimal value)
+    private void InjectSingleAdjustmentToShapeGuide(decimal[] values)
     {
-        var aPresetGeometry = this.APresetGeometry;
-        if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
+        var avList = this.APresetGeometry?.AdjustValueList 
+            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
+
+        if (values.Length != 1)
         {
-            return;
+            throw new SCException("This geometry supports a single adjustment value.");
         }
 
-        var avList = aPresetGeometry.AdjustValueList 
-            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
         var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
         if (sgs.Count() > 1)
         {
@@ -233,36 +255,29 @@ internal sealed class ShapeGeometry : IShapeGeometry
             ?? avList.AppendChild(new A.ShapeGuide() { Name = "adj" }) 
             ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
 
-        sg.Formula = new StringValue($"val {(int)(value * 500m)}");        
+        sg.Formula = new StringValue($"val {(int)(values[0] * 500m)}");        
     }
 
-    private void InjectCornerSizeIntoRound2SameRectangle(decimal value)
+    private void InjectMultipleAdjustmentsIntoShapeGuide(decimal[] values)
     {
-        var aPresetGeometry = this.APresetGeometry;
-        if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
-        {
-            return;
-        }
-
-        var avList = aPresetGeometry.AdjustValueList 
+        var avList = this.APresetGeometry?.AdjustValueList 
             ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
-        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj1");
-        if (sgs.Count() > 1)
-        {
-            throw new SCException("Malformed rounded rectangle. Has multiple shape guides.");
-        }
 
-        var sg = sgs.SingleOrDefault();
-        if (sg is null)
+        for (int i = 0; i < values.Length; i++)
         {
-            // Has no adj1 shape guide. We need to add an adj1/adj2 pair
-            sg = avList.AppendChild(new A.ShapeGuide() { Name = "adj1" }) ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
-            if (avList.AppendChild(new A.ShapeGuide() { Name = "adj2", Formula = "val 0" }) is null)
+            var name = $"adj{i + 1}";
+
+            var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == name);
+            if (sgs.Count() > 1)
             {
-                throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
+                throw new SCException($"Malformed rounded rectangle. Has multiple {name} shape guides.");
             }
+
+            var sg = sgs.SingleOrDefault()
+                ?? avList.AppendChild(new A.ShapeGuide() { Name = "adj" }) 
+                ?? throw new SCException($"Failed attempting to add {name} shape guide to AdjustValueList");
+            
+                sg.Formula = new StringValue($"val {(int)(values[i] * 500m)}");
         }
-    
-        sg.Formula = new StringValue($"val {(int)(value * 500m)}");        
     }
 }
