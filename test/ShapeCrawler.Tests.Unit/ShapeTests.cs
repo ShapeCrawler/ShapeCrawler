@@ -635,7 +635,7 @@ public class ShapeTests : SCTest
 
     [Test]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0.125-ish", "0.5")]
-    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0.5")]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0.50")]
     public void CornerSize_setter_sets_values_for_top_rounded(IShape shape, string expectedSizeStr)
     {
         // Arrange
@@ -769,16 +769,36 @@ public class ShapeTests : SCTest
     }
 
 
-    [Test]
-    [SlideShape("062_shape-adjustments.pptx", 1, "Triangle", "[200]")]
-    public void Adjustments_getter_returns_values(IShape shape, string expectedAdjustmentsJson)
+    [TestCase("Triangle", "[200]")]
+    [TestCase("Parallelogram", "[0]")]
+    [TestCase("Trapezoid", "[0]")]
+    [TestCase("NonIsoscelesTrapezoid", "[0,100]")]
+    [TestCase("Hexagon", "[0]")]
+    [TestCase("Octagon", "[0]")]
+    [TestCase("Star4", "[100]")]
+    [TestCase("Star5", "[100]")]
+    [TestCase("Star6", "[100]")]
+    [TestCase("Star7", "[100]")]
+    [TestCase("Star10", "[100]")]
+    [TestCase("Star12", "[100]")]
+    [TestCase("Star16", "[100]")]
+    [TestCase("Star24", "[100]")]
+    [TestCase("Star32", "[0]")]
+    [TestCase("RoundedRectangle", "[100]")]
+    [TestCase("TopCornersRoundedRectangle", "[100,0]")]
+    [TestCase("SnipRoundRectangle", "[100,100]")]
+    public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
     {
         // Arrange
+        var shape = new Presentation(StreamOf("062_shape-adjustments.pptx"))
+                        .Slides[0]
+                        .Shapes
+                        .GetByName(name)
+                        as RootShape;
         var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
-        var autoShape = shape as RootShape;
 
         // Act
-        var actualAdjustments = autoShape.ShapeGeometry.Adjustments;
+        var actualAdjustments = shape.ShapeGeometry.Adjustments;
 
         // Assert
         actualAdjustments.Should().BeEquivalentTo(expectedAdjustments);
