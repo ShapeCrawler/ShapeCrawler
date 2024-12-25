@@ -768,7 +768,6 @@ public class ShapeTests : SCTest
         pres.Validate();
     }
 
-
     [TestCase("Triangle", "[200]")]
     [TestCase("Parallelogram", "[0]")]
     [TestCase("Trapezoid", "[0]")]
@@ -787,14 +786,29 @@ public class ShapeTests : SCTest
     [TestCase("RoundedRectangle", "[100]")]
     [TestCase("TopCornersRoundedRectangle", "[100,0]")]
     [TestCase("SnipRoundRectangle", "[100,100]")]
+    [TestCase("Snip1Rectangle", "[100]")]
+    [TestCase("DiagonalCornersRoundedRectangle", "[0,100]")]
+    [TestCase("SingleCornerRoundedRectangle", "[100]")]
+    [TestCase("Snip2SameRectangle", "[100,78.704]")]
+    [TestCase("Snip2DiagonalRectangle", "[44.444,100]")]
+    [TestCase("Plaque", "[70.37]")]
+    [TestCase("HomePlate", "[39.814]")]
+    [TestCase("Chevron", "[30.556]")]
+    [TestCase("Pie", "[39930.998,16264.266]")]
+    [TestCase("BlockArc", "[10251.142,2160.504,22.112]")]
+    [TestCase("Donut", "[79.504]")]
+    [TestCase("NoSmoking", "[64.97]")]
+    [TestCase("Donut", "[79.504]")]
+    [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
     public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
     {
         // Arrange
-        var shape = new Presentation(StreamOf("062_shape-adjustments.pptx"))
-                        .Slides[0]
-                        .Shapes
-                        .GetByName(name)
-                        as RootShape;
+        var shape = 
+            new Presentation(StreamOf("062_shape-adjustments.pptx"))
+                .Slides[0]
+                .Shapes
+                .GetByName(name)
+                as RootShape;
         var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
 
         // Act
