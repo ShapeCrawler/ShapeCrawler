@@ -785,10 +785,10 @@ public class ShapeTests : SCTest
     [TestCase("Star32", "[0]")]
     [TestCase("RoundedRectangle", "[100]")]
     [TestCase("TopCornersRoundedRectangle", "[100,0]")]
-    [TestCase("SnipRoundRectangle", "[100,100]")]
-    [TestCase("Snip1Rectangle", "[100]")]
     [TestCase("DiagonalCornersRoundedRectangle", "[0,100]")]
     [TestCase("SingleCornerRoundedRectangle", "[100]")]
+    [TestCase("SnipRoundRectangle", "[100,100]")]
+    [TestCase("Snip1Rectangle", "[100]")]
     [TestCase("Snip2SameRectangle", "[100,78.704]")]
     [TestCase("Snip2DiagonalRectangle", "[44.444,100]")]
     [TestCase("Plaque", "[70.37]")]
@@ -816,5 +816,27 @@ public class ShapeTests : SCTest
 
         // Assert
         actualAdjustments.Should().BeEquivalentTo(expectedAdjustments);
+    }
+
+    [TestCase("RoundedRectangle", "[20]")]
+    [TestCase("TopCornersRoundedRectangle", "[30,40]")]
+    [TestCase("DiagonalCornersRoundedRectangle", "[50,60]")]
+    [TestCase("SingleCornerRoundedRectangle", "[70]")]    
+    public void Adjustments_setter_sets_values(string geometryStr, string expectedAdjustmentsJson)
+    {
+        // Arrange
+        var geometry = (Geometry)Enum.Parse(typeof(Geometry), geometryStr);
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70, geometry);
+        var shape = shapes.Last() as RootShape;
+        var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
+
+        // Act
+        shape.ShapeGeometry.Adjustments = expectedAdjustments;
+
+        // Assert
+        shape.ShapeGeometry.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
+        pres.SaveAs(geometryStr + expectedAdjustmentsJson + ".pptx");
     }
 }

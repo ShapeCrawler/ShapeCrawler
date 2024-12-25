@@ -274,7 +274,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
 
             var sg = sgs.SingleOrDefault()
-                ?? avList.AppendChild(new A.ShapeGuide() { Name = "adj" }) 
+                ?? avList.AppendChild(new A.ShapeGuide() { Name = name }) 
                 ?? throw new SCException($"Failed attempting to add {name} shape guide to AdjustValueList");
             
                 sg.Formula = new StringValue($"val {(int)(values[i] * 500m)}");
