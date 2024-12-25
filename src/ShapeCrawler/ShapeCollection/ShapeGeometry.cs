@@ -106,15 +106,26 @@ internal sealed class ShapeGeometry : IShapeGeometry
         get
         {
             var shapeType = this.APresetGeometry?.Preset?.Value;
+            var adjustments = this.Adjustments;
 
             if (shapeType == A.ShapeTypeValues.RoundRectangle)
             {
-                return this.ExtractCornerSizeFromRoundRectangle();
+                return adjustments.Length switch
+                {
+                    0 => 35,
+                    1 => adjustments[0],
+                    _ => throw new SCException("Malformed Geometry")
+                };
             }
 
             if (shapeType == A.ShapeTypeValues.Round2SameRectangle)
             {
-                return this.ExtractCornerSizeFromRound2SameRectangle();
+                return adjustments.Length switch
+                {
+                    0 => 35,
+                    2 => adjustments[0],
+                    _ => throw new SCException("Malformed Geometry")
+                };
             }
 
             return 0;
@@ -166,29 +177,6 @@ internal sealed class ShapeGeometry : IShapeGeometry
         return char.ToLowerInvariant(value[0]) + value[1..];
     }
 
-    private static decimal ExtractCornerSizeFromShapeGuide(A.ShapeGuide sg)
-    {
-        var formula = sg.Formula?.Value ?? throw new SCException("Malformed rounded rectangle. Shape guide has no formula.");
-
-        var pattern = "^val (?<value>[0-9]+)$";
-
-#if NETSTANDARD2_0
-        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
-#else
-        var regex = new Regex(pattern, RegexOptions.NonBacktracking);
-#endif
-
-        var match = regex.Match(formula);
-        if (!match.Success)
-        {
-            throw new SCException("Malformed rounded rectangle. Formula has no value.");
-        }
-
-        var value = int.Parse(match.Groups["value"].Value);
-
-        return value / 500m;
-    }
-
     private static decimal ExtractAdjustmentFromShapeGuide(A.ShapeGuide sg)
     {
         var formula = sg.Formula?.Value ?? throw new SCException("Malformed geometry. Shape guide has no formula.");
@@ -212,58 +200,16 @@ internal sealed class ShapeGeometry : IShapeGeometry
         return value / 500m;
     }
 
-    private decimal ExtractCornerSizeFromRoundRectangle()
-    {
-        var aPresetGeometry = this.APresetGeometry;
-        if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
-        {
-            return 0;
-        }
-
-        var avList = aPresetGeometry.AdjustValueList 
-            ?? throw new SCException();
-        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
-        if (!sgs.Any())
-        {
-            // Has no shape guide. That means we're using the DEFAULT value, which is 35
-            return 35m;
-        }
-
-        if (sgs.Count() > 1)
-        {
-            throw new SCException("Malformed rounded rectangle. Has multiple shape guides.");
-        }
-
-        return ExtractCornerSizeFromShapeGuide(sgs.Single());
-    }
-
     private decimal[] ExtractAdjustmentsFromShapeGuide()
     {
-        var aPresetGeometry = this.APresetGeometry;
-        if (aPresetGeometry?.Preset is null)
-        {
-            return [];
-        }
-
-        var avList = aPresetGeometry.AdjustValueList 
-            ?? throw new SCException();
-        var sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name == "adj");
-        if (sgs.Count() > 1)
-        {
-            throw new SCException("Malformed geometry. Has multiple single shape guides.");
-        }
-        if (sgs.Any())
-        {
-            return [ ExtractAdjustmentFromShapeGuide(sgs.Single()) ];
-        }
-
-        sgs = avList.Descendants<A.ShapeGuide>().Where(x => x.Name?.Value?.StartsWith("adj") ?? false);
-        if (sgs.Any())
-        {
-            return [ .. sgs.Select(x => ExtractAdjustmentFromShapeGuide(x)) ];
-        }
-
-        return [];
+        return this.APresetGeometry?
+            .AdjustValueList?
+            .Descendants<A.ShapeGuide>()
+            .Where(x => x.Name?.Value?.StartsWith("adj") ?? false)
+            .OrderBy(x => x.Name?.Value ?? string.Empty)
+            .Select(ExtractAdjustmentFromShapeGuide)
+            .ToArray()
+            ?? throw new SCException("Malformed geometry.");
     }
 
     private void InjectCornerSizeIntoRoundRectangle(decimal value)
@@ -288,35 +234,6 @@ internal sealed class ShapeGeometry : IShapeGeometry
             ?? throw new SCException("Failed attempting to add a shape guide to AdjustValueList");
 
         sg.Formula = new StringValue($"val {(int)(value * 500m)}");        
-    }
-
-    private decimal ExtractCornerSizeFromRound2SameRectangle()
-    {
-        var aPresetGeometry = this.APresetGeometry;
-        if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.Round2SameRectangle)
-        {
-            return 0;
-        }
-
-        var avList = aPresetGeometry.AdjustValueList 
-            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
-        var sgs = avList.Descendants<A.ShapeGuide>();
-        var count = sgs.Count();
-        if (count == 0)
-        {
-            // Has no shape guide. That means we're using the DEFAULT value, which is 35
-            return 35m;
-        }
-
-        if (count != 2)
-        {
-            throw new SCException($"Malformed rounded rectangle. Expected 2 shape guides, found {count}.");
-        }
-
-        var sg = sgs.SingleOrDefault(x => x.Name == "adj1") 
-            ?? throw new SCException($"Malformed rounded rectangle. No shape guide named `adj1`");
-
-        return ExtractCornerSizeFromShapeGuide(sg);
     }
 
     private void InjectCornerSizeIntoRound2SameRectangle(decimal value)
