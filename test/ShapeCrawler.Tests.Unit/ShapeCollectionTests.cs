@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using FluentAssertions;
+using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -387,7 +388,7 @@ public class ShapeCollectionTests : SCTest
         picture.Width.Should().BeLessThan(2400);
         pres.Validate();
     }
-
+    
     [Test]
     public void AddPicture_svg_with_text_matches_reference()
     {
@@ -465,9 +466,31 @@ public class ShapeCollectionTests : SCTest
         picture.Width.Should().Be(280);
         pres.Validate();
     }
-
+    
+    //Test that the png image is created with transparent background
     [Test]
-    public void AddPicture_adds_svg_picture_no_dimensions()
+    public void AddPicture_adds_picture_with_transparent_background()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-blank.svg");
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+        var imageMagickImage = new MagickImage(picture.Image!.AsByteArray());
+        var pixels = imageMagickImage.GetPixels();
+        pixels.Should().NotBeEmpty().And.AllSatisfy(x =>
+        {
+            x.ToColor().Should().Be(MagickColors.Transparent);
+        });
+    }
+    
+    [Test]
+    public void AddPicture_errors_adding_svg_picture_no_dimensions()
     {
         // Arrange
         var pres = new Presentation();
@@ -476,15 +499,10 @@ public class ShapeCollectionTests : SCTest
         image.Position = 0;
 
         // Act
-        shapes.AddPicture(image);
+        var act = () => shapes.AddPicture(image);
 
         // Assert
-        // These values are the actual extent of drawings on the test image, which is what
-        // we'll be using since the image has no explicit dimensions of any form
-        var picture = (IPicture)shapes.Last();
-        picture.Height.Should().Be(91);
-        picture.Width.Should().BeApproximately(277.96m,0.01m);
-        pres.Validate();
+        act.Should().Throw<SCException>();
     }
 
     [Test]
