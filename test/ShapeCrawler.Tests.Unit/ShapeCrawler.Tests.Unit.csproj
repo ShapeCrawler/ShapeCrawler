@@ -102,6 +102,7 @@
     <None Remove="Assets\tables\table-case001.pptx" />
     <EmbeddedResource Include="Assets\tables\table-case001.pptx" />
     <None Remove="Assets\video\test-video.avi" />
+    <EmbeddedResource Include="Assets\test-vector-image-blank.svg" />
     <EmbeddedResource Include="Assets\video\test-video.avi" />
     <None Remove="Assets\video\test-video.mp4" />
     <EmbeddedResource Include="Assets\video\test-video.mp4" />
