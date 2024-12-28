@@ -157,7 +157,10 @@ internal sealed class SlideShapes : ISlideShapes
             }
             
             image.Position = 0;
-            using var imageMagick = new MagickImage(image);
+            using var imageMagick = new MagickImage(image, new MagickReadSettings
+            {
+                BackgroundColor = MagickColors.Transparent
+            });
             imageMagick.Format = MagickFormat.Png;
 
             width = imageMagick.Width < 500 ? (int)imageMagick.Width : 500;
