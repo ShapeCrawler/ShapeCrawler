@@ -141,24 +141,24 @@ internal sealed class Slides : ISlides
         this.readOnlySlides[addedSlideIndex].Number = position;
     }
 
-    public void Add(ISlide slide)
+    public void Add(ISlide addingSlide)
     {
-        var addingSlide = (Slide)slide;
+        var internalAddingSlide = (Slide)addingSlide;
         var addingSlidePresStream = new MemoryStream();
         var targetPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
+        var addingSlidePresDocument = internalAddingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[addingSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        var existingMaster = targetPresPart.SlideMasterParts.FirstOrDefault(master => master.SlideLayouts.Any(layout => layout.SlideLayout == sourceSlidePart.SlideLayoutPart!.SlideLayout));
+        var existingMaster = targetPresPart.SlideMasterParts.FirstOrDefault(masterPart => masterPart.SlideLayoutParts.SelectMany(x=>x.SlideLayout).Any(layout => layout == sourceSlidePart.SlideLayoutPart!.SlideLayout));
         if (existingMaster != null)
         {
-            var existingLayout = existingMaster.SlideLayouts.First(layout => layout.SlideLayout == sourceSlidePart.SlideLayoutPart!.SlideLayout);
-            sourceSlidePart.SlideLayoutPart = existingLayout;
+            var existingLayout = existingMaster.SlideLayoutParts.SelectMany(x=>x.SlideLayout).First(layout => layout == sourceSlidePart.SlideLayoutPart!.SlideLayout);
+            sourceSlidePart.SlideLayoutPart!.SlideLayout = (P.SlideLayout)existingLayout;
         }
         else
         {
