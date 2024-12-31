@@ -380,4 +380,22 @@ public class SlideTests : SCTest
         notes.Text.Should().Be(expected);
         pres.Validate();
     }
+
+    [Test]
+    public void CopyingSlides_UsesSameMasterLayout()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+
+        // Act
+        for (int i = 0; i < 5; i++)
+        {
+            pres.Slides.Add(slide);
+        }
+
+        // Assert
+        var masterLayouts = pres.Slides.Select(s => s.SlideLayout).Distinct().ToList();
+        masterLayouts.Count.Should().Be(1);
+    }
 }

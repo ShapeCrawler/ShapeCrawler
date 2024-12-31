@@ -154,7 +154,16 @@ internal sealed class Slides : ISlides
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        new WrappedSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
+        var existingMaster = targetPresPart.SlideMasterParts.FirstOrDefault(master => master.SlideLayouts.Any(layout => layout.SlideLayout == sourceSlidePart.SlideLayoutPart!.SlideLayout));
+        if (existingMaster != null)
+        {
+            var existingLayout = existingMaster.SlideLayouts.First(layout => layout.SlideLayout == sourceSlidePart.SlideLayoutPart!.SlideLayout);
+            sourceSlidePart.SlideLayoutPart = existingLayout;
+        }
+        else
+        {
+            new WrappedSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
+        }
 
         var wrappedPresentationPart = new WrappedPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
