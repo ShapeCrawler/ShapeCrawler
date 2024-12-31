@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.59.1 - Unreleased
+🐞Fixed updating font [#828](https://github.com/ShapeCrawler/ShapeCrawler/issues/828)    
+
 ## Version 0.59.0 - 2024-12-29
 🍀Added `ITable.TableStyleOptions` [#817](https://github.com/ShapeCrawler/ShapeCrawler/issues/655)  
 🍀Added exposing metadata `IPresentation.FileProperties.Title`, `IPresentation.FileProperties.Created` etc.  
