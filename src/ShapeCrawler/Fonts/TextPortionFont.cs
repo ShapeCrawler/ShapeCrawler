@@ -308,5 +308,22 @@ internal sealed class TextPortionFont : ITextPortionFont
         }
     }
 
-    private void UpdateLatinName(string latinFont) => this.ALatinFont().Typeface = latinFont;
+    private void UpdateLatinName(string latinFont)
+    {
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
+
+        if (aLatinFont != null)
+        {
+            aLatinFont = new A.LatinFont { Typeface = latinFont };
+            aRunProperties!.InsertAt(aLatinFont, 0);
+        }
+        else
+        {
+            aLatinFont = new A.LatinFont { Typeface = latinFont };
+            aRunProperties = new A.RunProperties();
+            aRunProperties.Append(aLatinFont);
+            this.aText.Parent.InsertAt(aRunProperties, 0);
+        }
+    }
 }

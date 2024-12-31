@@ -311,7 +311,6 @@ public class FontTests : SCTest
     }
     
     [Test]
-    [Explicit("Fails. Reported as Issue #828")]
     public void LatinName_Setter_should_sets_font_for_the_latin_characters_only_for_the_specified_shape()
     {
         // Arrange
