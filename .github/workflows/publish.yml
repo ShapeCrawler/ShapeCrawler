@@ -9,7 +9,7 @@ jobs:
   
   test:
     name: Test on framework ${{ matrix.framework_version }}
-    runs-on: windows-22
+    runs-on: windows-latest
     strategy:
       matrix:
         framework_version: [ 'net472', 'net48', 'net9.0' ]
@@ -21,7 +21,7 @@ jobs:
   publish:
     needs: test
     name: Publish
-    runs-on: windows-22
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Create package
