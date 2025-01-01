@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: Test on .NET 9.0
+    name: Test
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4      
