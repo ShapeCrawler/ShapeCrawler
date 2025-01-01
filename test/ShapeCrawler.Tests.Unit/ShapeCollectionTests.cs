@@ -363,7 +363,8 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
-        imageParts.Length.Should().Be(2);
+        imageParts.Length.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    
         SavePresentationFile(pres);
     }
 
@@ -385,7 +386,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
-        imageParts.Count.Should().Be(2);
+        imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
         SavePresentationFile(pres);
     }
 
@@ -408,7 +409,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
-        imageParts.Count.Should().Be(2); // One for the vector and one for the auto-generated raster
+        imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
     }
 
     [Test]
