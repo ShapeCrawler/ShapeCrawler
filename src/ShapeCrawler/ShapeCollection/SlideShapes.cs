@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
@@ -29,11 +30,13 @@ internal sealed class SlideShapes : ISlideShapes
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
     private readonly IShapes shapes;
+    private readonly MediaCollection mediaCollection;
 
-    internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes)
+    internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes, MediaCollection mediaCollection)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.shapes = shapes;
+        this.mediaCollection = mediaCollection;
     }
 
     public int Count => this.shapes.Count;
@@ -471,8 +474,13 @@ internal sealed class SlideShapes : ISlideShapes
 
     private static string Mime(Stream imageStream)
     {
-        imageStream.Seek(0, SeekOrigin.Begin);
-        using var codec = SKCodec.Create(imageStream);
+        var mStream = new MemoryStream();
+        imageStream.CopyTo(mStream);
+        mStream.Position = 0;
+
+        // Note that the below disposes the underlying stream, which we typically don't want
+        // ergo, we do this on a copied memory stream.
+        using var codec = SKCodec.Create(mStream);
         var mime = codec.EncodedFormat switch
         {
             SKEncodedImageFormat.Jpeg => "image/jpeg",
@@ -564,15 +572,47 @@ internal sealed class SlideShapes : ISlideShapes
         return $"Table {maxOrder + 1}";
     }
 
+    private bool TryGetImageRId(string hash, out string imgPartRId)
+    {
+        if (this.mediaCollection.TryGetImagePart(hash, out var imagePart))
+        {
+            // Image already exists in the presentation sofar.
+            // Do we have a reference to it on this slide?
+            var found = this.sdkSlidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
+            if (found.Any())
+            {
+                // Yes, we already have a relationship with this part on this slide
+                // So use that relationship ID
+                imgPartRId = this.sdkSlidePart.GetIdOfPart(imagePart);
+            }
+            else
+            {
+                // No, so let's create a relationship to it
+                imgPartRId = this.sdkSlidePart.CreateRelationshipToPart(imagePart);
+            }
+
+            return true;
+        }
+        else
+        {
+            // Sorry, you'll need to create a new image part
+            imgPartRId = string.Empty;
+            return false;
+        }
+    }
+
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var imgPartRId = this.sdkSlidePart.NextRelationshipId();
-        var mStream = new MemoryStream();
-        imageStream.CopyTo(mStream);
-        var mime = Mime(mStream);
-        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>(mime, imgPartRId);
-        imageStream.Position = 0;
-        imagePart.FeedData(imageStream);
+        var hash = MediaCollection.ComputeFileHash(imageStream);
+
+        // Does this part already exist in the presentation?
+        if (!this.TryGetImageRId(hash, out var imgPartRId))
+        {
+            // No, let's create it!
+            var mimeType = Mime(imageStream);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream,mimeType);
+            this.mediaCollection.SetImagePart(hash,imagePart);
+        }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();
@@ -659,17 +699,25 @@ internal sealed class SlideShapes : ISlideShapes
 
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
     {
-        // The A.Blip contains a raster representation of the vector image
-        var imgPartRId = this.sdkSlidePart.NextRelationshipId();
-        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-        rasterStream.Position = 0;
-        imagePart.FeedData(rasterStream);
-
         // The SVG Blip contains the vector data
-        var svgPartRId = this.sdkSlidePart.NextRelationshipId();
-        var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
-        svgStream.Position = 0;
-        svgPart.FeedData(svgStream);
+        var svgHash = MediaCollection.ComputeFileHash(svgStream);
+        if (!this.TryGetImageRId(svgHash, out var svgPartRId))
+        {
+            (svgPartRId, var svgPart) = this.sdkSlidePart.AddImagePart(svgStream,"image/svg+xml");
+            this.mediaCollection.SetImagePart(svgHash,svgPart);
+        }
+
+        // There is a possible optimization here. If we've previously in this session rasterized
+        // this SVG, we could look up the rasterized image by reference to its vector image so
+        // we wouldn't have to rasterize it every time.
+
+        // The A.Blip contains a raster representation of the vector image
+        var imgHash = MediaCollection.ComputeFileHash(rasterStream);
+        if (!this.TryGetImageRId(imgHash, out var imgPartRId))
+        {
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(rasterStream,"image/png");
+            this.mediaCollection.SetImagePart(imgHash,imagePart);
+        }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();
