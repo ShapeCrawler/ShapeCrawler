@@ -83,7 +83,7 @@ public class SlideTests : SCTest
         var pres = new Presentation(StreamOf("009_table.pptx"));
         var slideFill = pres.Slide(2).Fill;
 
-        // Assert
+        // Act-Assert
         slideFill.Picture.Should().BeNull();
     }
 
