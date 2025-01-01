@@ -72,17 +72,6 @@ public abstract class SCTest
         return PresentationDocument.Open(stream, true);
     }
 
-    protected void SavePresentationFile(IPresentation presentation)
-    {
-        var directory = "out/" + TestContext.CurrentContext.Test.DisplayName;
-        var filename = directory + "/" + TestContext.CurrentContext.Test.Name + ".pptx";
-
-        Directory.CreateDirectory(directory);
-        File.Delete(filename);
-        presentation.SaveAs(filename);
-        TestContext.AddTestAttachment(filename);
-    }
-
 #if DEBUG
 
     protected void SaveResult(IPresentation pres)

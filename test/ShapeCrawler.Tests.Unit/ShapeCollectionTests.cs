@@ -364,8 +364,6 @@ public class ShapeCollectionTests : SCTest
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
-    
-        SavePresentationFile(pres);
     }
 
     [Test]
@@ -387,7 +385,6 @@ public class ShapeCollectionTests : SCTest
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
-        SavePresentationFile(pres);
     }
 
     [Test]
@@ -404,7 +401,6 @@ public class ShapeCollectionTests : SCTest
         // Act
         var shapesPres2 = presLoaded.Slides[0].Shapes;
         shapesPres2.AddPicture(image);
-        SavePresentationFile(presLoaded);
 
         // Assert
         var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
@@ -649,7 +645,6 @@ public class ShapeCollectionTests : SCTest
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
-        SavePresentationFile(pres);
    }
 
     [Test]
@@ -671,7 +666,6 @@ public class ShapeCollectionTests : SCTest
         var checkXml = SaveAndOpenPresentationAsXml(pres);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(1);
-        SavePresentationFile(pres);
     }
 
     [Test]
@@ -688,7 +682,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         pres.Slides.Add(slide);
-        SavePresentationFile(pres);
 
         // Assert
         var checkXml = SaveAndOpenPresentationAsXml(pres);
@@ -715,7 +708,6 @@ public class ShapeCollectionTests : SCTest
         var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
         var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
         imageParts.Count.Should().Be(1);
-        SavePresentationFile(presLoaded);
     }
 
     [Test]
