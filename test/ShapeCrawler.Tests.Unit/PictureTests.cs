@@ -297,23 +297,21 @@ public class PictureTests : SCTest
         pres.Validate();
     }
 
-    [Explicit]
     [TestCase("0")]
     [TestCase("100")]
     [TestCase("20")]
     [TestCase("50")]
-    public void Transparency_setter_sets_expected_values(decimal expected)
+    public void Transparency_Setter_sets_transparency_in_percentages(decimal transparency)
     {
         // Arrange
         var pres = new Presentation(StreamOf("060_picture-transparency.pptx"));
         var picture = pres.Slides[0].Shapes.GetByName<IPicture>("50%");
 
         // Act
-        picture.Transparency = expected;
+        picture.Transparency = transparency;
 
         // Assert
-        var actual = picture.Transparency;
-        actual.Should().Be(expected);
+        picture.Transparency.Should().Be(transparency);
     }
 
     [Test]
@@ -322,15 +320,13 @@ public class PictureTests : SCTest
     [SlideShape("060_picture-transparency.pptx", 1, "50%", "50")]
     [SlideShape("060_picture-transparency.pptx", 1, "80%", "80")]
     [SlideShape("060_picture-transparency.pptx", 1, "100%", "100")]
-    public void Transparency_getter_gets_expected_values(IShape shape, string expectedStr)
+    public void Transparency_Getter_returns_transparency_in_percentages(IShape shape, string expectedTransparencyStr)
     {
         // Arrange
-        var expected = decimal.Parse(expectedStr);
+        var expectedTransparency = decimal.Parse(expectedTransparencyStr);
+        var picture = shape.As<IPicture>();
 
-        // Act
-        var actual = shape.As<IPicture>().Transparency;
-
-        // Assert
-        actual.Should().Be(expected);
+        // Act-Assert
+        picture.Transparency.Should().Be(expectedTransparency);
     }
 }
