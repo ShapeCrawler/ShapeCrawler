@@ -17,7 +17,10 @@ jobs:
             framework_version: 'net48'
       fail-fast: false    
     steps:
-      - uses: actions/checkout@v4      
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x     
       
       - name: Test
         run: dotnet test -c Release -f ${{ matrix.framework_version }}
