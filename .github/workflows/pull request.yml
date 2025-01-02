@@ -16,7 +16,7 @@ jobs:
         exclude:
           - os: ubuntu-latest
             framework_version: 'net48'
-          - os: macos-latest-large
+          - os: macos-13
             framework_version: 'net48'
       fail-fast: false    
     steps:
@@ -25,11 +25,16 @@ jobs:
         with:
           dotnet-version: 9.0.x
       
-      - name: Install libgdiplus
+      - name: Install  on Ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libgdiplus     
+      
+      - name: Install libgdiplus on macOS
+        if: ${{ matrix.os == 'macos-13' }}
+        run: |
+          brew install mono-libgdiplus
       
       - name: Test
         run: dotnet test -c Release -f ${{ matrix.framework_version }}
