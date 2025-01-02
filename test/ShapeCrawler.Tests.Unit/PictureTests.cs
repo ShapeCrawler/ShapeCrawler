@@ -159,11 +159,8 @@ public class PictureTests : SCTest
         // Arrange
         var pre = new Presentation(StreamOf("019.pptx"));
 
-        // Act
-        Action act = () => pre.Slides[1].Shapes.Single(x => x.Id == 47);
-        
-        // Assert
-        act.Should().Throw<Exception>();
+        // Act-Assert
+        pre.Slides[1].Shapes.Any(x => x.Id == 47).Should().Be(false);
     }
     
     [Test]
