@@ -99,10 +99,8 @@ internal sealed class Picture : CopyableShape, IPicture
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>();
             var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
-
-            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
-            // Dividing by 1000 to get a percent value
-            return 100m - amount / 1000m;
+            
+            return 100m - amount / 1000m; // value is stored in Open XML as thousandths of a percent
         }
 
         set
@@ -110,9 +108,7 @@ internal sealed class Picture : CopyableShape, IPicture
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>()
                 ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(),0)
                 ?? throw new SCException("Failed to add AlphaModFix");
-
-            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
-            // Multiplying by 1000 to get a per cent mille value to store
+            
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
