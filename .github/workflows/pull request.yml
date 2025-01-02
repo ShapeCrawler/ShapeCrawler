@@ -10,8 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ windows-latest, ubuntu-latest ]
-        os: [ windows-latest, macos-13 ]
+        os: [ windows-latest, ubuntu-latest, macos-13 ]
         framework_version: [ 'net9.0', 'net48' ]
         exclude:
           - os: ubuntu-latest
@@ -25,7 +24,7 @@ jobs:
         with:
           dotnet-version: 9.0.x
       
-      - name: Install  on Ubuntu
+      - name: Install libgdiplus on Ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo apt-get update
