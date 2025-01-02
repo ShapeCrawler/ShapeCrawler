@@ -20,7 +20,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x     
+          dotnet-version: 9.0.x
+      
+      - name: Install libgdiplus
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgdiplus     
       
       - name: Test
         run: dotnet test -c Release -f ${{ matrix.framework_version }}
