@@ -116,24 +116,23 @@ public class PictureTests : SCTest
     }
 
     [Test]
-    public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
+    public void Image_Update_should_not_update_image_of_other_grouped_picture()
     {
         // Arrange
-        var pptx = StreamOf("pictures-case001.pptx");
-        var image = GetTestBytes("png image-2.png");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf("pictures-case001.pptx"));
+        var image = StreamOf("png image-2.png");
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
         var groupedPicture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
         var groupedPicture2 = groupShape.Shapes.GetByName<IPicture>("Picture 2");
         var stream = new MemoryStream();
 
         // Act
-        groupedPicture1.Image.Update(image);
+        groupedPicture1.Image!.Update(image);
 
         // Assert
         pres.SaveAs(stream);
         var pictureContent1 = groupedPicture1.Image.AsByteArray();
-        var pictureContent2 = groupedPicture2.Image.AsByteArray();
+        var pictureContent2 = groupedPicture2.Image!.AsByteArray();
         pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();
     }
         

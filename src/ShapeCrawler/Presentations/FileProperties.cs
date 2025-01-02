@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Presentations;
 
-internal class FileProperties: IFileProperties
+internal class FileProperties : IFileProperties
 {
     private readonly DocumentFormat.OpenXml.Packaging.IPackageProperties sdkPackageProperties;
 

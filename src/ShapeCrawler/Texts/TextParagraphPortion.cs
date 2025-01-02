@@ -112,5 +112,4 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 
         return hyperlinkRelationship.Uri.ToString();
     }
-    
 }

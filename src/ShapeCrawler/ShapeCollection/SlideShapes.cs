@@ -609,8 +609,8 @@ internal sealed class SlideShapes : ISlideShapes
         {
             // No, let's create it!
             var mimeType = Mime(imageStream);
-            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream,mimeType);
-            this.mediaCollection.SetImagePart(hash,imagePart);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream, mimeType);
+            this.mediaCollection.SetImagePart(hash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -702,8 +702,8 @@ internal sealed class SlideShapes : ISlideShapes
         var svgHash = MediaCollection.ComputeFileHash(svgStream);
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
-            (svgPartRId, var svgPart) = this.sdkSlidePart.AddImagePart(svgStream,"image/svg+xml");
-            this.mediaCollection.SetImagePart(svgHash,svgPart);
+            (svgPartRId, var svgPart) = this.sdkSlidePart.AddImagePart(svgStream, "image/svg+xml");
+            this.mediaCollection.SetImagePart(svgHash, svgPart);
         }
 
         // There is a possible optimization here. If we've previously in this session rasterized
@@ -714,8 +714,8 @@ internal sealed class SlideShapes : ISlideShapes
         var imgHash = MediaCollection.ComputeFileHash(rasterStream);
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
-            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(rasterStream,"image/png");
-            this.mediaCollection.SetImagePart(imgHash,imagePart);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(rasterStream, "image/png");
+            this.mediaCollection.SetImagePart(imgHash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
