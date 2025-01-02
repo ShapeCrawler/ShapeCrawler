@@ -12,7 +12,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using Svg;

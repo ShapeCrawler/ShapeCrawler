@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using ShapeCrawler.Tables;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;

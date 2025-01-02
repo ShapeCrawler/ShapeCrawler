@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a table style of a table.
@@ -15,6 +17,10 @@ public interface ITableStyle
 
 internal class TableStyle(string name): ITableStyle
 {
+    public string Name { get; } = name;
+
+    public string Guid { get; private set; } = string.Empty;
+    
     internal static TableStyle NoStyleNoGrid => new("No Style, No Grid") { Guid = "{2D5ABB26-0587-4C30-8999-92F81FD0307C}" };
 
     internal static TableStyle NoStyleTableGrid => new("No Style, Table Grid") { Guid = "{5940675A-B579-460E-94D1-54222C63F5DA}" };
@@ -162,10 +168,6 @@ internal class TableStyle(string name): ITableStyle
     internal static TableStyle DarkStyle2Accent3Accent4 => new("Dark Style 2 - Accent 3, Accent 4") { Guid = "{91EBBBCC-DAD2-459C-BE2E-F6DE35CF9A28}" };
 
     internal static TableStyle DarkStyle2Accent5Accent6 => new("Dark Style 2 - Accent 5, Accent 6") { Guid = "{46F890A9-2807-4EBB-B81D-B2AA78EC7F39}" };
-
-    public string Name { get; } = name;
-
-    public string Guid { get; private set; } = string.Empty;
 
     public override bool Equals(object? obj)
     {
