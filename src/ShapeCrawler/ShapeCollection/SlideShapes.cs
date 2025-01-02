@@ -415,7 +415,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
         var tableStyleId = new A.TableStyleId
-        { Text = style.Guid };
+        { Text = ((TableStyle)style).Guid };
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new A.TableGrid();

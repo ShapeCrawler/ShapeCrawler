@@ -101,7 +101,7 @@ internal sealed class Table : CopyableShape, ITable
         get => this.GetTableStyle();
         set => this.SetTableStyle(value);
     }
-    
+
     public ITableStyleOptions TableStyleOptions { get; init; }
 
     public override bool Removeable => true;
@@ -133,7 +133,7 @@ internal sealed class Table : CopyableShape, ITable
         var columnIndex = columnNumber - 1;
         var tableGrid = this.ATable.TableGrid!;
         var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
-        
+
         var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
         var targetColumn = existingColumns[columnIndex];
         tableGrid.InsertAfter(gridColumn, targetColumn);
@@ -143,7 +143,7 @@ internal sealed class Table : CopyableShape, ITable
             new SaTableRow(aTableRow).InsertNewCellAfter(columnNumber);
         }
     }
-    
+
     public void UpdateFill(string colorHex)
     {
         throw new NotImplementedException();
@@ -160,10 +160,18 @@ internal sealed class Table : CopyableShape, ITable
             throw new SCException("Cannot merge the same cells.");
         }
 
-        var minRowIndex = cell1Internal.RowIndex < cell2Internal.RowIndex ? cell1Internal.RowIndex : cell2Internal.RowIndex;
-        var maxRowIndex = cell1Internal.RowIndex > cell2Internal.RowIndex ? cell1Internal.RowIndex : cell2Internal.RowIndex;
-        var minColIndex = cell1Internal.ColumnIndex < cell2Internal.ColumnIndex ? cell1Internal.ColumnIndex : cell2Internal.ColumnIndex;
-        var maxColIndex = cell1Internal.ColumnIndex > cell2Internal.ColumnIndex ? cell1Internal.ColumnIndex : cell2Internal.ColumnIndex;
+        var minRowIndex = cell1Internal.RowIndex < cell2Internal.RowIndex
+            ? cell1Internal.RowIndex
+            : cell2Internal.RowIndex;
+        var maxRowIndex = cell1Internal.RowIndex > cell2Internal.RowIndex
+            ? cell1Internal.RowIndex
+            : cell2Internal.RowIndex;
+        var minColIndex = cell1Internal.ColumnIndex < cell2Internal.ColumnIndex
+            ? cell1Internal.ColumnIndex
+            : cell2Internal.ColumnIndex;
+        var maxColIndex = cell1Internal.ColumnIndex > cell2Internal.ColumnIndex
+            ? cell1Internal.ColumnIndex
+            : cell2Internal.ColumnIndex;
 
         var aTableRows = this.ATable.Elements<A.TableRow>().ToList();
         if (minColIndex != maxColIndex)
@@ -193,7 +201,7 @@ internal sealed class Table : CopyableShape, ITable
     {
         throw new NotImplementedException();
     }
-    
+
     private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
     {
         var totalWidth = existingColumns.Sum(col => col.Width!.Value);
@@ -207,10 +215,10 @@ internal sealed class Table : CopyableShape, ITable
 
         return new A.GridColumn { Width = newColumnWidth };
     }
-    
+
     private void SetTableStyle(ITableStyle style)
     {
-        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = style.Guid;
+        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = ((TableStyle)style).Guid;
         this.tableStyle = style;
     }
 
@@ -218,11 +226,8 @@ internal sealed class Table : CopyableShape, ITable
     {
         if (this.tableStyle is null)
         {
-            var tableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
-
-            var style = CommonTableStyles.GetTableStyleByGuid(tableStyleId) !;
-
-            // style ??= new TableStyle("Custom Style", tableStyleId);
+            var aTableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
+            var style = CommonTableStyles.GetTableStyleByGuid(aTableStyleId) !;
             this.tableStyle = style;
         }
 
