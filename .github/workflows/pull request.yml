@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         # os: [ windows-latest, ubuntu-latest ]
-        os: [ windows-latest, macos-latest-large ]
+        os: [ windows-latest, macos-13 ]
         framework_version: [ 'net9.0', 'net48' ]
         exclude:
           - os: ubuntu-latest
