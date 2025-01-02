@@ -24,8 +24,7 @@ internal sealed class ShapeFillImage : IImage
 
     public void Update(Stream stream)
     {
-        var isSharedImagePart =
-            this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(x => x == this.sdkImagePart) > 1;
+        var isSharedImagePart = this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(imagePart => imagePart == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {            
             var rId = default(RelationshipId).New();
