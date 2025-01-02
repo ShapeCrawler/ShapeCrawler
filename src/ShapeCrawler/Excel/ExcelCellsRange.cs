@@ -29,7 +29,7 @@ internal readonly record struct ExcelCellsRange
     internal List<string> Addresses()
     {
         this.Letter();
-        return [.. this.tempList];
+        return[.. this.tempList];
     }
 
     #region Private Methods

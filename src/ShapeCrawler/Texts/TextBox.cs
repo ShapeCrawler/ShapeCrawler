@@ -384,7 +384,7 @@ internal sealed record TextBox : ITextBox
 
             var widthInPixels = new Text(longerText, font).PxWidth;
             
-            var newWidth = (int)(widthInPixels * (decimal)1.4) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
+            var newWidth = (int)(widthInPixels * 1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
                            + lMarginPixel + rMarginPixel;
             new ShapeSize(this.sdkTypedOpenXmlPart, parent).UpdateWidth(newWidth);
         }

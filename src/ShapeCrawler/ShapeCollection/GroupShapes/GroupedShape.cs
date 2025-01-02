@@ -136,12 +136,14 @@ internal sealed class GroupedShape : IShape
     
     public PlaceholderType PlaceholderType => this.decoratedShape.PlaceholderType;
    
-    public Geometry GeometryType {
+    public Geometry GeometryType
+    {
         get => this.decoratedShape.GeometryType;
         set => this.decoratedShape.GeometryType = value;
     }
 
-    public decimal CornerSize {
+    public decimal CornerSize
+    {
         get => this.decoratedShape.CornerSize;
         set => this.decoratedShape.CornerSize = value;
     }

@@ -20,10 +20,8 @@ public interface ISpacing
     double? LineSpacingPoints { get; }
 }
 
-internal sealed class Spacing(Paragraph paragraph, A.Paragraph aParagraph): ISpacing
+internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
 {
-    private readonly Paragraph paragraph = paragraph;
-
     public double? LineSpacingLines => this.GetLineSpacingLines();
 
     public double? LineSpacingPoints => this.GetLineSpacingPoints();

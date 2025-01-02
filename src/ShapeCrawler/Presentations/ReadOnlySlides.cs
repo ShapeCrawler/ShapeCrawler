@@ -60,7 +60,7 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
             var hash = MediaCollection.ComputeFileHash(stream);
             if (!this.mediaCollection.TryGetImagePart(hash, out var _))
             {
-                this.mediaCollection.SetImagePart(hash,imagePart);
+                this.mediaCollection.SetImagePart(hash, imagePart);
             }
         }
     }

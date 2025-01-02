@@ -36,7 +36,7 @@ internal static class TypedOpenXmlPartExtensions
         return $"rId{nextId}";        
     }
     
-    internal static (string,ImagePart) AddImagePart(this OpenXmlPart typedOpenXmlPart, Stream stream, string mimeType)
+    internal static (string, ImagePart) AddImagePart(this OpenXmlPart typedOpenXmlPart, Stream stream, string mimeType)
     {
         var rId = typedOpenXmlPart.NextRelationshipId();
         
@@ -44,6 +44,6 @@ internal static class TypedOpenXmlPartExtensions
         stream.Position = 0;
         imagePart.FeedData(stream);
 
-        return (rId,imagePart);
+        return (rId, imagePart);
     }
 }
