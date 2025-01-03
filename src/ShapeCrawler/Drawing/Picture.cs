@@ -156,10 +156,10 @@ internal sealed class Picture : CopyableShape, IPicture
     /// <param name="aSrcRect">Rectangle to be updated with our values.</param>
     private static void ApplyCropToSourceRectangle(CroppingFrame frame, A.SourceRectangle aSrcRect)
     {
-        aSrcRect.Left = ToThousandths(frame.left);
-        aSrcRect.Right = ToThousandths(frame.right);
-        aSrcRect.Top = ToThousandths(frame.top);
-        aSrcRect.Bottom = ToThousandths(frame.bottom);        
+        aSrcRect.Left = ToThousandths(frame.Left);
+        aSrcRect.Right = ToThousandths(frame.Right);
+        aSrcRect.Top = ToThousandths(frame.Top);
+        aSrcRect.Bottom = ToThousandths(frame.Bottom);        
     }
 
     /// <summary>
