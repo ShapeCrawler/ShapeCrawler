@@ -10,9 +10,12 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
 {
     private readonly IEnumerable<SlidePart> sdkSlideParts;
 
+    private readonly MediaCollection mediaCollection = new();
+
     internal ReadOnlySlides(IEnumerable<SlidePart> sdkSlideParts)
     {
         this.sdkSlideParts = sdkSlideParts;
+        this.BuildMediaCollection();
     }
 
     public int Count => this.SlideList().Count;
@@ -41,10 +44,24 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
             var sdkSlidePart = (SlidePart)sdkPresPart.GetPartById(pSlideId.RelationshipId!);
             var layout = new SlideLayout(sdkSlidePart.SlideLayoutPart!);
             var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
-            var newSlide = new Slide(sdkSlidePart, layout, slideSize);
+            var newSlide = new Slide(sdkSlidePart, layout, slideSize, this.mediaCollection);
             slides.Add(newSlide);
         }
 
         return slides;
+    }
+
+    private void BuildMediaCollection()
+    {
+        var imageParts = this.sdkSlideParts.SelectMany(x => x.ImageParts);
+        foreach(var imagePart in imageParts)
+        {
+            using var stream = imagePart.GetStream();
+            var hash = MediaCollection.ComputeFileHash(stream);
+            if (!this.mediaCollection.TryGetImagePart(hash, out var _))
+            {
+                this.mediaCollection.SetImagePart(hash, imagePart);
+            }
+        }
     }
 }

@@ -210,7 +210,7 @@ internal sealed class Paragraph : IParagraph
         }
     }
     
-    private ISpacing GetSpacing() => new Spacing(this, this.aParagraph);
+    private ISpacing GetSpacing() => new Spacing(this.aParagraph);
 
     private Bullet GetBullet() => new(this.aParagraph.ParagraphProperties!);
 

@@ -24,30 +24,16 @@ internal sealed class ShapeFillImage : IImage
 
     public void Update(Stream stream)
     {
-        var isSharedImagePart =
-            this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(x => x == this.sdkImagePart) > 1;
+        var isSharedImagePart = this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(imagePart => imagePart == this.sdkImagePart) > 1;
         if (isSharedImagePart)
-        {
-            var rId = new RelationshipId().New();
+        {            
+            var rId = default(RelationshipId).New();
             this.sdkImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
 
         stream.Position = 0;
         this.sdkImagePart.FeedData(stream);
-    }
-
-    public void Update(byte[] bytes)
-    {
-        var stream = new MemoryStream(bytes);
-
-        this.Update(stream);
-    }
-
-    public void Update(string file)
-    {
-        byte[] sourceBytes = File.ReadAllBytes(file);
-        this.Update(sourceBytes);
     }
 
     public byte[] AsByteArray() => new WrappedImagePart(this.sdkImagePart).AsBytes(); 

@@ -1,4 +1,3 @@
-using System;
 using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Drawing;
@@ -31,9 +30,9 @@ public readonly record struct CroppingFrame(decimal Left, decimal Right, decimal
         }
 
         return new CroppingFrame(
-            Decimal.Parse(split[0].Trim()),
-            Decimal.Parse(split[1].Trim()),
-            Decimal.Parse(split[2].Trim()),
-            Decimal.Parse(split[3].Trim()));
+            decimal.Parse(split[0].Trim()),
+            decimal.Parse(split[1].Trim()),
+            decimal.Parse(split[2].Trim()),
+            decimal.Parse(split[3].Trim()));
     }
 }

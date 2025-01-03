@@ -28,13 +28,14 @@ internal sealed class Slide : ISlide
     internal Slide(
         SlidePart sdkSlidePart,
         ISlideLayout slideLayout,
-        SlideSize slideSize)
+        SlideSize slideSize,
+        MediaCollection mediaCollection)
     {
         this.SdkSlidePart = sdkSlidePart;
         this.slideSize = slideSize;
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart));
+        this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart), mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
@@ -68,7 +69,7 @@ internal sealed class Slide : ISlide
 
                 // Background element needs to be first, else it gets ignored.
                 var pBg = pcSld.GetFirstChild<P.Background>()
-                    ?? pcSld.InsertAt<P.Background>(new(),0);
+                    ?? pcSld.InsertAt<P.Background>(new(), 0);
 
                 var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>()
                     ?? pBg.AppendChild<P.BackgroundProperties>(new());
@@ -101,7 +102,9 @@ internal sealed class Slide : ISlide
 
     public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
 
-    public IShape Shape<T>(string name) where T : IShape => this.Shapes.GetByName<T>(name);
+    public IShape Shape<T>(string name)
+        where T : IShape
+        => this.Shapes.GetByName<T>(name);
 
     public void SaveAsPng(Stream stream)
     {

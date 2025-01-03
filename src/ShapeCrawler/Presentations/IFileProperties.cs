@@ -28,7 +28,6 @@ public interface IFileProperties
     /// <summary>
     ///     Gets or sets the creation date and time.
     /// </summary>
-
     DateTime? Created { get; set; }
 
     /// <summary>

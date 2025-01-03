@@ -25,7 +25,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Platforms>AnyCPU</Platforms>
     <PackageIcon>package-icon.jpg</PackageIcon>
     <Nullable>enable</Nullable>
-    <NoWarn>NU1608</NoWarn>
+    <NoWarn>OOXML0001</NoWarn>
+    <IsTrimmable Condition="'$(TargetFramework)' == 'net9.0'">true</IsTrimmable> 
   </PropertyGroup>
 
   <ItemGroup>

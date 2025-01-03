@@ -35,7 +35,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
         if (isSharedImagePart)
         {
-            var rId = new RelationshipId().New();
+            var rId = default(RelationshipId).New();
             sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             aBlip.Embed!.Value = rId;
         }
@@ -89,7 +89,7 @@ internal sealed class SlideBgImage : ISlideBgImage
             return pBg.BackgroundProperties!.Descendants<A.Blip>().First();
         }
 
-        var rId = new RelationshipId().New();
+        var rId = default(RelationshipId).New();
         var aBlip = new A.Blip { Embed = rId };
         var pBackground = new P.Background(
             new P.BackgroundProperties(

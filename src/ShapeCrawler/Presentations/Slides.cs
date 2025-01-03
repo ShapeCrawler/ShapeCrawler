@@ -86,9 +86,8 @@ internal sealed class Slides : ISlides
             new P.ColorMapOverride(new A.MasterColorMapping()));
         var layoutInternal = (SlideLayout)layout;
         sdkSlidePart.AddPart(layoutInternal.SdkSlideLayoutPart(), "rId1");
-
-        // Copy layout placeholders
-        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) // && layout.Type != SlideLayoutType.Blank) // if the layout is blank, no need to add placeholder
+        
+        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) 
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()

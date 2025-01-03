@@ -93,24 +93,4 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 
         this.AText.Text = text;
     }
-
-    private string? GetLink()
-    {
-        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
-        if (runProperties == null)
-        {
-            return null;
-        }
-
-        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
-        if (hyperlink == null)
-        {
-            return null;
-        }
-
-        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkTypedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
-
-        return hyperlinkRelationship.Uri.ToString();
-    }
-    
 }
