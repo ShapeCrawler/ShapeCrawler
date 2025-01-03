@@ -111,7 +111,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        [Explicit]
+        [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/850")]
         public void Text_Setter_resizes_shape_to_fit_multi_paragraph_text()
         {
             // Arrange
