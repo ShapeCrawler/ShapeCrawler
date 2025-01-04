@@ -478,23 +478,6 @@ internal sealed class SlideShapes : ISlideShapes
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private static bool HasDimensionsSvg(Stream svgStream)
-    {
-        var xmlReader = XmlReader.Create(svgStream);
-
-        if (!xmlReader.ReadToDescendant("svg"))
-        {
-            return false;
-        }
-        
-        if (xmlReader.GetAttribute("width") != null && xmlReader.GetAttribute("height") != null)
-        {
-            return true;
-        }
-        
-        return xmlReader.GetAttribute("viewBox") != null;
-    }
-
     private static string Mime(Stream imageStream)
     {
         imageStream.Seek(0, SeekOrigin.Begin);
