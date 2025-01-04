@@ -386,6 +386,9 @@ public class ShapeCollectionTests : SCTest
         picture.Height.Should().BeLessThan(2400);
         picture.Width.Should().BeGreaterThan(0);
         picture.Width.Should().BeLessThan(2400);
+        var rasterImage = new MagickImageInfo(picture.Image!.AsByteArray());
+        rasterImage.Width.Should().Be(500);
+        rasterImage.Height.Should().Be(500);
         pres.Validate();
     }
     
@@ -487,22 +490,6 @@ public class ShapeCollectionTests : SCTest
         {
             x.ToColor().Should().Be(MagickColors.Transparent);
         });
-    }
-    
-    [Test]
-    public void AddPicture_errors_adding_svg_picture_no_dimensions()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-no-dimensions.svg");
-        image.Position = 0;
-
-        // Act
-        var act = () => shapes.AddPicture(image);
-
-        // Assert
-        act.Should().Throw<SCException>();
     }
 
     [Test]

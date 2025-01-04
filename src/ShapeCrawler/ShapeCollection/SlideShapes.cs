@@ -151,11 +151,6 @@ internal sealed class SlideShapes : ISlideShapes
         }
         else
         {
-            if (!HasDimensionsSvg(image))
-            {
-                throw new SCException("SVG image must have width and height or viewbox attributes.");
-            }
-            
             image.Position = 0;
             using var imageMagick = new MagickImage(image, new MagickReadSettings
             {
@@ -166,11 +161,11 @@ internal sealed class SlideShapes : ISlideShapes
             width = imageMagick.Width < 500 ? (int)imageMagick.Width : 500;
             height = imageMagick.Height < 500 ? (int)imageMagick.Height : 500;
 
-            if (width > 500 || height > 500)
+            if (width == 500 || height == 500)
             {
                 imageMagick.Resize((uint)width, (uint)height);
             }
-
+            
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
