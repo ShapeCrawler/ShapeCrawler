@@ -12,8 +12,6 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Tables;
-using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
