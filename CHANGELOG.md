@@ -1,7 +1,13 @@
 # Changelog  
 
-## Version 0.59.0 - Unreleased
+## Version 0.59.1 - Unreleased
+🐞Fixed updating font [#828](https://github.com/ShapeCrawler/ShapeCrawler/issues/828)    
+
+## Version 0.59.0 - 2024-12-29
 🍀Added `ITable.TableStyleOptions` [#817](https://github.com/ShapeCrawler/ShapeCrawler/issues/655)  
+🍀Added exposing metadata `IPresentation.FileProperties.Title`, `IPresentation.FileProperties.Created` etc.  
+🐞Fixed updating the font color of the master shape [#793](https://github.com/ShapeCrawler/ShapeCrawler/issues/793)  
+🐞Fixed displaying constant maintainer'name for the created presentation [#812](https://github.com/ShapeCrawler/ShapeCrawler/issues/812)  
 
 ## Version 0.58.0 - 2024-12-18
 🍀Added `IHyperlink.AddFile()` [#724](https://github.com/ShapeCrawler/ShapeCrawler/issues/724)  

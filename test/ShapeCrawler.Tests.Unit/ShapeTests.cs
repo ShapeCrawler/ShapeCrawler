@@ -408,7 +408,7 @@ public class ShapeTests : SCTest
 
         // Assert
         var act = () => pres.Slides[0].Shapes.GetByName("TextBox 3");
-        act.Should().Throw<Exception>();
+        act.Should().Throw<SCException>();
         pres.Validate();
     }
 

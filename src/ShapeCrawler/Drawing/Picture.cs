@@ -44,12 +44,14 @@ internal sealed class Picture : CopyableShape, IPicture
    
     public string? SvgContent => this.GetSvgContent();
     
-    public override Geometry GeometryType {
+    public override Geometry GeometryType
+    {
         get => this.shapeGeometry.GeometryType;
         set => this.shapeGeometry.GeometryType = value;
     }
 
-    public override decimal CornerSize {
+    public override decimal CornerSize
+    {
         get => this.shapeGeometry.CornerSize;
         set => this.shapeGeometry.CornerSize = value;
     }
@@ -89,7 +91,7 @@ internal sealed class Picture : CopyableShape, IPicture
                 ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
                 ?? throw new SCException("Failed to add source rectangle");
 
-            ApplyCropToSourceRectangle(value,aSrcRect);
+            ApplyCropToSourceRectangle(value, aSrcRect);
         }
     }
     
@@ -99,20 +101,16 @@ internal sealed class Picture : CopyableShape, IPicture
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>();
             var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
-
-            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
-            // Dividing by 1000 to get a percent value
-            return 100m - amount / 1000m;
+            
+            return 100m - (amount / 1000m); // value is stored in Open XML as thousandths of a percent
         }
 
         set
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>()
-                ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(),0)
+                ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(), 0)
                 ?? throw new SCException("Failed to add AlphaModFix");
-
-            // Values are stored in OpenXML as "per cent mille", i.e. thousandths of a percent.
-            // Multiplying by 1000 to get a per cent mille value to store
+            
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
@@ -173,7 +171,7 @@ internal sealed class Picture : CopyableShape, IPicture
     {
         if (aSrcRect is null)
         {
-            return new CroppingFrame(0,0,0,0);
+            return new CroppingFrame(0, 0, 0, 0);
         }
 
         return new CroppingFrame(

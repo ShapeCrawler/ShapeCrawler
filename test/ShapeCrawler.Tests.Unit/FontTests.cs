@@ -311,6 +311,27 @@ public class FontTests : SCTest
     }
     
     [Test]
+    public void LatinName_Setter_should_sets_font_for_the_latin_characters_only_for_the_specified_shape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(10,20,30,40);
+        var shape1 = shapes.Last();
+        shapes.AddShape(100,20,30,40);
+        var shape2 = shapes.Last();
+        shape1.TextBox!.Text = "Shape 1";
+        shape1.TextBox!.Paragraphs[0].Portions[0].Font!.LatinName = "Segoe UI Semibold";
+
+        // Act
+        shape2.TextBox!.Text = "Shape 2";
+        shape2.TextBox!.Paragraphs[0].Portions[0].Font!.LatinName = "Aptos";
+
+        // Assert
+        shape1.TextBox!.Paragraphs[0].Portions[0].Font.LatinName.Should().Be("Segoe UI Semibold");
+    }
+    
+    [Test]
     [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
     [SlideShape("020.pptx", 1, 3, 18)]
     [SlideShape("015.pptx", 2, 61, 18.67)]

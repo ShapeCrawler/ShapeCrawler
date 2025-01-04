@@ -1,33 +1,30 @@
-name: Release
+name: Publish
 
 on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
 
 jobs:
   
   test:
-    name: Test on .NET Framework ${{ matrix.framework_version }}
+    name: Test on framework ${{ matrix.framework_version }}
     runs-on: windows-latest
     strategy:
       matrix:
-        framework_version: [ 'net472', 'net48' ]
+        framework_version: [ 'net472', 'net48', 'net9.0' ]
     steps:
       - uses: actions/checkout@v4
       - name: Test
         run: dotnet test -c Release -f ${{ matrix.framework_version }}
 
-  publish-package:
+  publish:
     needs: test
-    name: Publish package
+    name: Publish
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Test on .NET 9
-        run: dotnet test -c Release -f net9.0 --verbosity normal
-      - name: Create the package
+      - name: Create package
         run: dotnet pack --configuration Release /p:Version=${{ vars.VERSION }}
-      - name: Publish the package to nuget.org
+      - name: Publish package
         run: dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"

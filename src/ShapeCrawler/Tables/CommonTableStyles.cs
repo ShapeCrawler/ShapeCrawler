@@ -6,7 +6,7 @@ namespace ShapeCrawler.Tables;
 // TODO : verify the values 
 internal static class CommonTableStyles
 {
-    private static readonly Dictionary<string, ITableStyle> Styles = new()
+    private static readonly Dictionary<string, TableStyle> Styles = new()
     {
         // https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2010/hh273476(v=office.14)?redirectedfrom=MSDN
         { "No Style, No Grid", TableStyle.NoStyleNoGrid },
@@ -85,12 +85,8 @@ internal static class CommonTableStyles
         { "Dark Style 2 - Accent 5, Accent 6", TableStyle.DarkStyle2Accent5Accent6 }
     };
     
-    /// <summary>
-    ///     Get the style using its GUID.
-    /// </summary>
-    public static ITableStyle? GetTableStyleByGuid(string guid)
+    internal static ITableStyle? GetTableStyleByGuid(string guid)
     {
-        // Search through the dictionary for the matching GUID
         foreach (var value in Styles)
         {
             if (value.Value.Guid.Equals(guid, StringComparison.OrdinalIgnoreCase))

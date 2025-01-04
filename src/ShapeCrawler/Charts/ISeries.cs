@@ -60,7 +60,7 @@ internal sealed class Series : ISeries
 
     private string ParseName()
     {
-        var cStrRef = (this.cSer.GetFirstChild<C.SeriesText>()?.StringReference) ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
+        var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
         var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
 
         return fromCache ?? new ExcelBook(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();

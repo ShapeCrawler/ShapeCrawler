@@ -29,14 +29,4 @@ public interface IImage
     ///     Sets image with stream.
     /// </summary>
     void Update(Stream stream);
-
-    /// <summary>
-    ///     Sets image with byte array.
-    /// </summary>
-    void Update(byte[] bytes);
-
-    /// <summary>
-    ///     Sets image by specified file path.
-    /// </summary>
-    void Update(string file);
 }

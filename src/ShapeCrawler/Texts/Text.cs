@@ -60,7 +60,7 @@ internal readonly ref struct Text
 
                 if (wordY > (float)wordMaxY)
                 {
-                    if (skFont.Size <= 5) // Min reduce font size
+                    if (skFont.Size <= 5) 
                     {
                         break;
                     }

@@ -10,10 +10,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🍀Added `IHyperlink.AddFile()` [#724](https://github.com/ShapeCrawler/ShapeCrawler/issues/724)  
-🍀Added `IPicture.CornerSize` [#707](https://github.com/ShapeCrawler/ShapeCrawler/issues/707)  
-🍀Added `ISlide.Fill` [#797](https://github.com/ShapeCrawler/ShapeCrawler/issues/797)  
-🍀Added setter for `IShape.Name` [#802](https://github.com/ShapeCrawler/ShapeCrawler/issues/802)  </PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added `ITable.TableStyleOptions` [#817](https://github.com/ShapeCrawler/ShapeCrawler/issues/655)  
+🍀Added exposing metadata `IPresentation.FileProperties.Title`, `IPresentation.FileProperties.Created` etc.  
+🐞Fixed updating the font color of the master shape [#793](https://github.com/ShapeCrawler/ShapeCrawler/issues/793)  
+🐞Fixed displaying constant maintainer'name for the created presentation [#812](https://github.com/ShapeCrawler/ShapeCrawler/issues/812)  </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
@@ -25,7 +25,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Platforms>AnyCPU</Platforms>
     <PackageIcon>package-icon.jpg</PackageIcon>
     <Nullable>enable</Nullable>
-    <NoWarn>NU1608</NoWarn>
+    <NoWarn>OOXML0001</NoWarn>
+    <IsTrimmable Condition="'$(TargetFramework)' == 'net9.0'">true</IsTrimmable> 
   </PropertyGroup>
 
   <ItemGroup>
@@ -68,9 +69,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
-    <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="3.1.1" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.2.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.2" />
+    <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="3.2.0" />
     <PackageReference Include="PolySharp" Version="1.15.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

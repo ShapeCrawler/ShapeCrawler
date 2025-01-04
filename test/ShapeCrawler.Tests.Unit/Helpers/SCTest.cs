@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
@@ -60,6 +61,15 @@ public abstract class SCTest
         presentation.SaveAs(stream);
 
         return new Presentation(stream);
+    }
+
+    protected static PresentationDocument SaveAndOpenPresentationAsXml(IPresentation presentation)
+    {
+        var stream = new MemoryStream();
+        presentation.SaveAs(stream);
+        stream.Position = 0;
+
+        return PresentationDocument.Open(stream, true);
     }
 
 #if DEBUG

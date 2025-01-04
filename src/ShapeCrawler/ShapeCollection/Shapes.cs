@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.ShapeCollection.GroupShapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -39,7 +40,9 @@ internal sealed class Shapes : IShapes
     public T? TryGetByName<T>(string name) 
         where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
 
-    public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
+    public IShape GetByName(string name) => 
+        this.ShapesCore().FirstOrDefault(shape => shape.Name == name)
+        ?? throw new SCException("Shape not found");
 
     public T Last<T>() 
         where T : IShape => (T)this.ShapesCore().Last(shape => shape is T);

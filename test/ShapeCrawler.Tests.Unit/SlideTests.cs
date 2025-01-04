@@ -77,17 +77,14 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void Fill_Picture_AsByteArray_throws_exception_slide_doesnt_have_background()
+    public void Fill_Picture_is_null_when_slide_doesnt_have_background()
     {
         // Arrange
         var pres = new Presentation(StreamOf("009_table.pptx"));
-        var slide = pres.Slides[1];
+        var slideFill = pres.Slide(2).Fill;
 
-        // Act
-        var act = () => slide.Fill.Picture.AsByteArray();
-
-        // Assert
-        act.Should().Throw<Exception>();
+        // Act-Assert
+        slideFill.Picture.Should().BeNull();
     }
 
     [Test]

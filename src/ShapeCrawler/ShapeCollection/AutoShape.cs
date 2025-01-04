@@ -47,12 +47,14 @@ internal sealed class AutoShape : CopyableShape
     
     public override bool Removeable => true;
 
-    public override Geometry GeometryType {
+    public override Geometry GeometryType
+    {
         get => this.shapeGeometry.GeometryType;
         set => this.shapeGeometry.GeometryType = value;
     }
 
-    public override decimal CornerSize {
+    public override decimal CornerSize
+    {
         get => this.shapeGeometry.CornerSize;
         set => this.shapeGeometry.CornerSize = value;
     }
