@@ -16,7 +16,7 @@
 
 </h3>
 
-ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK), allowing users to process presentations without having Microsoft Office installed.
+ShapeCrawler is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK), allowing users to process presentations without having Microsoft Office installed.
 
 ## Contents
 
@@ -31,13 +31,13 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
   - [Code Contributing](#code-contributing)
 
 ## Quick Start
-> `install-package ShapeCrawler`
+> `dotnet add package ShapeCrawler`
 
 ```c#
 // open existing presentation
 var pres = new Presentation("some.pptx");
 
-var shapes = pres.Slides[0].Shapes;
+var shapes = pres.Slide(1).Shapes;
 
 // get number of shapes on slide
 var shapesCount = shapes.Count;
@@ -55,7 +55,7 @@ var text = shape.TextBox!.Text;
 // create a new presentation
 var pres = new Presentation();
 
-var shapes = pres.Slides[0].Shapes;
+var shapes = pres.Slide(1).Shapes;
 
 // add new shape
 shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
@@ -66,15 +66,29 @@ addedShape.TextBox!.Text = "Hello World!";
 pres.SaveAs("my_pres.pptx");
 ```
 
-### More samples
+### Update picture
+```C#
+var pres = new Presentation("picture.pptx");
 
-Visit the [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
+// get picture shape
+var picture = pres.Slide(1).Picture("Picture 1");
+
+// change image
+var image = System.IO.File.OpenRead("new-image.png");
+picture.Image!.Update(image);
+
+// get MIME type of image, eg. "image/png"
+var mimeType = picture.Image!.Mime;
+
+pres.Save();
+```
+
+
+### More samples
+You can find more usage samples by visiting the [**Wiki page**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) or [**Unit Tests folder**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/test/ShapeCrawler.Tests.Unit).
 
 ## Prerelease Version
-To access prerelease builds from `master` branch, add `https://www.myget.org/F/shape/api/v3/index.json` as a package source:
-
-![Prerelease](./docs/prerelease.png)
-![Download Prerelease](./docs/prerelease-download.png)
+To access prerelease builds from `master` branch, add `https://www.myget.org/F/shape/api/v3/index.json` as a NuGet package source.
 
 ## Have questions?
 
