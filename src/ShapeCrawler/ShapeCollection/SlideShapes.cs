@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
