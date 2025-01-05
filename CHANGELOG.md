@@ -1,7 +1,7 @@
 # Changelog  
 
 ## Version 0.59.1 - Unreleased
-🐞Fixed updating font [#828](https://github.com/ShapeCrawler/ShapeCrawler/issues/828)    
+🐞Fixed trim warning `IL2104` [#708](https://github.com/ShapeCrawler/ShapeCrawler/issues/708)  
 
 ## Version 0.59.0 - 2024-12-29
 🍀Added `ITable.TableStyleOptions` [#817](https://github.com/ShapeCrawler/ShapeCrawler/issues/655)  
