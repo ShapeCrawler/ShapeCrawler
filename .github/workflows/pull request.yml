@@ -10,12 +10,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-13, macos-14 ]
+        os: [ windows-latest, ubuntu-latest, macos-13, macos-14 ] # macos-14 is macOS 14 Arm64
         framework_version: [ 'net9.0', 'net48' ]
         exclude:
           - os: ubuntu-latest
             framework_version: 'net48'
-          - os: macos-13 || macos-14
+          - os: macos-13
+            framework_version: 'net48'
+          - os: macos-14
             framework_version: 'net48'
       fail-fast: false    
     steps:
