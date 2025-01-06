@@ -608,8 +608,6 @@ public class ShapeCollectionTests : SCTest
         var checkXml = SaveAndOpenPresentationAsSdk(pres);
         var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
-        
-        pres.SaveAs(@"c:\temp\test.pptx");
     }
 
     [Test]
