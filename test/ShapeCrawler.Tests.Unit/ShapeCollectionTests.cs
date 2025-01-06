@@ -1,9 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
-using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -96,7 +94,8 @@ public class ShapeCollectionTests : SCTest
         var shapesCollection = presentation.Slides[0].Shapes;
 
         // Act-Assert
-        shapesCollection.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
+        shapesCollection.Should()
+            .Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
     }
 
     [Test]
@@ -326,7 +325,7 @@ public class ShapeCollectionTests : SCTest
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
-    
+
     [Test]
     public void AddPicture_adds_svg_picture()
     {
@@ -347,65 +346,29 @@ public class ShapeCollectionTests : SCTest
         picture.Width.Should().Be(100);
         pres.Validate();
     }
-
+    
     [Test]
-    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
         var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapes = pres.Slides[0].Shapes;
         var image = StreamOf("test-vector-image-1.svg");
-
-        // Act
         shapes.AddPicture(image);
+        var loadedPres = SaveAndOpenPresentation(pres);
+
+        // Act
+        shapes = loadedPres.Slides[0].Shapes;
         shapes.AddPicture(image);
 
         // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(pres);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
-        imageParts.Length.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
-    }
-
-    [Test]
-    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
-    {
-        // Arrange
-        var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
-        var shapesSlide1 = pres.Slides[0].Shapes;
-        var shapesSlide2 = pres.Slides[1].Shapes;
-
-        var image = StreamOf("test-vector-image-1.svg");
-
-        // Act
-        shapesSlide1.AddPicture(image);
-        shapesSlide2.AddPicture(image);
-
-        // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(pres);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
-        imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
-    }
-
-    [Test]
-    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation()
-    {
-        // Arrange
-        var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
-        var shapesPres1 = pres.Slides[0].Shapes;
-        var image = StreamOf("test-vector-image-1.svg");
-        shapesPres1.AddPicture(image);
-        var presLoaded = SaveAndOpenPresentation(pres);
-
-        // Act
-        var shapesPres2 = presLoaded.Slides[0].Shapes;
-        shapesPres2.AddPicture(image);
-
-        // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
-        imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+        var sdkPres = SaveAndOpenPresentationAsSdk(loadedPres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Count.Should().Be(2,
+            "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+        loadedPres.Validate();
     }
 
     [Test]
@@ -421,11 +384,11 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var svgContent = picture.SvgContent;
-        
+
         // Assert
         svgContent.Should().Contain("<svg");
     }
-    
+
     [Test]
     public void AddPicture_too_large_adds_svg_picture()
     {
@@ -470,7 +433,7 @@ public class ShapeCollectionTests : SCTest
         xml.LoadXml(picture.SvgContent);
         var textTagRandomChild = xml.GetElementsByTagName("text").OfType<XmlElement>().First().ChildNodes.Item(0);
         textTagRandomChild.Should().NotBeOfType<XmlSignificantWhitespace>("Text tags must not contain whitespace");
-        
+
         // The above assertion does guard against the root cause of the bug 
         // which led to this test. However, the true test comes from loading
         // these up in PowerPoint and ensure the added image looks like the
@@ -544,7 +507,7 @@ public class ShapeCollectionTests : SCTest
         // we'll be using since the image has no explicit dimensions of any form
         var picture = (IPicture)shapes.Last();
         picture.Height.Should().Be(91);
-        picture.Width.Should().BeApproximately(277.96m,0.01m);
+        picture.Width.Should().BeApproximately(277.96m, 0.01m);
         pres.Validate();
     }
 
@@ -612,7 +575,7 @@ public class ShapeCollectionTests : SCTest
         var addedPictureImage = shapes.Last<IPicture>().Image!;
         addedPictureImage.Mime.Should().Be("image/jpeg");
     }
-    
+
     [Test]
     public void AddPicture_should_not_change_the_underlying_file_size()
     {
@@ -628,25 +591,68 @@ public class ShapeCollectionTests : SCTest
         var addedPictureImage = shapes.Last<IPicture>().Image!;
         addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
     }
-    
+
     [Test]
-    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_png_image_is_added_twice()
     {
         // Arrange
         var pres = new Presentation(StreamOf("008.pptx"));
         var shapes = pres.Slide(1).Shapes;
-        var image = StreamOf("png image-1.png");
-        
+        var pngImage = StreamOf("png image-1.png");
+
         // Act
-        shapes.AddPicture(image);
-        shapes.AddPicture(image);
+        shapes.AddPicture(pngImage);
+        shapes.AddPicture(pngImage);
 
         // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(pres);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
+        var checkXml = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
-   }
+        
+        pres.SaveAs(@"c:\temp\test.pptx");
+    }
 
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var svgImage = StreamOf("test-vector-image-1.svg");
+
+        // Act
+        shapes.AddPicture(svgImage);
+        shapes.AddPicture(svgImage);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
+        imageParts.Length.Should().Be(2,
+            "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    }
+    
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_on_two_different_slides()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Count.Should().Be(2,
+            "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    }
+    
     [Test]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
     {
@@ -663,29 +669,31 @@ public class ShapeCollectionTests : SCTest
         shapesSlide2.AddPicture(image);
 
         // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(pres);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
         imageParts.Count.Should().Be(1);
     }
 
     [Test]
-    [Explicit("Fails. Hopeful future improvement.")]
+    [Explicit("Should be fixed")]
     public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
     {
         // Arrange
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
-        var shapesSlide1 = slide.Shapes;
+        var shapes = slide.Shapes;
         var image = StreamOf("png image-1.png");
-        shapesSlide1.AddPicture(image);
+        shapes.AddPicture(image);
 
         // Act
         pres.Slides.Add(slide);
 
         // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(pres);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
         imageParts.Count.Should().Be(1);
     }
 
@@ -695,18 +703,19 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
-        var shapesPres1 = pres.Slides[0].Shapes;
+        var shapes = pres.Slides[0].Shapes;
         var image = StreamOf("png image-1.png");
-        shapesPres1.AddPicture(image);
-        var presLoaded = SaveAndOpenPresentation(pres);
 
         // Act
-        var shapesPres2 = presLoaded.Slides[1].Shapes;
-        shapesPres2.AddPicture(image);
+        shapes.AddPicture(image);
+        var presLoaded = SaveAndOpenPresentation(pres);
+        shapes = presLoaded.Slides[1].Shapes;
+        shapes.AddPicture(image);
 
         // Assert
-        var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
-        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        var sdkPres = SaveAndOpenPresentationAsSdk(presLoaded);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
         imageParts.Count.Should().Be(1);
     }
 
@@ -803,7 +812,7 @@ public class ShapeCollectionTests : SCTest
         table.Columns[0].Width.Should().Be(284);
         pres.Validate();
     }
-    
+
     [Test]
     [LayoutShape("autoshape-case004_subtitle.pptx", 1, "Group 1")]
     [MasterShape("autoshape-case004_subtitle.pptx", "Group 1")]
@@ -812,20 +821,20 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var groupShape = (IGroupShape)shape;
         var shapeCollection = groupShape.Shapes;
-            
+
         // Act
         var resultShape = shapeCollection.GetByName<IShape>("AutoShape 1");
 
         // Assert
         resultShape.Should().NotBeNull();
     }
-    
+
     [Test]
-    [TestCase("002.pptx", 1,4)]
-    [TestCase("003.pptx", 1,5)]
-    [TestCase("013.pptx", 1,4)]
-    [TestCase("023.pptx", 1,1)]
-    [TestCase("014.pptx", 3,5)]
+    [TestCase("002.pptx", 1, 4)]
+    [TestCase("003.pptx", 1, 5)]
+    [TestCase("013.pptx", 1, 4)]
+    [TestCase("023.pptx", 1, 1)]
+    [TestCase("014.pptx", 3, 5)]
     [TestCase("009_table.pptx", 1, 6)]
     [TestCase("009_table.pptx", 2, 8)]
     public void Count_returns_number_of_shapes(string pptxName, int slideNumber, int expectedCount)
@@ -840,13 +849,13 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapesCount.Should().Be(expectedCount);
     }
-    
+
     [Test]
     public void Count_returns_one_When_presentation_contains_one_slide()
     {
         // Act
         var pptx17 = StreamOf("017.pptx");
-        var pres17 = new Presentation(pptx17);        
+        var pres17 = new Presentation(pptx17);
         var pptx16 = StreamOf("016.pptx");
         var pres16 = new Presentation(pptx16);
         var numberSlidesCase1 = pres17.Slides.Count;
@@ -866,7 +875,7 @@ public class ShapeCollectionTests : SCTest
         var destPre = new Presentation(pptx);
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
-        MemoryStream savedPre = new ();
+        MemoryStream savedPre = new();
 
         // Act
         destPre.Slides.Add(sourceSlide);
@@ -878,7 +887,7 @@ public class ShapeCollectionTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-    
+
     [Test]
     public void Add_adds_slide_from_the_Same_presentation()
     {
@@ -895,7 +904,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         pres.Slides.Count.Should().Be(expectedSlidesCount);
     }
-    
+
     [Test]
     public void Add_adds_slide_After_updating_chart_series()
     {
@@ -908,7 +917,7 @@ public class ShapeCollectionTests : SCTest
         // Act
         chart.SeriesList[0].Points[0].Value = 1;
         pres.Slides.Add(pres.Slides[0]);
-        
+
         // Assert
         pres.Slides.Count.Should().Be(expectedSlidesCount);
     }
@@ -919,7 +928,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var layout = pres.SlideMasters[0].SlideLayouts[0]; 
+        var layout = pres.SlideMasters[0].SlideLayouts[0];
         var slides = pres.Slides;
 
         // Act
@@ -930,7 +939,7 @@ public class ShapeCollectionTests : SCTest
         addedSlide.Should().NotBeNull();
         pres.Validate();
     }
-    
+
     [Test]
     public void AddEmptySlide_adds_empty_slide()
     {
@@ -961,18 +970,18 @@ public class ShapeCollectionTests : SCTest
         addedSlide.Should().NotBeNull();
         titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
     }
-    
+
     [Test]
     public void Remove()
     {
         // Arrange
         var pres = new Presentation();
-        var shapes = pres.Slide(1).Shapes; 
+        var shapes = pres.Slide(1).Shapes;
         shapes.AddShape(10, 10, 10, 10);
 
         // Act
         shapes.Remove(shapes.Last());
-        
+
         // Assert
         shapes.Should().HaveCount(0);
         pres.Validate();
