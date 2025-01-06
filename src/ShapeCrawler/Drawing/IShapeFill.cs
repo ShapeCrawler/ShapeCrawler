@@ -42,9 +42,6 @@ public interface IShapeFill
     /// <summary>
     ///     Fills the shape with picture.
     /// </summary>
-    /// <remarks>
-    ///     Only PNG mimetype supported.
-    /// </remarks>
     void SetPicture(Stream image);
 
     /// <summary>
