@@ -63,7 +63,7 @@ public abstract class SCTest
         return new Presentation(stream);
     }
 
-    protected static PresentationDocument SaveAndOpenPresentationAsXml(IPresentation presentation)
+    protected static PresentationDocument SaveAndOpenPresentationAsSdk(IPresentation presentation)
     {
         var stream = new MemoryStream();
         presentation.SaveAs(stream);
