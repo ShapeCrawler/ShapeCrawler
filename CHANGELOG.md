@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.59.1 - 2025-01-07
+## Version 0.60.0 - 2025-01-07
 🐞Fixed trim warning `IL2104` [#708](https://github.com/ShapeCrawler/ShapeCrawler/issues/708)  
 🐞Fixed duplication of image source [#809](https://github.com/ShapeCrawler/ShapeCrawler/issues/809)  
 
