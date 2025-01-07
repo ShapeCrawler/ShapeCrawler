@@ -11,7 +11,7 @@ internal readonly ref struct Assets
     
     internal MemoryStream StreamOf(string file)
     {
-        var stream = this.assembly.GetManifestResourceStream($"ShapeCrawler.Resources.{file}") !;
+        using var stream = this.assembly.GetManifestResourceStream($"ShapeCrawler.Resources.{file}") !;
         var asset = new MemoryStream();
         stream.CopyTo(asset);
         asset.Position = 0;

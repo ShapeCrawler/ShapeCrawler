@@ -311,19 +311,35 @@ internal sealed class TextPortionFont : ITextPortionFont
     private void UpdateLatinName(string latinFont)
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
-        var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
-        if (aLatinFont != null)
+        A.TextCharacterPropertiesType aCurrentProperties; 
+
+        if (aRunProperties is not null)
         {
-            aLatinFont = new A.LatinFont { Typeface = latinFont };
-            aRunProperties!.InsertAt(aLatinFont, 0);
+            aCurrentProperties = aRunProperties;
         }
         else
         {
-            aLatinFont = new A.LatinFont { Typeface = latinFont };
-            aRunProperties = new A.RunProperties();
-            aRunProperties.Append(aLatinFont);
-            this.aText.Parent.InsertAt(aRunProperties, 0);
+            var aEndParaRunProperties = this.aText.Parent!.GetFirstChild<A.EndParagraphRunProperties>();
+
+            if (aEndParaRunProperties is not null)
+            {
+                aCurrentProperties = aEndParaRunProperties;   
+            }
+            else
+            {
+                aCurrentProperties = this.aText.Parent!.AddRunProperties();
+            }
         }
+
+        var aLatinFont = aCurrentProperties.GetFirstChild<A.LatinFont>();
+
+        if (aLatinFont is null)
+        {
+            aLatinFont = new A.LatinFont();
+            aCurrentProperties.Append(aLatinFont); // we need to append it otherwise, the text will ignore color etc
+        }
+        
+        aLatinFont.Typeface = latinFont;
     }
 }
