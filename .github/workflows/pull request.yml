@@ -10,10 +10,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, macos-13 ]
+        os: [ windows-latest, macos-13, macos-14 ]
         framework_version: [ 'net9.0', 'net48' ]
         exclude:
           - os: macos-13
+            framework_version: 'net48'
+          - os: macos-14
             framework_version: 'net48'
       fail-fast: false    
     steps:
@@ -23,7 +25,7 @@ jobs:
           dotnet-version: 9.0.x  
       
       - name: Install libgdiplus on macOS
-        if: ${{ matrix.os == 'macos-13' }}
+        if: ${{ matrix.os == 'macos-13' || matrix.os == 'macos-14'}}
         run: |
           brew install mono-libgdiplus
       
