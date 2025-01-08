@@ -192,7 +192,7 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
-    [Explicit]
+    [Explicit("A bug")] // this attribute should be removed after fixing the issue
     public void SetPicture_should_not_break_presentation()
     {
         // Arrange
