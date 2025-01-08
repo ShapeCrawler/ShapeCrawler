@@ -49,9 +49,9 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         set => this.SetAfterSpacingPoints(value);
     }
     
-    private static double ConvertToFontPoints(int emu)
+    private static double ConvertToFontPoints(int fontPoints)
     {
-        return emu * 1.0 / 100;
+        return fontPoints * 1.0 / 100;
     }
     
     private static int ConvertToPoints(double points)
