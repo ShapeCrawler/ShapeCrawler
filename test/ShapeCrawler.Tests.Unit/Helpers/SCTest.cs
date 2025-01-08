@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
+using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 

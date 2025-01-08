@@ -948,4 +948,46 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().HaveCount(0);
         pres.Validate();
     }
+    
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapes = pres.Slides[0].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+        shapes.AddPicture(image);
+        var loadedPres = SaveAndOpenPresentation(pres);
+
+        // Act
+        shapes = loadedPres.Slides[0].Shapes;
+        shapes.AddPicture(image);
+
+        // Assert
+        var sdkPres = SaveAndOpenPresentationAsSdk(loadedPres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Count.Should().Be(2,
+            "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+        loadedPres.Validate();
+    }
+    
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_png_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("008.pptx"));
+        var shapes = pres.Slide(1).Shapes;
+        var pngImage = StreamOf("png image-1.png");
+
+        // Act
+        shapes.AddPicture(pngImage);
+        shapes.AddPicture(pngImage);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
+        imageParts.Length.Should().Be(1);
+    }
 }
