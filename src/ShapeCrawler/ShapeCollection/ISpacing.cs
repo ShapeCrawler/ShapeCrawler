@@ -73,13 +73,15 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         aSpcBef.SpaceBefore ??= new A.SpaceBefore();
         aSpcBef.SpaceBefore.SpacingPoints ??= new A.SpacingPoints();
         
-        if (points == 0)
+        var hundredsOfPoints = ConvertPointsToHundredsOfPoints(points);
+        
+        if (hundredsOfPoints == 0)
         {
             aSpcBef.SpaceBefore = null;
         }
         else
         {
-            aSpcBef.SpaceBefore.SpacingPoints.Val = ConvertPointsToHundredsOfPoints(points);
+            aSpcBef.SpaceBefore.SpacingPoints.Val = hundredsOfPoints;
         }
     }
     
@@ -97,13 +99,15 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         aSpcAft.SpaceAfter ??= new A.SpaceAfter();
         aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
 
-        if (points == 0)
+        var hundredsOfPoints = ConvertPointsToHundredsOfPoints(points);
+        
+        if (hundredsOfPoints == 0)
         {
             aSpcAft.SpaceAfter = null;
         }
         else
         {
-            aSpcAft.SpaceAfter.SpacingPoints.Val = ConvertPointsToHundredsOfPoints(points);
+            aSpcAft.SpaceAfter.SpacingPoints.Val = hundredsOfPoints;
         }
     }
 
