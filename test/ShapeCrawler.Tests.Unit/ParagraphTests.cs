@@ -344,4 +344,80 @@ public class ParagraphTests : SCTest
         spacingPoints.Should().Be(expectedPoints);
         paragraph.Spacing.LineSpacingLines.Should().BeNull();
     }
+    
+    [Test]
+    [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
+    public void Paragraph_Spacing_BeforeSpacingPoints_returns_before_spacing_points(IShape shape, double expectedPoints)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+            
+        // Act
+        var beforeSpacingPoints = paragraph.Spacing.BeforeSpacingPoints;
+            
+        // Assert
+        beforeSpacingPoints.Should().Be(expectedPoints);
+    }
+    
+    [Test]
+    [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
+    public void Paragraph_Spacing_AfterSpacingPoints_returns_after_spacing_points(IShape shape, double expectedPoints)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+            
+        // Act
+        var afterSpacingPoints = paragraph.Spacing.AfterSpacingPoints;
+            
+        // Assert
+        afterSpacingPoints.Should().Be(expectedPoints);
+    }
+    
+    [Test]
+    public void Paragraph_Spacing_BeforeSpacingPoints_Setter_sets_before_spacing_points()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
+        paragraph.Text = "test";
+        
+        // Act
+        paragraph.Spacing.BeforeSpacingPoints = 50;
+        
+        // Assert
+        paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
+
+        using var mStream = new MemoryStream();
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
+        paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
+    }
+    
+    [Test]
+    public void Paragraph_Spacing_AfterSpacingPoints_Setter_sets_after_spacing_points()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
+        paragraph.Text = "test";
+        
+        // Act
+        paragraph.Spacing.AfterSpacingPoints = 50;
+        
+        // Assert
+        paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
+
+        using var mStream = new MemoryStream();
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
+        paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
+    }
 }
