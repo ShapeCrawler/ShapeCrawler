@@ -109,8 +109,6 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.59.0 - 2024-12-29
-🍀Added `ITable.TableStyleOptions` [#817](https://github.com/ShapeCrawler/ShapeCrawler/issues/655)  
-🍀Added exposing metadata `IPresentation.FileProperties.Title`, `IPresentation.FileProperties.Created` etc.  
-🐞Fixed updating the font color of the master shape [#793](https://github.com/ShapeCrawler/ShapeCrawler/issues/793)  
-🐞Fixed displaying constant maintainer'name for the created presentation [#812](https://github.com/ShapeCrawler/ShapeCrawler/issues/812)  
+### Version 0.60.0 - 2025-01-07
+🐞Fixed trim warning `IL2104` [#708](https://github.com/ShapeCrawler/ShapeCrawler/issues/708)  
+🐞Fixed duplication of image source [#809](https://github.com/ShapeCrawler/ShapeCrawler/issues/809)  

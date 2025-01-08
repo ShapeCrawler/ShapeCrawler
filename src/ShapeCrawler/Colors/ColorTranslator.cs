@@ -16,7 +16,7 @@ internal static class ColorTranslator
 
     internal static string HexFromName(string coloName)
     {
-        if (coloName.ToLower() == "white")
+        if (coloName.Equals("white", StringComparison.CurrentCultureIgnoreCase))
         {
             return "FFFFFF";
         }

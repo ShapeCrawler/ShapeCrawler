@@ -61,21 +61,22 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void Fill_SetPicture_sets_background_of_new_slide()
+    public void Fill_SetPicture_sets_image_background()
     {
         // Arrange
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
-        var bgImage = StreamOf("png image-2.png");
+        var image = StreamOf("png image-2.png");
 
         // Act
-        slide.Fill.SetPicture(bgImage);
+        slide.Fill.SetPicture(image);
 
         // Assert
         slide.Fill.Picture.Should().NotBeNull();
+        pres.Validate();
     }
-
+    
     [Test]
     public void Fill_Picture_is_null_when_slide_doesnt_have_background()
     {
