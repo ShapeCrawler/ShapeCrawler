@@ -350,6 +350,66 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+
+        // Act
+        shapes.AddPicture(image);
+        shapes.AddPicture(image);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
+        imageParts.Length.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    }
+
+    [Test]
+    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+
+        var image = StreamOf("test-vector-image-1.svg");
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    }
+
+    [Test]
+    public void AddPicture_svg_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesPres1 = pres.Slides[0].Shapes;
+        var image = StreamOf("test-vector-image-1.svg");
+        shapesPres1.AddPicture(image);
+        var presLoaded = SaveAndOpenPresentation(pres);
+
+        // Act
+        var shapesPres2 = presLoaded.Slides[0].Shapes;
+        shapesPres2.AddPicture(image);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(2, "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    }
+
+    [Test]
     public void AddPicture_sets_valid_svg_content()
     {
         // Arrange
@@ -574,6 +634,87 @@ public class ShapeCollectionTests : SCTest
         addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
     }
     
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_twice()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("008.pptx"));
+        var shapes = pres.Slide(1).Shapes;
+        var image = StreamOf("png image-1.png");
+        
+        // Act
+        shapes.AddPicture(image);
+        shapes.AddPicture(image);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).ToArray();
+        imageParts.Length.Should().Be(1);
+   }
+
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+
+        var image = StreamOf("png image-1.png");
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+
+    [Test]
+    [Explicit("Fails. Hopeful future improvement.")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var slide = pres.Slides[0];
+        var shapesSlide1 = slide.Shapes;
+        var image = StreamOf("png image-1.png");
+        shapesSlide1.AddPicture(image);
+
+        // Act
+        pres.Slides.Add(slide);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(pres);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+
+    [Test]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesPres1 = pres.Slides[0].Shapes;
+        var image = StreamOf("png image-1.png");
+        shapesPres1.AddPicture(image);
+        var presLoaded = SaveAndOpenPresentation(pres);
+
+        // Act
+        var shapesPres2 = presLoaded.Slides[1].Shapes;
+        shapesPres2.AddPicture(image);
+
+        // Assert
+        var checkXml = SaveAndOpenPresentationAsXml(presLoaded);
+        var imageParts = checkXml.PresentationPart.SlideParts.SelectMany(x=>x.ImageParts).Select(x=>x.Uri).ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+
     [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {
