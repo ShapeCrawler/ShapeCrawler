@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, macos-13, macos-14 ]
+        os: [ windows-latest, ubuntu-latest, macos-13, macos-14 ]
         framework_version: [ 'net9.0', 'net48' ]
         exclude:
           - os: macos-13
