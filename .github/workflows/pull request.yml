@@ -13,6 +13,8 @@ jobs:
         os: [ windows-latest, ubuntu-latest, macos-13, macos-14 ]
         framework_version: [ 'net9.0', 'net48' ]
         exclude:
+          - os: ubuntu-latest
+            framework_version: 'net48'
           - os: macos-13
             framework_version: 'net48'
           - os: macos-14
@@ -22,7 +24,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x   
+          dotnet-version: 9.0.x  
+
+      - name: Install libgdiplus on Ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgdiplus  
       
       - name: Install libgdiplus on macOS
         if: ${{ matrix.os == 'macos-13' || matrix.os == 'macos-14'}}
