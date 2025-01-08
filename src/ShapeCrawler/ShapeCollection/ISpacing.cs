@@ -66,15 +66,21 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         return aSpcBef != null ? ConvertHundredsOfPointsToPoints(aSpcBef) : 0;
     }
     
-    private void SetBeforeSpacingPoints(double? points)
+    private void SetBeforeSpacingPoints(double points)
     {
         var aSpcBef = aParagraph.ParagraphProperties;
         aSpcBef ??= new A.ParagraphProperties();
         aSpcBef.SpaceBefore ??= new A.SpaceBefore();
         aSpcBef.SpaceBefore.SpacingPoints ??= new A.SpacingPoints();
-
-        aSpcBef.SpaceBefore.SpacingPoints.Val = 
-            points != null ? ConvertPointsToHundredsOfPoints(points.Value) : 0;
+        
+        if (points == 0)
+        {
+            aSpcBef.SpaceBefore = null;
+        }
+        else
+        {
+            aSpcBef.SpaceBefore.SpacingPoints.Val = ConvertPointsToHundredsOfPoints(points);
+        }
     }
     
     private double GetAfterSpacingPoints()
@@ -84,15 +90,21 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         return aSpcAft != null ? ConvertHundredsOfPointsToPoints(aSpcAft) : 0;
     }
     
-    private void SetAfterSpacingPoints(double? points)
+    private void SetAfterSpacingPoints(double points)
     {
         var aSpcAft = aParagraph.ParagraphProperties;
         aSpcAft ??= new A.ParagraphProperties();
         aSpcAft.SpaceAfter ??= new A.SpaceAfter();
         aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
 
-        aSpcAft.SpaceAfter.SpacingPoints.Val = 
-            points != null ? ConvertPointsToHundredsOfPoints(points.Value) : 0;
+        if (points == 0)
+        {
+            aSpcAft.SpaceAfter = null;
+        }
+        else
+        {
+            aSpcAft.SpaceAfter.SpacingPoints.Val = ConvertPointsToHundredsOfPoints(points);
+        }
     }
 
     private double? GetLineSpacingLines()

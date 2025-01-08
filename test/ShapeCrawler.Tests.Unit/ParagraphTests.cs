@@ -1,5 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using A = DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -419,5 +418,29 @@ public class ParagraphTests : SCTest
         pres = new Presentation(mStream);
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
+    }
+    
+    // test that setting the spacing to 0 sets the value to null
+    [Test]
+    public void Paragraph_Spacing_BeforeSpacingPoints_Setter_sets_before_spacing_points_to_null()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
+        paragraph.Text = "test";
+        
+        // Act
+        paragraph.Spacing.BeforeSpacingPoints = 0;
+        
+        // Assert
+        paragraph.Spacing.BeforeSpacingPoints.Should().Be(0);
+        
+        pres.SaveAs("test.pptx");
+        var presSdk = SaveAndOpenPresentationAsSdk(pres);
+        var paragraphSdk = presSdk.PresentationPart!.SlideParts.First().Slide.Descendants<A.Paragraph>().First();
+        paragraphSdk.ParagraphProperties!.SpaceBefore!.SpacingPoints!.Val.Should().BeNull();
     }
 }
