@@ -206,7 +206,6 @@ public class ShapeFillTests : SCTest
 
         // Assert
         pres.Validate();
-        SaveResult(pres); // this statement should be removed after fixing the issue
     }
 
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
