@@ -420,7 +420,6 @@ public class ParagraphTests : SCTest
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
     }
     
-    // test that setting the spacing to 0 sets the value to null
     [Test]
     public void Paragraph_Spacing_BeforeSpacingPoints_Setter_sets_before_spacing_points_to_null()
     {
@@ -441,6 +440,6 @@ public class ParagraphTests : SCTest
         pres.SaveAs("test.pptx");
         var presSdk = SaveAndOpenPresentationAsSdk(pres);
         var paragraphSdk = presSdk.PresentationPart!.SlideParts.First().Slide.Descendants<A.Paragraph>().First();
-        paragraphSdk.ParagraphProperties!.SpaceBefore!.SpacingPoints!.Val.Should().BeNull();
+        paragraphSdk.ParagraphProperties!.SpaceBefore.Should().BeNull();
     }
 }
