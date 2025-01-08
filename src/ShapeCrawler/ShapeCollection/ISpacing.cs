@@ -23,12 +23,12 @@ public interface ISpacing
     /// <summary>
     ///    Gets or sets the number of points before the paragraph, otherwise <see langword="null"/>.
     /// </summary>
-    double? BeforeSpacingPoints { get; set; }
+    double BeforeSpacingPoints { get; set; }
     
     /// <summary>
     ///   Gets or sets the number of points after the paragraph, otherwise <see langword="null"/>.
     /// </summary>
-    double? AfterSpacingPoints { get; set; }
+    double AfterSpacingPoints { get; set; }
 }
 
 internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
@@ -37,38 +37,33 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
 
     public double? LineSpacingPoints => this.GetLineSpacingPoints();
 
-    public double? BeforeSpacingPoints
+    public double BeforeSpacingPoints
     {
         get => this.GetBeforeSpacingPoints();
         set => this.SetBeforeSpacingPoints(value);
     }
 
-    public double? AfterSpacingPoints
+    public double AfterSpacingPoints
     {
         get => this.GetAfterSpacingPoints();
         set => this.SetAfterSpacingPoints(value);
     }
     
-    private static double ConvertToFontPoints(int fontPoints)
+    private static double ConvertHundredsOfPointsToPoints(int hundredsOfPoints)
     {
-        return fontPoints * 1.0 / 100;
+        return hundredsOfPoints * 1.0 / 100;
     }
     
-    private static int ConvertToPoints(double points)
+    private static int ConvertPointsToHundredsOfPoints(double points)
     {
         return (int)Math.Round(points * 100);
     }
     
-    private double? GetBeforeSpacingPoints()
+    private double GetBeforeSpacingPoints()
     {
-        var aSpcBef = aParagraph.ParagraphProperties?.SpaceBefore?.SpacingPoints;
+        var aSpcBef = aParagraph.ParagraphProperties?.SpaceBefore?.SpacingPoints?.Val;
 
-        if (aSpcBef != null)
-        {
-            return ConvertToFontPoints(aSpcBef.Val!);
-        }
-
-        return null;
+        return aSpcBef != null ? ConvertHundredsOfPointsToPoints(aSpcBef) : 0;
     }
     
     private void SetBeforeSpacingPoints(double? points)
@@ -78,26 +73,15 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         aSpcBef.SpaceBefore ??= new A.SpaceBefore();
         aSpcBef.SpaceBefore.SpacingPoints ??= new A.SpacingPoints();
 
-        if (points != null)
-        {
-            aSpcBef.SpaceBefore.SpacingPoints.Val = ConvertToPoints(points.Value);
-        }
-        else
-        {
-            aSpcBef.SpaceBefore.SpacingPoints.Val = null;
-        }
+        aSpcBef.SpaceBefore.SpacingPoints.Val = 
+            points != null ? ConvertPointsToHundredsOfPoints(points.Value) : 0;
     }
     
-    private double? GetAfterSpacingPoints()
+    private double GetAfterSpacingPoints()
     {
-        var aSpcAft = aParagraph.ParagraphProperties?.SpaceAfter?.SpacingPoints;
-
-        if (aSpcAft != null)
-        {
-            return ConvertToFontPoints(aSpcAft.Val!);
-        }
-
-        return null;
+        var aSpcAft = aParagraph.ParagraphProperties?.SpaceAfter?.SpacingPoints?.Val;
+        
+        return aSpcAft != null ? ConvertHundredsOfPointsToPoints(aSpcAft) : 0;
     }
     
     private void SetAfterSpacingPoints(double? points)
@@ -107,14 +91,8 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         aSpcAft.SpaceAfter ??= new A.SpaceAfter();
         aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
 
-        if (points != null)
-        {
-            aSpcAft.SpaceAfter.SpacingPoints.Val = ConvertToPoints(points.Value);
-        }
-        else
-        {
-            aSpcAft.SpaceAfter.SpacingPoints.Val = null;
-        }
+        aSpcAft.SpaceAfter.SpacingPoints.Val = 
+            points != null ? ConvertPointsToHundredsOfPoints(points.Value) : 0;
     }
 
     private double? GetLineSpacingLines()
@@ -140,7 +118,7 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
 
         if (aLnSpc != null)
         {
-            return ConvertToFontPoints(aLnSpc.Val!);
+            return ConvertHundredsOfPointsToPoints(aLnSpc.Val!);
         }
 
         return null;
