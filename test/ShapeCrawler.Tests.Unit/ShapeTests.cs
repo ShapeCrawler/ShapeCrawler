@@ -799,6 +799,22 @@ public class ShapeTests : SCTest
     [TestCase("Donut", "[79.504]")]
     [TestCase("NoSmoking", "[64.97]")]
     [TestCase("Donut", "[79.504]")]
+
+    [TestCase("RightArrow", "[0,19.444]")]
+    [TestCase("LeftArrow", "[200,7.408]")]
+    [TestCase("UpArrow", "[15.972,28.124]")]
+    [TestCase("DownArrow", "[5.556,37.152]")]
+    [TestCase("StripedRightArrow", "[25.926,161.574]")]
+    [TestCase("NotchedRightArrow", "[55.556,143.056]")]
+    [TestCase("BentUpArrow", "[100,80.902,29.862]")]
+    [TestCase("LeftRightArrow", "[0,20.486]")]
+    [TestCase("UpDownArrow", "[41.666,27.778]")]
+    [TestCase("LeftUpArrow", "[10.562,70.422,59.156]")]
+    [TestCase("LeftRightUpArrow", "[0,20.422,50]")]
+    [TestCase("QuadArrow", "[0,75.986,8.38]")]
+    [TestCase("LeftArrowCallout", "[0,48.592,57.042,14.788]")]
+    [TestCase("RightArrowCallout", "[50,26.056,79.578,76.434]")]
+    
     [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
     public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
     {
@@ -841,6 +857,8 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.ShapeGeometry.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
+
+        // TODO: Remove this before merging
         pres.SaveAs(geometryStr + expectedAdjustmentsJson + ".pptx");
     }
 }
