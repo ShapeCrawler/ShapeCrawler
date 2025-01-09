@@ -16,6 +16,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
 {
     private const string ExceptionMessageMissingAdjustValueList = "Malformed rounded rectangle. Missing AdjustValueList.";
 
+    /// <summary>
+    ///     Mapping of geometries to shape types in outlying cases.
+    /// </summary>
+    /// <remarks>
+    ///     Most geometry types use the same names in both types, or can be programatically
+    ///     mapped with substring substitution. These are the outliers which require special
+    ///     handling.
+    /// </remarks>
     private static readonly Dictionary<Geometry, ShapeTypeValues> GeometryToShapeTypeValuesMap = new()
     {
         { Geometry.RoundedRectangle, A.ShapeTypeValues.RoundRectangle },
@@ -29,6 +37,13 @@ internal sealed class ShapeGeometry : IShapeGeometry
     
     private static readonly Dictionary<ShapeTypeValues, Geometry> ShapeTypeValuesToGeometryMap 
         = GeometryToShapeTypeValuesMap.ToDictionary(x => x.Value, x => x.Key);
+
+    /// <summary>
+    ///     Mapping of geometries to the number of adjustments it's expected to have.
+    /// </summary>
+    /// <remarks>
+    ///     Only geometries listed here allow setting adjustments.
+    /// </remarks>
 
     private static readonly Dictionary<Geometry, int> GeometryToNumberOfAdjustmentsMap = new()
     {
