@@ -10,13 +10,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_Getter_returns_text_of_table_Cell()
         {
             // Arrange
-            var pptx8 = StreamOf("008.pptx");
-            var pres8 = new Presentation(pptx8);
-            var pptx1 = StreamOf("001.pptx");
-            var pres1 = new Presentation(pptx1);
-            var pptx9 = StreamOf("009_table.pptx");
-            var pres9 = new Presentation(pptx9);
-            var textFrame1 = ((IShape)new Presentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3))
+            var textFrame1 = new Presentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3)
                 .TextBox;
             var textFrame2 = ((ITable)new Presentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3))
                 .Rows[0].Cells[0]
