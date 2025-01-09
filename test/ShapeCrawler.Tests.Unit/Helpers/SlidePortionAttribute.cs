@@ -46,7 +46,7 @@ public class SlidePortionAttribute : Attribute, ITestBuilder
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pres = new Presentation(SCTest.StreamOf(this.pptxName));
+        var pres = new Presentation(SCTest.TestAsset(this.pptxName));
         var portion = pres.Slides[this.slide - 1].Shapes.GetById<IShape>(this.shapeId).TextBox
             .Paragraphs[this.paragraph - 1].Portions[this.portion - 1];
 

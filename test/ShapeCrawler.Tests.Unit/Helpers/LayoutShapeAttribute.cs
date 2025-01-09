@@ -21,7 +21,7 @@ public class LayoutShapeAttribute : Attribute, ITestBuilder
     
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pptxStream = SCTest.StreamOf(this.pptxName);
+        var pptxStream = SCTest.TestAsset(this.pptxName);
         var pres = new Presentation(pptxStream);
         var shape = pres.SlideMasters[0].SlideLayouts[this.slideLayoutNumber - 1].Shapes.GetByName(this.shapeName);
 

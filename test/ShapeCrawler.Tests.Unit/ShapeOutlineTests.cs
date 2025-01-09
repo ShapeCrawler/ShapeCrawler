@@ -42,7 +42,7 @@ public class ShapeOutlineTests : SCTest
     public void Weight_Setter_sets_outline_weight_in_points(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(file));
+        var pres = new Presentation(TestAsset(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var outline = shape.Outline;
         
@@ -81,7 +81,7 @@ public class ShapeOutlineTests : SCTest
     public void SetHexColor_sets_outline_color(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(file));
+        var pres = new Presentation(TestAsset(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var outline = shape.Outline;
         
@@ -98,7 +98,7 @@ public class ShapeOutlineTests : SCTest
     public void SetNoOutline_removes_outline_color(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(file));
+        var pres = new Presentation(TestAsset(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var outline = shape.Outline;
         
