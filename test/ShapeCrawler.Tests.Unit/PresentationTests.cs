@@ -23,7 +23,7 @@ public class PresentationTests : SCTest
     public void SlideWidth_Getter_returns_presentation_Slides_Width_in_pixels()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
+        var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
 
         // Act
@@ -37,7 +37,7 @@ public class PresentationTests : SCTest
     public void SlideWidth_Setter_sets_presentation_Slides_Width_in_pixels()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
+        var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
 
         // Act
@@ -51,7 +51,7 @@ public class PresentationTests : SCTest
     public void SlideHeight_Getter_returns_presentation_Slides_Height_in_pixels()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
+        var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
 
         // Act
@@ -65,7 +65,7 @@ public class PresentationTests : SCTest
     public void SlideHeight_Setter_sets_presentation_Slides_Height_in_pixels()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
+        var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
 
         // Act
@@ -79,8 +79,8 @@ public class PresentationTests : SCTest
     public void Slides_Count_returns_One_When_presentation_contains_one_slide()
     {
         // Act
-        var pres17 = new Presentation(StreamOf("017.pptx"));
-        var pres16 = new Presentation(StreamOf("016.pptx"));
+        var pres17 = new Presentation(TestAsset("017.pptx"));
+        var pres16 = new Presentation(TestAsset("016.pptx"));
         var numberSlidesCase1 = pres17.Slides.Count;
         var numberSlidesCase2 = pres16.Slides.Count;
 
@@ -93,7 +93,7 @@ public class PresentationTests : SCTest
     public void Slides_Count()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("007_2 slides.pptx"));
+        var pres = new Presentation(TestAsset("007_2 slides.pptx"));
         var removingSlide = pres.Slides[0];
         var slides = pres.Slides;
 
@@ -108,8 +108,8 @@ public class PresentationTests : SCTest
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
         // Arrange
-        var sourceSlide = new Presentation(StreamOf("001.pptx")).Slides[0];
-        var destPre = new Presentation(StreamOf("002.pptx"));
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
+        var destPre = new Presentation(TestAsset("002.pptx"));
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
         MemoryStream savedPre = new();
@@ -129,9 +129,9 @@ public class PresentationTests : SCTest
     public void Slides_Add_should_copy_only_layout_of_copying_slide()
     {
         // Arrange
-        var sourcePres = new Presentation(StreamOf("pictures-case004.pptx"));
+        var sourcePres = new Presentation(TestAsset("pictures-case004.pptx"));
         var copyingSlide = sourcePres.Slides[0];
-        var destPres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var destPres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var expectedCount = destPres.Slides.Count + 1;
         MemoryStream savedPre = new();
 
@@ -152,9 +152,9 @@ public class PresentationTests : SCTest
     public void Slides_Add_should_copy_notes()
     {
         // Arrange
-        var sourcePres = new Presentation(StreamOf("008.pptx"));
+        var sourcePres = new Presentation(TestAsset("008.pptx"));
         var copyingSlide = sourcePres.Slides[0];
-        var destPres = new Presentation(StreamOf("autoshape-case017_slide-number.pptx"));
+        var destPres = new Presentation(TestAsset("autoshape-case017_slide-number.pptx"));
 
         // Act
         destPres.Slides.Add(copyingSlide);
@@ -184,10 +184,10 @@ public class PresentationTests : SCTest
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
-        var sourceSlide = new Presentation(StreamOf("001.pptx")).Slides[0];
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
         string sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        var destPre = new Presentation(StreamOf("002.pptx"));
+        var destPre = new Presentation(TestAsset("002.pptx"));
 
         // Act
         destPre.Slides.Insert(2, sourceSlide);
@@ -197,10 +197,27 @@ public class PresentationTests : SCTest
     }
     
     [Test]
+    [Explicit("Should be fixed")]
+    public void Slides_Insert_should_not_break_hyperlink()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("autoshape-case018_rotation.pptx"));
+        var inserting = pres.Slide(1);
+
+        // Act
+        pres.Slides.Insert(2, inserting);
+        
+        // Assert
+        pres.Validate();
+        pres.SaveAs("output.pptx"); // uncomment for repro
+        // TODO: Add assertion
+    }
+    
+    [Test]
     public void Slides_Remove_removes_slide_from_section()
     {
         // Arrange
-        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
+        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
         var pres = new Presentation(pptxStream);
         var sectionSlides = pres.Sections[0].Slides;
         var removingSlide = sectionSlides[0];
@@ -222,8 +239,8 @@ public class PresentationTests : SCTest
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {
         // Arrange
-        IPresentation presentationCase1 = new Presentation(StreamOf("001.pptx"));
-        IPresentation presentationCase2 = new Presentation(StreamOf("002.pptx"));
+        IPresentation presentationCase1 = new Presentation(TestAsset("001.pptx"));
+        IPresentation presentationCase2 = new Presentation(TestAsset("002.pptx"));
 
         // Act
         int slideMastersCountCase1 = presentationCase1.SlideMasters.Count;
@@ -238,7 +255,7 @@ public class PresentationTests : SCTest
     public void SlideMaster_Shapes_Count_returns_number_of_master_shapes()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
 
         // Act
@@ -252,7 +269,7 @@ public class PresentationTests : SCTest
     public void Sections_Remove_removes_specified_section()
     {
         // Arrange
-        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
+        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
         var pres = new Presentation(pptxStream);
         var removingSection = pres.Sections[0];
 
@@ -267,7 +284,7 @@ public class PresentationTests : SCTest
     public void Sections_Remove_should_remove_section_after_Removing_Slide_from_section()
     {
         // Arrange
-        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
+        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
         var pres = new Presentation(pptxStream);
         var removingSection = pres.Sections[0];
 
@@ -283,7 +300,7 @@ public class PresentationTests : SCTest
     public void Sections_Section_Slides_Count_returns_Zero_When_section_is_Empty()
     {
         // Arrange
-        var pptxStream = StreamOf("008.pptx");
+        var pptxStream = TestAsset("008.pptx");
         var pres = new Presentation(pptxStream);
         var section = pres.Sections.GetByName("Section 2");
 
@@ -297,7 +314,7 @@ public class PresentationTests : SCTest
     [Test]
     public void Sections_Section_Slides_Count_returns_number_of_slides_in_section()
     {
-        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
+        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
         var pres = new Presentation(pptxStream);
         var section = pres.Sections.GetByName("Section 1");
 
@@ -312,7 +329,7 @@ public class PresentationTests : SCTest
     public void Save_saves_presentation_opened_from_Stream_when_it_was_Saved()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-case003.pptx");
+        var pptx = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptx);
         var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text = "Test";
@@ -330,7 +347,7 @@ public class PresentationTests : SCTest
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
     {
         // Arrange
-        var originalStream = StreamOf("001.pptx");
+        var originalStream = TestAsset("001.pptx");
         var pres = new Presentation(originalStream);
         var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
         var originalText = textBox!.Text;
@@ -431,7 +448,7 @@ public class PresentationTests : SCTest
     public void Slides_Add_adds_slide()
     {
         // Arrange
-        var source = new Presentation(StreamOf("001.pptx"));
+        var source = new Presentation(TestAsset("001.pptx"));
         var targetPath = GetTestPath("008.pptx");
         var target = new Presentation(targetPath);
         var copyingSlide = source.Slides[0];
@@ -452,7 +469,7 @@ public class PresentationTests : SCTest
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(file));
+        var pres = new Presentation(TestAsset(file));
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
 
@@ -471,11 +488,11 @@ public class PresentationTests : SCTest
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         var sourceSlide = new Presentation(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        pptx = StreamOf("002.pptx");
+        pptx = TestAsset("002.pptx");
         var destPre = new Presentation(pptx);
 
         // Act
@@ -526,7 +543,7 @@ public class PresentationTests : SCTest
     [Test]
     public void Properties_from_stream_getter_returns_values()
     {
-        var pptx = StreamOf("059_crop-images.pptx");
+        var pptx = TestAsset("059_crop-images.pptx");
         var pres = new Presentation(pptx);
 
         var expectedModified = DateTime.Parse("2024-12-16T17:11:58Z", CultureInfo.InvariantCulture);

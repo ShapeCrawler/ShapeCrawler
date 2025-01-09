@@ -38,7 +38,7 @@ public class SlideShapeAttribute : Attribute, ITestBuilder
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pptxStream = SCTest.StreamOf(this.pptxName);
+        var pptxStream = SCTest.TestAsset(this.pptxName);
         var pres = new Presentation(pptxStream);
         var shape = this.shapeId.HasValue 
             ? pres.Slides[this.slideNumber - 1].Shapes.GetById<IShape>(this.shapeId.Value) 

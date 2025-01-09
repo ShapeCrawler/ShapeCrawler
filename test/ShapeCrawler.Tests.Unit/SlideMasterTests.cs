@@ -44,7 +44,7 @@ public class SlideMasterTests : SCTest
     public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
        IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
@@ -62,7 +62,7 @@ public class SlideMasterTests : SCTest
     public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
@@ -82,7 +82,7 @@ public class SlideMasterTests : SCTest
     public void SlideLayout_Name_returns_name_of_slide_layout()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-case011_save-as-png.pptx");
+        var pptx = TestAsset("autoshape-case011_save-as-png.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -97,7 +97,7 @@ public class SlideMasterTests : SCTest
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("001.pptx"));
+        var pres = new Presentation(TestAsset("001.pptx"));
         var slideMaster = pres.SlideMasters[0];
         var masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         var masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
@@ -116,7 +116,7 @@ public class SlideMasterTests : SCTest
     public void ShapeGeometryType_ReturnsShapesGeometryFormType()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
@@ -135,7 +135,7 @@ public class SlideMasterTests : SCTest
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        ISlideMaster slideMaster = new Presentation(StreamOf("001.pptx")).SlideMasters[0];
+        ISlideMaster slideMaster = new Presentation(TestAsset("001.pptx")).SlideMasters[0];
         IShape autoShape = (IShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert
@@ -146,7 +146,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_Heading()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -161,7 +161,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadEastAsianFont_Getter_returns_font_name_for_the_EastAsian_characters_of_Heading()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -176,7 +176,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadLatinFont_Setter_sets_font_name_for_the_Latin_characters_of_heading()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -191,7 +191,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadEastAsianFont_Setter_sets_font_for_the_East_Asian_characters_of_heading()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -207,7 +207,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_body()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -222,7 +222,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyEastAsianFont_Getter_returns_font_for_the_EastAsian_characters_of_body()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -237,7 +237,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyLatinFont_Setter_font_name_for_the_Latin_characters_of_body()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -252,7 +252,7 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyEastAsianFont_Setter_font_for_the_East_Asian_characters_of_body()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -267,7 +267,7 @@ public class SlideMasterTests : SCTest
     public void Theme_ColorScheme_color_getter_returns_scheme_with_colors()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -304,7 +304,7 @@ public class SlideMasterTests : SCTest
     public void Theme_ColorScheme_color_setter_sets_scheme_color()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 

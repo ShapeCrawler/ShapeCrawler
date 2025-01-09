@@ -14,8 +14,8 @@ public class ChartPointTests : SCTest
     public void Value_Getter_returns_point_value_of_Bar_chart()
     {
         // Arrange
-        var pptx21 = StreamOf("021.pptx");
-        var pptx25 = StreamOf("025_chart.pptx");
+        var pptx21 = TestAsset("021.pptx");
+        var pptx25 = TestAsset("025_chart.pptx");
         var pres21 = new Presentation(pptx21);
         var pres25 = new Presentation(pptx25);
         var shapes1 = pres21.Slides[0].Shapes;
@@ -35,7 +35,7 @@ public class ChartPointTests : SCTest
     public void Value_Getter_returns_point_value_of_Scatter_chart()
     {
         // Arrange
-        var pptx = StreamOf("021.pptx");
+        var pptx = TestAsset("021.pptx");
         var pres = new Presentation(pptx);
         var shapes1 = pres.Slides[0].Shapes;
         var chart1 = (IChart)shapes1.First(x => x.Id == 3);
@@ -65,8 +65,8 @@ public class ChartPointTests : SCTest
     public void Value_Getter_returns_chart_point()
     {
         // Arrange
-        var pres21 = new Presentation(StreamOf("021.pptx"));
-        var pres009 = new Presentation(StreamOf("009_table.pptx"));
+        var pres21 = new Presentation(TestAsset("021.pptx"));
+        var pres009 = new Presentation(TestAsset("009_table.pptx"));
         var seriesCase1 = pres21.Slides[1].Shapes.GetById<IChart>(3).SeriesList[0];
         var seriesCase2 = pres21.Slides[2].Shapes.GetById<IChart>(4).SeriesList[0];
         var seriesCase3 = pres009.Slides[2].Shapes.GetById<IChart>(7).SeriesList[0];
@@ -88,7 +88,7 @@ public class ChartPointTests : SCTest
     public void Value_Setter_updates_chart_point_in_Embedded_excel_workbook()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("024_chart.pptx"));
+        var pres = new Presentation(TestAsset("024_chart.pptx"));
         var chart = pres.Slides[2].Shapes.GetById<IChart>(5);
         var point = chart.SeriesList[0].Points[0];
 
@@ -104,7 +104,7 @@ public class ChartPointTests : SCTest
     public void Value_Getter_returns_chart_point2()
     {
         // Arrange
-        var pptxStream = StreamOf("charts-case004_bars.pptx");
+        var pptxStream = TestAsset("charts-case004_bars.pptx");
         var pres = new Presentation(pptxStream);
 
         var chart1 = pres.Slides[0].Shapes.First() as IChart;
@@ -135,7 +135,7 @@ public class ChartPointTests : SCTest
     public void Value_Setter_updates_chart_point(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(file));
+        var pres = new Presentation(TestAsset(file));
         var chart = pres.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
         var point = chart.SeriesList[0].Points[0];
         const int newChartPointValue = 6;

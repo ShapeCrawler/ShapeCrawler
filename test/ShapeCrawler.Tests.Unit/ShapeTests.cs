@@ -12,7 +12,7 @@ public class ShapeTests : SCTest
     public void AudioShape_BinaryData_returns_audio_bytes()
     {
         // Arrange
-        var pptx = StreamOf("audio-case001.pptx");
+        var pptx = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptx);
         var audioShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Audio 1");
 
@@ -27,7 +27,7 @@ public class ShapeTests : SCTest
     public void AudioShape_MIME_returns_MIME_type_of_audio_content()
     {
         // Arrange
-        var pptxStream = StreamOf("audio-case001.pptx");
+        var pptxStream = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptxStream);
         var audioShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Audio 1");
 
@@ -42,7 +42,7 @@ public class ShapeTests : SCTest
     public void VideoShape_BinaryData_returns_video_bytes()
     {
         // Arrange
-        var pptxStream = StreamOf("video-case001.pptx");
+        var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
         var videoShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Video 1");
 
@@ -57,7 +57,7 @@ public class ShapeTests : SCTest
     public void AudioShape_MIME_returns_MIME_type_of_video_content()
     {
         // Arrange
-        var pptxStream = StreamOf("video-case001.pptx");
+        var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
         var videoShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Video 1");
 
@@ -72,8 +72,8 @@ public class ShapeTests : SCTest
     public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
-        var image = StreamOf("png image-2.png");
+        var pptx = TestAsset("009_table.pptx");
+        var image = TestAsset("png image-2.png");
         IPresentation presentation = new Presentation(pptx);
         IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
         IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
@@ -98,9 +98,9 @@ public class ShapeTests : SCTest
     public void Y_Getter_returns_y_coordinate_in_pixels()
     {
         // Arrange
-        IShape shapeCase1 = new Presentation(StreamOf("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IShape shapeCase2 = new Presentation(StreamOf("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
-        IShape shapeCase3 = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        IShape shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        IShape shapeCase2 = new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
+        IShape shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
         float verticalResoulution = Helpers.TestHelper.VerticalResolution;
 
         // Act
@@ -118,7 +118,7 @@ public class ShapeTests : SCTest
     public void Id_returns_id()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("010.pptx"));
+        var pres = new Presentation(TestAsset("010.pptx"));
         var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("Date Placeholder 3");
 
         // Act
@@ -132,7 +132,7 @@ public class ShapeTests : SCTest
     public void Y_Setter_moves_the_Up_hand_grouped_shape_to_Up()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
@@ -150,7 +150,7 @@ public class ShapeTests : SCTest
     public void Y_Setter_moves_the_Down_hand_grouped_shape_to_Down()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
 
@@ -167,7 +167,7 @@ public class ShapeTests : SCTest
     public void X_Setter_moves_the_Left_hand_grouped_shape_to_Left()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
 
@@ -184,7 +184,7 @@ public class ShapeTests : SCTest
     public void X_Setter_moves_the_Right_hand_grouped_shape_to_Right()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
 
@@ -202,11 +202,11 @@ public class ShapeTests : SCTest
     public void Width_returns_shape_width_in_pixels()
     {
         // Arrange
-        IShape shapeCase1 = new Presentation(StreamOf("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        IShape shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
         IGroupShape groupShape =
-            (IGroupShape)new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
+            (IGroupShape)new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
         IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
-        IShape shapeCase3 = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        IShape shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
         // Act
         decimal width1 = shapeCase1.Width;
@@ -223,7 +223,7 @@ public class ShapeTests : SCTest
     public void Height_returns_Grouped_Shape_height_in_pixels()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
+        var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
         var groupShape = pres.Slides[1].Shapes.GetByName<IGroupShape>("Group 1");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
@@ -240,7 +240,7 @@ public class ShapeTests : SCTest
     public void GeometryType_returns_shape_geometry_type(int shapeId, Geometry expectedGeometryType)
     {
         // Arrange
-        var presentation = new Presentation(StreamOf("021.pptx"));
+        var presentation = new Presentation(TestAsset("021.pptx"));
 
         // Act
         var shape = presentation.Slides[3].Shapes.First(sp => sp.Id == shapeId);
@@ -253,7 +253,7 @@ public class ShapeTests : SCTest
     public void Shape_IsNotGroupShape()
     {
         // Arrange
-        IShape shape = new Presentation(StreamOf("006_1 slides.pptx")).Slides[0].Shapes.First(x => x.Id == 3);
+        IShape shape = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(x => x.Id == 3);
 
         // Act-Assert
         shape.Should().NotBeOfType<IGroupShape>();
@@ -263,7 +263,7 @@ public class ShapeTests : SCTest
     public void CustomData_ReturnsNull_WhenShapeHasNotCustomData()
     {
         // Arrange
-        var shape = new Presentation(StreamOf("009_table.pptx")).Slides.First().Shapes.First();
+        var shape = new Presentation(TestAsset("009_table.pptx")).Slides.First().Shapes.First();
 
         // Act
         var shapeCustomData = shape.CustomData;
@@ -278,7 +278,7 @@ public class ShapeTests : SCTest
         // Arrange
         const string customDataString = "Test custom data";
         var savedPreStream = new MemoryStream();
-        var presentation = new Presentation(StreamOf("009_table.pptx"));
+        var presentation = new Presentation(TestAsset("009_table.pptx"));
         var shape = presentation.Slides.First().Shapes.First();
 
         // Act
@@ -295,7 +295,7 @@ public class ShapeTests : SCTest
     public void Name_ReturnsShapeNameString()
     {
         // Arrange
-        IShape shape = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8);
+        IShape shape = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8);
 
         // Act
         string shapeName = shape.Name;
@@ -309,7 +309,7 @@ public class ShapeTests : SCTest
     public void Hidden_ReturnsValueIndicatingWhetherShapeIsHiddenFromTheSlide(int shapeIndex, bool expectedHidden)
     {
         // Arrange
-        var pptx = StreamOf("004.pptx");
+        var pptx = TestAsset("004.pptx");
         var pres = new Presentation(pptx);
         var shape = pres.Slides[0].Shapes[shapeIndex];
 
@@ -325,7 +325,7 @@ public class ShapeTests : SCTest
         double expectedAngle)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(presentationName));
+        var pres = new Presentation(TestAsset(presentationName));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
 
         // Act
@@ -342,7 +342,7 @@ public class ShapeTests : SCTest
     public void Y_Setter_sets_y_coordinate(string file, int slideNumber, string shapeName)
     {
         // Act
-        var pres = new Presentation(StreamOf(file));
+        var pres = new Presentation(TestAsset(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         shape.Y = 100;
 
@@ -359,7 +359,7 @@ public class ShapeTests : SCTest
     public void X_Setter_sets_x_coordinate(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pptx = StreamOf(file);
+        var pptx = TestAsset(file);
         var pres = new Presentation(pptx);
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var stream = new MemoryStream();
@@ -380,7 +380,7 @@ public class ShapeTests : SCTest
     public void Width_Setter_sets_width(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pptx = StreamOf(file);
+        var pptx = TestAsset(file);
         var pres = new Presentation(pptx);
         var stream = new MemoryStream();
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
@@ -400,7 +400,7 @@ public class ShapeTests : SCTest
     public void Remove_removes_shape()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var shape = pres.Slides[0].Shape("TextBox 3");
 
         // Act
@@ -441,7 +441,7 @@ public class ShapeTests : SCTest
     public void TryGetSlideShapeById(string presentationName, int slideNumber, int shapeId, string? expectedShapeName)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(presentationName));
+        var pres = new Presentation(TestAsset(presentationName));
         var slide = pres.Slides[slideNumber - 1];
         var shape = slide.Shapes.TryGetById<IShape>(shapeId);
 
@@ -460,7 +460,7 @@ public class ShapeTests : SCTest
     public void TryGetSlideShapeByName(string presentationName, int slideNumber, string shapeName, int? expectedShapeId)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(presentationName));
+        var pres = new Presentation(TestAsset(presentationName));
         var slide = pres.Slides[slideNumber - 1];
         var shape = slide.Shapes.TryGetByName<IShape>(shapeName);
 
@@ -475,7 +475,7 @@ public class ShapeTests : SCTest
     public void AsTable_returns_ITable()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var pres = new Presentation(TestAsset("table-case001.pptx"));
         var slide = pres.Slides[0];
         var table = slide.Shapes.GetByName<ITable>("Table 1");
 
@@ -506,7 +506,7 @@ public class ShapeTests : SCTest
     public void X_Getter_returns_x_coordinate_of_Grouped_shape_in_pixels()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var pres = new Presentation(TestAsset("009_table.pptx"));
         var shape = pres.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
 
         // Act
@@ -526,7 +526,7 @@ public class ShapeTests : SCTest
         decimal expectedWidth)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(filename));
+        var pres = new Presentation(TestAsset(filename));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
 
         // Act
@@ -574,7 +574,7 @@ public class ShapeTests : SCTest
     public void Text_Setter_updates_shape_text()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-case017_slide-number.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-case017_slide-number.pptx"));
         var shape = pres.SlideMaster(1).Shape("Shape 1");
 
         // Act
@@ -731,7 +731,7 @@ public class ShapeTests : SCTest
     public void Name_Setter_sets_shape_name()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("006_1 slides.pptx"));
+        var pres = new Presentation(TestAsset("006_1 slides.pptx"));
         var stream = new MemoryStream();
         var shape = pres.Slides[0].Shapes.GetByName("Shape 1");
 
@@ -750,7 +750,7 @@ public class ShapeTests : SCTest
     public void Name_Setter_sets_grouped_shape_name()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var stream = new MemoryStream();
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");

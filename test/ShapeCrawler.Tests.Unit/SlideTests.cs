@@ -17,7 +17,7 @@ public class SlideTests : SCTest
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         var pre = new Presentation(pptx);
         var slide = pre.Slides.First();
 
@@ -32,7 +32,7 @@ public class SlideTests : SCTest
     public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
     {
         // Arrange
-        var pptx = StreamOf("002.pptx");
+        var pptx = TestAsset("002.pptx");
         var pres = new Presentation(pptx);
         ISlide slideEx = pres.Slides[2];
 
@@ -47,9 +47,9 @@ public class SlideTests : SCTest
     public void Fill_Picture_Update_updates_background()
     {
         // Arrange
-        var pre = new Presentation(StreamOf("009_table.pptx"));
+        var pre = new Presentation(TestAsset("009_table.pptx"));
         var backgroundImage = pre.Slides[0].Fill.Picture;
-        var image = StreamOf("png image-2.png");
+        var image = TestAsset("png image-2.png");
         var bytesBefore = backgroundImage.AsByteArray();
 
         // Act
@@ -67,7 +67,7 @@ public class SlideTests : SCTest
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
-        var image = StreamOf("png image-2.png");
+        var image = TestAsset("png image-2.png");
 
         // Act
         slide.Fill.SetPicture(image);
@@ -81,7 +81,7 @@ public class SlideTests : SCTest
     public void Fill_Picture_is_null_when_slide_doesnt_have_background()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var pres = new Presentation(TestAsset("009_table.pptx"));
         var slideFill = pres.Slide(2).Fill;
 
         // Act-Assert
@@ -92,7 +92,7 @@ public class SlideTests : SCTest
     public void Fill_Color_gets_returns_solid_color_of_slide_background()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("058_bg-fill.pptx"));
+        var pres = new Presentation(TestAsset("058_bg-fill.pptx"));
         var slideFill = pres.Slide(1).Fill;
         var orange = "E6BB90";
 
@@ -137,7 +137,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = new Presentation(StreamOf("001.pptx"));
+        var originPre = new Presentation(TestAsset("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -156,7 +156,7 @@ public class SlideTests : SCTest
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = new Presentation(StreamOf("001.pptx")).Slides.First();
+        var slide = new Presentation(TestAsset("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -169,7 +169,7 @@ public class SlideTests : SCTest
     public void Number_Setter_moves_slide_to_specified_number_position()
     {
         // Arrange
-        var pptxStream = StreamOf("001.pptx");
+        var pptxStream = TestAsset("001.pptx");
         var pres = new Presentation(pptxStream);
         var slide1 = pres.Slides[0];
         var slide2 = pres.Slides[1];
@@ -206,7 +206,7 @@ public class SlideTests : SCTest
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
         // Arrange
-        var pptx = StreamOf("039.pptx");
+        var pptx = TestAsset("039.pptx");
         var pres = new Presentation(pptx);
         var slide = pres.Slides.First();
 
@@ -221,7 +221,7 @@ public class SlideTests : SCTest
     public void TextFrames_returns_list_of_all_text_frames_on_that_slide()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("011_dt.pptx"));
+        var pres = new Presentation(TestAsset("011_dt.pptx"));
         var slide = pres.Slides.First();
 
         // Act
@@ -235,7 +235,7 @@ public class SlideTests : SCTest
     public void Notes_Getter_returns_notes()
     {
         // Arrange
-        var pptxStream = StreamOf("056_slide-notes.pptx");
+        var pptxStream = TestAsset("056_slide-notes.pptx");
         var pres = new Presentation(pptxStream);
         var slide = pres.Slides[0];
 
@@ -251,7 +251,7 @@ public class SlideTests : SCTest
     public void Notes_Paragraph_Text_Setter_updates_paragraph_of_note()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("056_slide-notes.pptx"));
+        var pres = new Presentation(TestAsset("056_slide-notes.pptx"));
         var slide = pres.Slides[0];
         var expected = string.Join(Environment.NewLine, "0", "1", "2", "3");
 
@@ -309,7 +309,7 @@ public class SlideTests : SCTest
     public void Notes_Getter_returns_null_if_no_notes()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("003.pptx"));
+        var pres = new Presentation(TestAsset("003.pptx"));
         var slide = pres.Slides[0];
 
         // Act-Assert

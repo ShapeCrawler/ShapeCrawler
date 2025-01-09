@@ -23,7 +23,7 @@ public class PresentationAttribute : Attribute, ITestBuilder
         }
         else
         {
-            var pptxStream = SCTest.StreamOf(this.pptxName);
+            var pptxStream = SCTest.TestAsset(this.pptxName);
             pres = new Presentation(pptxStream);
         }
 

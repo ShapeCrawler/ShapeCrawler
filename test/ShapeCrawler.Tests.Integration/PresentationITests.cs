@@ -13,7 +13,7 @@ public class PresentationITests : SCTest
         // Arrange
         var originFilePath = Path.GetTempFileName();
         var savedAsFilePath = Path.GetTempFileName();
-        var pptx = StreamOf("001.pptx");
+        var pptx = TestAsset("001.pptx");
         File.WriteAllBytes(originFilePath, pptx.ToArray());
         var pres = new Presentation(originFilePath);
         pres.SaveAs(savedAsFilePath);

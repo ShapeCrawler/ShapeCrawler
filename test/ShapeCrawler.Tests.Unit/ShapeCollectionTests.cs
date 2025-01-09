@@ -20,7 +20,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_shape()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("053_add_shapes.pptx"));
+        var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
         var copyingShape = pres.Slides[0].Shapes.GetByName("TextBox")!;
         var shapes = pres.Slides[1].Shapes;
 
@@ -35,7 +35,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_table()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("053_add_shapes.pptx"));
+        var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
         var copyingShape = pres.Slides[0].Shapes.GetByName("Table 1")!;
         var shapes = pres.Slides[1].Shapes;
 
@@ -51,7 +51,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_particular_shape_Types()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("003.pptx"));
+        var pres = new Presentation(TestAsset("003.pptx"));
 
         // Act
         var shapes = pres.Slides.First().Shapes;
@@ -67,7 +67,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Picture_shape()
     {
         // Arrange
-        IShape shape = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        IShape shape = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert
         IPicture picture = shape as IPicture;
@@ -78,7 +78,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Media_Shape()
     {
         // Arrange
-        var pptxStream = StreamOf("audio-case001.pptx");
+        var pptxStream = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptxStream);
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
@@ -92,7 +92,7 @@ public class ShapeCollectionTests : SCTest
     [Test]
     public void Contains_Connection_shape()
     {
-        var pptxStream = StreamOf("001.pptx");
+        var pptxStream = TestAsset("001.pptx");
         var presentation = new Presentation(pptxStream);
         var shapesCollection = presentation.Slides[0].Shapes;
 
@@ -104,7 +104,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Video_shape()
     {
         // Arrange
-        var pptx = StreamOf("040_video.pptx");
+        var pptx = TestAsset("040_video.pptx");
         var pres = new Presentation(pptx);
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
@@ -271,8 +271,8 @@ public class ShapeCollectionTests : SCTest
     public void AddAudio_adds_audio_shape_with_MP3_content()
     {
         // Arrange
-        var pptx = StreamOf("001.pptx");
-        var mp3 = StreamOf("test-mp3.mp3");
+        var pptx = TestAsset("001.pptx");
+        var mp3 = TestAsset("test-mp3.mp3");
         var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
         int xPxCoordinate = 300;
@@ -294,8 +294,8 @@ public class ShapeCollectionTests : SCTest
     public void AddAudio_adds_audio_shape_with_WAVE_content()
     {
         // Arrange
-        var wav = StreamOf("test-wav.wav");
-        var pres = new Presentation(StreamOf("001.pptx"));
+        var wav = TestAsset("test-wav.wav");
+        var pres = new Presentation(TestAsset("001.pptx"));
         var shapes = pres.Slides[1].Shapes;
 
         // Act
@@ -310,10 +310,10 @@ public class ShapeCollectionTests : SCTest
     public void AddVideo_adds_Video_shape()
     {
         // Arrange
-        var preStream = StreamOf("001.pptx");
+        var preStream = TestAsset("001.pptx");
         var presentation = new Presentation(preStream);
         var shapesCollection = presentation.Slides[1].Shapes;
-        var videoStream = StreamOf("test-video.mp4");
+        var videoStream = TestAsset("test-video.mp4");
         int xPxCoordinate = 300;
         int yPxCoordinate = 100;
 
@@ -334,7 +334,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = StreamOf("test-vector-image-1.svg");
+        var image = TestAsset("test-vector-image-1.svg");
         image.Position = 0;
 
         // Act
@@ -355,7 +355,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var svgImage = StreamOf("test-vector-image-1.svg");
+        var svgImage = TestAsset("test-vector-image-1.svg");
 
         // Act
         shapes.AddPicture(svgImage);
@@ -376,7 +376,7 @@ public class ShapeCollectionTests : SCTest
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
-        var image = StreamOf("test-vector-image-1.svg");
+        var image = TestAsset("test-vector-image-1.svg");
 
         // Act
         shapesSlide1.AddPicture(image);
@@ -399,7 +399,7 @@ public class ShapeCollectionTests : SCTest
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
 
-        var image = StreamOf("png image-1.png");
+        var image = TestAsset("png image-1.png");
 
         // Act
         shapesSlide1.AddPicture(image);
@@ -421,7 +421,7 @@ public class ShapeCollectionTests : SCTest
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
         var shapes = slide.Shapes;
-        var image = StreamOf("png image-1.png");
+        var image = TestAsset("png image-1.png");
         shapes.AddPicture(image);
 
         // Act
@@ -458,7 +458,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = StreamOf("test-vector-image-large.svg");
+        var image = TestAsset("test-vector-image-large.svg");
         image.Position = 0;
 
         // Act
@@ -485,7 +485,7 @@ public class ShapeCollectionTests : SCTest
 
         // This presentation contains the same SVG we're adding below, manually
         // dragged in while running PowerPoint
-        var pres = new Presentation(StreamOf("055_svg_with_text.pptx"));
+        var pres = new Presentation(TestAsset("055_svg_with_text.pptx"));
         var shapes = pres.Slides[0].Shapes;
         var image = TestHelper.GetStream("1x1.svg");
         image.Position = 0;
@@ -602,7 +602,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slide(1).Shapes;
-        var stream = StreamOf("autoshape-case011_save-as-png.pptx");
+        var stream = TestAsset("autoshape-case011_save-as-png.pptx");
 
         // Act
         var addingPicture = () => shapes.AddPicture(stream);
@@ -633,7 +633,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = StreamOf("jpeg image.jpg");
+        var image = TestAsset("jpeg image.jpg");
 
         // Act
         shapes.AddPicture(image);
@@ -649,7 +649,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = StreamOf("jpeg image-500w.jpg");
+        var image = TestAsset("jpeg image-500w.jpg");
 
         // Act
         shapes.AddPicture(image);
@@ -666,7 +666,7 @@ public class ShapeCollectionTests : SCTest
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapes = pres.Slides[0].Shapes;
-        var image = StreamOf("png image-1.png");
+        var image = TestAsset("png image-1.png");
 
         // Act
         shapes.AddPicture(image);
@@ -685,7 +685,7 @@ public class ShapeCollectionTests : SCTest
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-case011_save-as-png.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-case011_save-as-png.pptx"));
         var shapes = pres.Slides[0].Shapes;
 
         // Act
@@ -724,7 +724,7 @@ public class ShapeCollectionTests : SCTest
     public void AddShape_adds_Rounded_Rectangle()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var shapes = pres.Slides[0].Shapes;
 
         // Act
@@ -742,7 +742,7 @@ public class ShapeCollectionTests : SCTest
     public void AddShape_adds_Top_Corners_Rounded_Rectangle()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var shapes = pres.Slides[0].Shapes;
 
         // Act
@@ -802,7 +802,7 @@ public class ShapeCollectionTests : SCTest
     public void Count_returns_number_of_shapes(string pptxName, int slideNumber, int expectedCount)
     {
         // Arrange
-        var pres = new Presentation(StreamOf(pptxName));
+        var pres = new Presentation(TestAsset(pptxName));
         var slide = pres.Slides[slideNumber - 1];
 
         // Act
@@ -816,9 +816,9 @@ public class ShapeCollectionTests : SCTest
     public void Count_returns_one_When_presentation_contains_one_slide()
     {
         // Act
-        var pptx17 = StreamOf("017.pptx");
+        var pptx17 = TestAsset("017.pptx");
         var pres17 = new Presentation(pptx17);        
-        var pptx16 = StreamOf("016.pptx");
+        var pptx16 = TestAsset("016.pptx");
         var pres16 = new Presentation(pptx16);
         var numberSlidesCase1 = pres17.Slides.Count;
         var numberSlidesCase2 = pres16.Slides.Count;
@@ -832,8 +832,8 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_external_slide()
     {
         // Arrange
-        var sourceSlide = new Presentation(StreamOf("001.pptx")).Slides[0];
-        var pptx = StreamOf("002.pptx");
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
+        var pptx = TestAsset("002.pptx");
         var destPre = new Presentation(pptx);
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
@@ -854,7 +854,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_slide_from_the_Same_presentation()
     {
         // Arrange
-        var pptxStream = StreamOf("charts-case003.pptx");
+        var pptxStream = TestAsset("charts-case003.pptx");
         var pres = new Presentation(pptxStream);
         var expectedSlidesCount = pres.Slides.Count + 1;
         var slideCollection = pres.Slides;
@@ -888,7 +888,7 @@ public class ShapeCollectionTests : SCTest
     public void AddEmptySlide_adds_New_slide()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var layout = pres.SlideMasters[0].SlideLayouts[0]; 
         var slides = pres.Slides;
@@ -920,7 +920,7 @@ public class ShapeCollectionTests : SCTest
     public void AddEmptySlide_adds_slide_from_layout()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("017.pptx"));
+        var pres = new Presentation(TestAsset("017.pptx"));
         var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
 
         // Act
@@ -956,7 +956,7 @@ public class ShapeCollectionTests : SCTest
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapes = pres.Slides[0].Shapes;
-        var image = StreamOf("test-vector-image-1.svg");
+        var image = TestAsset("test-vector-image-1.svg");
         shapes.AddPicture(image);
         var loadedPres = SaveAndOpenPresentation(pres);
 
@@ -977,9 +977,9 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_png_image_is_added_twice()
     {
         // Arrange
-        var pres = new Presentation(StreamOf("008.pptx"));
+        var pres = new Presentation(TestAsset("008.pptx"));
         var shapes = pres.Slide(1).Shapes;
-        var pngImage = StreamOf("png image-1.png");
+        var pngImage = TestAsset("png image-1.png");
 
         // Act
         shapes.AddPicture(pngImage);
