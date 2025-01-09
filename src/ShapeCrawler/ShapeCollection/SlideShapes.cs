@@ -167,10 +167,11 @@ internal sealed class SlideShapes : ISlideShapes
                 imageMagick.Resize((uint)width, (uint)height);
             }
             
-            using var rasterStream = new MemoryStream();
+            var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
-            pPicture = this.CreatePPictureSvg(rasterStream, image, "Picture");
+            rasterStream.Position = 0;
+            pPicture = this.CreateSvgPPicture(rasterStream, image, "Picture");
         }
         
         // Fix up the sizes
@@ -625,7 +626,7 @@ internal sealed class SlideShapes : ISlideShapes
         return pPicture;
     }
 
-    private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
+    private P.Picture CreateSvgPPicture(Stream rasterStream, Stream svgStream, string shapeName)
     {
         // The SVG Blip contains the vector data
         var svgHash = MediaCollection.ComputeFileHash(svgStream);
