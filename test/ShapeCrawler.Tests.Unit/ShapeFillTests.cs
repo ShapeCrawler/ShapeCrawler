@@ -171,6 +171,43 @@ public class ShapeFillTests : SCTest
         pres.Validate();
     }
 
+    [Test]
+    [TestCase("009_table.pptx", 2, "AutoShape 2")]
+    public void SetColor_replaces_picture_with_solid_color(string file, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(file));
+        var shape = pres.Slide(slideNumber).Shapes.GetByName(shapeName);
+        var shapeFill = shape.Fill;
+        var image = StreamOf("png image-1.png");
+        var greenColor = "32a852";
+
+        // Act
+        shapeFill.SetPicture(image);
+        shapeFill.SetColor(greenColor);
+
+        // Assert
+        shapeFill.Color.Should().Be(greenColor);
+        pres.Validate();
+    }
+
+    [Test]
+    [Explicit("A bug")] // this attribute should be removed after fixing the issue
+    public void SetPicture_should_not_break_presentation()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var shape = pres.Slide(2).Shape("AutoShape 2");
+        var shapeFill = shape.Fill;
+        var image = StreamOf("png image-1.png");
+
+        // Act
+        shapeFill.SetPicture(image);
+
+        // Assert
+        pres.Validate();
+    }
+
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
     [TestCase("autoshape-grouping.pptx", 1, "AutoShape 1")]
@@ -222,29 +259,6 @@ public class ShapeFillTests : SCTest
         pres.Validate();
     }
 
-    [Test]
-    [TestCase("009_table.pptx", 2, "AutoShape 2")]
-    public void SetFill_sets_as(
-        string file,
-        int slideNumber,
-        string shapeName
-    )
-    {
-        // Arrange
-        var pres = new Presentation(StreamOf(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
-        var shapeFill = shape.Fill;
-        var imageStream = StreamOf("png image-1.png");
-
-        // Act
-        shapeFill.SetPicture(imageStream);
-        shapeFill.SetColor("32a852");
-
-        // Assert
-        shapeFill.Color.Should().Be("32a852");
-        pres.Validate();
-    }
-    
     [Theory]
     [SlideShape("008.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
     [SlideShape("autoshape-case009.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
@@ -264,7 +278,7 @@ public class ShapeFillTests : SCTest
         var imageBytes = imageStream.ToArray();
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
     }
-    
+
     [Test]
     [SlideShape("009_table.pptx", 2, 6, FillType.NoFill)]
     [SlideShape("009_table.pptx", 2, 2, FillType.Solid)]
@@ -279,7 +293,7 @@ public class ShapeFillTests : SCTest
         // Assert
         fillType.Should().Be(expectedFill);
     }
-    
+
     [Test]
     public void Type_returns_Gradient_fill_type()
     {
