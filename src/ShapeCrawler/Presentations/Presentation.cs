@@ -37,7 +37,7 @@ public sealed class Presentation : IPresentation
         var stream = assets.StreamOf("new-presentation.pptx");
         this.validateable = new StreamPresentation(stream);
         this.validateable.FileProperties.Modified =
-            this.validateable.FileProperties.Created = ShapeCrawlerInternal.TimeProvider.UtcNow;
+            this.validateable.FileProperties.Created = SCSettings.TimeProvider.UtcNow;
     }
 
     /// <inheritdoc />

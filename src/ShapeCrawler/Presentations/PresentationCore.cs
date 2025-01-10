@@ -71,14 +71,14 @@ internal sealed class PresentationCore
 
     internal void CopyTo(string path)
     {
-        this.FileProperties.Modified = ShapeCrawlerInternal.TimeProvider.UtcNow;
+        this.FileProperties.Modified = SCSettings.TimeProvider.UtcNow;
         var cloned = this.sdkPresDocument.Clone(path);
         cloned.Dispose();
     }
 
     internal void CopyTo(Stream stream)
     {
-        this.FileProperties.Modified = ShapeCrawlerInternal.TimeProvider.UtcNow;
+        this.FileProperties.Modified = SCSettings.TimeProvider.UtcNow;
         this.sdkPresDocument.Clone(stream);
     }
 
