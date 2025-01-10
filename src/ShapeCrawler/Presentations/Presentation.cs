@@ -13,7 +13,7 @@ public sealed class Presentation : IPresentation
     private IValidateable validateable;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Presentation"/> class.
+    ///     Opens existing presentation from specified path.
     /// </summary>
     public Presentation(string path)
     {
@@ -21,7 +21,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Presentation"/> class.
+    ///     Opens existing presentation from specified stream.
     /// </summary>
     public Presentation(Stream stream)
     {
@@ -29,7 +29,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Presentation"/> class.
+    ///     Creates a new presentation.
     /// </summary>
     public Presentation()
     {

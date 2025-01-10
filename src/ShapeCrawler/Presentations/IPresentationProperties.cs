@@ -38,7 +38,7 @@ public interface IPresentationProperties
     IFooter Footer { get; }
 
     /// <summary>
-    ///     Gets the proeprties of the file.
+    ///     Gets the properties (meta-data) of the file.
     /// </summary>
     /// <remarks>
     ///     These properties are not presentation-specific.
