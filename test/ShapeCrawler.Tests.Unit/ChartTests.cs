@@ -303,7 +303,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Minimum_Getter()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pptx = TestAsset("charts_bar-chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
@@ -318,7 +318,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Minimum_Setter()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pptx = TestAsset("charts_bar-chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         var mStream = new MemoryStream();
@@ -337,7 +337,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Maximum_Setter()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pptx = TestAsset("charts_bar-chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
@@ -353,7 +353,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Maximum_Getter_returns_default_6()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pptx = TestAsset("charts_bar-chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
