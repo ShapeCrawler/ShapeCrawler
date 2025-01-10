@@ -924,14 +924,20 @@ public class TableTests : SCTest
     [TestCase(false, false, false, true, false, false)]
     [TestCase(false, false, false, false, true, false)]
     [TestCase(false, false, false, false, false, true)]
-    public void TableStyleOptions_setter_set_table_style_options(bool hasHeaderRow, bool hasTotalRow, bool hasBandedRows, bool hasFirstColumn, bool hasLastColumn, bool hasBandedColumns)
+    public void TableStyleOptions_property_setters_set_table_style_options(
+        bool hasHeaderRow, 
+        bool hasTotalRow, 
+        bool hasBandedRows, 
+        bool hasFirstColumn, 
+        bool hasLastColumn, 
+        bool hasBandedColumns)
     {
         // Arrange
         var mStream = new MemoryStream();
         var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
-        var table = slide.Shapes.Last() as ITable;
+        var table = slide.Shapes.Last<ITable>();
 
         // Act
         table.TableStyleOptions.HasHeaderRow = hasHeaderRow;
@@ -944,7 +950,7 @@ public class TableTests : SCTest
         // Assert
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = pres.Slides[0].Shapes.Last() as ITable;
+        table = pres.Slides[0].Shapes.Last<ITable>();
         table.TableStyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);
         table.TableStyleOptions.HasTotalRow.Should().Be(hasTotalRow);
         table.TableStyleOptions.HasBandedRows.Should().Be(hasBandedRows);
@@ -954,13 +960,13 @@ public class TableTests : SCTest
     }
     
     [Test]
-    public void Table_creation_has_tableStyleOptions_default_options()
+    public void TableStyleOptions_property_getters_return_table_style_options()
     {
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
-        var table = slide.Shapes.Last() as ITable;
+        var table = slide.Shapes.Last<ITable>();
 
         // Act
         var options = table.TableStyleOptions;
