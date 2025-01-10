@@ -262,7 +262,7 @@ public class PictureTests : SCTest
         var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        var image = TestAsset("test-vector-image-1.svg");
         image.Position = 0;
         shapes.AddPicture(image);
         var picture = shapes.Last().As<IPicture>();
