@@ -478,28 +478,7 @@ internal sealed class SlideShapes : ISlideShapes
     public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    private static string Mime(Stream imageStream)
-    {
-        var mStream = new MemoryStream();
-        imageStream.CopyTo(mStream);
-        mStream.Position = 0;
-
-        // Note that the below disposes the underlying stream, which we typically don't want
-        // ergo, we do this on a copied memory stream.
-        using var codec = SKCodec.Create(mStream);
-        var mime = codec.EncodedFormat switch
-        {
-            SKEncodedImageFormat.Jpeg => "image/jpeg",
-            SKEncodedImageFormat.Png => "image/png",
-            SKEncodedImageFormat.Gif => "image/gif",
-            SKEncodedImageFormat.Bmp => "image/bmp",
-            _ => "image/png"
-        };
-
-        return mime;
-    }
-
+    
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
@@ -564,23 +543,22 @@ internal sealed class SlideShapes : ISlideShapes
 
             return true;
         }
-        else
-        {
-            // Sorry, you'll need to create a new image part
-            imgPartRId = string.Empty;
-            return false;
-        }
+
+        // Sorry, you'll need to create a new image part
+        imgPartRId = string.Empty;
+        return false;
     }
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var hash = MediaCollection.ComputeFileHash(imageStream);
+        var scStream = new ImageStream(imageStream);
+        var hash = scStream.Base64Hash;
 
         // Does this part already exist in the presentation?
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             // No, let's create it!
-            var mimeType = Mime(imageStream);
+            var mimeType = scStream.Mime;
             (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream, mimeType);
             this.mediaCollection.SetImagePart(hash, imagePart);
         }
@@ -628,7 +606,7 @@ internal sealed class SlideShapes : ISlideShapes
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
     {
         // The SVG Blip contains the vector data
-        var svgHash = MediaCollection.ComputeFileHash(svgStream);
+        var svgHash = new ImageStream(svgStream).Base64Hash;
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
             (svgPartRId, var svgPart) = this.sdkSlidePart.AddImagePart(svgStream, "image/svg+xml");
@@ -640,7 +618,7 @@ internal sealed class SlideShapes : ISlideShapes
         // we wouldn't have to rasterize it every time.
 
         // The A.Blip contains a raster representation of the vector image
-        var imgHash = MediaCollection.ComputeFileHash(rasterStream);
+        var imgHash = new ImageStream(rasterStream).Base64Hash;
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
             (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(rasterStream, "image/png");
