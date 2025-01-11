@@ -27,6 +27,8 @@ internal sealed class SlideShapes : ISlideShapes
     private readonly SlidePart sdkSlidePart;
     private readonly IShapes shapes;
     private readonly MediaCollection mediaCollection;
+    private static readonly MagickFormat[] SupportedImageFormats = [MagickFormat.Bmp, MagickFormat.Emf, MagickFormat.Eps, MagickFormat.Gif, MagickFormat.Jpe, MagickFormat.Jpeg, MagickFormat.Png, MagickFormat.Svg, MagickFormat.Tif, MagickFormat.Tiff];
+    private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
 
     internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes, MediaCollection mediaCollection)
     {
@@ -121,68 +123,66 @@ internal sealed class SlideShapes : ISlideShapes
     public void AddPicture(Stream image)
     {
         image.Position = 0;
-        var imageCopy = new MemoryStream();
-        image.CopyTo(imageCopy);
-        imageCopy.Position = 0;
-        image.Position = 0;
-        using var skBitmap = SKBitmap.Decode(imageCopy);
-        
-        int height;
-        int width;
-        P.Picture pPicture;
-
-        if (skBitmap != null)
+        try
         {
-            height = skBitmap.Height;
-            width = skBitmap.Width;
+            using var imageMagick = new MagickImage(
+                image,
+                new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+
+            if (imageMagick.Format == MagickFormat.Unknown)
+            {
+                throw new SCException("Unsupported image format.");
+            }
+
+            var originalFormat = imageMagick.Format;
+            if (!SupportedImageFormats.Contains(imageMagick.Format) || VectorImageFormats.Contains(imageMagick.Format))
+            {
+                imageMagick.Format = MagickFormat.Png;
+            }
+
+            uint width = imageMagick.Width;
+            uint height = imageMagick.Height;
 
             if (height > 500)
             {
                 height = 500;
-                width = (int)(height * skBitmap.Width / (decimal)skBitmap.Height);
+                width = (uint)(height * imageMagick.Width / (decimal)imageMagick.Height);
             }
 
             if (width > 500)
             {
                 width = 500;
-                height = (int)(width * skBitmap.Height / (decimal)skBitmap.Width);
+                height = (uint)(width * imageMagick.Height / (decimal)imageMagick.Width);
             }
-            
-            pPicture = this.CreatePPicture(image, "Picture");
-        }
-        else
-        {
-            image.Position = 0;
-            using var imageMagick = new MagickImage(image, new MagickReadSettings
-            {
-                BackgroundColor = MagickColors.Transparent
-            });
-            imageMagick.Format = MagickFormat.Png;
-
-            width = imageMagick.Width < 500 ? (int)imageMagick.Width : 500;
-            height = imageMagick.Height < 500 ? (int)imageMagick.Height : 500;
 
             if (width == 500 || height == 500)
             {
-                imageMagick.Resize((uint)width, (uint)height);
+                imageMagick.Resize(width, height);
             }
-            
+
+            P.Picture pPicture;
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
-            pPicture = this.CreatePPictureSvg(rasterStream, image, "Picture");
+            pPicture = VectorImageFormats.Contains(originalFormat) 
+                ? this.CreatePPictureSvg(rasterStream, image, "Picture") 
+                : this.CreatePPicture(image, "Picture");
+
+            // Fix up the sizes
+            var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
+            var yEmu = UnitConverter.VerticalPixelToEmu(100m);
+            var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
+            var cyEmu = UnitConverter.VerticalPixelToEmu(height);
+            var transform2D = pPicture.ShapeProperties!.Transform2D!;
+            transform2D.Offset!.X = xEmu;
+            transform2D.Offset!.Y = yEmu;
+            transform2D.Extents!.Cx = cxEmu;
+            transform2D.Extents!.Cy = cyEmu;
         }
-        
-        // Fix up the sizes
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100m);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
-        var transform2D = pPicture.ShapeProperties!.Transform2D!;
-        transform2D.Offset!.X = xEmu;
-        transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = cxEmu;
-        transform2D.Extents!.Cy = cyEmu;
+        catch (MagickException)
+        {
+            throw new SCException("Unsupported image format.");
+        }
     }
 
     public void AddVideo(int x, int y, Stream stream)
