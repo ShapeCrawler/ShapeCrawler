@@ -24,12 +24,14 @@ namespace ShapeCrawler.ShapeCollection;
 internal sealed class SlideShapes : ISlideShapes
 {
     private const long DefaultTableWidthEmu = 8128000L;
-    private readonly SlidePart sdkSlidePart;
-    private readonly IShapes shapes;
-    private readonly MediaCollection mediaCollection;
+    
     private static readonly MagickFormat[] SupportedImageFormats = [MagickFormat.Bmp, MagickFormat.Emf, MagickFormat.Eps, MagickFormat.Gif, MagickFormat.Jpe, MagickFormat.Jpeg, MagickFormat.Png, MagickFormat.Svg, MagickFormat.Tif, MagickFormat.Tiff];
     private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
 
+    private readonly SlidePart sdkSlidePart;
+    private readonly IShapes shapes;
+    private readonly MediaCollection mediaCollection;
+    
     internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes, MediaCollection mediaCollection)
     {
         this.sdkSlidePart = sdkSlidePart;
