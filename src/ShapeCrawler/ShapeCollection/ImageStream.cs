@@ -12,9 +12,9 @@ internal readonly record struct ImageStream(Stream Stream)
         get
         {
             using var sha512 = SHA512.Create();
-            Stream.Position = 0;
-            var hash = sha512.ComputeHash(Stream);
-            Stream.Position = 0;
+            this.Stream.Position = 0;
+            var hash = sha512.ComputeHash(this.Stream);
+            this.Stream.Position = 0;
 
             return Convert.ToBase64String(hash);
         }
@@ -25,7 +25,7 @@ internal readonly record struct ImageStream(Stream Stream)
         get
         {
             var imageStreamCopy = new MemoryStream(); // the below disposes the underlying stream
-            Stream.CopyTo(imageStreamCopy);
+            this.Stream.CopyTo(imageStreamCopy);
             imageStreamCopy.Position = 0;
             using var codec = SKCodec.Create(imageStreamCopy);
             var mime = codec.EncodedFormat switch
