@@ -161,11 +161,10 @@ internal sealed class SlideShapes : ISlideShapes
                 imageMagick.Resize(width, height);
             }
 
-            P.Picture pPicture;
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
-            pPicture = VectorImageFormats.Contains(originalFormat) 
+            var pPicture = VectorImageFormats.Contains(originalFormat) 
                 ? this.CreatePPictureSvg(rasterStream, image, "Picture") 
                 : this.CreatePPicture(image, "Picture");
 
