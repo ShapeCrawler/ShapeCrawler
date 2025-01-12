@@ -219,8 +219,8 @@
     <EmbeddedResource Include="Assets\063 vector image.svg" />
     <None Remove="Assets\068 vector image-large.svg" />
     <EmbeddedResource Include="Assets\068 vector image-large.svg" />
-    <None Remove="Assets\069 vector-image-no dimensions.svg" />
-    <EmbeddedResource Include="Assets\069 vector-image-no dimensions.svg" />
+    <None Remove="Assets\069 vector image-no dimensions.svg" />
+    <EmbeddedResource Include="Assets\069 vector image-no dimensions.svg" />
     <None Remove="Assets\070 vector image-wide.svg" />
     <EmbeddedResource Include="Assets\070 vector image-wide.svg" />
     <None Remove="Assets\071 wav.wav" />

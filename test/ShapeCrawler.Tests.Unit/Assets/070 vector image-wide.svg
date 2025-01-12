@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="svg1"
+   viewBox="0 0 280 90"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <circle
+     r="45"
+     cx="45"
+     cy="45"
+     fill="#ff0000"
+     id="circle1" />
+  <circle
+     r="45"
+     cx="137.28889"
+     cy="45"
+     fill="#ff0000"
+     id="circle1-2" />
+  <circle
+     r="45"
+     cx="231.9623"
+     cy="45"
+     fill="#ff0000"
+     id="circle1-6" />
+</svg>
