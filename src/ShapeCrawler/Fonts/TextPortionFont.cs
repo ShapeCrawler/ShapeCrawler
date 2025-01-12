@@ -337,7 +337,7 @@ internal sealed class TextPortionFont : ITextPortionFont
         if (aLatinFont is null)
         {
             aLatinFont = new A.LatinFont();
-            aCurrentProperties.Append(aLatinFont); // we need to append it otherwise, the text will ignore color etc
+            aCurrentProperties.Append(aLatinFont); // to avoid ignoring color
         }
         
         aLatinFont.Typeface = latinFont;
