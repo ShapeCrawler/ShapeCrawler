@@ -6,6 +6,7 @@ using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
+using Random = System.Random;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -609,7 +610,7 @@ public class ShapeCollectionTests : SCTest
         var addingPicture = () => shapes.AddPicture(stream);
 
         // Assert
-        addingPicture.Should().Throw<Exception>();
+        addingPicture.Should().Throw<SCException>();
     }
 
     [Test]
@@ -681,7 +682,24 @@ public class ShapeCollectionTests : SCTest
             .ToHashSet();
         imageParts.Count.Should().Be(1);
     }
+    
+    [Test]
+    public void AddPicture_adds_known_but_unsupported_picture_as_png()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset("psd image.psd");
 
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+        var imageMagickImage = new MagickImage(picture.Image!.AsByteArray());
+        imageMagickImage.Format.Should().Be(MagickFormat.Png);
+    }
+    
     [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {

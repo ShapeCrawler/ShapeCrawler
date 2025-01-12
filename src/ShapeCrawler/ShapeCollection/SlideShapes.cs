@@ -131,11 +131,6 @@ internal sealed class SlideShapes : ISlideShapes
                 image,
                 new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
 
-            if (imageMagick.Format == MagickFormat.Unknown)
-            {
-                throw new SCException("Unsupported image format.");
-            }
-
             var originalFormat = imageMagick.Format;
             if (!SupportedImageFormats.Contains(imageMagick.Format) || VectorImageFormats.Contains(imageMagick.Format))
             {
@@ -167,7 +162,7 @@ internal sealed class SlideShapes : ISlideShapes
             image.Position = 0;
             var pPicture = VectorImageFormats.Contains(originalFormat) 
                 ? this.CreateSvgPPicture(rasterStream, image, "Picture") 
-                : this.CreatePPicture(image, "Picture");
+                : this.CreatePPicture(rasterStream, "Picture");
 
             // Fix up the sizes
             var xEmu = UnitConverter.HorizontalPixelToEmu(100m);

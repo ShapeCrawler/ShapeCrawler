@@ -235,6 +235,10 @@
     <EmbeddedResource Include="Assets\images\jpeg image-500w.jpg" />
     <None Remove="Assets\061_font-color.pptx" />
     <EmbeddedResource Include="Assets\061_font-color.pptx" />
+    <None Remove="Assets\images\psd image.psd" />
+    <EmbeddedResource Include="Assets\images\psd image.psd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
