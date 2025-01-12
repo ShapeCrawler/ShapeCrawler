@@ -284,7 +284,7 @@ public class TableTests : SCTest
     public void Row_Clone_cloning_row_increases_row_count_by_one()
     {
         // Arrange
-        var pptx = TestAsset("tables-case001.pptx");
+        var pptx = TestAsset("065 table.pptx");
         var pres = new Presentation(pptx);
         var targetTable = pres.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
         var rowCountBefore = targetTable.Rows.Count;

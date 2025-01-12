@@ -294,7 +294,7 @@ public class ShapeCollectionTests : SCTest
     public void AddAudio_adds_audio_shape_with_WAVE_content()
     {
         // Arrange
-        var wav = TestAsset("test-wav.wav");
+        var wav = TestAsset("071 wav.wav");
         var pres = new Presentation(TestAsset("001.pptx"));
         var shapes = pres.Slides[1].Shapes;
 
@@ -460,7 +460,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-large.svg");
+        var image = TestAsset("068 vector image-large.svg");
         image.Position = 0;
 
         // Act
@@ -489,7 +489,7 @@ public class ShapeCollectionTests : SCTest
         // dragged in while running PowerPoint
         var pres = new Presentation(TestAsset("055_svg_with_text.pptx"));
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("1x1.svg");
+        var image = TestAsset("066 1x1.svg");
         image.Position = 0;
 
         // ACT
@@ -543,7 +543,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-wide.svg");
+        var image = TestAsset("070 vector image-wide.svg");
         image.Position = 0;
 
         // Act
@@ -565,7 +565,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-blank.svg");
+        var image = TestAsset("067 vector image-blank.svg");
 
         // Act
         shapes.AddPicture(image);
