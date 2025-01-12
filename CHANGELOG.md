@@ -1,8 +1,11 @@
 # Changelog  
 
-## Version 0.61.0 - Unreleased
-🐞Fixed updating font [#828](https://github.com/ShapeCrawler/ShapeCrawler/issues/828)  
+## Version 0.62.0 - Unreleased
+🍀Added properties `ISpacing.BeforeSpacingPoints` and `ISpacing.AfterSpacingPoints` for the paragraph [#563](https://github.com/ShapeCrawler/ShapeCrawler/issues/563)  
+
+## Version 0.61.0 - 2025-01-09
 🍀Added support macOS ARM [D823](https://github.com/ShapeCrawler/ShapeCrawler/discussions/823)  
+🐞Fixed updating font [#828](https://github.com/ShapeCrawler/ShapeCrawler/issues/828)  
 
 ## Version 0.60.0 - 2025-01-07
 🐞Fixed trim warning `IL2104` [#708](https://github.com/ShapeCrawler/ShapeCrawler/issues/708)  

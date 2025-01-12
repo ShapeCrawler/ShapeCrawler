@@ -101,7 +101,7 @@ public class ShapeTests : SCTest
         IShape shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
         IShape shapeCase2 = new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
         IShape shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
-        float verticalResoulution = Helpers.TestHelper.VerticalResolution;
+        float verticalResolution = 96;
 
         // Act
         decimal yCoordinate1 = shapeCase1.Y;
@@ -109,9 +109,9 @@ public class ShapeTests : SCTest
         decimal yCoordinate3 = shapeCase3.Y;
 
         // Assert
-        yCoordinate1.Should().Be((int)(1122363 * verticalResoulution / 914400));
-        yCoordinate2.Should().Be((int)(4 * verticalResoulution / 914400));
-        yCoordinate3.Should().Be((int)(3463288 * verticalResoulution / 914400));
+        yCoordinate1.Should().Be((int)(1122363 * 96 / 914400));
+        yCoordinate2.Should().Be((int)(4 * 96 / 914400));
+        yCoordinate3.Should().Be((int)(3463288 * 96 / 914400));
     }
 
     [Test]
@@ -214,9 +214,9 @@ public class ShapeTests : SCTest
         decimal width3 = shapeCase3.Width;
 
         // Assert
-        (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000m);
-        (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181377m);
-        (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775m);
+        (width1 * 914400 / 96).Should().Be(9144000m);
+        (width2 * 914400 / 96).Should().Be(1181377m);
+        (width3 * 914400 / 96).Should().Be(485775m);
     }
 
     [Test]

@@ -109,6 +109,6 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.60.0 - 2025-01-07
-🐞Fixed trim warning `IL2104` [#708](https://github.com/ShapeCrawler/ShapeCrawler/issues/708)  
-🐞Fixed duplication of image source [#809](https://github.com/ShapeCrawler/ShapeCrawler/issues/809)  
+### Version 0.61.0 - 2025-01-09
+🍀Added support macOS ARM [D823](https://github.com/ShapeCrawler/ShapeCrawler/discussions/823)  
+🐞Fixed updating font [#828](https://github.com/ShapeCrawler/ShapeCrawler/issues/828)  

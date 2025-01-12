@@ -102,7 +102,7 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
 
-    public ITableStyleOptions TableStyleOptions { get; init; }
+    public ITableStyleOptions TableStyleOptions { get; }
 
     public override bool Removeable => true;
 

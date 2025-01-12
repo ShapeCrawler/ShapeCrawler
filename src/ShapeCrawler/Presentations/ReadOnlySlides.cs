@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.ShapeCollection;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Presentations;
@@ -57,8 +58,8 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
         foreach(var imagePart in imageParts)
         {
             using var stream = imagePart.GetStream();
-            var hash = MediaCollection.ComputeFileHash(stream);
-            if (!this.mediaCollection.TryGetImagePart(hash, out var _))
+            var hash = new ImageStream(stream).Base64Hash;
+            if (!this.mediaCollection.TryGetImagePart(hash, out _))
             {
                 this.mediaCollection.SetImagePart(hash, imagePart);
             }

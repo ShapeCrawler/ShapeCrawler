@@ -444,7 +444,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        var image = TestAsset("test-vector-image-1.svg");
         image.Position = 0;
         shapes.AddPicture(image);
         var picture = (IPicture)shapes.Last();
@@ -491,7 +491,7 @@ public class ShapeCollectionTests : SCTest
         // dragged in while running PowerPoint
         var pres = new Presentation(TestAsset("055_svg_with_text.pptx"));
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("1x1.svg");
+        var image = TestAsset("1x1.svg");
         image.Position = 0;
 
         // ACT
@@ -517,7 +517,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("png image-large.png");
+        var image = TestAsset("png image-large.png");
         image.Position = 0;
 
         // Act
@@ -545,7 +545,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-wide.svg");
+        var image = TestAsset("test-vector-image-wide.svg");
         image.Position = 0;
 
         // Act
@@ -567,7 +567,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-vector-image-blank.svg");
+        var image = TestAsset("test-vector-image-blank.svg");
 
         // Act
         shapes.AddPicture(image);
@@ -588,7 +588,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("png image-1.png");
+        var image = TestAsset("png image-1.png");
 
         // Act
         shapes.AddPicture(image);
@@ -621,7 +621,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("png image-1.png");
+        var image = TestAsset("png image-1.png");
 
         // Act
         shapes.AddPicture(image);
@@ -875,7 +875,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_slide_After_updating_chart_series()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pptx = TestAsset("charts_bar-chart.pptx");
         var pres = new Presentation(pptx);
         var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         var expectedSlidesCount = pres.Slides.Count + 1;

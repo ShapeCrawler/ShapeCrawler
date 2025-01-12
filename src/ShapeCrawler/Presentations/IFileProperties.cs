@@ -31,8 +31,11 @@ public interface IFileProperties
     DateTime? Created { get; set; }
 
     /// <summary>
-    ///     Gets or sets the primary creator. The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.
+    ///     Gets or sets the primary creator.
     /// </summary>
+    /// <remarks>
+    ///     The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.     
+    /// </remarks>
     string? Author { get; set; }
 
     /// <summary>
@@ -41,24 +44,27 @@ public interface IFileProperties
     string? Comments { get; set; }
 
     /// <summary>
-    ///     Gets or sets a delimited set of keywords (tags) to support searching and indexing. This is typically a list of terms that are not available elsewhere in the properties.
+    ///     Gets or sets a delimited set of keywords (tags) to support searching and indexing.
     /// </summary>
     /// <remarks>
-    ///     The delimeter to use is not specified.
+    ///      This is typically a list of terms that are not available elsewhere in the properties. The delimiter to use is not specified.
     /// </remarks>
     string? Tags { get; set; }
 
     /// <summary>
-    ///     Gets or sets the primary language of the package content. The language tag is composed of one or more parts: A primary language subtag and a (possibly empty) series of subsequent subtags, for example, "EN-US". These values MUST follow the convention specified in RFC 3066.
+    ///     Gets or sets the primary language of the package content.
     /// </summary>
     /// <remarks>
-    ///     Show in File Explorer, but not in PowerPoint client.
+    ///     The language tag is composed of one or more parts: A primary language subtag and a (possibly empty) series of subsequent subtags, for example, "EN-US". These values MUST follow the convention specified in RFC 3066. Show in File Explorer, but not in PowerPoint client.
     /// </remarks>
     string? Language { get; set; }
 
     /// <summary>
-    ///     Gets or sets the user who performed the last modification. The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.
+    ///     Gets or sets the user who performed the last modification.
     /// </summary>
+    /// <remarks>
+    ///     The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.
+    /// </remarks>
     string? LastModifiedBy { get; set; }
 
     /// <summary>
@@ -72,15 +78,15 @@ public interface IFileProperties
     DateTime? Modified { get; set; }
 
     /// <summary>
-    ///     Gets or sets the revision number. This value indicates the number of saves or revisions. The application is responsible for updating this value after each revision.
+    ///     Gets or sets the revision number.
     /// </summary>
     /// <remarks>
-    ///     Show in File Explorer, but not in PowerPoint client.
+    ///      This value indicates the number of saves or revisions. The application is responsible for updating this value after each revision. Show in File Explorer, but not in PowerPoint client.
     /// </remarks>
     int? RevisionNumber { get; set; }
 
     /// <summary>
-    ///     Gets or sets the topic of the contents.
+    ///     Gets or sets the topic of the content.
     /// </summary>
     string? Subject { get; set; }
 
@@ -90,7 +96,10 @@ public interface IFileProperties
     string? Title { get; set; }
 
     /// <summary>
-    ///     Gets or sets the version number. This value is set by the user or by the application.
+    ///     Gets or sets the version number.
     /// </summary>
+    /// <remarks>
+    ///     This value is set by the user or by the application.
+    /// </remarks>
     string? Version { get; set; }
 }

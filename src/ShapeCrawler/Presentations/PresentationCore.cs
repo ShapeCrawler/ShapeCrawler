@@ -71,14 +71,14 @@ internal sealed class PresentationCore
 
     internal void CopyTo(string path)
     {
-        this.FileProperties.Modified = ShapeCrawlerInternal.TimeProvider.UtcNow;
+        this.FileProperties.Modified = SCSettings.TimeProvider.UtcNow;
         var cloned = this.sdkPresDocument.Clone(path);
         cloned.Dispose();
     }
 
     internal void CopyTo(Stream stream)
     {
-        this.FileProperties.Modified = ShapeCrawlerInternal.TimeProvider.UtcNow;
+        this.FileProperties.Modified = SCSettings.TimeProvider.UtcNow;
         this.sdkPresDocument.Clone(stream);
     }
 
@@ -92,7 +92,7 @@ internal sealed class PresentationCore
 
     internal void Validate()
     {
-        var nonCriticalErrorDesc = new List<string>
+        var nonCriticalErrors = new List<string>
         {
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
                 "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
@@ -102,25 +102,25 @@ internal sealed class PresentationCore
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
         };
         var sdkErrors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.sdkPresDocument);
-        sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrorDesc.Contains(errorInfo.Description));
-        sdkErrors = sdkErrors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
+        sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
+        sdkErrors = sdkErrors.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath }).ToList();
 
         if (sdkErrors.Any())
         {
             throw new SCException("Presentation is invalid.");
         }
         
-        var errors = this.ValidateATableRows(this.sdkPresDocument);
-        errors = errors.Concat(this.ValidateASolidFill(this.sdkPresDocument));
+        var errors = ValidateATableRows(this.sdkPresDocument);
+        errors = errors.Concat(ValidateASolidFill(this.sdkPresDocument));
         if (errors.Any())
         {
             throw new SCException("Presentation is invalid.");
         }
     }
 
-    private IEnumerable<string> ValidateATableRows(PresentationDocument presDocument)
+    private static IEnumerable<string> ValidateATableRows(PresentationDocument sdkPres)
     {
-        var aTableRows = presDocument.PresentationPart!.SlideParts
+        var aTableRows = sdkPres.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.TableRow>());
 
         foreach (var aTableRow in aTableRows)
@@ -154,21 +154,20 @@ internal sealed class PresentationCore
         }
     }
     
-    private IEnumerable<string> ValidateASolidFill(PresentationDocument presDocument)
+    private static IEnumerable<string> ValidateASolidFill(PresentationDocument sdkPres)
     {
-        var aText = presDocument.PresentationPart!.SlideParts
+        var aText = sdkPres.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.Text>());
-        aText = aText.Concat(presDocument.PresentationPart!.SlideMasterParts
+        aText = aText.Concat(sdkPres.PresentationPart!.SlideMasterParts
             .SelectMany(slidePart => slidePart.SlideMaster.Descendants<A.Text>())).ToList();
 
         foreach (var text in aText)
         {
             var runProperties = text.Parent!.GetFirstChild<A.RunProperties>();
-            
-            if ((runProperties?.Descendants<A.SolidFill>()?.Any() ?? false) 
+            if ((runProperties?.Descendants<A.SolidFill>().Any() ?? false) 
                 && runProperties.ChildElements.Take(2).All(x => x is not A.SolidFill))
             {
-                yield return $"Invalid solid fill structure: SolidFill element must be index 0";
+                yield return "Invalid solid fill structure: SolidFill element must be index 0";
             }
         }
     }
