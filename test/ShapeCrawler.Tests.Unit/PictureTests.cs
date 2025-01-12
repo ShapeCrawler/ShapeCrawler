@@ -251,7 +251,7 @@ public class PictureTests : SCTest
         var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("vector image.svg");
+        var image = TestAsset("063 vector image.svg");
         image.Position = 0;
         shapes.AddPicture(image);
         var picture = shapes.Last().As<IPicture>();
@@ -271,7 +271,7 @@ public class PictureTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("vector image.svg");
+        var image = TestAsset("063 vector image.svg");
         shapes.AddPicture(image);
         var picture = shapes.Last().As<IPicture>();
         var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryName);

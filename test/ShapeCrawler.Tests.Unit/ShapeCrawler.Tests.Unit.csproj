@@ -213,10 +213,10 @@
     <EmbeddedResource Include="Assets\images\png image-2.png" />
     <None Remove="Assets\images\png image-large.png" />
     <EmbeddedResource Include="Assets\images\png image-large.png" />
-    <None Remove="Assets\test-mp3.mp3" />
-    <EmbeddedResource Include="Assets\test-mp3.mp3" />
-    <None Remove="Assets\vector image.svg" />
-    <EmbeddedResource Include="Assets\vector image.svg" />
+    <None Remove="Assets\064 mp3.mp3" />
+    <EmbeddedResource Include="Assets\064 mp3.mp3" />
+    <None Remove="Assets\063 vector image.svg" />
+    <EmbeddedResource Include="Assets\063 vector image.svg" />
     <None Remove="Assets\test-vector-image-large.svg" />
     <EmbeddedResource Include="Assets\test-vector-image-large.svg" />
     <None Remove="Assets\test-vector-image-no-dimensions.svg" />

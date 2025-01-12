@@ -272,7 +272,7 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("001.pptx");
-        var mp3 = TestAsset("test-mp3.mp3");
+        var mp3 = TestAsset("064 mp3.mp3");
         var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
         int xPxCoordinate = 300;
@@ -334,7 +334,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("vector image.svg");
+        var image = TestAsset("063 vector image.svg");
         image.Position = 0;
 
         // Act
@@ -356,7 +356,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var svgImage = TestAsset("vector image.svg");
+        var svgImage = TestAsset("063 vector image.svg");
 
         // Act
         shapes.AddPicture(svgImage);
@@ -378,7 +378,7 @@ public class ShapeCollectionTests : SCTest
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
-        var image = TestAsset("vector image.svg");
+        var image = TestAsset("063 vector image.svg");
 
         // Act
         shapesSlide1.AddPicture(image);
@@ -442,7 +442,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("vector image.svg");
+        var image = TestAsset("063 vector image.svg");
         image.Position = 0;
         shapes.AddPicture(image);
         var picture = (IPicture)shapes.Last();
@@ -959,7 +959,7 @@ public class ShapeCollectionTests : SCTest
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("vector image.svg");
+        var image = TestAsset("063 vector image.svg");
         shapes.AddPicture(image);
         var loadedPres = SaveAndOpenPresentation(pres);
 
