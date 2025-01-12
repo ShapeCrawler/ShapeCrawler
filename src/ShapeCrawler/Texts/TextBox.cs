@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
-using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
