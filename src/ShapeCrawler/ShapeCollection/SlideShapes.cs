@@ -12,6 +12,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
@@ -165,7 +166,7 @@ internal sealed class SlideShapes : ISlideShapes
             imageMagick.Write(rasterStream);
             image.Position = 0;
             var pPicture = VectorImageFormats.Contains(originalFormat) 
-                ? this.CreatePPictureSvg(rasterStream, image, "Picture") 
+                ? this.CreateSvgPPicture(rasterStream, image, "Picture") 
                 : this.CreatePPicture(image, "Picture");
 
             // Fix up the sizes
@@ -603,7 +604,7 @@ internal sealed class SlideShapes : ISlideShapes
         return pPicture;
     }
 
-    private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
+    private P.Picture CreateSvgPPicture(Stream rasterStream, Stream svgStream, string shapeName)
     {
         // The SVG Blip contains the vector data
         var svgHash = new ImageStream(svgStream).Base64Hash;
