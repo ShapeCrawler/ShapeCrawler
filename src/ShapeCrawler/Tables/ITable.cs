@@ -192,16 +192,6 @@ internal sealed class Table : CopyableShape, ITable
 
     public override ITable AsTable() => this;
 
-    internal void Draw(SKCanvas canvas)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal string ToJson()
-    {
-        throw new NotImplementedException();
-    }
-
     private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
     {
         var totalWidth = existingColumns.Sum(col => col.Width!.Value);

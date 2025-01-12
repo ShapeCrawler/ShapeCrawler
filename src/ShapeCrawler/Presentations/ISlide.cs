@@ -92,12 +92,4 @@ public interface ISlide
     /// <typeparam name="T">Shape type.</typeparam>
     IShape Shape<T>(string name)
         where T : IShape;
-    
-#if DEBUG
-    
-    /// <summary>
-    ///     Saves slide as PNG image.
-    /// </summary>
-    void SaveAsPng(System.IO.Stream stream);
-#endif
 }

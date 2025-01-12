@@ -106,24 +106,6 @@ internal sealed class Slide : ISlide
         where T : IShape
         => this.Shapes.GetByName<T>(name);
 
-    public void SaveAsPng(Stream stream)
-    {
-        var imageInfo = new SKImageInfo((int)this.slideSize.Width(), (int)this.slideSize.Height());
-        var surface = SKSurface.Create(imageInfo);
-        var canvas = surface.Canvas;
-        canvas.Clear(SKColors.White); // TODO: #344 get real
-
-        foreach (var autoShape in this.Shapes.OfType<AutoShape>())
-        {
-            autoShape.Draw(canvas);
-        }
-
-        var image = surface.Snapshot();
-        var bitmap = SKBitmap.FromImage(image);
-        var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
-        data.SaveTo(stream);
-    }
-
     public IList<ITextBox> TextFrames()
     {
         var returnList = new List<ITextBox>();
