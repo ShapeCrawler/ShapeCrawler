@@ -351,7 +351,7 @@ public class ShapeCollectionTests : SCTest
 
     [Test]
     [Category("issue-883")]
-    public async Task AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
         var pres = new Presentation();
