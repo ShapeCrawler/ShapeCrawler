@@ -360,7 +360,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddPicture(svgImage);
-        Task.Delay(1100).Wait(); // See issue #883
         shapes.AddPicture(svgImage);
 
         // Assert
@@ -383,7 +382,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapesSlide1.AddPicture(image);
-        Task.Delay(1100).Wait(); // See issue #883
         shapesSlide2.AddPicture(image);
 
         // Assert
@@ -967,7 +965,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes = loadedPres.Slides[0].Shapes;
-        Task.Delay(1100).Wait(); // See issue #883
         shapes.AddPicture(image);
 
         // Assert
