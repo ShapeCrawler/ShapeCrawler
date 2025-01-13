@@ -1,5 +1,4 @@
-﻿using System;
-using ShapeCrawler.Units;
+﻿using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130

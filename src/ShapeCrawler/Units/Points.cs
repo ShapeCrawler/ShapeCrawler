@@ -15,5 +15,5 @@ internal readonly ref struct Points
 
     internal float AsPixels() => (float)this.points * 96 / 72;
 
-    internal int AsHundredsOfPoints() => (int)Math.Round(points * 100);
+    internal int AsHundredsOfPoints() => (int)Math.Round(this.points * 100);
 }
