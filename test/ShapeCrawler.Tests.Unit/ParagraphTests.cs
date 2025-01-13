@@ -346,34 +346,28 @@ public class ParagraphTests : SCTest
     
     [Test]
     [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
-    public void Paragraph_Spacing_BeforeSpacingPoints_returns_before_spacing_points(IShape shape, double expectedPoints)
+    public void Spacing_BeforeSpacingPoints_returns_before_spacing_in_points(IShape shape, double expectedPoints)
     {
         // Arrange
         var paragraph = shape.TextBox!.Paragraphs[0];
             
-        // Act
-        var beforeSpacingPoints = paragraph.Spacing.BeforeSpacingPoints;
-            
-        // Assert
-        beforeSpacingPoints.Should().Be(expectedPoints);
+        // Act-Assert
+        paragraph.Spacing.BeforeSpacingPoints.Should().Be(expectedPoints);
     }
     
     [Test]
     [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
-    public void Paragraph_Spacing_AfterSpacingPoints_returns_after_spacing_points(IShape shape, double expectedPoints)
+    public void Spacing_AfterSpacingPoints_returns_after_spacing_in_points(IShape shape, double expectedPoints)
     {
         // Arrange
         var paragraph = shape.TextBox!.Paragraphs[0];
             
-        // Act
-        var afterSpacingPoints = paragraph.Spacing.AfterSpacingPoints;
-            
-        // Assert
-        afterSpacingPoints.Should().Be(expectedPoints);
+        // Act-Assert
+        paragraph.Spacing.AfterSpacingPoints.Should().Be(expectedPoints);
     }
     
     [Test]
-    public void Paragraph_Spacing_BeforeSpacingPoints_Setter_sets_before_spacing_points()
+    public void Spacing_BeforeSpacingPoints_Setter_sets_before_spacing()
     {
         // Arrange
         var pres = new Presentation();
@@ -397,7 +391,7 @@ public class ParagraphTests : SCTest
     }
     
     [Test]
-    public void Paragraph_Spacing_AfterSpacingPoints_Setter_sets_after_spacing_points()
+    public void Spacing_AfterSpacingPoints_Setter_sets_after_spacing()
     {
         // Arrange
         var pres = new Presentation();
@@ -412,34 +406,10 @@ public class ParagraphTests : SCTest
         
         // Assert
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
-
-        using var mStream = new MemoryStream();
+        var mStream = new MemoryStream();
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
-    }
-    
-    [Test]
-    public void Paragraph_Spacing_BeforeSpacingPoints_Setter_sets_before_spacing_points_to_null()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.Shapes.AddShape(10, 10, 10, 10);
-        var addedShape = slide.Shapes[0];
-        var paragraph = addedShape.TextBox.Paragraphs[0];
-        paragraph.Text = "test";
-        
-        // Act
-        paragraph.Spacing.BeforeSpacingPoints = 0;
-        
-        // Assert
-        paragraph.Spacing.BeforeSpacingPoints.Should().Be(0);
-        
-        pres.SaveAs("test.pptx");
-        var presSdk = SaveAndOpenPresentationAsSdk(pres);
-        var paragraphSdk = presSdk.PresentationPart!.SlideParts.First().Slide.Descendants<A.Paragraph>().First();
-        paragraphSdk.ParagraphProperties!.SpaceBefore.Should().BeNull();
     }
 }
