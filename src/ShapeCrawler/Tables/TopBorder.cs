@@ -30,7 +30,7 @@ internal class TopBorder : IBorder
             this.aTableCellProperties.TopBorderLineProperties.AppendChild(aSolidFill);
         }
         
-        var emus = new Points(points).AsEmus();
+        var emus = new Points((decimal)points).AsEmus();
         this.aTableCellProperties.TopBorderLineProperties.Width = new Int32Value((int)emus);
     }
 

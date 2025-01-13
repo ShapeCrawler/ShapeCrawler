@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Positions;
 using ShapeCrawler.ShapeCollection;
 using P = DocumentFormat.OpenXml.Presentation;
 
