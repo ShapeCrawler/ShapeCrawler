@@ -350,7 +350,6 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit("Fails. Tracked in issue #883")]
     [Category("issue-883")]
     public async Task AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
@@ -361,7 +360,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddPicture(svgImage);
-        Task.Delay(1100).Wait();
+        Task.Delay(1100).Wait(); // See issue #883
         shapes.AddPicture(svgImage);
 
         // Assert
@@ -372,7 +371,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("Fails. Tracked in issue #883")]
     [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_on_two_different_slides()
     {
@@ -385,7 +383,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapesSlide1.AddPicture(image);
-        Task.Delay(1100).Wait();
+        Task.Delay(1100).Wait(); // See issue #883
         shapesSlide2.AddPicture(image);
 
         // Assert
@@ -956,7 +954,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("Fails. Tracked in issue #883")]
     [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
@@ -970,7 +967,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes = loadedPres.Slides[0].Shapes;
-        Task.Delay(1100).Wait();
+        Task.Delay(1100).Wait(); // See issue #883
         shapes.AddPicture(image);
 
         // Assert
