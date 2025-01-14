@@ -350,7 +350,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit("A flaky test. Should be fixed")]
+    [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
@@ -370,7 +370,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("A flaky test. Should be fixed")]
+    [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_on_two_different_slides()
     {
         // Arrange
@@ -952,7 +952,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("A flaky test, should be fixed")]
+    [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
