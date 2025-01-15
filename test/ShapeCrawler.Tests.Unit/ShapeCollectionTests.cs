@@ -273,7 +273,7 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("001.pptx");
-        var mp3 = TestAsset("test-mp3.mp3");
+        var mp3 = TestAsset("064 mp3.mp3");
         var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
         int xPxCoordinate = 300;
@@ -295,7 +295,7 @@ public class ShapeCollectionTests : SCTest
     public void AddAudio_adds_audio_shape_with_WAVE_content()
     {
         // Arrange
-        var wav = TestAsset("test-wav.wav");
+        var wav = TestAsset("071 wav.wav");
         var pres = new Presentation(TestAsset("001.pptx"));
         var shapes = pres.Slides[1].Shapes;
 
@@ -335,7 +335,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-1.svg");
+        var image = TestAsset("063 vector image.svg");
         image.Position = 0;
 
         // Act
@@ -351,12 +351,13 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var svgImage = TestAsset("test-vector-image-1.svg");
+        var svgImage = TestAsset("063 vector image.svg");
 
         // Act
         shapes.AddPicture(svgImage);
@@ -370,7 +371,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("A flaky test. Should be fixed")]
+    [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_on_two_different_slides()
     {
         // Arrange
@@ -378,7 +379,7 @@ public class ShapeCollectionTests : SCTest
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
-        var image = TestAsset("test-vector-image-1.svg");
+        var image = TestAsset("063 vector image.svg");
 
         // Act
         shapesSlide1.AddPicture(image);
@@ -442,7 +443,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-1.svg");
+        var image = TestAsset("063 vector image.svg");
         image.Position = 0;
         shapes.AddPicture(image);
         var picture = (IPicture)shapes.Last();
@@ -460,7 +461,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-large.svg");
+        var image = TestAsset("068 vector image-large.svg");
         image.Position = 0;
 
         // Act
@@ -489,7 +490,7 @@ public class ShapeCollectionTests : SCTest
         // dragged in while running PowerPoint
         var pres = new Presentation(TestAsset("055_svg_with_text.pptx"));
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("1x1.svg");
+        var image = TestAsset("066 1x1.svg");
         image.Position = 0;
 
         // ACT
@@ -543,7 +544,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-wide.svg");
+        var image = TestAsset("070 vector image-wide.svg");
         image.Position = 0;
 
         // Act
@@ -565,7 +566,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-blank.svg");
+        var image = TestAsset("067 vector image-blank.svg");
 
         // Act
         shapes.AddPicture(image);
@@ -969,14 +970,14 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("A flaky test, should be fixed")]
+    [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("test-vector-image-1.svg");
+        var image = TestAsset("063 vector image.svg");
         shapes.AddPicture(image);
         var loadedPres = SaveAndOpenPresentation(pres);
 

@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
-using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -225,11 +224,6 @@ internal sealed record TextBox : ITextBox
             return;
         }
 
-        var paint = new SKPaint
-        {
-            IsAntialias = true
-        };
-
         var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
         var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
         var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
@@ -274,11 +268,6 @@ internal sealed record TextBox : ITextBox
 
         this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
         this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
-    }
-
-    internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
-    {
-        throw new NotImplementedException();
     }
 
     private decimal GetLeftMargin()

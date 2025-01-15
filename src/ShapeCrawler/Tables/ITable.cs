@@ -7,7 +7,6 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Tables;
-using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -191,16 +190,6 @@ internal sealed class Table : CopyableShape, ITable
     public override void Remove() => this.pGraphicFrame.Remove();
 
     public override ITable AsTable() => this;
-
-    internal void Draw(SKCanvas canvas)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal string ToJson()
-    {
-        throw new NotImplementedException();
-    }
 
     private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
     {

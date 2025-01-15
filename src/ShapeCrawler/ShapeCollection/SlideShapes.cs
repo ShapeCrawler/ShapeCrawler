@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
+using ImageMagick.Formats;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
@@ -157,7 +158,7 @@ internal sealed class SlideShapes : ISlideShapes
             }
 
             using var rasterStream = new MemoryStream();
-            imageMagick.Write(rasterStream);
+            imageMagick.Write(rasterStream, new PngWriteDefines() { IncludeChunks = PngChunkFlags.None });
             image.Position = 0;
             var pPicture = VectorImageFormats.Contains(originalFormat) 
                 ? this.CreateSvgPPicture(rasterStream, image, "Picture") 

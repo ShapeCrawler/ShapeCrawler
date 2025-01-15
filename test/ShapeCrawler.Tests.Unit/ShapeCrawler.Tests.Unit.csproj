@@ -31,7 +31,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Drawing.Common" Version="8.0.11" />
   </ItemGroup>
 
   <ItemGroup>
@@ -103,7 +102,7 @@
     <None Remove="Assets\tables\table-case001.pptx" />
     <EmbeddedResource Include="Assets\tables\table-case001.pptx" />
     <None Remove="Assets\video\test-video.avi" />
-    <EmbeddedResource Include="Assets\test-vector-image-blank.svg" />
+    <EmbeddedResource Include="Assets\067 vector image-blank.svg" />
     <EmbeddedResource Include="Assets\video\test-video.avi" />
     <None Remove="Assets\video\test-video.mp4" />
     <EmbeddedResource Include="Assets\video\test-video.mp4" />
@@ -111,8 +110,8 @@
     <EmbeddedResource Include="Assets\video\video-01.mp4" />
     <None Remove="Assets\video\video-case001.pptx" />
     <EmbeddedResource Include="Assets\video\video-case001.pptx" />
-    <None Remove="Assets\1x1.svg" />
-    <EmbeddedResource Include="Assets\1x1.svg" />
+    <None Remove="Assets\066 1x1.svg" />
+    <EmbeddedResource Include="Assets\066 1x1.svg" />
     <None Remove="Assets\002.pptx" />
     <EmbeddedResource Include="Assets\002.pptx" />
     <None Remove="Assets\003.pptx" />
@@ -201,8 +200,8 @@
     <EmbeddedResource Include="Assets\057_corner-radius.pptx" />
     <None Remove="Assets\058_bg-fill.pptx" />
     <EmbeddedResource Include="Assets\058_bg-fill.pptx" />
-    <None Remove="Assets\tables-case001.pptx" />
-    <EmbeddedResource Include="Assets\tables-case001.pptx" />
+    <None Remove="Assets\065 table.pptx" />
+    <EmbeddedResource Include="Assets\065 table.pptx" />
     <None Remove="Assets\059_crop-images.pptx" />
     <EmbeddedResource Include="Assets\059_crop-images.pptx" />
     <None Remove="Assets\060_picture-transparency.pptx" />
@@ -213,18 +212,16 @@
     <EmbeddedResource Include="Assets\images\png image-2.png" />
     <None Remove="Assets\images\png image-large.png" />
     <EmbeddedResource Include="Assets\images\png image-large.png" />
-    <None Remove="Assets\test-mp3.mp3" />
-    <EmbeddedResource Include="Assets\test-mp3.mp3" />
-    <None Remove="Assets\test-vector-image-1.svg" />
-    <EmbeddedResource Include="Assets\test-vector-image-1.svg" />
-    <None Remove="Assets\test-vector-image-large.svg" />
-    <EmbeddedResource Include="Assets\test-vector-image-large.svg" />
-    <None Remove="Assets\test-vector-image-no-dimensions.svg" />
-    <EmbeddedResource Include="Assets\test-vector-image-no-dimensions.svg" />
-    <None Remove="Assets\test-vector-image-wide.svg" />
-    <EmbeddedResource Include="Assets\test-vector-image-wide.svg" />
-    <None Remove="Assets\test-wav.wav" />
-    <EmbeddedResource Include="Assets\test-wav.wav" />
+    <None Remove="Assets\064 mp3.mp3" />
+    <EmbeddedResource Include="Assets\064 mp3.mp3" />
+    <None Remove="Assets\063 vector image.svg" />
+    <EmbeddedResource Include="Assets\063 vector image.svg" />
+    <None Remove="Assets\068 vector image-large.svg" />
+    <EmbeddedResource Include="Assets\068 vector image-large.svg" />
+    <None Remove="Assets\070 vector image-wide.svg" />
+    <EmbeddedResource Include="Assets\070 vector image-wide.svg" />
+    <None Remove="Assets\071 wav.wav" />
+    <EmbeddedResource Include="Assets\071 wav.wav" />
     <None Remove="Assets\040_video.pptx" />
     <EmbeddedResource Include="Assets\040_video.pptx" />
     <None Remove="Assets\autoshape\line-shape.xml" />
