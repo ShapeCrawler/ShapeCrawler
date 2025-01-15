@@ -24,7 +24,7 @@ internal sealed class SlideShapes : ISlideShapes
 {
     private const long DefaultTableWidthEmu = 8128000L;
     
-    private static readonly MagickFormat[] SupportedImageFormats = [MagickFormat.Bmp, MagickFormat.Emf, MagickFormat.Eps, MagickFormat.Gif, MagickFormat.Jpe, MagickFormat.Jpeg, MagickFormat.Png, MagickFormat.Svg, MagickFormat.Tif, MagickFormat.Tiff];
+    private static readonly MagickFormat[] SupportedImageFormats = [MagickFormat.Emf, MagickFormat.Gif, MagickFormat.Jpeg, MagickFormat.Png, MagickFormat.Svg, MagickFormat.Tif, MagickFormat.Tiff];
     private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
 
     private readonly SlidePart sdkSlidePart;
