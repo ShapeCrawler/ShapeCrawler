@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -179,6 +179,12 @@ internal record ShapeFill : IShapeFill
 
     public void SetPicture(Stream image)
     {
+        var existingBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        if (existingBlipFill != null)
+        {
+            existingBlipFill.Remove();
+        }
+
         if (this.Type == FillType.Picture)
         {
             this.pictureImage!.Update(image);
