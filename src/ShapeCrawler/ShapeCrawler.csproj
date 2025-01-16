@@ -10,8 +10,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🐞Fixed trim warning `IL2104` [#708](https://github.com/ShapeCrawler/ShapeCrawler/issues/708)  
-🐞Fixed duplication of image source [#809](https://github.com/ShapeCrawler/ShapeCrawler/issues/809)  </PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added properties `ISpacing.BeforeSpacingPoints` and `ISpacing.AfterSpacingPoints` for the paragraph [#563](https://github.com/ShapeCrawler/ShapeCrawler/issues/563)  </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
