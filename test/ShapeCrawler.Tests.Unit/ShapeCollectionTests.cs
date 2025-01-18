@@ -670,6 +670,23 @@ public class ShapeCollectionTests : SCTest
         // Assert
         addingPicture.Should().Throw<SCException>();
     }
+    
+    [Test]
+    public void AddPicture_throws_exception_when_the_specified_stream_is_unsupported_image()
+    {
+        Assume.That(!EnvironmentChecks.IsGhostscriptInstalled(), "Ghostscript is installed, skipping the test.");
+
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        var stream = TestAsset("test-image.eps");
+
+        // Act
+        var addingPicture = () => shapes.AddPicture(stream);
+
+        // Assert
+        addingPicture.Should().Throw<SCException>();
+    }
 
     [Test]
     public void AddPicture_adds_picture_with_correct_Height()

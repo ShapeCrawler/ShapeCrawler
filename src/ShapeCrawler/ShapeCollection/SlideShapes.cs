@@ -489,23 +489,8 @@ internal sealed class SlideShapes : ISlideShapes
     private static string GetMimeType(MagickFormat format)
     {
         var mime = MagickFormatInfo.Create(format)?.MimeType;
-
-        if (mime is not null)
-        {
-            return mime;
-        }
         
-        return format switch
-        {
-            MagickFormat.Emf => "image/x-emf",
-            MagickFormat.Gif => "image/gif",
-            MagickFormat.Jpeg => "image/jpeg",
-            MagickFormat.Png => "image/png",
-            MagickFormat.Svg => "image/svg+xml",
-            MagickFormat.Tif => "image/tiff",
-            MagickFormat.Tiff => "image/tiff",
-            _ => throw new SCException("Unsupported image format.")
-        };
+        return mime ?? throw new SCException("Unsupported image format.");
     }
 
     private (int, string) GenerateIdAndName()
