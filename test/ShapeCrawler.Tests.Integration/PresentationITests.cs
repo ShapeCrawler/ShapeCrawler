@@ -1,13 +1,13 @@
 using System.IO;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
 
 namespace ShapeCrawler.Tests.Integration;
 
 public class PresentationITests : SCTest
 {
-    [Fact]
+    [Test]
     public void Open_should_not_throw_exception()
     {
         // Arrange
@@ -26,7 +26,7 @@ public class PresentationITests : SCTest
         File.Delete(savedAsFilePath);
     }
     
-    [Fact]
+    [Test]
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Stream()
     {
         // Arrange
@@ -50,7 +50,7 @@ public class PresentationITests : SCTest
         File.Delete(originalPath);
     }
            
-    [Fact]
+    [Test]
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Path()
     {
         // Arrange
