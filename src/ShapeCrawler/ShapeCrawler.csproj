@@ -69,6 +69,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.4.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.4" />
     <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="3.2.0" />
+    <PackageReference Include="PolySharp" Version="1.15.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="SkiaSharp" Version="3.116.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.116.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
