@@ -31,6 +31,7 @@ public abstract class SCTest
         var stream = assembly.GetResourceStream(file);
         var mStream = new MemoryStream();
         stream!.CopyTo(mStream);
+        mStream.Position = 0;
 
         return mStream;
     }
