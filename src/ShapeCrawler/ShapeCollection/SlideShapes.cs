@@ -169,7 +169,6 @@ internal sealed class SlideShapes : ISlideShapes
             }
             
             var rasterStream = new MemoryStream();
-            imageMagick.Density = new Density(384, 384, DensityUnit.PixelsPerInch);
             imageMagick.Write(rasterStream, new PngWriteDefines() { IncludeChunks = PngChunkFlags.None });
             image.Position = 0;
             rasterStream.Position = 0;
