@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.62.0 - Unreleased
+## Version 0.62.0 - 2025-01-16
 🍀Added properties `ISpacing.BeforeSpacingPoints` and `ISpacing.AfterSpacingPoints` for the paragraph [#563](https://github.com/ShapeCrawler/ShapeCrawler/issues/563)  
 
 ## Version 0.61.0 - 2025-01-09
