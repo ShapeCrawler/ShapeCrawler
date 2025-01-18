@@ -559,7 +559,6 @@ public class ShapeCollectionTests : SCTest
         pres.Validate();
     }
     
-    //Test that the png image is created with transparent background
     [Test]
     public void AddPicture_adds_picture_with_transparent_background()
     {
@@ -581,13 +580,16 @@ public class ShapeCollectionTests : SCTest
         });
     }
 
-    [Test]
-    public void AddPicture_adds_picture()
+    [TestCase("png image-1.png", "image/png")]
+    [TestCase("jpeg image.jpg", "image/jpeg")]
+    [TestCase("gif image.gif", "image/gif")]
+    [TestCase("tiff image.tiff", "image/tiff")]
+    public void AddPicture_adds_picture_without_conversion(string imagePath, string mime)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset(imagePath);
 
         // Act
         shapes.AddPicture(image);
@@ -596,6 +598,61 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.Image!.Mime.Should().Be(mime);
+        pres.Validate();
+    }
+    
+    [TestCase("webp image.webp")]
+    [TestCase("avif image.avif")]
+    [TestCase("bmp image.bmp")]
+    public void AddPicture_adds_picture_with_conversion_to_png(string imagePath)
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset(imagePath);
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.Image!.Mime.Should().Be("image/png");
+        
+        // Ensure the image is valid
+        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
+        var originalImage = new MagickImage(TestAsset("reference image.png"));
+        
+        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        
+        pres.Validate();
+    }
+    
+    [TestCase("heic image.heic")]
+    public void AddPicture_adds_picture_with_conversion_to_jpeg(string imagePath)
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset(imagePath);
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.Image!.Mime.Should().Be("image/jpeg");
+        
+        // Ensure the image is valid
+        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
+        var originalImage = new MagickImage(TestAsset("reference image.jpg"));
+        
+        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        
         pres.Validate();
     }
 
@@ -658,6 +715,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
+        pres.SaveAs("test.pptx");
         var addedPictureImage = shapes.Last<IPicture>().Image!;
         addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
     }

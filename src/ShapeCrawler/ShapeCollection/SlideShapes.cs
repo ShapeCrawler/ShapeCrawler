@@ -24,7 +24,16 @@ internal sealed class SlideShapes : ISlideShapes
 {
     private const long DefaultTableWidthEmu = 8128000L;
     
-    private static readonly MagickFormat[] SupportedImageFormats = [MagickFormat.Emf, MagickFormat.Gif, MagickFormat.Jpeg, MagickFormat.Png, MagickFormat.Svg, MagickFormat.Tif, MagickFormat.Tiff];
+    private static readonly MagickFormat[] SupportedImageFormats = 
+    [
+        MagickFormat.Jpeg, 
+        MagickFormat.Png,
+        MagickFormat.Gif,
+        MagickFormat.Tif, 
+        MagickFormat.Tiff,
+        MagickFormat.Svg
+    ];
+    
     private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
 
     private readonly SlidePart sdkSlidePart;
@@ -133,7 +142,7 @@ internal sealed class SlideShapes : ISlideShapes
             var originalFormat = imageMagick.Format;
             if (!SupportedImageFormats.Contains(imageMagick.Format) || VectorImageFormats.Contains(imageMagick.Format))
             {
-                imageMagick.Format = MagickFormat.Png;
+                imageMagick.Format = imageMagick.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
             }
 
             uint width = imageMagick.Width;
@@ -479,6 +488,13 @@ internal sealed class SlideShapes : ISlideShapes
 
     private static string GetMimeType(MagickFormat format)
     {
+        var mime = MagickFormatInfo.Create(format)?.MimeType;
+
+        if (mime is not null)
+        {
+            return mime;
+        }
+        
         return format switch
         {
             MagickFormat.Emf => "image/x-emf",

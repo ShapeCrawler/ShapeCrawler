@@ -233,9 +233,24 @@
     <None Remove="Assets\061_font-color.pptx" />
     <EmbeddedResource Include="Assets\061_font-color.pptx" />
     <None Remove="Assets\images\psd image.psd" />
-    <EmbeddedResource Include="Assets\images\psd image.psd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <None Remove="Assets\images\layout_left_icon_264872.ico" />
+    <None Remove="Assets\images\webp image.webp" />
+    <EmbeddedResource Include="Assets\images\webp image.webp" />
+    <None Remove="Assets\images\avif image.avif" />
+    <EmbeddedResource Include="Assets\images\avif image.avif" />
+    <None Remove="Assets\images\bmp image.bmp" />
+    <EmbeddedResource Include="Assets\images\bmp image.bmp" />
+    <None Remove="Assets\images\gif image.gif" />
+    <EmbeddedResource Include="Assets\images\gif image.gif" />
+    <None Remove="Assets\images\webp image.tiff" />
+    <EmbeddedResource Include="Assets\images\tiff image.tiff" />
+    <None Remove="Assets\images\IMG_1469.heic" />
+    <None Remove="Assets\images\webp image.heic" />
+    <EmbeddedResource Include="Assets\images\heic image.heic" />
+    <None Remove="Assets\images\reference image.png" />
+    <EmbeddedResource Include="Assets\images\reference image.png" />
+    <None Remove="Assets\images\reference image.jpg" />
+    <EmbeddedResource Include="Assets\images\reference image.jpg" />
   </ItemGroup>
 
 </Project>
