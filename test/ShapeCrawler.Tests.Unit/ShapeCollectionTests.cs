@@ -993,4 +993,24 @@ public class ShapeCollectionTests : SCTest
         var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
         imageParts.Length.Should().Be(1);
     }
+    
+    [Test]
+    [Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/696")]
+    public void AddPicture_sets_384_ppi_resolution_for_svg_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var svg = TestAsset("063 vector image.svg");
+        
+        // Act
+        shapes.AddPicture(svg);
+        
+        // Assert
+        var addedPicture = shapes.Last<IPicture>();
+        var addedPictureInfo = new MagickImageInfo(addedPicture.Image!.AsByteArray());
+        var addedPictureResolution = addedPictureInfo.Density!.ChangeUnits(DensityUnit.PixelsPerInch);
+        addedPictureResolution.X.Should().BeApproximately(384, 0.1);
+        addedPictureResolution.Y.Should().BeApproximately(384, 0.1);
+    }
 }
