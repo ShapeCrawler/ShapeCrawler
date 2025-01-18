@@ -188,7 +188,7 @@ internal sealed class SlideShapes : ISlideShapes
         }
         catch (MagickException)
         {
-            throw new SCException("Unsupported image format.");
+            throw new SCException("The stream is not an image or a non-supported image format. You can raise a discussion at https://github.com/ShapeCrawler/ShapeCrawler/discussions to find out about the possibilities supporting it.");
         }
     }
 
