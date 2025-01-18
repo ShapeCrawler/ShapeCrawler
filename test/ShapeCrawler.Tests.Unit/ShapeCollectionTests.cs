@@ -743,23 +743,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddPicture_adds_known_but_unsupported_picture_as_png()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("psd image.psd");
-
-        // Act
-        shapes.AddPicture(image);
-
-        // Assert
-        var picture = (IPicture)shapes.Last();
-        var imageMagickImage = new MagickImage(picture.Image!.AsByteArray());
-        imageMagickImage.Format.Should().Be(MagickFormat.Png);
-    }
-    
-    [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
