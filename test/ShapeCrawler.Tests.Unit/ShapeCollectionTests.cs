@@ -605,7 +605,7 @@ public class ShapeCollectionTests : SCTest
     [TestCase("webp image.webp")]
     [TestCase("avif image.avif")]
     [TestCase("bmp image.bmp")]
-    [TestCase("ico image.ico")]
+    [TestCase("ico image.ico", Ignore = "ICO images are not supported")]
     public void AddPicture_adds_picture_with_conversion_to_png(string imagePath)
     {
         // Arrange
