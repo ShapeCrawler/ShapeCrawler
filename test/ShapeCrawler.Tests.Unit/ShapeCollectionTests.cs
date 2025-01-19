@@ -706,7 +706,7 @@ public class ShapeCollectionTests : SCTest
         var addingPicture = () => shapes.AddPicture(stream);
 
         // Assert
-        addingPicture.Should().Throw<SCException>();
+        addingPicture.Should().Throw<SCException>().And.InnerException.Should().NotBeNull();
     }
 
     [Test]

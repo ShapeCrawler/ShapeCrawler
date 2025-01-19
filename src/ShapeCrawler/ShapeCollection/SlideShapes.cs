@@ -164,15 +164,15 @@ internal sealed class SlideShapes : ISlideShapes
             {
                 imageMagick.Resize(width, height);
             }
-            
+
             imageMagick.Strip();
-            
+
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
             rasterStream.Position = 0;
-            var pPicture = VectorImageFormats.Contains(originalFormat) 
-                ? this.CreateSvgPPicture(rasterStream, image, "Picture") 
+            var pPicture = VectorImageFormats.Contains(originalFormat)
+                ? this.CreateSvgPPicture(rasterStream, image, "Picture")
                 : this.CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
 
             // Fix up the sizes
@@ -185,6 +185,10 @@ internal sealed class SlideShapes : ISlideShapes
             transform2D.Offset!.Y = yEmu;
             transform2D.Extents!.Cx = cxEmu;
             transform2D.Extents!.Cy = cyEmu;
+        }
+        catch (MagickDelegateErrorException ex) when (ex.Message.Contains("ghostscript"))
+        {
+            throw new SCException("The stream is an image format that requires GhostScript which is not installed on your system.", ex);
         }
         catch (MagickException)
         {
