@@ -14,12 +14,11 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 
     internal TextParagraphPortion(OpenXmlPart sdkTypedOpenXmlPart, A.Run aRun)
     {
-        var sdkTypedOpenXmlPart1 = sdkTypedOpenXmlPart;
         this.AText = aRun.Text!;
         this.aRun = aRun;
         var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.AText);
         this.font = new Lazy<TextPortionFont>(() =>
-            new TextPortionFont(sdkTypedOpenXmlPart1, this.AText, textPortionSize));
+            new TextPortionFont(sdkTypedOpenXmlPart, this.AText, textPortionSize));
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }
 
