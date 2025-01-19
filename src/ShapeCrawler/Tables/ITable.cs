@@ -22,7 +22,7 @@ public interface ITable : IShape
     /// <summary>
     ///     Gets table columns.
     /// </summary>
-    IReadOnlyList<IColumn> Columns { get; }
+    ITableColumns Columns { get; }
 
     /// <summary>
     ///     Gets table rows.
@@ -50,22 +50,6 @@ public interface ITable : IShape
     void MergeCells(ITableCell cell1, ITableCell cell2);
 
     /// <summary>
-    ///     Removes a column at specified index.
-    /// </summary>
-    void RemoveColumnAt(int columnIndex);
-
-    /// <summary>
-    ///     Adds a new column to the table.
-    /// </summary>
-    void AddColumn();
-
-    /// <summary>
-    ///     Inserts a new column after the specified column.
-    /// </summary>
-    /// <param name="columnNumber">The column number after which to add the new column.</param>
-    void InsertColumnAfter(int columnNumber);
-
-    /// <summary>
     ///     Updates table fill.
     /// </summary>
     void UpdateFill(string colorHex);
@@ -86,13 +70,14 @@ internal sealed class Table : CopyableShape, ITable
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
         this.Rows = new TableRows(sdkTypedOpenXmlPart, this.pGraphicFrame);
+        this.Columns = new TableColumns(this.pGraphicFrame);
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
 
     public override ShapeType ShapeType => ShapeType.Table;
 
-    public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
-
+    public ITableColumns Columns { get; }
+    
     public ITableRows Rows { get; }
 
     public ITableStyle TableStyle
@@ -110,38 +95,6 @@ internal sealed class Table : CopyableShape, ITable
     private A.Table ATable => this.pGraphicFrame.ATable();
 
     public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
-
-    public void RemoveColumnAt(int columnIndex)
-    {
-        var column = (Column)this.Columns[columnIndex];
-        column.AGridColumn.Remove();
-
-        var aTableRows = this.ATable.Elements<A.TableRow>();
-
-        foreach (var aTableRow in aTableRows)
-        {
-            var aTableCell = aTableRow.Elements<A.TableCell>().ElementAt(columnIndex);
-            aTableCell.Remove();
-        }
-    }
-
-    public void AddColumn() => this.InsertColumnAfter(this.Columns.Count);
-
-    public void InsertColumnAfter(int columnNumber)
-    {
-        var columnIndex = columnNumber - 1;
-        var tableGrid = this.ATable.TableGrid!;
-        var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
-
-        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
-        var targetColumn = existingColumns[columnIndex];
-        tableGrid.InsertAfter(gridColumn, targetColumn);
-
-        foreach (var aTableRow in this.ATable.Elements<A.TableRow>())
-        {
-            new SaTableRow(aTableRow).InsertNewCellAfter(columnNumber);
-        }
-    }
 
     public void UpdateFill(string colorHex)
     {
@@ -190,20 +143,6 @@ internal sealed class Table : CopyableShape, ITable
     public override void Remove() => this.pGraphicFrame.Remove();
 
     public override ITable AsTable() => this;
-
-    private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
-    {
-        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
-        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
-
-        // Adjust existing column widths
-        foreach (var col in existingColumns)
-        {
-            col.Width = newColumnWidth;
-        }
-
-        return new A.GridColumn { Width = newColumnWidth };
-    }
 
     private void SetTableStyle(ITableStyle style)
     {
@@ -321,15 +260,6 @@ internal sealed class Table : CopyableShape, ITable
                 this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
             }
         }
-    }
-
-    private IReadOnlyList<Column> GetColumnList()
-    {
-        IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();
-        var columnList = new List<Column>(aGridColumns.Count());
-        columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
-
-        return columnList;
     }
 
     private void RemoveColumnIfNeeded(List<A.TableRow> aTableRows)

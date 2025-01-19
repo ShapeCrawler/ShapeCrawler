@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml.Spreadsheet;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tables;
@@ -55,7 +56,7 @@ public class TableTests : SCTest
         var expectedColumnsCount = table.Columns.Count - 1;
 
         // Act
-        table.RemoveColumnAt(1);
+        table.Columns.RemoveAt(1);
 
         // Assert
         table.Columns.Should().HaveCount(expectedColumnsCount);
@@ -75,7 +76,7 @@ public class TableTests : SCTest
         var expectedColumnsCount = table.Columns.Count + 1;
 
         // Act
-        table.AddColumn();
+        table.Columns.Add();
 
         // Assert
         table.Columns.Should().HaveCount(expectedColumnsCount);
@@ -90,12 +91,70 @@ public class TableTests : SCTest
         var table = pres.Slide(1).Table("Table 1");
 
         // Act
-        table.InsertColumnAfter(1);
+        table.Columns.InsertAfter(1);
         var cell = table.Cell(1, 2);
 
         // Assert
         cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
         pres.Validate();
+    }
+    
+    [Test]
+    public void Columns_Duplicate_increases_column_count_by_one()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case001.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var column = table.Columns[0];
+        var columnsCountBefore = table.Columns.Count;
+
+        // Act
+        column.Duplicate();
+        
+        // Assert
+        table.Columns.Should().HaveCount(columnsCountBefore + 1);
+        pres.Validate();
+    }
+    
+    [Test]
+    public void Columns_Duplicate_copies_column_with_all_its_cells()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case002.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var column = table.Columns[0];
+
+        // Act
+        column.Duplicate();
+        
+        // Assert
+        foreach (var row in table.Rows)
+        {
+            row.Cells.Should().HaveCount(table.Columns.Count);
+            row.Cells[0].TextBox.Text.Should().Be(row.Cells[table.Columns.Count - 1].TextBox.Text);
+        }
+    }
+    
+    [Test]
+    public void Columns_Duplicate_copies_middle_column_with_all_its_cells()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case003.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var column = table.Columns[1];
+
+        // Act
+        column.Duplicate();
+        
+        // Assert
+        foreach (var row in table.Rows)
+        {
+            row.Cells.Should().HaveCount(table.Columns.Count);
+            row.Cells[1].TextBox.Text.Should().Be(row.Cells[table.Columns.Count - 1].TextBox.Text);
+        }
     }
     
     [Test]
