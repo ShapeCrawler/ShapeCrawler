@@ -232,6 +232,26 @@
     <EmbeddedResource Include="Assets\images\jpeg image-500w.jpg" />
     <None Remove="Assets\061_font-color.pptx" />
     <EmbeddedResource Include="Assets\061_font-color.pptx" />
+    <None Remove="Assets\images\webp image.webp" />
+    <EmbeddedResource Include="Assets\images\webp image.webp" />
+    <None Remove="Assets\images\avif image.avif" />
+    <EmbeddedResource Include="Assets\images\avif image.avif" />
+    <None Remove="Assets\images\bmp image.bmp" />
+    <EmbeddedResource Include="Assets\images\bmp image.bmp" />
+    <None Remove="Assets\images\gif image.gif" />
+    <EmbeddedResource Include="Assets\images\gif image.gif" />
+    <None Remove="Assets\images\webp image.tiff" />
+    <EmbeddedResource Include="Assets\images\tiff image.tiff" />
+    <None Remove="Assets\images\webp image.heic" />
+    <EmbeddedResource Include="Assets\images\heic image.heic" />
+    <None Remove="Assets\images\reference image.png" />
+    <EmbeddedResource Include="Assets\images\reference image.png" />
+    <None Remove="Assets\images\reference image.jpg" />
+    <EmbeddedResource Include="Assets\images\reference image.jpg" />
+    <None Remove="Assets\images\test-image.eps" />
+    <EmbeddedResource Include="Assets\images\test-image.eps" />
+    <None Remove="Assets\images\ico image.ico" />
+    <EmbeddedResource Include="Assets\images\ico image.ico" />
   </ItemGroup>
 
 </Project>
