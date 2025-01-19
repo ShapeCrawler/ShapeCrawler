@@ -38,15 +38,15 @@ internal sealed class TextParagraphPortion : IParagraphPortion
 
     public Color TextHighlightColor
     {
-        get => this.ParseTextHighlight();
-        set => this.UpdateTextHighlight(value);
+        get => this.GetTextHighlight();
+        set => this.SetTextHighlight(value);
     }
 
     internal A.Text AText { get; }
 
     public void Remove() => this.aRun.Remove();
 
-    private Color ParseTextHighlight()
+    private Color GetTextHighlight()
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>();
 
@@ -71,7 +71,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         return color;
     }
 
-    private void UpdateTextHighlight(Color color)
+    private void SetTextHighlight(Color color)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 

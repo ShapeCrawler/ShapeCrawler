@@ -47,11 +47,6 @@ public struct Color
         this.Alpha = alpha;
     }
 
-    private Color((int r, int g, int b, float a) color)
-        : this(color.r, color.g, color.b, color.a)
-    {
-    }
-
     /// <summary>
     ///     Gets or sets the alpha value.
     /// </summary>
@@ -59,21 +54,6 @@ public struct Color
     /// Values are 0 to 255, where 0 is totally transparent.
     /// </remarks>
     public float Alpha { get; set; }
-
-    /// <summary>
-    ///     Gets the blue value.
-    /// </summary>
-    public int B => this.blue;
-
-    /// <summary>
-    ///     Gets the green value.
-    /// </summary>
-    public int G => this.green;
-
-    /// <summary>
-    ///     Gets the red value.
-    /// </summary>
-    public int R => this.red;
 
     /// <summary>
     ///     Gets hexadecimal code.
@@ -102,16 +82,12 @@ public struct Color
 
         return new(r, g, b, a);
     }
-    
+
     /// <summary>
     ///     Creates color hexadecimal code.
     /// </summary>
-    public override string ToString()
-    {
-        // String representation ignores alpha value
-        return $"{this.R:X2}{this.G:X2}{this.B:X2}";
-    }
-    
+    public override string ToString() => $"{this.red:X2}{this.green:X2}{this.blue:X2}";
+
     /// <summary>
     ///     Returns a color of RGBA.
     /// </summary>
