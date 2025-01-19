@@ -28,7 +28,11 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         get => this.AText.Text;
         set
         {
-            ArgumentNullException.ThrowIfNull(value, nameof(value));
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             this.AText.Text = value;
         }
     }
