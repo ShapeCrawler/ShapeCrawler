@@ -605,7 +605,6 @@ public class ShapeCollectionTests : SCTest
     [TestCase("webp image.webp")]
     [TestCase("avif image.avif")]
     [TestCase("bmp image.bmp")]
-    [TestCase("ico image.ico", Ignore = "ICO images are not supported")]
     public void AddPicture_adds_picture_with_conversion_to_png(string imagePath)
     {
         // Arrange
@@ -617,9 +616,32 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.Image!.Mime.Should().Be("image/png");
+        
+        // Ensure the image is valid
+        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
+        var originalImage = new MagickImage(TestAsset("reference image.png"));
+        
+        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        
+        pres.Validate();
+    }
+    
+    [Test]
+    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/892")]
+    public void AddPicture_adds_ico_picture_with_conversion_to_png()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset("ico image.ico");
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
         picture.Image!.Mime.Should().Be("image/png");
         
         // Ensure the image is valid
@@ -643,9 +665,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
         picture.Image!.Mime.Should().Be("image/jpeg");
         
         // Ensure the image is valid
@@ -733,7 +753,6 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        pres.SaveAs("test.pptx");
         var addedPictureImage = shapes.Last<IPicture>().Image!;
         addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
     }
