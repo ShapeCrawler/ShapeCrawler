@@ -6,6 +6,7 @@ using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
+using Random = System.Random;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -558,7 +559,6 @@ public class ShapeCollectionTests : SCTest
         pres.Validate();
     }
     
-    //Test that the png image is created with transparent background
     [Test]
     public void AddPicture_adds_picture_with_transparent_background()
     {
@@ -580,13 +580,16 @@ public class ShapeCollectionTests : SCTest
         });
     }
 
-    [Test]
-    public void AddPicture_adds_picture()
+    [TestCase("png image-1.png", "image/png")]
+    [TestCase("jpeg image.jpg", "image/jpeg")]
+    [TestCase("gif image.gif", "image/gif")]
+    [TestCase("tiff image.tiff", "image/tiff")]
+    public void AddPicture_adds_picture_without_conversion(string imagePath, string mime)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset(imagePath);
 
         // Act
         shapes.AddPicture(image);
@@ -595,6 +598,82 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.Image!.Mime.Should().Be(mime);
+        pres.Validate();
+    }
+    
+    [TestCase("webp image.webp")]
+    [TestCase("avif image.avif")]
+    [TestCase("bmp image.bmp")]
+    public void AddPicture_adds_picture_with_conversion_to_png(string imagePath)
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset(imagePath);
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+        picture.Image!.Mime.Should().Be("image/png");
+        
+        // Ensure the image is valid
+        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
+        var originalImage = new MagickImage(TestAsset("reference image.png"));
+        
+        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        
+        pres.Validate();
+    }
+    
+    [Test]
+    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/892")]
+    public void AddPicture_adds_ico_picture_with_conversion_to_png()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset("ico image.ico");
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+        picture.Image!.Mime.Should().Be("image/png");
+        
+        // Ensure the image is valid
+        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
+        var originalImage = new MagickImage(TestAsset("reference image.png"));
+        
+        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        
+        pres.Validate();
+    }
+    
+    [TestCase("heic image.heic")]
+    public void AddPicture_adds_picture_with_conversion_to_jpeg(string imagePath)
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset(imagePath);
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+        picture.Image!.Mime.Should().Be("image/jpeg");
+        
+        // Ensure the image is valid
+        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
+        var originalImage = new MagickImage(TestAsset("reference image.jpg"));
+        
+        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        
         pres.Validate();
     }
 
@@ -610,7 +689,24 @@ public class ShapeCollectionTests : SCTest
         var addingPicture = () => shapes.AddPicture(stream);
 
         // Assert
-        addingPicture.Should().Throw<Exception>();
+        addingPicture.Should().Throw<SCException>();
+    }
+    
+    [Test]
+    public void AddPicture_throws_exception_when_the_specified_stream_is_unsupported_image()
+    {
+        Assume.That(!EnvironmentChecks.IsGhostscriptInstalled(), "Ghostscript is installed, skipping the test.");
+
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        var stream = TestAsset("test-image.eps");
+
+        // Act
+        var addingPicture = () => shapes.AddPicture(stream);
+
+        // Assert
+        addingPicture.Should().Throw<SCException>().And.InnerException.Should().NotBeNull();
     }
 
     [Test]
@@ -682,7 +778,7 @@ public class ShapeCollectionTests : SCTest
             .ToHashSet();
         imageParts.Count.Should().Be(1);
     }
-
+    
     [Test]
     public void AddShape_adds_rectangle_with_valid_id_and_name()
     {

@@ -8,45 +8,49 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class TextParagraphPortion : IParagraphPortion
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<TextPortionFont> font;
     private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Run aRun;
 
     internal TextParagraphPortion(OpenXmlPart sdkTypedOpenXmlPart, A.Run aRun)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AText = aRun.Text!;
         this.aRun = aRun;
         var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.AText);
         this.font = new Lazy<TextPortionFont>(() =>
-            new TextPortionFont(this.sdkTypedOpenXmlPart, this.AText, textPortionSize));
+            new TextPortionFont(sdkTypedOpenXmlPart, this.AText, textPortionSize));
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }
 
-    /// <inheritdoc/>
     public string? Text
     {
-        get => this.ParseText();
-        set => this.SetText(value);
+        get => this.AText.Text;
+        set
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            this.AText.Text = value;
+        }
     }
 
-    /// <inheritdoc/>
     public ITextPortionFont Font => this.font.Value;
 
     public IHyperlink? Link => this.hyperlink.Value;
 
     public Color TextHighlightColor
     {
-        get => this.ParseTextHighlight();
-        set => this.UpdateTextHighlight(value);
+        get => this.GetTextHighlight();
+        set => this.SetTextHighlight(value);
     }
 
     internal A.Text AText { get; }
 
     public void Remove() => this.aRun.Remove();
 
-    private Color ParseTextHighlight()
+    private Color GetTextHighlight()
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>();
 
@@ -57,40 +61,21 @@ internal sealed class TextParagraphPortion : IParagraphPortion
             return Color.Transparent;
         }
 
-        // Gets node value.
         // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
         var hex = aSrgbClr.Val.ToString() !;
 
-        // Check if color value is valid, we are expecting values as "000000".
         var color = Color.FromHex(hex);
 
-        // Calculate alpha value if is defined in highlight node.
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
         color.Alpha = Color.Opacity / (100000 / aAlphaValue);
 
         return color;
     }
 
-    private void UpdateTextHighlight(Color color)
+    private void SetTextHighlight(Color color)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight(color);
-    }
-
-    private string? ParseText()
-    {
-        var portionText = this.AText?.Text;
-        return portionText;
-    }
-
-    private void SetText(string? text)
-    {
-        if (text is null)
-        {
-            throw new ArgumentNullException(nameof(text));
-        }
-
-        this.AText.Text = text;
     }
 }
