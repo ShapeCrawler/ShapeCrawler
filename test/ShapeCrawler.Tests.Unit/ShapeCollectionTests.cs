@@ -415,6 +415,32 @@ public class ShapeCollectionTests : SCTest
         imageParts.Count.Should().Be(1);
     }
     
+    [TestCase("jpeg image-500w.jpg")]
+    [TestCase("png image-1.png")]
+    [TestCase("gif image.gif")]
+    [TestCase("tiff image.tiff")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+
+        var image = TestAsset(fileName);
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        Thread.Sleep(1000);
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+    
     [Test]
     [Explicit("Should be fixed")]
     public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
