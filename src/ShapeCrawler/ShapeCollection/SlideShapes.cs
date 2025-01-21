@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
+using ImageMagick.Formats;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
@@ -140,9 +141,15 @@ internal sealed class SlideShapes : ISlideShapes
                 new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
 
             var originalFormat = imageMagick.Format;
-            if (!SupportedImageFormats.Contains(imageMagick.Format) || VectorImageFormats.Contains(imageMagick.Format))
+            if (!SupportedImageFormats.Contains(imageMagick.Format))
             {
                 imageMagick.Format = imageMagick.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
+            }
+
+            if (VectorImageFormats.Contains(imageMagick.Format))
+            {
+                imageMagick.Format = MagickFormat.Png;
+                imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch);
             }
 
             uint width = imageMagick.Width;
@@ -165,7 +172,11 @@ internal sealed class SlideShapes : ISlideShapes
                 imageMagick.Resize(width, height);
             }
 
-            imageMagick.Strip();
+            imageMagick.Settings.SetDefines(
+                new PngWriteDefines
+            {
+                ExcludeChunks = PngChunkFlags.date
+            });
 
             using var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);

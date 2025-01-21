@@ -741,20 +741,23 @@ public class ShapeCollectionTests : SCTest
         addedPictureImage.Mime.Should().Be("image/jpeg");
     }
     
-    [Test]
-    public void AddPicture_should_not_change_the_underlying_file_size()
+    [TestCase("jpeg image-500w.jpg")]
+    [TestCase("png image-1.png")]
+    [TestCase("gif image.gif")]
+    [TestCase("tiff image.tiff")]
+    public void AddPicture_should_not_change_the_underlying_file_size(string fileName)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("jpeg image-500w.jpg");
+        var image = TestAsset(fileName);
 
         // Act
         shapes.AddPicture(image);
 
         // Assert
         var addedPictureImage = shapes.Last<IPicture>().Image!;
-        addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
+        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)image.Length + 2000);
     }
     
     [Test]
@@ -1091,7 +1094,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/696")]
     public void AddPicture_sets_384_ppi_resolution_for_svg_picture()
     {
         // Arrange
