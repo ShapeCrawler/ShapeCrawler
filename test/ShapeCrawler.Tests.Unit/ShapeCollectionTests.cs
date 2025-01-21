@@ -431,7 +431,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapesSlide1.AddPicture(image);
-        Thread.Sleep(1000);
+        Task.Delay(1000).Wait();
         shapesSlide2.AddPicture(image);
 
         // Assert
