@@ -799,7 +799,6 @@ public class ShapeTests : SCTest
     [TestCase("Donut", "[79.504]")]
     [TestCase("NoSmoking", "[64.97]")]
     [TestCase("Donut", "[79.504]")]
-
     [TestCase("RightArrow", "[0,19.444]")]
     [TestCase("LeftArrow", "[200,7.408]")]
     [TestCase("UpArrow", "[15.972,28.124]")]
@@ -814,7 +813,22 @@ public class ShapeTests : SCTest
     [TestCase("QuadArrow", "[0,75.986,8.38]")]
     [TestCase("LeftArrowCallout", "[0,48.592,57.042,14.788]")]
     [TestCase("RightArrowCallout", "[50,26.056,79.578,76.434]")]
-    
+
+    [TestCase("UpArrowCallout", "[0,100,165.494,15.87]")]
+    [TestCase("DownArrowCallout", "[0,100,145.774,6.01]")]
+    [TestCase("UpDownArrowCallout", "[81.69,100,78.168,0]")]
+    [TestCase("QuadArrowCallout", "[0,0,62.97,0]")]
+    [TestCase("BentArrow", "[61.972,30.986,100,0]")]
+    [TestCase("UTurnArrow", "[0,18.31,85.212,5.81,135.212]")]
+    [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
+    //[TestCase("LeftCircularArrow", "[]")] // Malformed geometry. Formula has no value.
+    [TestCase("LeftRightCircularArrow", "[0,6773.122,1642.124,36866.022,8.998]")]
+    [TestCase("CurvedRightArrow", "[33.77,17.324,111.458]")]
+    [TestCase("CurvedLeftArrow", "[78.226,40.222,137.152]")]
+    [TestCase("CurvedUpArrow", "[1.734,42.154,33.68]")]
+    [TestCase("CurvedDownArrow", "[28.276,68.26,57.522]")]
+    [TestCase("SwooshArrow", "[147.778, 140]")]
+
     [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
     public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
     {
