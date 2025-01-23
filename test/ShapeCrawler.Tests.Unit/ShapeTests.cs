@@ -828,7 +828,6 @@ public class ShapeTests : SCTest
     [TestCase("CurvedDownArrow", "[28.276,68.26,57.522]")]
     [TestCase("SwooshArrow", "[147.778, 140]")]
     [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
-
     //[TestCase("LeftCircularArrow", "[]")] // Malformed geometry. Formula has no value.
     [TestCase("LeftRightCircularArrow", "[0,6773.122,1642.124,36866.022,8.998]")]
     [TestCase("CurvedRightArrow", "[33.77,17.324,111.458]")]
@@ -839,6 +838,17 @@ public class ShapeTests : SCTest
     [TestCase("Can", "[100]")]
     [TestCase("Sun", "[93.75]")]
     [TestCase("Moon", "[175]")]
+    // [TestCase("SmileyFace", "[]")] // Malformed geometry. Formula has no value.
+    [TestCase("FoldedCorner", "[100]")]
+    [TestCase("Bevel", "[11.266]")]
+    [TestCase("Frame", "[100]")]
+    [TestCase("HalfFrame", "[107.638, 17.36]")]
+    [TestCase("Corner", "[147.222,154.862]")]
+    [TestCase("DiagonalStripe", "[32.87]")]
+    [TestCase("Chord", "[12235.572,37755.642]")]
+    [TestCase("Arc", "[14144.04,9163.314]")]
+    [TestCase("LeftBracket", "[100]")]
+    [TestCase("RightBracket", "[0]")]
 
     public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
     {
@@ -881,8 +891,5 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.ShapeGeometry.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
-
-        // TODO: Remove this before merging
-        pres.SaveAs(geometryStr + expectedAdjustmentsJson + ".pptx");
     }
 }
