@@ -854,7 +854,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var shape = 
-            new Presentation(StreamOf("062_shape-adjustments.pptx"))
+            new Presentation(TestAsset("062_shape-adjustments.pptx"))
                 .Slides[0]
                 .Shapes
                 .GetByName(name)
