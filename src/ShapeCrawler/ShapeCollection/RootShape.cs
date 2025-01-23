@@ -46,8 +46,6 @@ internal sealed class RootShape : CopyableShape, IRootShape
         set => this.decoratedShape.CornerSize = value;
     }
 
-    internal ShapeGeometry? ShapeGeometry => (this.decoratedShape as AutoShape)?.ShapeGeometry;
-
     public override decimal X
     {
         get => this.decoratedShape.X; 
@@ -55,7 +53,9 @@ internal sealed class RootShape : CopyableShape, IRootShape
     }
 
     #endregion Decorated Shape
-    
+
+    internal ShapeGeometry? ShapeGeometry => (this.decoratedShape as AutoShape)?.ShapeGeometry;
+
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)this.pShape.Parent!;

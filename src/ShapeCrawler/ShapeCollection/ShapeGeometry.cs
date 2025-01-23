@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -44,7 +42,6 @@ internal sealed class ShapeGeometry : IShapeGeometry
     /// <remarks>
     ///     Only geometries listed here allow setting adjustments.
     /// </remarks>
-
     private static readonly Dictionary<Geometry, int> GeometryToNumberOfAdjustmentsMap = new()
     {
         { Geometry.RoundedRectangle, 1 },
@@ -151,24 +148,25 @@ internal sealed class ShapeGeometry : IShapeGeometry
             this.Adjustments = geometryType switch
             {
                 Geometry.RoundedRectangle => [value],
-                Geometry.TopCornersRoundedRectangle => [value,0],
-                _ => throw new SCException($"{geometryType} does not support {nameof(CornerSize)}")
+                Geometry.TopCornersRoundedRectangle => [value, 0],
+                _ => throw new SCException($"{geometryType} does not support {nameof(this.CornerSize)}")
             };
         }
     }
 
     /// <summary>
-    ///     Gets or sets the geometry adjustments. Work in progress!! 
+    ///     Gets or sets the geometry adjustments.
     /// </summary>
     internal decimal[] Adjustments
     {
-        get => ExtractAdjustmentsFromShapeGuide();
-        set {
-            if (GeometryToNumberOfAdjustmentsMap.TryGetValue(GeometryType, out var numAdjustments))
+        get => this.ExtractAdjustmentsFromShapeGuide();
+        set 
+        {
+            if (GeometryToNumberOfAdjustmentsMap.TryGetValue(this.GeometryType, out var numAdjustments))
             {
                 if (value.Length > numAdjustments)
                 {
-                    throw new SCException($"{GeometryType} only supports {numAdjustments} adjustments");
+                    throw new SCException($"{this.GeometryType} only supports {numAdjustments} adjustments");
                 }
 
                 if (numAdjustments == 1)
@@ -182,7 +180,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
             else
             {
-                throw new SCException($"{GeometryType} does not support adjustments");
+                throw new SCException($"{this.GeometryType} does not support adjustments");
             }
         }
     }
@@ -237,7 +235,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
         return this.APresetGeometry?
             .AdjustValueList?
             .Descendants<A.ShapeGuide>()
-            .Where(x => x.Name?.Value?.StartsWith("adj") ?? false)
+            .Where(x => x.Name?.Value?.StartsWith("adj", StringComparison.InvariantCulture) ?? false)
             .OrderBy(x => x.Name?.Value ?? string.Empty)
             .Select(ExtractAdjustmentFromShapeGuide)
             .ToArray()
@@ -251,14 +249,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
             throw new SCException("This geometry supports a single adjustment value.");
         }
 
-        Inject("adj", values[0]);
+        this.Inject("adj", values[0]);
     }
 
     private void InjectMultipleAdjustmentsIntoShapeGuide(decimal[] values)
     {
         for (int i = 0; i < values.Length; i++)
         {
-            Inject($"adj{i + 1}", values[i]);
+            this.Inject($"adj{i + 1}", values[i]);
         }
     }
 
