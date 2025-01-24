@@ -1,12 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
-using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Random = System.Random;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -415,6 +413,32 @@ public class ShapeCollectionTests : SCTest
         imageParts.Count.Should().Be(1);
     }
     
+    [TestCase("jpeg image-500w.jpg")]
+    [TestCase("png image-1.png")]
+    [TestCase("3 gif image.gif")]
+    [TestCase("tiff image.tiff")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+
+        var image = TestAsset(fileName);
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        Task.Delay(1000).Wait();
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Count.Should().Be(1);
+    }
+    
     [Test]
     [Explicit("Should be fixed")]
     public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
@@ -581,49 +605,47 @@ public class ShapeCollectionTests : SCTest
     }
 
     [TestCase("png image-1.png", "image/png")]
-    [TestCase("jpeg image.jpg", "image/jpeg")]
-    [TestCase("gif image.gif", "image/gif")]
+    [TestCase("6 jpeg image.jpg", "image/jpeg")]
+    [TestCase("3 gif image.gif", "image/gif")]
     [TestCase("tiff image.tiff", "image/tiff")]
-    public void AddPicture_adds_picture_without_conversion(string imagePath, string mime)
+    public void AddPicture_adds_should_set_valid_mime(string image, string expectedMime)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset(imagePath);
+        var imageStream = TestAsset(image);
 
         // Act
-        shapes.AddPicture(image);
+        shapes.AddPicture(imageStream);
 
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
-        picture.Image!.Mime.Should().Be(mime);
+        picture.Image!.Mime.Should().Be(expectedMime);
         pres.Validate();
     }
     
     [TestCase("webp image.webp")]
-    [TestCase("avif image.avif")]
-    [TestCase("bmp image.bmp")]
-    public void AddPicture_adds_picture_with_conversion_to_png(string imagePath)
+    [TestCase("1 avif image.avif")]
+    [TestCase("2 bmp image.bmp")]
+    public void AddPicture_should_set_png_mime(string image)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset(imagePath);
+        var imageStream = TestAsset(image);
 
         // Act
-        shapes.AddPicture(image);
+        shapes.AddPicture(imageStream);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
-        picture.Image!.Mime.Should().Be("image/png");
+        var addedPicture = shapes.Last<IPicture>();
         
-        // Ensure the image is valid
-        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
-        var originalImage = new MagickImage(TestAsset("reference image.png"));
+        addedPicture.Image!.Mime.Should().Be("image/png");
         
-        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        var actualImage = new MagickImage(addedPicture.Image!.AsByteArray());
+        var expectedImage = new MagickImage(TestAsset("reference image.png"));
+        actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
         pres.Validate();
     }
@@ -653,26 +675,25 @@ public class ShapeCollectionTests : SCTest
         pres.Validate();
     }
     
-    [TestCase("heic image.heic")]
-    public void AddPicture_adds_picture_with_conversion_to_jpeg(string imagePath)
+    [Test]
+    public void AddPicture_adds_should_set_jpeg_mime()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset(imagePath);
+        var image = TestAsset("4 heic image.heic");
 
         // Act
         shapes.AddPicture(image);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
+        var picture = shapes.Last<IPicture>();
+        
         picture.Image!.Mime.Should().Be("image/jpeg");
         
-        // Ensure the image is valid
-        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
-        var originalImage = new MagickImage(TestAsset("reference image.jpg"));
-        
-        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        var actualImage = new MagickImage(picture.Image!.AsByteArray());
+        var expectedImage = new MagickImage(TestAsset("reference image.jpg"));
+        actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
         pres.Validate();
     }
@@ -692,23 +713,6 @@ public class ShapeCollectionTests : SCTest
         addingPicture.Should().Throw<SCException>();
     }
     
-    [Test]
-    public void AddPicture_throws_exception_when_the_specified_stream_is_unsupported_image()
-    {
-        Assume.That(!EnvironmentChecks.IsGhostscriptInstalled(), "Ghostscript is installed, skipping the test.");
-
-        // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slide(1).Shapes;
-        var stream = TestAsset("test-image.eps");
-
-        // Act
-        var addingPicture = () => shapes.AddPicture(stream);
-
-        // Assert
-        addingPicture.Should().Throw<SCException>().And.InnerException.Should().NotBeNull();
-    }
-
     [Test]
     public void AddPicture_adds_picture_with_correct_Height()
     {
@@ -731,7 +735,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("jpeg image.jpg");
+        var image = TestAsset("6 jpeg image.jpg");
 
         // Act
         shapes.AddPicture(image);

@@ -136,10 +136,7 @@ internal sealed class SlideShapes : ISlideShapes
         image.Position = 0;
         try
         {
-            using var imageMagick = new MagickImage(
-                image,
-                new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
-
+            using var imageMagick = new MagickImage(image, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = imageMagick.Format;
             if (!SupportedImageFormats.Contains(imageMagick.Format))
             {
@@ -152,9 +149,9 @@ internal sealed class SlideShapes : ISlideShapes
                 // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
                 imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch);
             }
-
-            uint width = imageMagick.Width;
-            uint height = imageMagick.Height;
+            
+            var width = imageMagick.Width;
+            var height = imageMagick.Height;
 
             if (height > 500)
             {
@@ -179,7 +176,7 @@ internal sealed class SlideShapes : ISlideShapes
                 ExcludeChunks = PngChunkFlags.date
             });
 
-            using var rasterStream = new MemoryStream();
+            var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
             image.Position = 0;
             rasterStream.Position = 0;

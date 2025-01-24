@@ -18,7 +18,7 @@ public struct Color
     /// <summary>
     ///     Predefined transparent color.
     /// </summary>
-    public static readonly Color Transparent = new(0, 0, 0, 0);
+    public static readonly Color NoColor = new(0, 0, 0, 0);
 
     /// <summary>
     ///     Predefined white color.

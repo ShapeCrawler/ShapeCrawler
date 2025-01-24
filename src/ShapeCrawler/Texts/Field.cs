@@ -57,7 +57,7 @@ internal sealed class Field : IParagraphPortion
         if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
-            return Color.Transparent;
+            return Color.NoColor;
         }
 
         // Gets node value.

@@ -58,7 +58,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
-            return Color.Transparent;
+            return Color.NoColor;
         }
 
         // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
