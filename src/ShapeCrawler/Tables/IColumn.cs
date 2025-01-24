@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -48,19 +49,21 @@ internal sealed class Column : IColumn
         var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
         
         var totalWidth = existingColumns.Sum(col => col.Width!.Value);
-        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
-
-        foreach (var col in existingColumns)
-        {
-            col.Width = newColumnWidth;
-        }
         
         var newGridColumn = new A.GridColumn
         {
-            Width = newColumnWidth
+            Width = this.AGridColumn.Width 
         };
         
         tableGrid.Append(newGridColumn);
+        
+        var newTotalWidth = totalWidth + this.GetWidth();
+        var ratio = (double)totalWidth / newTotalWidth;
+
+        foreach (var col in existingColumns)
+        {
+            col.Width = (int)Math.Round(col.Width!.Value * ratio);
+        }
         
         var table = tableGrid.Parent as A.Table;
         foreach(A.TableRow tr in table!.Elements<A.TableRow>())
