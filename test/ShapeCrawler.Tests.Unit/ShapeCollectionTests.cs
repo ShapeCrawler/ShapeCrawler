@@ -416,7 +416,7 @@ public class ShapeCollectionTests : SCTest
     [TestCase("jpeg image-500w.jpg")]
     [TestCase("png image-1.png")]
     [TestCase("3 gif image.gif")]
-    [TestCase("tiff image.tiff")]
+    [TestCase("7 tiff image.tiff")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
     {
         // Arrange
@@ -607,7 +607,7 @@ public class ShapeCollectionTests : SCTest
     [TestCase("png image-1.png", "image/png")]
     [TestCase("6 jpeg image.jpg", "image/jpeg")]
     [TestCase("3 gif image.gif", "image/gif")]
-    [TestCase("tiff image.tiff", "image/tiff")]
+    [TestCase("7 tiff image.tiff", "image/tiff")]
     public void AddPicture_adds_should_set_valid_mime(string image, string expectedMime)
     {
         // Arrange
@@ -747,8 +747,8 @@ public class ShapeCollectionTests : SCTest
     
     [TestCase("jpeg image-500w.jpg")]
     [TestCase("png image-1.png")]
-    [TestCase("gif image.gif")]
-    [TestCase("tiff image.tiff")]
+    [TestCase("3 gif image.gif")]
+    [TestCase("7 tiff image.tiff")]
     public void AddPicture_should_not_change_the_underlying_file_size(string fileName)
     {
         // Arrange
