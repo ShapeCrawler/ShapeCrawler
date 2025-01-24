@@ -857,12 +857,11 @@ public class ShapeTests : SCTest
             new Presentation(TestAsset("062_shape-adjustments.pptx"))
                 .Slides[0]
                 .Shapes
-                .GetByName(name)
-                as RootShape;
+                .GetByName(name);
         var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
 
         // Act
-        var actualAdjustments = shape.ShapeGeometry.Adjustments;
+        var actualAdjustments = shape.Adjustments;
 
         // Assert
         actualAdjustments.Should().BeEquivalentTo(expectedAdjustments);
@@ -887,9 +886,9 @@ public class ShapeTests : SCTest
         var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
 
         // Act
-        shape.ShapeGeometry.Adjustments = expectedAdjustments;
+        shape.Adjustments = expectedAdjustments;
 
         // Assert
-        shape.ShapeGeometry.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
+        shape.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
     }
 }

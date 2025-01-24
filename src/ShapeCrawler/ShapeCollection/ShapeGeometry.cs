@@ -154,10 +154,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
     }
 
-    /// <summary>
-    ///     Gets or sets the geometry adjustments.
-    /// </summary>
-    internal decimal[] Adjustments
+    public decimal[] Adjustments
     {
         get => this.ExtractAdjustmentsFromShapeGuide();
         set 

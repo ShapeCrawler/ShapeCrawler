@@ -52,9 +52,13 @@ internal sealed class RootShape : CopyableShape, IRootShape
         set => this.decoratedShape.X = value;
     }
 
-    #endregion Decorated Shape
+    public override decimal[] Adjustments
+    {
+        get => this.decoratedShape.Adjustments;
+        set => this.decoratedShape.Adjustments = value;
+    }
 
-    internal ShapeGeometry? ShapeGeometry => (this.decoratedShape as AutoShape)?.ShapeGeometry;
+    #endregion Decorated Shape
 
     public void Duplicate()
     {

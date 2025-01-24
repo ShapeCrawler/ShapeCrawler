@@ -157,6 +157,12 @@ internal abstract class Shape : IShape
         set => throw new SCException("Changing corner size of this shape is not supported");
     }
 
+    public virtual decimal[] Adjustments
+    {
+        get => [];
+        set => throw new SCException("Setting adjustments of this shape is not supported");
+    }
+
     public string? CustomData
     {
         get
