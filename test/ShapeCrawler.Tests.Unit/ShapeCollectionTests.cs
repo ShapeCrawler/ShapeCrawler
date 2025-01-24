@@ -400,7 +400,7 @@ public class ShapeCollectionTests : SCTest
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
 
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset("09 png image.png");
 
         // Act
         shapesSlide1.AddPicture(image);
@@ -413,10 +413,10 @@ public class ShapeCollectionTests : SCTest
         imageParts.Count.Should().Be(1);
     }
     
-    [TestCase("jpeg image-500w.jpg")]
-    [TestCase("png image-1.png")]
-    [TestCase("3 gif image.gif")]
-    [TestCase("7 tiff image.tiff")]
+    [TestCase("08 jpeg image-500w.jpg")]
+    [TestCase("09 png image.png")]
+    [TestCase("03 gif image.gif")]
+    [TestCase("07 tiff image.tiff")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
     {
         // Arrange
@@ -448,7 +448,7 @@ public class ShapeCollectionTests : SCTest
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
         var shapes = slide.Shapes;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset("09 png image.png");
         shapes.AddPicture(image);
 
         // Act
@@ -604,10 +604,10 @@ public class ShapeCollectionTests : SCTest
         });
     }
 
-    [TestCase("png image-1.png", "image/png")]
-    [TestCase("6 jpeg image.jpg", "image/jpeg")]
-    [TestCase("3 gif image.gif", "image/gif")]
-    [TestCase("7 tiff image.tiff", "image/tiff")]
+    [TestCase("09 png image.png", "image/png")]
+    [TestCase("06 jpeg image.jpg", "image/jpeg")]
+    [TestCase("03 gif image.gif", "image/gif")]
+    [TestCase("07 tiff image.tiff", "image/tiff")]
     public void AddPicture_adds_should_set_valid_mime(string image, string expectedMime)
     {
         // Arrange
@@ -626,8 +626,8 @@ public class ShapeCollectionTests : SCTest
     }
     
     [TestCase("webp image.webp")]
-    [TestCase("1 avif image.avif")]
-    [TestCase("2 bmp image.bmp")]
+    [TestCase("01 avif image.avif")]
+    [TestCase("02 bmp image.bmp")]
     public void AddPicture_should_set_png_mime(string image)
     {
         // Arrange
@@ -681,7 +681,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("4 heic image.heic");
+        var image = TestAsset("04 heic image.heic");
 
         // Act
         shapes.AddPicture(image);
@@ -719,7 +719,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset("09 png image.png");
 
         // Act
         shapes.AddPicture(image);
@@ -735,7 +735,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("6 jpeg image.jpg");
+        var image = TestAsset("06 jpeg image.jpg");
 
         // Act
         shapes.AddPicture(image);
@@ -745,24 +745,24 @@ public class ShapeCollectionTests : SCTest
         addedPictureImage.Mime.Should().Be("image/jpeg");
     }
     
-    [TestCase("jpeg image-500w.jpg")]
-    [TestCase("png image-1.png")]
-    [TestCase("3 gif image.gif")]
-    [TestCase("7 tiff image.tiff")]
-    public void AddPicture_should_not_change_the_underlying_file_size(string fileName)
+    [TestCase("08 jpeg image-500w.jpg")]
+    [TestCase("09 png image.png")]
+    [TestCase("03 gif image.gif")]
+    [TestCase("07 tiff image.tiff")]
+    public void AddPicture_should_not_change_the_underlying_file_size(string image)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset(fileName);
+        var imageStream = TestAsset(image);
+        const int fileSizeTolerance = 2000;
 
         // Act
-        shapes.AddPicture(image);
+        shapes.AddPicture(imageStream);
 
         // Assert
         var addedPictureImage = shapes.Last<IPicture>().Image!;
-        const int fileSizeTolerance = 2000;
-        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)image.Length + fileSizeTolerance);
+        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)imageStream.Length + fileSizeTolerance);
     }
     
     [Test]
@@ -772,7 +772,7 @@ public class ShapeCollectionTests : SCTest
         var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset("09 png image.png");
 
         // Act
         shapes.AddPicture(image);
@@ -1086,7 +1086,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("008.pptx"));
         var shapes = pres.Slide(1).Shapes;
-        var pngImage = TestAsset("png image-1.png");
+        var pngImage = TestAsset("09 png image.png");
 
         // Act
         shapes.AddPicture(pngImage);
