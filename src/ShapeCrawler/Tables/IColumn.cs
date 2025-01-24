@@ -18,7 +18,7 @@ public interface IColumn
     int Width { get; set; }
     
     /// <summary>
-    ///     Creates a duplicate of the current column.
+    ///     Creates a duplicate of the current column at the end of the table.
     /// </summary>
     void Duplicate();
 }
