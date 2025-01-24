@@ -757,7 +757,8 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         var addedPictureImage = shapes.Last<IPicture>().Image!;
-        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)image.Length + 2000);
+        const int fileSizeTolerance = 2000;
+        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)image.Length + fileSizeTolerance);
     }
     
     [Test]

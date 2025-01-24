@@ -149,6 +149,7 @@ internal sealed class SlideShapes : ISlideShapes
             if (VectorImageFormats.Contains(imageMagick.Format))
             {
                 imageMagick.Format = MagickFormat.Png;
+                // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
                 imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch);
             }
 
