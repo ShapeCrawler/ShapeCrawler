@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
+using ImageMagick.Formats;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
@@ -137,13 +138,22 @@ internal sealed class SlideShapes : ISlideShapes
         {
             using var imageMagick = new MagickImage(image, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = imageMagick.Format;
-            if (!SupportedImageFormats.Contains(imageMagick.Format) || VectorImageFormats.Contains(imageMagick.Format))
+            if (!SupportedImageFormats.Contains(imageMagick.Format))
             {
                 imageMagick.Format = imageMagick.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
             }
 
+            if (VectorImageFormats.Contains(imageMagick.Format))
+            {
+                imageMagick.Format = MagickFormat.Png;
+                
+                // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch);
+            }
+            
             var width = imageMagick.Width;
             var height = imageMagick.Height;
+
             if (height > 500)
             {
                 height = 500;
@@ -161,7 +171,11 @@ internal sealed class SlideShapes : ISlideShapes
                 imageMagick.Resize(width, height);
             }
 
-            imageMagick.Strip();
+            imageMagick.Settings.SetDefines(
+                new PngWriteDefines
+            {
+                ExcludeChunks = PngChunkFlags.date
+            });
 
             var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);

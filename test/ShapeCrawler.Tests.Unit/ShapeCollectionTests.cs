@@ -416,7 +416,7 @@ public class ShapeCollectionTests : SCTest
     [TestCase("jpeg image-500w.jpg")]
     [TestCase("png image-1.png")]
     [TestCase("3 gif image.gif")]
-    [TestCase("tiff image.tiff")]
+    [TestCase("7 tiff image.tiff")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
     {
         // Arrange
@@ -607,7 +607,7 @@ public class ShapeCollectionTests : SCTest
     [TestCase("png image-1.png", "image/png")]
     [TestCase("6 jpeg image.jpg", "image/jpeg")]
     [TestCase("3 gif image.gif", "image/gif")]
-    [TestCase("tiff image.tiff", "image/tiff")]
+    [TestCase("7 tiff image.tiff", "image/tiff")]
     public void AddPicture_adds_should_set_valid_mime(string image, string expectedMime)
     {
         // Arrange
@@ -745,20 +745,24 @@ public class ShapeCollectionTests : SCTest
         addedPictureImage.Mime.Should().Be("image/jpeg");
     }
     
-    [Test]
-    public void AddPicture_should_not_change_the_underlying_file_size()
+    [TestCase("jpeg image-500w.jpg")]
+    [TestCase("png image-1.png")]
+    [TestCase("3 gif image.gif")]
+    [TestCase("7 tiff image.tiff")]
+    public void AddPicture_should_not_change_the_underlying_file_size(string fileName)
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("jpeg image-500w.jpg");
+        var image = TestAsset(fileName);
 
         // Act
         shapes.AddPicture(image);
 
         // Assert
         var addedPictureImage = shapes.Last<IPicture>().Image!;
-        addedPictureImage.AsByteArray().Length.Should().BeLessThan(38000);
+        const int fileSizeTolerance = 2000;
+        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)image.Length + fileSizeTolerance);
     }
     
     [Test]
@@ -1095,7 +1099,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/696")]
     public void AddPicture_sets_384_ppi_resolution_for_svg_picture()
     {
         // Arrange

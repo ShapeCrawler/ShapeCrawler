@@ -241,7 +241,7 @@
     <None Remove="Assets\images\3 gif image.gif" />
     <EmbeddedResource Include="Assets\images\3 gif image.gif" />
     <None Remove="Assets\images\webp image.tiff" />
-    <EmbeddedResource Include="Assets\images\tiff image.tiff" />
+    <EmbeddedResource Include="Assets\images\7 tiff image.tiff" />
     <None Remove="Assets\images\webp image.heic" />
     <EmbeddedResource Include="Assets\images\4 heic image.heic" />
     <None Remove="Assets\images\reference image.png" />
