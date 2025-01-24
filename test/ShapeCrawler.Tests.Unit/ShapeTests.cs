@@ -73,7 +73,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("009_table.pptx");
-        var image = TestAsset("png image-2.png");
+        var image = TestAsset("10 png image.png");
         IPresentation presentation = new Presentation(pptx);
         IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
         IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);

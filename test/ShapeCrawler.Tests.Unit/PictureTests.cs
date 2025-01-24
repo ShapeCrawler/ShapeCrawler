@@ -81,7 +81,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("009_table");
-        var pngStream = TestAsset("png image-2.png");
+        var pngStream = TestAsset("10 png image.png");
         var pres = new Presentation(pptx);
         var mStream = new MemoryStream();
         var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
@@ -120,7 +120,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("pictures-case001.pptx"));
-        var image = TestAsset("png image-2.png");
+        var image = TestAsset("10 png image.png");
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
         var groupedPicture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
         var groupedPicture2 = groupShape.Shapes.GetByName<IPicture>("Picture 2");

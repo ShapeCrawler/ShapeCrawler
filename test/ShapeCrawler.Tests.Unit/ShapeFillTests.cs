@@ -27,7 +27,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("009_table.pptx");
-        var image = TestAsset("png image-2.png");
+        var image = TestAsset("10 png image.png");
         var shape = new Presentation(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var imageSizeBefore = fill.Picture!.AsByteArray().Length;
@@ -179,7 +179,7 @@ public class ShapeFillTests : SCTest
         var pres = new Presentation(TestAsset(file));
         var shape = pres.Slide(slideNumber).Shapes.GetByName(shapeName);
         var shapeFill = shape.Fill;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset("09 png image.png");
         var greenColor = "32a852";
 
         // Act
@@ -199,7 +199,7 @@ public class ShapeFillTests : SCTest
         var pres = new Presentation(TestAsset("009_table.pptx"));
         var shape = pres.Slide(2).Shape("AutoShape 2");
         var shapeFill = shape.Fill;
-        var image = TestAsset("png image-1.png");
+        var image = TestAsset("09 png image.png");
 
         // Act
         shapeFill.SetPicture(image);
@@ -268,7 +268,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var fill = shape.Fill;
-        var imageStream = TestAsset("png image-1.png");
+        var imageStream = TestAsset("09 png image.png");
 
         // Act
         fill.SetPicture(imageStream);
