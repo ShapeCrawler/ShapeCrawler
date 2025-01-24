@@ -70,7 +70,7 @@ internal sealed class Column : IColumn
         {
             var cells = tr.Elements<A.TableCell>().ToList();
             var cloneCell = cells[this.index].Clone();
-            tr.InsertAfter((A.TableCell)cloneCell, cells.Last());
+            tr.InsertAfter((A.TableCell)cloneCell, cells[^1]);
         }
     }
 
