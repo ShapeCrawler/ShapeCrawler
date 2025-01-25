@@ -7,7 +7,7 @@ using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-internal class ChartCreator(SlidePart slidePart)
+internal readonly ref struct SSlidePart(SlidePart slidePart)
 {
     internal void AddPieChart()
     {

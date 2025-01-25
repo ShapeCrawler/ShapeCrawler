@@ -210,7 +210,7 @@ internal sealed class SlideShapes : ISlideShapes
     
     public void AddPieChart(int x, int y, int width, int height)
     {
-        new ChartCreator(this.sdkSlidePart).AddPieChart();
+        new SSlidePart(this.sdkSlidePart).AddPieChart();
     }
 
     public void AddVideo(int x, int y, Stream stream)
