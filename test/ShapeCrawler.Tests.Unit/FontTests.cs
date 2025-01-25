@@ -80,7 +80,7 @@ public class FontTests : SCTest
         var font = autoShape.TextBox!.Paragraphs[0].Portions[0].Font;
         
         // Act
-        var fontSize = font.Size;
+        var fontSize = font!.Size;
         
         // Assert
         fontSize.Should().Be((decimal)expectedSize);
@@ -89,6 +89,7 @@ public class FontTests : SCTest
     [Test]
     [SlideShape("028.pptx", 1, 4098, 32)]
     [SlideShape("029.pptx", 1, "Content Placeholder 2", 25)]
+    // [SlideShape("072 content placeholder.pptx", 1, "Content Placeholder 1", 18)]
     public void Size_Getter_returns_font_size_of_Placeholder(IShape shape, int expectedSize)
     {
         // Arrange
@@ -106,7 +107,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var nonPlaceholderautoshapecase1 =
-            (IShape)new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
+            new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
         ITextPortionFont fontC1 = nonPlaceholderautoshapecase1.TextBox.Paragraphs[0].Portions[0].Font;
 
         // Act-Assert

@@ -252,6 +252,8 @@
     <EmbeddedResource Include="Assets\images\test-image.eps" />
     <None Remove="Assets\images\05 ico image.ico" />
     <EmbeddedResource Include="Assets\images\05 ico image.ico" />
+    <None Remove="Assets\072 content placeholder.pptx" />
+    <EmbeddedResource Include="Assets\072 content placeholder.pptx" />
   </ItemGroup>
 
 </Project>
