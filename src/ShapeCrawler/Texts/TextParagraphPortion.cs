@@ -22,7 +22,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }
 
-    public string? Text
+    public string Text
     {
         get => this.AText.Text;
         set

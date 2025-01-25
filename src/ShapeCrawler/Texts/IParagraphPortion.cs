@@ -9,11 +9,14 @@ public interface IParagraphPortion
     /// <summary>
     ///     Gets or sets text.
     /// </summary>
-    string? Text { get; set; }
+    string Text { get; set; }
 
     /// <summary>
     ///     Gets font.
     /// </summary>
+    /// <remarks>
+    ///     Returns <see langword="null"/> if the portion type doesn't support font, e.g., when it is a Line Break.
+    /// </remarks>
     ITextPortionFont? Font { get; }
 
     /// <summary>
