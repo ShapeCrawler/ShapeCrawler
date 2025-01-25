@@ -17,6 +17,6 @@ internal abstract class CopyableShape : Shape
         P.ShapeTree pShapeTree,
         IEnumerable<string> existingShapeNames)
     {
-        new WrappedPShapeTree(pShapeTree).Add(this.PShapeTreeElement);
+        new SPShapeTree(pShapeTree).Add(this.PShapeTreeElement);
     }
 }

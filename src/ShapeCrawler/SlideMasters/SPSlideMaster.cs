@@ -3,11 +3,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideMasters;
 
-internal readonly ref struct WrappedPSlideMaster
+// ReSharper disable once InconsistentNaming
+internal readonly ref struct SPSlideMaster
 {
     private readonly P.SlideMaster pSlideMaster;
 
-    internal WrappedPSlideMaster(P.SlideMaster pSlideMaster)
+    internal SPSlideMaster(P.SlideMaster pSlideMaster)
     {
         this.pSlideMaster = pSlideMaster;
     }

@@ -40,5 +40,5 @@ internal sealed class SlidePictureImage : IImage
         this.sdkImagePart.FeedData(stream);
     }
 
-    public byte[] AsByteArray() => new WrappedImagePart(this.sdkImagePart).AsBytes();
+    public byte[] AsByteArray() => new SImagePart(this.sdkImagePart).AsBytes();
 }

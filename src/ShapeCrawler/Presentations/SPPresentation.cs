@@ -3,11 +3,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Presentations;
 
-internal readonly ref struct WrappedPPresentation
+// ReSharper disable once InconsistentNaming
+internal readonly ref struct SPPresentation
 {
     private readonly P.Presentation pPresentation;
 
-    internal WrappedPPresentation(P.Presentation pPresentation)
+    internal SPPresentation(P.Presentation pPresentation)
     {
         this.pPresentation = pPresentation;
     }

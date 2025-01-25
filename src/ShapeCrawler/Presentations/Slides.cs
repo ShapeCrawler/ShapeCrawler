@@ -52,7 +52,7 @@ internal sealed class Slides : ISlides
         pPresentation.Save();
 
         var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
-        new WrappedPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
+        new SPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
@@ -153,9 +153,9 @@ internal sealed class Slides : ISlides
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        new WrappedSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
+        new SSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
 
-        var wrappedPresentationPart = new WrappedPresentationPart(targetPresPart);
+        var wrappedPresentationPart = new SPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
         var addedSlidePart = wrappedPresentationPart.Last<SlidePart>();
         var addedSlideMasterPart = wrappedPresentationPart.Last<SlideMasterPart>();

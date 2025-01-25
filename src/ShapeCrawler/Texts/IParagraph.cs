@@ -61,21 +61,21 @@ internal sealed class Paragraph : IParagraph
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
-    private readonly WrappedAParagraph wrappedAParagraph;
+    private readonly SAParagraph saParagraph;
     private readonly A.Paragraph aParagraph;
 
     private TextHorizontalAlignment? alignment;
     
     internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
-        : this(sdkTypedOpenXmlPart, aParagraph, new WrappedAParagraph(aParagraph))
+        : this(sdkTypedOpenXmlPart, aParagraph, new SAParagraph(aParagraph))
     {
     }
 
-    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, WrappedAParagraph wrappedAParagraph)
+    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, SAParagraph saParagraph)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aParagraph = aParagraph;
-        this.wrappedAParagraph = wrappedAParagraph;
+        this.saParagraph = saParagraph;
         this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
         this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.aParagraph);
@@ -179,8 +179,8 @@ internal sealed class Paragraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.wrappedAParagraph.IndentLevel();
-        set => this.wrappedAParagraph.UpdateIndentLevel(value);
+        get => this.saParagraph.IndentLevel();
+        set => this.saParagraph.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();

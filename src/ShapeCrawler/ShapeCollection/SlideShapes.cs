@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using DocumentFormat.OpenXml.Office2010.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
@@ -18,6 +20,8 @@ using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
+using NonVisualDrawingProperties = DocumentFormat.OpenXml.Drawing.ChartDrawing.NonVisualDrawingProperties;
 
 namespace ShapeCrawler.ShapeCollection;
 
@@ -203,10 +207,10 @@ internal sealed class SlideShapes : ISlideShapes
             throw new SCException("The stream is not an image or a non-supported image format. You can raise a discussion at https://github.com/ShapeCrawler/ShapeCrawler/discussions to find out about the possibilities supporting it.");
         }
     }
-
+    
     public void AddPieChart(int x, int y, int width, int height)
     {
-        throw new NotImplementedException();
+        new ChartCreator(this.sdkSlidePart).AddPieChart();
     }
 
     public void AddVideo(int x, int y, Stream stream)

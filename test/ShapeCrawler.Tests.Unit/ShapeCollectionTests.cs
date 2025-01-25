@@ -1120,9 +1120,12 @@ public class ShapeCollectionTests : SCTest
     [Test]
     public void AddPieChart_add_pie_chart()
     {
-        var pres = new Presentation(@"c:\Repo\Shape\test\ShapeCrawler.Tests.Unit\Assets\charts\001 bar chart.pptx");
+        var pres = new Presentation(@"c:\temp\pie chart.pptx");
         var shapes = pres.Slide(1).Shapes;
         
         shapes.AddPieChart(100, 100, 400, 300);
+        
+        pres.SaveAs(@"c:\temp\output.pptx");
+        pres.Validate();
     }
 }

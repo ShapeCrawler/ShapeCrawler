@@ -3,11 +3,12 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed record WrappedAParagraph
+// ReSharper disable once InconsistentNaming
+internal sealed record SAParagraph
 {
     private readonly A.Paragraph aParagraph;
 
-    internal WrappedAParagraph(A.Paragraph aParagraph)
+    internal SAParagraph(A.Paragraph aParagraph)
     {
         this.aParagraph = aParagraph;
     }

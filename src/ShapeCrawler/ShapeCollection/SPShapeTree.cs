@@ -7,11 +7,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
 
-internal readonly ref struct WrappedPShapeTree
+// ReSharper disable once InconsistentNaming
+internal readonly ref struct SPShapeTree
 {
     private readonly P.ShapeTree pShapeTree;
 
-    internal WrappedPShapeTree(P.ShapeTree pShapeTree)
+    internal SPShapeTree(P.ShapeTree pShapeTree)
     {
         this.pShapeTree = pShapeTree;
     }

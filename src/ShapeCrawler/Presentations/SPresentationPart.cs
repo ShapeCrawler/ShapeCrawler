@@ -5,11 +5,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Presentations;
 
-internal readonly ref struct WrappedPresentationPart
+internal readonly ref struct SPresentationPart
 {
     private readonly PresentationPart presentationPart;
 
-    internal WrappedPresentationPart(PresentationPart presentationPart)
+    internal SPresentationPart(PresentationPart presentationPart)
     {
         this.presentationPart = presentationPart;
     }

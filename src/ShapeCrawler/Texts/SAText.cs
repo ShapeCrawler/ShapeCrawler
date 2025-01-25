@@ -3,12 +3,13 @@ using DocumentFormat.OpenXml.Packaging;
 namespace ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-internal sealed record WrappedAText
+// ReSharper disable once InconsistentNaming
+internal sealed record SAText
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal WrappedAText(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal SAText(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;
