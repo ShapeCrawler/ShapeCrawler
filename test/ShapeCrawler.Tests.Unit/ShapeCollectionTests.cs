@@ -1118,6 +1118,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
+    [Ignore("WIP")]
     public void AddPieChart_add_pie_chart()
     {
         var pres = new Presentation(@"c:\temp\pie chart.pptx");

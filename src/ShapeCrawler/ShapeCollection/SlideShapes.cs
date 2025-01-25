@@ -580,16 +580,16 @@ internal sealed class SlideShapes : ISlideShapes
         return false;
     }
 
-    private P.Picture CreatePPicture(Stream imageStream, string shapeName, string mimeType = "image/png")
+    private P.Picture CreatePPicture(Stream image, string shapeName, string mimeType = "image/png")
     {
-        var scStream = new ImageStream(imageStream);
-        var hash = scStream.Base64Hash;
+        var imageStream = new ImageStream(image);
+        var hash = imageStream.Base64Hash;
 
         // Does this part already exist in the presentation?
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             // No, let's create it!;
-            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream, mimeType);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(image, mimeType);
             this.mediaCollection.SetImagePart(hash, imagePart);
         }
 
