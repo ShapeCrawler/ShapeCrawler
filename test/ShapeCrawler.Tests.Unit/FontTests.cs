@@ -46,7 +46,7 @@ public class FontTests : SCTest
     }
 
     [Test]
-    public void Size_Getter_returns_Font_Size_of_Non_Placeholder_Table()
+    public void Size_Getter_returns_font_size_of_Non_Placeholder_Table()
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
@@ -54,16 +54,61 @@ public class FontTests : SCTest
         var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act-Assert
-        portion.Font.Size.Should().Be(18);
+        portion.Font!.Size.Should().Be(18);
+    }
+    
+    [Test]
+    [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
+    [SlideShape("020.pptx", 1, 3, 18)]
+    [SlideShape("015.pptx", 2, 61, 18.67)]
+    [SlideShape("009_table.pptx", 3, 2, 18)]
+    [SlideShape("009_table.pptx", 4, 2, 44)]
+    [SlideShape("009_table.pptx", 4, 3, 32)]
+    [SlideShape("019.pptx", 1, 4103, 18)]
+    [SlideShape("019.pptx", 1, 2, 12)]
+    [SlideShape("014.pptx", 2, 5, 21.77)]
+    [SlideShape("012_title-placeholder.pptx", 1, "Title 1", 20)]
+    [SlideShape("010.pptx", 1, 2, 15.39)]
+    [SlideShape("014.pptx", 4, 5, 12)]
+    [SlideShape("014.pptx", 5, 4, 12)]
+    [SlideShape("014.pptx", 6, 52, 27)]
+    [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
+    public void Size_Getter_returns_font_size(IShape shape, double expectedSize)
+    {
+        // Arrange
+        var autoShape =  shape;
+        var font = autoShape.TextBox!.Paragraphs[0].Portions[0].Font;
+        
+        // Act
+        var fontSize = font!.Size;
+        
+        // Assert
+        fontSize.Should().Be((decimal)expectedSize);
+    }
+    
+    [Test]
+    [SlideShape("028.pptx", 1, 4098, 32)]
+    [SlideShape("029.pptx", 1, "Content Placeholder 2", 25)]
+    // [SlideShape("072 content placeholder.pptx", 1, "Content Placeholder 1", 18)]
+    public void Size_Getter_returns_font_size_of_Placeholder(IShape shape, int expectedSize)
+    {
+        // Arrange
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        var fontSize = font!.Size;
+
+        // Assert
+        fontSize.Should().Be(expectedSize);
     }
 
     [Test]
     public void IsBold_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsBold()
     {
         // Arrange
-        var nonPlaceholderAutoShapeCase1 =
-            (IShape)new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
-        ITextPortionFont fontC1 = nonPlaceholderAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font;
+        var nonPlaceholderautoshapecase1 =
+            new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
+        ITextPortionFont fontC1 = nonPlaceholderautoshapecase1.TextBox.Paragraphs[0].Portions[0].Font;
 
         // Act-Assert
         fontC1.IsBold.Should().BeTrue();
@@ -329,50 +374,6 @@ public class FontTests : SCTest
 
         // Assert
         shape1.TextBox!.Paragraphs[0].Portions[0].Font.LatinName.Should().Be("Segoe UI Semibold");
-    }
-    
-    [Test]
-    [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
-    [SlideShape("020.pptx", 1, 3, 18)]
-    [SlideShape("015.pptx", 2, 61, 18.67)]
-    [SlideShape("009_table.pptx", 3, 2, 18)]
-    [SlideShape("009_table.pptx", 4, 2, 44)]
-    [SlideShape("009_table.pptx", 4, 3, 32)]
-    [SlideShape("019.pptx", 1, 4103, 18)]
-    [SlideShape("019.pptx", 1, 2, 12)]
-    [SlideShape("014.pptx", 2, 5, 21.77)]
-    [SlideShape("012_title-placeholder.pptx", 1, "Title 1", 20)]
-    [SlideShape("010.pptx", 1, 2, 15.39)]
-    [SlideShape("014.pptx", 4, 5, 12)]
-    [SlideShape("014.pptx", 5, 4, 12)]
-    [SlideShape("014.pptx", 6, 52, 27)]
-    [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
-    public void Size_Getter_returns_font_size(IShape shape, double expectedSize)
-    {
-        // Arrange
-        var autoShape =  shape;
-        var font = autoShape.TextBox!.Paragraphs[0].Portions[0].Font;
-        
-        // Act
-        var fontSize = font.Size;
-        
-        // Assert
-        fontSize.Should().Be((decimal)expectedSize);
-    }
-    
-    [Test]
-    [SlideShape("028.pptx", 1, 4098, 32)]
-    [SlideShape("029.pptx", 1, "Content Placeholder 2", 25)]
-    public void Size_Getter_returns_font_size_of_Placeholder(IShape shape, int expectedFontSize)
-    {
-        // Arrange
-        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font;
-
-        // Act
-        var fontSize = font.Size;
-
-        // Assert
-        fontSize.Should().Be(expectedFontSize);
     }
     
     [Test]
