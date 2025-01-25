@@ -13,7 +13,7 @@ internal sealed record ParagraphLineBreak : IParagraphPortion
         this.aBreak = aBreak;
     }
 
-    public string? Text { get; set; } = Environment.NewLine;
+    public string Text { get; set; } = Environment.NewLine;
 
     public ITextPortionFont? Font { get; }
 

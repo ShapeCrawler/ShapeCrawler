@@ -22,23 +22,15 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }
 
-    public string? Text
+    public string Text
     {
         get => this.AText.Text;
-        set
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            this.AText.Text = value;
-        }
+        set => this.AText.Text = value;
     }
 
     public ITextPortionFont Font => this.font.Value;
 
-    public IHyperlink? Link => this.hyperlink.Value;
+    public IHyperlink Link => this.hyperlink.Value;
 
     public Color TextHighlightColor
     {

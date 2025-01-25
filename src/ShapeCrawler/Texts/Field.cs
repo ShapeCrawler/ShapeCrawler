@@ -30,7 +30,7 @@ internal sealed class Field : IParagraphPortion
     }
 
     /// <inheritdoc/>
-    public string? Text
+    public string Text
     {
         get => this.portionText.Text();
         set => this.portionText.Update(value!);
