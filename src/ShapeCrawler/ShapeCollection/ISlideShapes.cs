@@ -71,4 +71,9 @@ public interface ISlideShapes : IShapes
     ///     Adds picture.
     /// </summary>
     void AddPicture(Stream image);
+
+    /// <summary>
+    ///     Adds Pie Chart.
+    /// </summary>
+    void AddPieChart(int x, int y, int width, int height);
 }

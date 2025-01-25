@@ -204,6 +204,11 @@ internal sealed class SlideShapes : ISlideShapes
         }
     }
 
+    public void AddPieChart(int x, int y, int width, int height)
+    {
+        throw new NotImplementedException();
+    }
+
     public void AddVideo(int x, int y, Stream stream)
     {
         var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;

@@ -1116,4 +1116,13 @@ public class ShapeCollectionTests : SCTest
         addedPictureResolution.X.Should().BeApproximately(384, 0.1);
         addedPictureResolution.Y.Should().BeApproximately(384, 0.1);
     }
+    
+    [Test]
+    public void AddPieChart_add_pie_chart()
+    {
+        var pres = new Presentation(@"c:\Repo\Shape\test\ShapeCrawler.Tests.Unit\Assets\charts\001 bar chart.pptx");
+        var shapes = pres.Slide(1).Shapes;
+        
+        shapes.AddPieChart(100, 100, 400, 300);
+    }
 }
