@@ -407,7 +407,7 @@ public class PresentationTests : SCTest
     public void BinaryData_returns_presentation_binary_content_After_updating_series()
     {
         // Arrange
-        var pptx = TestAsset("charts_bar-chart.pptx");
+        var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
         var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
 
