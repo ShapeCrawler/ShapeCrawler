@@ -205,14 +205,14 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase3 = new Presentation(TestAsset("011_dt.pptx")).Slides[0].Shapes.First(sp => sp.Id == 54275);
 
             // Act
-            var autoShapeCase1 = shapeCase1 as IShape;
-            var autoShapeCase2 = shapeCase2 as IShape;
-            var autoShapeCase3 = shapeCase3 as IShape;
+            var autoshapecase1 = shapeCase1 as IShape;
+            var autoshapecase2 = shapeCase2 as IShape;
+            var autoshapecase3 = shapeCase3 as IShape;
 
             // Assert
-            autoShapeCase1.Should().NotBeNull();
-            autoShapeCase2.Should().NotBeNull();
-            autoShapeCase3.Should().NotBeNull();
+            autoshapecase1.Should().NotBeNull();
+            autoshapecase2.Should().NotBeNull();
+            autoshapecase3.Should().NotBeNull();
         }
 
         [Test]

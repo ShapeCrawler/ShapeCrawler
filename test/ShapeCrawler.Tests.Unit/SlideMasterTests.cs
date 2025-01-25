@@ -99,17 +99,17 @@ public class SlideMasterTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
         var slideMaster = pres.SlideMasters[0];
-        var masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
-        var masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
-        var masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
+        var masterautoshapecase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+        var masterautoshapecase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+        var masterautoshapecase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
         // Act
-        PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;
+        PlaceholderType? shapePlaceholderTypeCase1 = masterautoshapecase1.PlaceholderType;
 
         // Assert
         shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
-        masterAutoShapeCase2.IsPlaceholder.Should().BeFalse();
-        masterAutoShapeCase3.IsPlaceholder.Should().BeFalse();
+        masterautoshapecase2.IsPlaceholder.Should().BeFalse();
+        masterautoshapecase3.IsPlaceholder.Should().BeFalse();
     }
 
     [Test]
