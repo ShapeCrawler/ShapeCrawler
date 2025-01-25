@@ -8,7 +8,6 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -226,7 +225,7 @@ internal sealed class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = this.SdkSlidePart.NextRelationshipId();
+        var rid = new SOpenXmlPart(this.SdkSlidePart).NextRelationshipId();
         var notesSlidePart1 = this.SdkSlidePart.AddNewPart<NotesSlidePart>(rid);
         var notesSlide = new NotesSlide(
             new CommonSlideData(

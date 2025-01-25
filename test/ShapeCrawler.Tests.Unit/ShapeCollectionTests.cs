@@ -1116,4 +1116,17 @@ public class ShapeCollectionTests : SCTest
         addedPictureResolution.X.Should().BeApproximately(384, 0.1);
         addedPictureResolution.Y.Should().BeApproximately(384, 0.1);
     }
+    
+    [Test]
+    [Ignore("WIP")]
+    public void AddPieChart_add_pie_chart()
+    {
+        var pres = new Presentation(@"c:\temp\pie chart.pptx");
+        var shapes = pres.Slide(1).Shapes;
+        
+        shapes.AddPieChart(100, 100, 400, 300);
+        
+        pres.SaveAs(@"c:\temp\output.pptx");
+        pres.Validate();
+    }
 }

@@ -43,7 +43,7 @@ internal sealed class FontColor : IFontColor
 
             // TryFromTextBody()
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
+            var indentLevel = new SAParagraph(aParagraph).IndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
             var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
@@ -96,7 +96,7 @@ internal sealed class FontColor : IFontColor
 
             // From TextBody
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new WrappedAParagraph(aParagraph).IndentLevel();
+            var indentLevel = new SAParagraph(aParagraph).IndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()
                 !).FontOrNull(indentLevel);
@@ -129,7 +129,7 @@ internal sealed class FontColor : IFontColor
 
             // From Common Placeholder
             var pSlideMasterWrap =
-                new WrappedPSlideMaster(pSlideMaster);
+                new SPSlideMaster(pSlideMaster);
             var masterIndentFont = pSlideMasterWrap.BodyStyleFontOrNull(indentLevel);
             if (this.TryFromIndentFont(masterIndentFont, out var masterColor))
             {

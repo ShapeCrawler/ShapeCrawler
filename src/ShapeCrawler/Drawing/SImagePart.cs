@@ -3,11 +3,11 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Drawing;
 
-internal readonly ref struct WrappedImagePart
+internal readonly ref struct SImagePart
 {
     private readonly ImagePart imagePart;
 
-    internal WrappedImagePart(ImagePart imagePart)
+    internal SImagePart(ImagePart imagePart)
     {
         this.imagePart = imagePart;
     }

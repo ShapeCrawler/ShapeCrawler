@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Extensions;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -52,7 +52,7 @@ internal sealed class Slides : ISlides
         pPresentation.Save();
 
         var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
-        new WrappedPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
+        new SPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
@@ -73,7 +73,7 @@ internal sealed class Slides : ISlides
     {
         var sdkPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
         var sdkPresPart = sdkPresDocument.PresentationPart!;
-        var rId = sdkPresPart.NextRelationshipId();
+        var rId = new SOpenXmlPart(sdkPresPart).NextRelationshipId();
         var sdkSlidePart = sdkPresPart.AddNewPart<SlidePart>(rId);
         sdkSlidePart.Slide = new P.Slide(
             new P.CommonSlideData(
@@ -86,8 +86,9 @@ internal sealed class Slides : ISlides
             new P.ColorMapOverride(new A.MasterColorMapping()));
         var layoutInternal = (SlideLayout)layout;
         sdkSlidePart.AddPart(layoutInternal.SdkSlideLayoutPart(), "rId1");
-        
-        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData && commonSlideData.ShapeTree is P.ShapeTree shapeTree) 
+
+        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+            commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()
@@ -153,9 +154,10 @@ internal sealed class Slides : ISlides
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        new WrappedSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
+        new SSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
+            .SlideLayoutPart!);
 
-        var wrappedPresentationPart = new WrappedPresentationPart(targetPresPart);
+        var wrappedPresentationPart = new SPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
         var addedSlidePart = wrappedPresentationPart.Last<SlidePart>();
         var addedSlideMasterPart = wrappedPresentationPart.Last<SlideMasterPart>();
@@ -170,7 +172,9 @@ internal sealed class Slides : ISlides
         // Creates a new TextBody
         if (shape.TextBody is null)
         {
-            return new P.TextBody(new DocumentFormat.OpenXml.Drawing.Paragraph([new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties()]))
+            return new P.TextBody(new DocumentFormat.OpenXml.Drawing.Paragraph([
+                new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties()
+            ]))
             {
                 BodyProperties = new DocumentFormat.OpenXml.Drawing.BodyProperties(),
                 ListStyle = new DocumentFormat.OpenXml.Drawing.ListStyle(),
@@ -179,7 +183,7 @@ internal sealed class Slides : ISlides
 
         return (P.TextBody)shape.TextBody.CloneNode(true);
     }
-    
+
     private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
@@ -203,8 +207,7 @@ internal sealed class Slides : ISlides
         var masterId = CreateId(sdkPresDest.SlideMasterIdList!);
         P.SlideMasterId slideMaterId = new()
         {
-            Id = masterId,
-            RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
+            Id = masterId, RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
         };
         sdkPresDocDest.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
         sdkPresDocDest.PresentationPart.Presentation.Save();
@@ -234,7 +237,7 @@ internal sealed class Slides : ISlides
 
         return ++currentId;
     }
-    
+
     private static uint CreateId(P.SlideMasterIdList slideMasterIdList)
     {
         uint currentId = 0;

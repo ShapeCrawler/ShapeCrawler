@@ -3,11 +3,11 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Presentations;
 
-internal readonly ref struct WrappedSlideMasterPart
+internal readonly ref struct SSlideMasterPart
 {
     private readonly SlideMasterPart slideMasterPart;
 
-    internal WrappedSlideMasterPart(SlideMasterPart slideMasterPart)
+    internal SSlideMasterPart(SlideMasterPart slideMasterPart)
     {
         this.slideMasterPart = slideMasterPart;
     }

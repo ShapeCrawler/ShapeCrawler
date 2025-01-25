@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -202,6 +202,11 @@ internal sealed class SlideShapes : ISlideShapes
         {
             throw new SCException("The stream is not an image or a non-supported image format. You can raise a discussion at https://github.com/ShapeCrawler/ShapeCrawler/discussions to find out about the possibilities supporting it.");
         }
+    }
+    
+    public void AddPieChart(int x, int y, int width, int height)
+    {
+        new SSlidePart(this.sdkSlidePart).AddPieChart();
     }
 
     public void AddVideo(int x, int y, Stream stream)
@@ -575,16 +580,16 @@ internal sealed class SlideShapes : ISlideShapes
         return false;
     }
 
-    private P.Picture CreatePPicture(Stream imageStream, string shapeName, string mimeType = "image/png")
+    private P.Picture CreatePPicture(Stream image, string shapeName, string mimeType = "image/png")
     {
-        var scStream = new ImageStream(imageStream);
-        var hash = scStream.Base64Hash;
+        var imageStream = new ImageStream(image);
+        var hash = imageStream.Base64Hash;
 
         // Does this part already exist in the presentation?
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             // No, let's create it!;
-            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(imageStream, mimeType);
+            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(image, mimeType);
             this.mediaCollection.SetImagePart(hash, imagePart);
         }
 
