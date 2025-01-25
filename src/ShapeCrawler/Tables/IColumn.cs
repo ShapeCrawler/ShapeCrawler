@@ -45,22 +45,21 @@ internal sealed class Column : IColumn
     public void Duplicate()
     {
         var tableGrid = this.AGridColumn.Parent!;
-
-        var existingColumns = tableGrid.Elements<A.GridColumn>().ToList();
         
-        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
+        var totalWidth = tableGrid.Elements<A.GridColumn>()
+            .Sum(col => col.Width!.Value);
+        
+        var newTotalWidth = totalWidth + this.AGridColumn.Width!.Value;
+        var ratio = (double)totalWidth / newTotalWidth;
         
         var newGridColumn = new A.GridColumn
         {
-            Width = this.AGridColumn.Width 
+            Width = (int)Math.Round(this.AGridColumn.Width!.Value * ratio) 
         };
         
         tableGrid.Append(newGridColumn);
-        
-        var newTotalWidth = totalWidth + this.GetWidth();
-        var ratio = (double)totalWidth / newTotalWidth;
 
-        foreach (var col in existingColumns)
+        foreach (var col in tableGrid.Elements<A.GridColumn>())
         {
             col.Width = (int)Math.Round(col.Width!.Value * ratio);
         }

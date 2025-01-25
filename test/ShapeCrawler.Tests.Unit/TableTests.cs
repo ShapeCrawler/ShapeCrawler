@@ -178,6 +178,27 @@ public class TableTests : SCTest
     }
 
     [Test]
+    public void Columns_Duplicate_sets_width_of_all_columns_proportionally()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case003.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var column = table.Columns[0];
+        var columWidthBefore = table.Columns.Select(c => c.Width).ToList();
+        var totalWidthBefore = table.Columns.Sum(c => c.Width);
+        var newTotalWidth = totalWidthBefore + column.Width;
+        
+        // Act
+        column.Duplicate();
+
+        // Assert
+        var widthRatio = (double)totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => c.Width).ToList().Take(columWidthBefore.Count).Should()
+            .BeEquivalentTo(columWidthBefore.Select(w => (int)(w * widthRatio)));
+    }
+    
+    [Test]
     public void Rows_Add_adds_row()
     {
         // Arrange
