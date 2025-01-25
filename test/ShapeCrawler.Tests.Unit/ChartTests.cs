@@ -112,7 +112,7 @@ public class ChartTests : SCTest
     public void SeriesCollection_Series_Points_returns_chart_point_collection()
     {
         // Arrange
-        var pptxStream = TestAsset("charts-case001.pptx");
+        var pptxStream = TestAsset("005 chart.pptx");
         var presentation = new Presentation(pptxStream);
         var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
         var series = chart.SeriesList[0]; 
@@ -124,7 +124,7 @@ public class ChartTests : SCTest
         chartPoints.Should().NotBeEmpty();
     }
     
-    [TestCase("charts_bar-chart.pptx", "Bar Chart 1")]
+    [TestCase("001 bar chart.pptx", "Bar Chart 1")]
     [TestCase("019.pptx", "Pie Chart 1")]
     public void SeriesCollection_RemoveAt_removes_series_by_index(string pptxFile, string chartName)
     {
@@ -303,7 +303,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Minimum_Getter()
     {
         // Arrange
-        var pptx = TestAsset("charts_bar-chart.pptx");
+        var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
@@ -318,7 +318,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Minimum_Setter()
     {
         // Arrange
-        var pptx = TestAsset("charts_bar-chart.pptx");
+        var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         var mStream = new MemoryStream();
@@ -337,7 +337,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Maximum_Setter()
     {
         // Arrange
-        var pptx = TestAsset("charts_bar-chart.pptx");
+        var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
@@ -353,7 +353,7 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Maximum_Getter_returns_default_6()
     {
         // Arrange
-        var pptx = TestAsset("charts_bar-chart.pptx");
+        var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         

@@ -960,7 +960,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_slide_from_the_Same_presentation()
     {
         // Arrange
-        var pptxStream = TestAsset("charts-case003.pptx");
+        var pptxStream = TestAsset("003 chart.pptx");
         var pres = new Presentation(pptxStream);
         var expectedSlidesCount = pres.Slides.Count + 1;
         var slideCollection = pres.Slides;
@@ -977,7 +977,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_slide_After_updating_chart_series()
     {
         // Arrange
-        var pptx = TestAsset("charts_bar-chart.pptx");
+        var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
         var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         var expectedSlidesCount = pres.Slides.Count + 1;
