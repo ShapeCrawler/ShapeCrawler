@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Extensions;
 

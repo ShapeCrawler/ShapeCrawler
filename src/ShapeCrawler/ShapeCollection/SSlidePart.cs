@@ -1,7 +1,5 @@
 ﻿namespace ShapeCrawler.ShapeCollection;
 
-using System;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Drawing.Charts;
@@ -13,8 +11,7 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
     {
         var chartPart = slidePart.AddNewPart<ChartPart>("rId3");
         GeneratePieChartContent(chartPart);
-
-        InsertChartGraphicFrame(chartPart);
+        this.InsertChartGraphicFrame(chartPart);
     }
     
     /// <summary>
@@ -42,12 +39,10 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         PieChartSeries series = new PieChartSeries(
             new DocumentFormat.OpenXml.Drawing.Charts.Index() { Val = 0 },
             new Order() { Val = 0 },
-            new SeriesText(new NumericValue() { Text = "Sample Series" })
-        );
+            new SeriesText(new NumericValue() { Text = "Sample Series" }));
 
         // --- Categories ---
-        StringLiteral stringLiteral = new StringLiteral();
-        stringLiteral.PointCount = new PointCount() { Val = 3 };
+        var stringLiteral = new StringLiteral { PointCount = new PointCount() { Val = 3 } };
         stringLiteral.Append(new StringPoint() { Index = 0, NumericValue = new NumericValue("Category A") });
         stringLiteral.Append(new StringPoint() { Index = 1, NumericValue = new NumericValue("Category B") });
         stringLiteral.Append(new StringPoint() { Index = 2, NumericValue = new NumericValue("Category C") });
@@ -56,9 +51,7 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         categoryAxisData.Append(stringLiteral);
 
         // --- Values ---
-        NumberLiteral numberLiteral = new NumberLiteral();
-        numberLiteral.FormatCode = new FormatCode("General");
-        numberLiteral.PointCount = new PointCount() { Val = 3 };
+        var numberLiteral = new NumberLiteral { FormatCode = new FormatCode("General"), PointCount = new PointCount() { Val = 3 } };
         numberLiteral.Append(new NumericPoint() { Index = 0, NumericValue = new NumericValue("10") });
         numberLiteral.Append(new NumericPoint() { Index = 1, NumericValue = new NumericValue("30") });
         numberLiteral.Append(new NumericPoint() { Index = 2, NumericValue = new NumericValue("60") });
@@ -95,28 +88,24 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         var shapeTree = slidePart.Slide.CommonSlideData!.ShapeTree;
 
         // Create a new GraphicFrame
-        GraphicFrame graphicFrame = new GraphicFrame();
-
-        // Give it an ID and name
-        graphicFrame.NonVisualGraphicFrameProperties = new NonVisualGraphicFrameProperties(
-            new NonVisualDrawingProperties() { Id = 2U, Name = "PieChart" },
-            new NonVisualGraphicFrameDrawingProperties(),
-            new ApplicationNonVisualDrawingProperties()
-        );
-
-        // Position/Size of the chart in EMUs (English Metric Units)
-        // For reference: 914400 EMUs = 1 inch
-        graphicFrame.Transform = new Transform(
-            new A.Offset() { X = 1524000L, Y = 1524000L }, // 1.67in from top-left corner
-            new A.Extents() { Cx = 6096000L, Cy = 3429000L } // 6.67in wide, 3.75in high
-        );
-
-        // Link the chart part by relationship ID
-        graphicFrame.Graphic = new A.Graphic(
-            new A.GraphicData(
-                new ChartReference() { Id = slidePart.GetIdOfPart(chartPart) } // "rId3"
-            ) { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" }
-        );
+        var graphicFrame = new GraphicFrame
+        {
+            // Give it an ID and name
+            NonVisualGraphicFrameProperties = new NonVisualGraphicFrameProperties(
+                new NonVisualDrawingProperties() { Id = 2U, Name = "PieChart" },
+                new NonVisualGraphicFrameDrawingProperties(),
+                new ApplicationNonVisualDrawingProperties()),
+            
+            // Position/Size of the chart in EMUs (English Metric Units)
+            // For reference: 914400 EMUs = 1 inch
+            Transform = new Transform(
+                new A.Offset() { X = 1524000L, Y = 1524000L }, // 1.67in from top-left corner
+                new A.Extents() { Cx = 6096000L, Cy = 3429000L }), // 6.67in wide, 3.75in high
+            Graphic = new A.Graphic(
+                new A.GraphicData(
+                    new ChartReference() { Id = slidePart.GetIdOfPart(chartPart) }) // "rId3"
+                { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" })
+        };
 
         // Append the graphic frame to the shape tree
         shapeTree!.Append(graphicFrame);

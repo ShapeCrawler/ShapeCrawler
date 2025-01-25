@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Extensions;
+namespace ShapeCrawler.Shared;
 
 internal readonly ref struct SOpenXmlPart(OpenXmlPart openXmlPart)
 {

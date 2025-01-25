@@ -6,8 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Office2010.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
@@ -20,8 +18,6 @@ using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
-using NonVisualDrawingProperties = DocumentFormat.OpenXml.Drawing.ChartDrawing.NonVisualDrawingProperties;
 
 namespace ShapeCrawler.ShapeCollection;
 

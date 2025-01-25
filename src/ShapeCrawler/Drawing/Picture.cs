@@ -6,8 +6,8 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
