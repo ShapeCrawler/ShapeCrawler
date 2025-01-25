@@ -1116,10 +1116,4 @@ public class ShapeCollectionTests : SCTest
         addedPictureResolution.X.Should().BeApproximately(384, 0.1);
         addedPictureResolution.Y.Should().BeApproximately(384, 0.1);
     }
-
-    [Test]
-    public void AddPieChart_add_pie_chart()
-    {
-        
-    }
 }
