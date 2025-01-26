@@ -1,4 +1,6 @@
-﻿using ShapeCrawler.Shared;
+﻿using System;
+using System.Linq;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -15,13 +17,21 @@ public interface IColumn
     ///     Gets or sets width in pixels.
     /// </summary>
     int Width { get; set; }
+    
+    /// <summary>
+    ///     Creates a duplicate of the current column at the end of the table.
+    /// </summary>
+    void Duplicate();
 }
 
 internal sealed class Column : IColumn
 {
-    internal Column(A.GridColumn aGridColumn)
+    private readonly int index;
+
+    internal Column(A.GridColumn aGridColumn, int index)
     {
         this.AGridColumn = aGridColumn;
+        this.index = index;
     }
 
     public int Width
@@ -30,7 +40,38 @@ internal sealed class Column : IColumn
         set => this.SetWidth(value);
     }
 
-    internal A.GridColumn AGridColumn { get; init; }
+    internal A.GridColumn AGridColumn { get; }
+
+    public void Duplicate()
+    {
+        var tableGrid = this.AGridColumn.Parent!;
+        
+        var totalWidth = tableGrid.Elements<A.GridColumn>()
+            .Sum(col => col.Width!.Value);
+        
+        var newTotalWidth = totalWidth + this.AGridColumn.Width!.Value;
+        var ratio = (double)totalWidth / newTotalWidth;
+        
+        var newGridColumn = new A.GridColumn
+        {
+            Width = (int)Math.Round(this.AGridColumn.Width!.Value * ratio) 
+        };
+        
+        tableGrid.Append(newGridColumn);
+
+        foreach (var col in tableGrid.Elements<A.GridColumn>())
+        {
+            col.Width = (int)Math.Round(col.Width!.Value * ratio);
+        }
+        
+        var table = tableGrid.Parent as A.Table;
+        foreach(A.TableRow tr in table!.Elements<A.TableRow>())
+        {
+            var cells = tr.Elements<A.TableCell>().ToList();
+            var cloneCell = cells[this.index].Clone();
+            tr.InsertAfter((A.TableCell)cloneCell, cells[^1]);
+        }
+    }
 
     private int GetWidth()
     {

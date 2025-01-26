@@ -232,6 +232,10 @@
     <EmbeddedResource Include="Assets\images\08 jpeg image-500w.jpg" />
     <None Remove="Assets\061_font-color.pptx" />
     <EmbeddedResource Include="Assets\061_font-color.pptx" />
+    <None Remove="Assets\tables\table-case002.pptx" />
+    <EmbeddedResource Include="Assets\tables\table-case002.pptx" />
+    <None Remove="Assets\tables\table-case003.pptx" />
+    <EmbeddedResource Include="Assets\tables\table-case003.pptx" />
     <None Remove="Assets\images\webp image.webp" />
     <EmbeddedResource Include="Assets\images\webp image.webp" />
     <None Remove="Assets\images\01 avif image.avif" />
