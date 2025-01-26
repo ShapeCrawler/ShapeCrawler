@@ -109,5 +109,5 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.62.0 - 2025-01-16
-🍀Added properties `ISpacing.BeforeSpacingPoints` and `ISpacing.AfterSpacingPoints` for the paragraph [#563](https://github.com/ShapeCrawler/ShapeCrawler/issues/563)  
+### Version 0.63.0 - 2025-01-26
+🍀Added support for adding new table column [#661](https://github.com/ShapeCrawler/ShapeCrawler/issues/661)  
