@@ -1,4 +1,9 @@
-﻿namespace ShapeCrawler.ShapeCollection;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Shared;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
+
+namespace ShapeCrawler.ShapeCollection;
 
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -7,54 +12,58 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 internal readonly ref struct SSlidePart(SlidePart slidePart)
 {
-    internal void AddPieChart()
+    internal void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName)
     {
-        var chartPart = slidePart.AddNewPart<ChartPart>("rId3");
-        GeneratePieChartContent(chartPart);
+        var rId = new SOpenXmlPart(slidePart).NextRelationshipId();
+        var chartPart = slidePart.AddNewPart<ChartPart>(rId);
+        GeneratePieChartContent(chartPart, categoryValues, seriesName);
         this.InsertChartGraphicFrame(chartPart);
     }
     
-    /// <summary>
-    /// Generates the XML for a simple Pie Chart with 3 categories.
-    /// </summary>
-    private static void GeneratePieChartContent(ChartPart chartPart)
+    private static void GeneratePieChartContent(ChartPart chartPart, Dictionary<string, double> categoryValues, string seriesName)
     {
-        // Create the ChartSpace
-        ChartSpace chartSpace = new ChartSpace();
-        chartSpace.Append(new EditingLanguage() { Val = "en-US" });
-        chartSpace.Append(new RoundedCorners() { Val = false });
-
-        // Create the Chart
-        Chart chart = new Chart();
-        chart.Append(new AutoTitleDeleted() { Val = true }); // Hide default chart title
+        var chartSpace = new ChartSpace();
+        chartSpace.Append(new EditingLanguage { Val = "en-US" });
+        chartSpace.Append(new RoundedCorners { Val = false });
+        
+        var chart = new Chart();
+        chart.Append(new AutoTitleDeleted { Val = false });
 
         PlotArea plotArea = new PlotArea();
         plotArea.Append(new Layout());
-
-        // Create the PieChart element
-        PieChart pieChart = new PieChart();
-        pieChart.Append(new VaryColors() { Val = true });
-
-        // PieChartSeries: define series index, order, and label
+        
+        var pieChart = new PieChart();
+        pieChart.Append(new VaryColors { Val = true });
+        
         PieChartSeries series = new PieChartSeries(
-            new DocumentFormat.OpenXml.Drawing.Charts.Index() { Val = 0 },
-            new Order() { Val = 0 },
-            new SeriesText(new NumericValue() { Text = "Sample Series" }));
+            new Index { Val = 0 },
+            new Order { Val = 0 },
+            new SeriesText(new NumericValue { Text = seriesName }));
 
         // --- Categories ---
-        var stringLiteral = new StringLiteral { PointCount = new PointCount() { Val = 3 } };
-        stringLiteral.Append(new StringPoint() { Index = 0, NumericValue = new NumericValue("Category A") });
-        stringLiteral.Append(new StringPoint() { Index = 1, NumericValue = new NumericValue("Category B") });
-        stringLiteral.Append(new StringPoint() { Index = 2, NumericValue = new NumericValue("Category C") });
+        var categoriesCount = UInt32Value.FromUInt32((uint)categoryValues.Count);
+        var stringLiteral = new StringLiteral
+        {
+            PointCount = new PointCount { Val = categoriesCount }
+        };
+        uint catIndex = 0;
+        foreach (var categoryToValue in categoryValues)
+        {
+            stringLiteral.Append(new StringPoint { Index = catIndex, NumericValue = new NumericValue(categoryToValue.Key) });    
+            catIndex++;
+        }
 
         CategoryAxisData categoryAxisData = new CategoryAxisData();
         categoryAxisData.Append(stringLiteral);
 
         // --- Values ---
-        var numberLiteral = new NumberLiteral { FormatCode = new FormatCode("General"), PointCount = new PointCount() { Val = 3 } };
-        numberLiteral.Append(new NumericPoint() { Index = 0, NumericValue = new NumericValue("10") });
-        numberLiteral.Append(new NumericPoint() { Index = 1, NumericValue = new NumericValue("30") });
-        numberLiteral.Append(new NumericPoint() { Index = 2, NumericValue = new NumericValue("60") });
+        var numberLiteral = new NumberLiteral { FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = categoriesCount } };
+        catIndex = 0;
+        foreach (var categoryToValue in categoryValues)
+        {
+            numberLiteral.Append(new NumericPoint { Index = catIndex, NumericValue = new NumericValue(categoryToValue.Value.ToString()) });
+            catIndex++;
+        }
 
         Values values = new Values();
         values.Append(numberLiteral);
@@ -63,20 +72,37 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         series.Append(categoryAxisData);
         series.Append(values);
 
-        // Add series to the PieChart
         pieChart.Append(series);
-
-        // Add the PieChart to the PlotArea
         plotArea.Append(pieChart);
-
-        // Complete the chart
+        
         chart.Append(plotArea);
-
-        // Add the chart to the ChartSpace
+        
+        var cLegendPos = new C.LegendPosition { Val = C.LegendPositionValues.Right };
+        var cLegend = new C.Legend();
+        cLegend.Append(cLegendPos);
+        chart.Append(cLegend);
+        
         chartSpace.Append(chart);
-
-        // Assign ChartSpace to the ChartPart
         chartPart.ChartSpace = chartSpace;
+
+        // Show Data Labels
+        var cShowLegendKey = new C.ShowLegendKey { Val = false };
+        var cShowVal = new C.ShowValue { Val = true };
+        var cShowCatName = new ShowCategoryName{ Val = false };
+        var cShowSerName = new ShowSeriesName{ Val = false };
+        var cShowPercent = new ShowPercent{ Val = false };
+        var cShowBubbleSize = new ShowBubbleSize{ Val = false };
+        var cShowLeaderLines = new ShowLeaderLines{ Val = true };
+        var cdLbls = new C.DataLabels();
+        cdLbls.Append(cShowLegendKey);
+        cdLbls.Append(cShowVal);
+        cdLbls.Append(cShowCatName);
+        cdLbls.Append(cShowSerName);
+        cdLbls.Append(cShowPercent);
+        cdLbls.Append(cShowBubbleSize);
+        cdLbls.Append(cShowLeaderLines);
+        // series.Append(cdLbls);
+        pieChart.Append(cdLbls);
     }
 
     /// <summary>

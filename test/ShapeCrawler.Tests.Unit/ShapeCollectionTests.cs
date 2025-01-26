@@ -1118,13 +1118,13 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Ignore("WIP")]
+    [Explicit("WIP")]
     public void AddPieChart_add_pie_chart()
     {
         var pres = new Presentation(@"c:\temp\pie chart.pptx");
         var shapes = pres.Slide(1).Shapes;
-        
-        shapes.AddPieChart(100, 100, 400, 300);
+        var categoryValues = new Dictionary<string, double>{ { "1st Qtr", 10 }, { "2nd Qtr", 20 }, { "3rd Qtr", 30 } };
+        shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Sales");
         
         pres.SaveAs(@"c:\temp\output.pptx");
         pres.Validate();
