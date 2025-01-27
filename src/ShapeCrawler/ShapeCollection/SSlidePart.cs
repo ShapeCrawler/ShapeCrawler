@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Units;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.ShapeCollection;
 
@@ -14,7 +12,12 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 internal readonly ref struct SSlidePart(SlidePart slidePart)
 {
-    internal void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues,
+    internal void AddPieChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<string, double> categoryValues,
         string seriesName)
     {
         var rId = new SOpenXmlPart(slidePart).NextRelationshipId();
@@ -23,7 +26,9 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height);
     }
 
-    private static void GeneratePieChartContent(ChartPart chartPart, Dictionary<string, double> categoryValues,
+    private static void GeneratePieChartContent(
+        ChartPart chartPart, 
+        Dictionary<string, double> categoryValues,
         string seriesName)
     {
         var chartSpace = new ChartSpace();
@@ -42,8 +47,7 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         var series = new PieChartSeries(
             new Index { Val = 0 },
             new Order { Val = 0 },
-            new SeriesText(new NumericValue { Text = seriesName })
-        );
+            new SeriesText(new NumericValue { Text = seriesName }));
 
         // --- Categories ---
         var categoriesCount = UInt32Value.FromUInt32((uint)categoryValues.Count);
@@ -89,8 +93,7 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         chart.Append(plotArea);
 
         var cLegend = new Legend(
-            new LegendPosition { Val = LegendPositionValues.Right }
-        );
+            new LegendPosition { Val = LegendPositionValues.Right });
         chart.Append(cLegend);
 
         chartSpace.Append(chart);
@@ -105,9 +108,7 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
                 new ShowSeriesName { Val = false },
                 new ShowPercent { Val = false },
                 new ShowBubbleSize { Val = false },
-                new ShowLeaderLines { Val = true }
-            )
-        );
+                new ShowLeaderLines { Val = true }));
     }
     
     private void InsertChartGraphicFrame(ChartPart chartPart, int x, int y, int width, int height)
