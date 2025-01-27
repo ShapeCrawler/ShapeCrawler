@@ -1,4 +1,9 @@
-﻿namespace ShapeCrawler.ShapeCollection;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Shared;
+using ShapeCrawler.Units;
+
+namespace ShapeCrawler.ShapeCollection;
 
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -7,54 +12,73 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 internal readonly ref struct SSlidePart(SlidePart slidePart)
 {
-    internal void AddPieChart()
+    internal void AddPieChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<string, double> categoryValues,
+        string seriesName)
     {
-        var chartPart = slidePart.AddNewPart<ChartPart>("rId3");
-        GeneratePieChartContent(chartPart);
-        this.InsertChartGraphicFrame(chartPart);
+        var rId = new SOpenXmlPart(slidePart).NextRelationshipId();
+        var chartPart = slidePart.AddNewPart<ChartPart>(rId);
+        GeneratePieChartContent(chartPart, categoryValues, seriesName);
+        this.InsertChartGraphicFrame(chartPart, x, y, width, height);
     }
-    
-    /// <summary>
-    /// Generates the XML for a simple Pie Chart with 3 categories.
-    /// </summary>
-    private static void GeneratePieChartContent(ChartPart chartPart)
-    {
-        // Create the ChartSpace
-        ChartSpace chartSpace = new ChartSpace();
-        chartSpace.Append(new EditingLanguage() { Val = "en-US" });
-        chartSpace.Append(new RoundedCorners() { Val = false });
 
-        // Create the Chart
-        Chart chart = new Chart();
-        chart.Append(new AutoTitleDeleted() { Val = true }); // Hide default chart title
+    private static void GeneratePieChartContent(
+        ChartPart chartPart, 
+        Dictionary<string, double> categoryValues,
+        string seriesName)
+    {
+        var chartSpace = new ChartSpace();
+        chartSpace.Append(new EditingLanguage { Val = "en-US" });
+        chartSpace.Append(new RoundedCorners { Val = false });
+
+        var chart = new Chart();
+        chart.Append(new AutoTitleDeleted { Val = false });
 
         PlotArea plotArea = new PlotArea();
         plotArea.Append(new Layout());
 
-        // Create the PieChart element
-        PieChart pieChart = new PieChart();
-        pieChart.Append(new VaryColors() { Val = true });
+        var pieChart = new PieChart();
+        pieChart.Append(new VaryColors { Val = true });
 
-        // PieChartSeries: define series index, order, and label
-        PieChartSeries series = new PieChartSeries(
-            new DocumentFormat.OpenXml.Drawing.Charts.Index() { Val = 0 },
-            new Order() { Val = 0 },
-            new SeriesText(new NumericValue() { Text = "Sample Series" }));
+        var series = new PieChartSeries(
+            new Index { Val = 0 },
+            new Order { Val = 0 },
+            new SeriesText(new NumericValue { Text = seriesName }));
 
         // --- Categories ---
-        var stringLiteral = new StringLiteral { PointCount = new PointCount() { Val = 3 } };
-        stringLiteral.Append(new StringPoint() { Index = 0, NumericValue = new NumericValue("Category A") });
-        stringLiteral.Append(new StringPoint() { Index = 1, NumericValue = new NumericValue("Category B") });
-        stringLiteral.Append(new StringPoint() { Index = 2, NumericValue = new NumericValue("Category C") });
+        var categoriesCount = UInt32Value.FromUInt32((uint)categoryValues.Count);
+        var stringLiteral = new StringLiteral { PointCount = new PointCount { Val = categoriesCount } };
+        uint catIndex = 0;
+        foreach (var categoryToValue in categoryValues)
+        {
+            stringLiteral.Append(new StringPoint
+            {
+                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Key)
+            });
+            catIndex++;
+        }
 
         CategoryAxisData categoryAxisData = new CategoryAxisData();
         categoryAxisData.Append(stringLiteral);
 
         // --- Values ---
-        var numberLiteral = new NumberLiteral { FormatCode = new FormatCode("General"), PointCount = new PointCount() { Val = 3 } };
-        numberLiteral.Append(new NumericPoint() { Index = 0, NumericValue = new NumericValue("10") });
-        numberLiteral.Append(new NumericPoint() { Index = 1, NumericValue = new NumericValue("30") });
-        numberLiteral.Append(new NumericPoint() { Index = 2, NumericValue = new NumericValue("60") });
+        var numberLiteral = new NumberLiteral
+        {
+            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = categoriesCount }
+        };
+        catIndex = 0;
+        foreach (var categoryToValue in categoryValues)
+        {
+            numberLiteral.Append(new NumericPoint
+            {
+                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Value.ToString())
+            });
+            catIndex++;
+        }
 
         Values values = new Values();
         values.Append(numberLiteral);
@@ -63,51 +87,52 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         series.Append(categoryAxisData);
         series.Append(values);
 
-        // Add series to the PieChart
         pieChart.Append(series);
-
-        // Add the PieChart to the PlotArea
         plotArea.Append(pieChart);
 
-        // Complete the chart
         chart.Append(plotArea);
 
-        // Add the chart to the ChartSpace
+        var cLegend = new Legend(
+            new LegendPosition { Val = LegendPositionValues.Right });
+        chart.Append(cLegend);
+
         chartSpace.Append(chart);
-
-        // Assign ChartSpace to the ChartPart
         chartPart.ChartSpace = chartSpace;
+
+        // Show Data Labels
+        pieChart.Append(
+            new DataLabels(
+                new ShowLegendKey { Val = false },
+                new ShowValue { Val = true },
+                new ShowCategoryName { Val = false },
+                new ShowSeriesName { Val = false },
+                new ShowPercent { Val = false },
+                new ShowBubbleSize { Val = false },
+                new ShowLeaderLines { Val = true }));
     }
-
-    /// <summary>
-    /// Inserts a graphic frame in the slide that references the chart part by ID.
-    /// </summary>
-    private void InsertChartGraphicFrame(ChartPart chartPart)
+    
+    private void InsertChartGraphicFrame(ChartPart chartPart, int x, int y, int width, int height)
     {
-        // Retrieve the shape tree of the slide
-        var shapeTree = slidePart.Slide.CommonSlideData!.ShapeTree;
-
         // Create a new GraphicFrame
         var graphicFrame = new GraphicFrame
         {
             // Give it an ID and name
             NonVisualGraphicFrameProperties = new NonVisualGraphicFrameProperties(
-                new NonVisualDrawingProperties() { Id = 2U, Name = "PieChart" },
+                new NonVisualDrawingProperties { Id = 2U, Name = "Pie Chart" },
                 new NonVisualGraphicFrameDrawingProperties(),
                 new ApplicationNonVisualDrawingProperties()),
             
-            // Position/Size of the chart in EMUs (English Metric Units)
-            // For reference: 914400 EMUs = 1 inch
             Transform = new Transform(
-                new A.Offset() { X = 1524000L, Y = 1524000L }, // 1.67in from top-left corner
-                new A.Extents() { Cx = 6096000L, Cy = 3429000L }), // 6.67in wide, 3.75in high
+                new A.Offset { X = new Pixels(x).AsHorizontalEmus(), Y = new Pixels(y).AsVerticalEmus() },
+                new A.Extents { Cx = new Pixels(width).AsHorizontalEmus(), Cy = new Pixels(height).AsVerticalEmus() }),
             Graphic = new A.Graphic(
                 new A.GraphicData(
-                    new ChartReference() { Id = slidePart.GetIdOfPart(chartPart) }) // "rId3"
-                { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" })
+                        new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
+                    {
+                        Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"
+                    })
         };
 
-        // Append the graphic frame to the shape tree
-        shapeTree!.Append(graphicFrame);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 }
