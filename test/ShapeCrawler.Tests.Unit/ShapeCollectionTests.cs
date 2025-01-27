@@ -1118,15 +1118,17 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("WIP")]
-    public void AddPieChart_add_pie_chart()
+    public void AddPieChart_adds_pie_chart()
     {
-        var pres = new Presentation(@"c:\temp\pie chart.pptx");
+        var pres = new Presentation();
         var shapes = pres.Slide(1).Shapes;
         var categoryValues = new Dictionary<string, double>{ { "1st Qtr", 10 }, { "2nd Qtr", 20 }, { "3rd Qtr", 30 } };
+        
+        // Act
         shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Sales");
         
-        pres.SaveAs(@"c:\temp\output.pptx");
+        // Assert
+        shapes.Should().Contain(shape=> shape is IChart);
         pres.Validate();
     }
 }
