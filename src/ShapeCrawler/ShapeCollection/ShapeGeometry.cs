@@ -12,8 +12,6 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class ShapeGeometry : IShapeGeometry
 {
-    private const string ExceptionMessageMissingAdjustValueList = "Malformed rounded rectangle. Missing AdjustValueList.";
-
     /// <summary>
     ///     Corner size on new rounded rectangles, before adjustments are applied.
     /// </summary>
@@ -253,7 +251,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
     {
         if (values.Length != 1)
         {
-            throw new SCException("This geometry supports a single adjustment value.");
+            throw new SCException("This geometry supports only a single adjustment value.");
         }
 
         this.Inject("adj", values[0]);
@@ -270,7 +268,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
     private void Inject(string name, decimal value)
     {
         var avList = this.APresetGeometry?.AdjustValueList 
-            ?? throw new SCException(ExceptionMessageMissingAdjustValueList);
+            ?? throw new SCException("Malformed geometry. Missing AdjustValueList.");
 
         var sgs = avList
             .Descendants<A.ShapeGuide>()
