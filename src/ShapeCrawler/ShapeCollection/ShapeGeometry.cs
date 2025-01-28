@@ -15,6 +15,16 @@ internal sealed class ShapeGeometry : IShapeGeometry
     private const string ExceptionMessageMissingAdjustValueList = "Malformed rounded rectangle. Missing AdjustValueList.";
 
     /// <summary>
+    ///     Corner size on new rounded rectangles, before adjustments are applied.
+    /// </summary>
+    /// <remarks>
+    ///     Rounded rectangles always have a corner size. When they are first created, they have no
+    ///     adjustments. The visual appearance of an unadjusted corner is the same as a corner
+    ///     with a size of this value.
+    /// </remarks>
+    private const decimal DefaultCornerSize = 35m;
+
+    /// <summary>
     ///     Mapping of geometries to shape types in outlying cases.
     /// </summary>
     /// <remarks>
@@ -135,7 +145,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
             return (this.GeometryType, adjustments.Length) switch
             {
                 (Geometry.RoundedRectangle, 0) or 
-                (Geometry.TopCornersRoundedRectangle, 0) => 35,
+                (Geometry.TopCornersRoundedRectangle, 0) => DefaultCornerSize,
                 (Geometry.RoundedRectangle, _) or 
                 (Geometry.TopCornersRoundedRectangle, _) => adjustments[0],
                 _ => 0
