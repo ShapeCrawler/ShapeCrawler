@@ -173,6 +173,14 @@ internal sealed class ShapeGeometry : IShapeGeometry
                 {
                     throw new SCException($"{this.GeometryType} only supports {numAdjustments} adjustments");
                 }
+                
+                if (value.Length < numAdjustments && this.ExtractAdjustmentsFromShapeGuide().Length < numAdjustments)
+                {
+                    // If user is not setting sufficient quantity of adjustments, AND there are
+                    // not already enough adjustments in place, we need to resize up to the
+                    // total expected number of adjustments.
+                    Array.Resize(ref value, numAdjustments);
+                }
 
                 if (numAdjustments == 1)
                 {

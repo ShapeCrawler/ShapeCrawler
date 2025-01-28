@@ -912,4 +912,26 @@ public class ShapeTests : SCTest
         // Second adjustment should be untouched from the source file.
         shape.Adjustments.Should().BeEquivalentTo([ 10m, 78.704m ]);
     }
+
+    [Test]
+    public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_new_shape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70, Geometry.Snip2SameRectangle);
+        var shape = shapes.Last();
+
+        // Act
+
+        // Here, we are setting only ONE adjustment on a shape which allows two
+        // And this is a new shape, so doesn't even have a second adjustment
+        shape.Adjustments = [ 10m ];
+
+        // Assert
+
+        // First adjustment should be what we set
+        // Second adjustment should be zero.
+        shape.Adjustments.Should().BeEquivalentTo([ 10m, 0m ]);
+    }
 }
