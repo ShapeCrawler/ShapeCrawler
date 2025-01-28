@@ -881,7 +881,7 @@ public class ShapeTests : SCTest
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70, geometry);
-        var shape = shapes.Last() as RootShape;
+        var shape = shapes.Last();
         var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
 
         // Act
