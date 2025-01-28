@@ -216,7 +216,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
     {
         var formula = sg.Formula?.Value ?? throw new SCException("Malformed geometry. Shape guide has no formula.");
 
-        var pattern = "^val (?<value>[0-9]+)$";
+        var pattern = "^val (?<value>-?[0-9]+)$";
 
 #if NETSTANDARD2_0
         var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
