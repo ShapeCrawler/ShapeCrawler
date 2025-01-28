@@ -52,8 +52,14 @@ internal sealed class RootShape : CopyableShape, IRootShape
         set => this.decoratedShape.X = value;
     }
 
+    public override decimal[] Adjustments
+    {
+        get => this.decoratedShape.Adjustments;
+        set => this.decoratedShape.Adjustments = value;
+    }
+
     #endregion Decorated Shape
-    
+
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)this.pShape.Parent!;

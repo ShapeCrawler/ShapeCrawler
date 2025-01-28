@@ -57,5 +57,13 @@ internal sealed class AutoShape : CopyableShape
         set => this.shapeGeometry.CornerSize = value;
     }
 
+    public override decimal[] Adjustments
+    {
+        get => this.shapeGeometry.Adjustments;
+        set => this.shapeGeometry.Adjustments = value;
+    }
+
+    internal ShapeGeometry ShapeGeometry => this.shapeGeometry;
+
     public override void Remove() => this.pShape.Remove();
 }

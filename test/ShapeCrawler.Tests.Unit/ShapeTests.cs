@@ -2,6 +2,8 @@
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
+using System.Text.Json;
+using ShapeCrawler.ShapeCollection;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -614,7 +616,7 @@ public class ShapeTests : SCTest
         var shape = shapes[0];
 
         // Act-Assert
-        shape.CornerSize.Should().Be(35m,"Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
+        shape.CornerSize.Should().Be(35m, "Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
     }
 
     [Test]
@@ -633,7 +635,7 @@ public class ShapeTests : SCTest
 
     [Test]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0.125-ish", "0.5")]
-    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0.5")]
+    [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0.50")]
     public void CornerSize_setter_sets_values_for_top_rounded(IShape shape, string expectedSizeStr)
     {
         // Arrange
@@ -679,7 +681,7 @@ public class ShapeTests : SCTest
     public void Geometry_setter_sets_values(string expectedStr)
     {
         // Arrange
-        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+        var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
@@ -724,9 +726,9 @@ public class ShapeTests : SCTest
         shape.GeometryType = Geometry.TopCornersRoundedRectangle;
 
         // Assert
-        shape.CornerSize.Should().Be(35m,"Default unadjusted corner size is 35");
+        shape.CornerSize.Should().Be(35m, "Default unadjusted corner size is 35");
     }
-    
+
     [Test]
     public void Name_Setter_sets_shape_name()
     {
@@ -745,7 +747,7 @@ public class ShapeTests : SCTest
         shape.Name.Should().Be("New Name");
         pres.Validate();
     }
-    
+
     [Test]
     public void Name_Setter_sets_grouped_shape_name()
     {
@@ -764,5 +766,172 @@ public class ShapeTests : SCTest
         groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("New Group Name");
         groupShape.Name.Should().Be("New Group Name");
         pres.Validate();
+    }
+
+    [TestCase("Triangle", "[200]")]
+    [TestCase("Parallelogram", "[0]")]
+    [TestCase("Trapezoid", "[0]")]
+    [TestCase("NonIsoscelesTrapezoid", "[0,100]")]
+    [TestCase("Hexagon", "[0]")]
+    [TestCase("Octagon", "[0]")]
+    [TestCase("Star4", "[100]")]
+    [TestCase("Star5", "[100]")]
+    [TestCase("Star6", "[100]")]
+    [TestCase("Star7", "[100]")]
+    [TestCase("Star10", "[100]")]
+    [TestCase("Star12", "[100]")]
+    [TestCase("Star16", "[100]")]
+    [TestCase("Star24", "[100]")]
+    [TestCase("Star32", "[0]")]
+    [TestCase("RoundedRectangle", "[100]")]
+    [TestCase("TopCornersRoundedRectangle", "[100,0]")]
+    [TestCase("DiagonalCornersRoundedRectangle", "[0,100]")]
+    [TestCase("SingleCornerRoundedRectangle", "[100]")]
+    [TestCase("SnipRoundRectangle", "[100,100]")]
+    [TestCase("Snip1Rectangle", "[100]")]
+    [TestCase("Snip2SameRectangle", "[100,78.704]")]
+    [TestCase("Snip2DiagonalRectangle", "[44.444,100]")]
+    [TestCase("Plaque", "[70.37]")]
+    [TestCase("HomePlate", "[39.814]")]
+    [TestCase("Chevron", "[30.556]")]
+    [TestCase("Pie", "[39930.998,16264.266]")]
+    [TestCase("BlockArc", "[10251.142,2160.504,22.112]")]
+    [TestCase("Donut", "[79.504]")]
+    [TestCase("NoSmoking", "[64.97]")]
+    [TestCase("Donut", "[79.504]")]
+    [TestCase("RightArrow", "[0,19.444]")]
+    [TestCase("LeftArrow", "[200,7.408]")]
+    [TestCase("UpArrow", "[15.972,28.124]")]
+    [TestCase("DownArrow", "[5.556,37.152]")]
+    [TestCase("StripedRightArrow", "[25.926,161.574]")]
+    [TestCase("NotchedRightArrow", "[55.556,143.056]")]
+    [TestCase("BentUpArrow", "[100,80.902,29.862]")]
+    [TestCase("LeftRightArrow", "[0,20.486]")]
+    [TestCase("UpDownArrow", "[41.666,27.778]")]
+    [TestCase("LeftUpArrow", "[10.562,70.422,59.156]")]
+    [TestCase("LeftRightUpArrow", "[0,20.422,50]")]
+    [TestCase("QuadArrow", "[0,75.986,8.38]")]
+    [TestCase("LeftArrowCallout", "[0,48.592,57.042,14.788]")]
+    [TestCase("RightArrowCallout", "[50,26.056,79.578,76.434]")]
+    [TestCase("UpArrowCallout", "[0,100,165.494,15.87]")]
+    [TestCase("DownArrowCallout", "[0,100,145.774,6.01]")]
+    [TestCase("UpDownArrowCallout", "[81.69,100,78.168,0]")]
+    [TestCase("QuadArrowCallout", "[0,0,62.97,0]")]
+    [TestCase("BentArrow", "[61.972,30.986,100,0]")]
+    [TestCase("UTurnArrow", "[0,18.31,85.212,5.81,135.212]")]
+    [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
+    [TestCase("LeftCircularArrow", "[8.262,-2284.638,38241.328,15665.55,40.128]")]
+    [TestCase("LeftRightCircularArrow", "[0,6773.122,1642.124,36866.022,8.998]")]
+    [TestCase("CurvedRightArrow", "[33.77,17.324,111.458]")]
+    [TestCase("CurvedLeftArrow", "[78.226,40.222,137.152]")]
+    [TestCase("CurvedUpArrow", "[1.734,42.154,33.68]")]
+    [TestCase("CurvedDownArrow", "[28.276,68.26,57.522]")]
+    [TestCase("SwooshArrow", "[147.778, 140]")]
+    [TestCase("CircularArrow", "[77.376,6331.394,36798.45,9442.808,38.688]")]
+    [TestCase("LeftRightCircularArrow", "[0,6773.122,1642.124,36866.022,8.998]")]
+    [TestCase("CurvedRightArrow", "[33.77,17.324,111.458]")]
+    [TestCase("CurvedLeftArrow", "[78.226,40.222,137.152]")]
+    [TestCase("CurvedUpArrow", "[1.734,42.154,33.68]")]
+    [TestCase("CurvedDownArrow", "[28.276,68.26,57.522]")]
+    [TestCase("Cube", "[121.528]")]
+    [TestCase("Can", "[100]")]
+    [TestCase("Sun", "[93.75]")]
+    [TestCase("Moon", "[175]")]
+    [TestCase("SmileyFace", "[-9.306]")] 
+    [TestCase("FoldedCorner", "[100]")]
+    [TestCase("Bevel", "[11.266]")]
+    [TestCase("Frame", "[100]")]
+    [TestCase("HalfFrame", "[107.638, 17.36]")]
+    [TestCase("Corner", "[147.222,154.862]")]
+    [TestCase("DiagonalStripe", "[32.87]")]
+    [TestCase("Chord", "[12235.572,37755.642]")]
+    [TestCase("Arc", "[14144.04,9163.314]")]
+    [TestCase("LeftBracket", "[100]")]
+    [TestCase("RightBracket", "[0]")]
+
+    public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
+    {
+        // Arrange
+        var shape = 
+            new Presentation(TestAsset("062_shape-adjustments.pptx"))
+                .Slides[0]
+                .Shapes
+                .GetByName(name);
+        var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
+
+        // Act
+        var actualAdjustments = shape.Adjustments;
+
+        // Assert
+        actualAdjustments.Should().BeEquivalentTo(expectedAdjustments);
+    }
+
+    [TestCase("RoundedRectangle", "[20]")]
+    [TestCase("TopCornersRoundedRectangle", "[30,40]")]
+    [TestCase("DiagonalCornersRoundedRectangle", "[50,60]")]
+    [TestCase("SingleCornerRoundedRectangle", "[70]")]
+    [TestCase("SnipRoundRectangle", "[20,80]")]
+    [TestCase("Snip1Rectangle", "[10]")]
+    [TestCase("Snip2SameRectangle", "[75,25]")]
+    [TestCase("Snip2DiagonalRectangle", "[40,10]")]
+    public void Adjustments_setter_sets_values(string geometryStr, string expectedAdjustmentsJson)
+    {
+        // Arrange
+        var geometry = (Geometry)Enum.Parse(typeof(Geometry), geometryStr);
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70, geometry);
+        var shape = shapes.Last();
+        var expectedAdjustments = JsonSerializer.Deserialize<decimal[]>(expectedAdjustmentsJson);
+
+        // Act
+        shape.Adjustments = expectedAdjustments;
+
+        // Assert
+        shape.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
+    }
+
+    [Test]
+    public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_existing_shape()
+    {
+        // Arrange
+        var shape = 
+            new Presentation(TestAsset("062_shape-adjustments.pptx"))
+                .Slides[0]
+                .Shapes
+                .GetByName("Snip2SameRectangle");
+
+        // Act
+
+        // Here, we are setting only ONE adjustment on a shape which allows two
+        shape.Adjustments = [ 10m ];
+
+        // Assert
+
+        // First adjustment should be what we set
+        // Second adjustment should be untouched from the source file.
+        shape.Adjustments.Should().BeEquivalentTo([ 10m, 78.704m ]);
+    }
+
+    [Test]
+    public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_new_shape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(50, 60, 100, 70, Geometry.Snip2SameRectangle);
+        var shape = shapes.Last();
+
+        // Act
+
+        // Here, we are setting only ONE adjustment on a shape which allows two
+        // And this is a new shape, so doesn't even have a second adjustment
+        shape.Adjustments = [ 10m ];
+
+        // Assert
+
+        // First adjustment should be what we set
+        // Second adjustment should be zero.
+        shape.Adjustments.Should().BeEquivalentTo([ 10m, 0m ]);
     }
 }

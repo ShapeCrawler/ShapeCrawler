@@ -212,6 +212,8 @@
     <EmbeddedResource Include="Assets\images\10 png image.png" />
     <None Remove="Assets\images\png image-large.png" />
     <EmbeddedResource Include="Assets\images\png image-large.png" />
+    <None Remove="Assets\062_shape-adjustments.pptx" />
+    <EmbeddedResource Include="Assets\062_shape-adjustments.pptx" />
     <None Remove="Assets\064 mp3.mp3" />
     <EmbeddedResource Include="Assets\064 mp3.mp3" />
     <None Remove="Assets\063 vector image.svg" />

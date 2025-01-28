@@ -148,6 +148,12 @@ internal sealed class GroupedShape : IShape
         set => this.decoratedShape.CornerSize = value;
     }
 
+    public decimal[] Adjustments
+    {
+        get => this.decoratedShape.Adjustments;
+        set => this.decoratedShape.Adjustments = value;
+    }
+
     public string? CustomData
     {
         get => this.decoratedShape.CustomData;

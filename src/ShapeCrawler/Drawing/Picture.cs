@@ -56,6 +56,12 @@ internal sealed class Picture : CopyableShape, IPicture
         set => this.shapeGeometry.CornerSize = value;
     }
 
+    public override decimal[] Adjustments
+    {
+        get => this.shapeGeometry.Adjustments;
+        set => this.shapeGeometry.Adjustments = value;
+    }
+
     public override ShapeType ShapeType => ShapeType.Picture;
     
     public override bool HasOutline => true;
