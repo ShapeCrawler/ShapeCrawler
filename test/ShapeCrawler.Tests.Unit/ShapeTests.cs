@@ -890,4 +890,26 @@ public class ShapeTests : SCTest
         // Assert
         shape.Adjustments.Should().BeEquivalentTo(expectedAdjustments);
     }
+
+    [Test]
+    public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_existing_shape()
+    {
+        // Arrange
+        var shape = 
+            new Presentation(TestAsset("062_shape-adjustments.pptx"))
+                .Slides[0]
+                .Shapes
+                .GetByName("Snip2SameRectangle");
+
+        // Act
+
+        // Here, we are setting only ONE adjustment on a shape which allows two
+        shape.Adjustments = [ 10m ];
+
+        // Assert
+
+        // First adjustment should be what we set
+        // Second adjustment should be untouched from the source file.
+        shape.Adjustments.Should().BeEquivalentTo([ 10m, 78.704m ]);
+    }
 }
