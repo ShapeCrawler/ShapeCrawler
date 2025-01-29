@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Tables;
-using ShapeCrawler.Texts;
+using ShapeCrawler.Tables; 
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -56,7 +55,7 @@ internal sealed class TableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.TextBox = new TextBox(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
+        this.TextBox = new TextBoxTableCells(sdkTypedOpenXmlPart, this.ATableCell);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);

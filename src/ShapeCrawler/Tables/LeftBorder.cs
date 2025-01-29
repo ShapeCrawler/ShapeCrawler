@@ -7,10 +7,20 @@ namespace ShapeCrawler.Tables;
 internal class LeftBorder : IBorder
 {
     private readonly A.TableCellProperties aTableCellProperties;
+    private A.SolidFill? aSolidFill;
 
     internal LeftBorder(A.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
+
+        if(this.aTableCellProperties.LeftBorderLineProperties is not null)
+        {
+            this.aSolidFill = this.aTableCellProperties.LeftBorderLineProperties.GetFirstChild<A.SolidFill>();
+        }
+        else
+        {
+            this.aSolidFill = null;
+        }
     }
 
     public float Width
@@ -19,16 +29,49 @@ internal class LeftBorder : IBorder
         set => this.UpdateWidth(value);
     }
 
+    public string? Color { get => this.GetColor(); set => this.SetColor(value!); }
+
+    private string? GetColor()
+    {
+        if (this.aSolidFill is null || this.aSolidFill.RgbColorModelHex is null)
+        {
+            return null;
+        }
+
+        return this.aSolidFill.RgbColorModelHex.Val;
+    }
+
+    private void SetColor(string color)
+    {
+        this.aTableCellProperties.LeftBorderLineProperties ??= new A.LeftBorderLineProperties
+        {
+            Width = new Int32Value(12700) // 1 * 12700 => emu to point
+        };
+
+        this.aSolidFill ??= this.aTableCellProperties.LeftBorderLineProperties.GetFirstChild<A.SolidFill>();
+
+        if (this.aSolidFill is null)
+        {
+            this.aSolidFill = new A.SolidFill();
+            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(this.aSolidFill);
+        }
+
+        this.aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+
+        this.aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+    }
+
     private void UpdateWidth(float points)
     {
         if (this.aTableCellProperties.LeftBorderLineProperties is null)
         {
-            var aSolidFill = new A.SolidFill
+            this.aSolidFill = new A.SolidFill
             {
-                SchemeColor = new A.SchemeColor { Val = A.SchemeColorValues.Text1 }
+                RgbColorModelHex = new A.RgbColorModelHex { Val = "000000" } // black by default 
             };
+
             this.aTableCellProperties.LeftBorderLineProperties = new A.LeftBorderLineProperties();
-            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(aSolidFill);
+            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(this.aSolidFill);
         }
         
         var emus = new Points((decimal)points).AsEmus();
