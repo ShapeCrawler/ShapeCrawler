@@ -1059,4 +1059,22 @@ public class TableTests : SCTest
         options.HasLastColumn.Should().BeFalse();
         options.HasBandedColumns.Should().BeFalse();
     }
+    
+    [Test]
+    [Explicit("https://github.com/ShapeCrawler/ShapeCrawler/issues/552")]
+    public void Height_Setter_should_proportionally_increase_the_row_heights_When_the_new_table_height_is_bigger()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var addedTable = pres.Slide(1).Shapes.Last<ITable>();
+        
+        // Act
+        addedTable.Height = 100;
+        
+        // Assert
+        addedTable.Rows[0].Height.Should().Be(40);
+        addedTable.Rows[1].Height.Should().Be(40);
+        pres.Validate();
+    }
 }
