@@ -84,6 +84,27 @@ public class TableTests : SCTest
     }
     
     [Test]
+    public void AddColumn_sets_width_of_all_columns_proportionally()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case003.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var columnsCountBefore = table.Columns.Count;
+        var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
+        var totalWidthBefore = table.Columns.Sum(c => c.Width);
+        var newTotalWidth = totalWidthBefore + table.Columns[columnsCountBefore - 1].Width;
+        
+        // Act
+        table.Columns.Add();
+
+        // Assert
+        var widthRatio = (double)totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => c.Width).ToList().Take(columnsCountBefore).Should()
+            .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
+    }
+    
+    [Test]
     public void InsertColumnAfter_inserts_column_after_the_specified_column_number()
     {
         // Arrange
@@ -97,6 +118,27 @@ public class TableTests : SCTest
         // Assert
         cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
         pres.Validate();
+    }
+    
+    [Test]
+    public void InsertColumnAfter_sets_width_of_all_columns_proportionally()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case003.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var columnsCountBefore = table.Columns.Count;
+        var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
+        var totalWidthBefore = table.Columns.Sum(c => c.Width);
+        var newTotalWidth = totalWidthBefore + table.Columns[2].Width;
+        
+        // Act
+        table.Columns.InsertAfter(3);
+
+        // Assert
+        var widthRatio = (double)totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => c.Width).ToList().Take(columnsCountBefore).Should()
+            .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
     }
     
     [Test]
