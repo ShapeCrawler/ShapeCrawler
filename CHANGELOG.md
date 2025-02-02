@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.64.0 - Unreleased
+## Version 0.64.0 - 2025-02-02
 🍀Added support for creating Pie Chart [#907](https://github.com/ShapeCrawler/ShapeCrawler/issues/907)  
 
 ## Version 0.63.0 - 2025-01-26
