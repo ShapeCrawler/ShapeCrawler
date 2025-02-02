@@ -238,6 +238,8 @@
     <EmbeddedResource Include="Assets\tables\table-case002.pptx" />
     <None Remove="Assets\tables\table-case003.pptx" />
     <EmbeddedResource Include="Assets\tables\table-case003.pptx" />
+    <None Remove="Assets\tables\table-case004.pptx" />
+    <EmbeddedResource Include="Assets\tables\table-case004.pptx" />
     <None Remove="Assets\images\webp image.webp" />
     <EmbeddedResource Include="Assets\images\webp image.webp" />
     <None Remove="Assets\images\01 avif image.avif" />

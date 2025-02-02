@@ -46,6 +46,134 @@ public class TableTests : SCTest
 	}
 
 	[Test]
+	public void CellBorder_Getter_return_bottom_border_color()
+	{
+		// Arrange
+		var pres = new Presentation(TestAsset("table-case004.pptx"));
+        var table = pres.Slide(1).Shapes[0] as ITable;
+          
+		// Act 
+		var tableCell = table[1, 2];
+
+        // Assert
+        tableCell.BottomBorder.Color.Should().Be("FF0000"); 
+		pres.Validate();
+	}
+
+	[Test]
+	public void CellBorder_Setter_right_border_color()
+	{
+		// Arrange
+		var pres = new Presentation(TestAsset("table-case004.pptx"));
+		var table = pres.Slide(1).Shapes[0] as ITable;
+		var mStream = new MemoryStream();
+
+        // Act
+        table[1, 2].RightBorder.Color = "00FF00";
+
+		// Assert
+		table[1, 2].RightBorder.Color.Should().Be("00FF00");
+		pres.SaveAs(mStream);
+
+		pres = new Presentation(mStream);
+        table = pres.Slide(1).Shapes[0] as ITable;
+		table[1, 2].RightBorder.Color.Should().Be("00FF00");
+		pres.Validate();
+	}
+
+    [Test]
+	public void CellMargins_Getter_return_cell_margin()
+	{
+		// Arrange
+		var pres = new Presentation(TestAsset("table-case004.pptx"));
+        var table = pres.Slide(1).Shapes[1] as ITable;
+        
+        // Assert
+		var tableCell = table[0, 0];
+        tableCell.TextBox.TopMargin.Should().Be(1);
+        tableCell.TextBox.RightMargin.Should().Be(1);
+        tableCell.TextBox.LeftMargin.Should().Be(1);
+        tableCell.TextBox.BottomMargin.Should().Be(1);
+
+        
+        pres.Validate();
+	}
+
+	[Test]
+	public void CellMargins_Setter_cell_margin()
+	{
+		// Arrange
+		var pres = new Presentation(TestAsset("table-case004.pptx"));
+		var table = pres.Slide(1).Shapes[1] as ITable;
+		var mStream = new MemoryStream();
+
+        // Act
+		var tableCell = table[0, 0];
+		tableCell.TextBox.TopMargin = 1.4M;
+		tableCell.TextBox.RightMargin = 1.33M;
+		tableCell.TextBox.LeftMargin = 1.21M;
+		tableCell.TextBox.BottomMargin = 1.45M;
+
+		// Assert
+		tableCell.TextBox.TopMargin.Should().Be(1.4M);
+		pres.SaveAs(mStream);
+
+		pres = new Presentation(mStream);
+        table = pres.Slide(1).Shapes[1] as ITable;
+		
+        tableCell = table[0, 0];
+		tableCell.TextBox.TopMargin.Should().Be(1.4M);
+		tableCell.TextBox.RightMargin.Should().Be(1.33M);
+		tableCell.TextBox.LeftMargin.Should().Be(1.21M);
+		tableCell.TextBox.BottomMargin.Should().Be(1.45M);
+
+		pres.Validate();
+	}
+    
+    [Test]
+	public void CellTextAlignment_Getter_return_cell_alignment()
+	{
+		// Arrange
+		var pres = new Presentation(TestAsset("table-case004.pptx"));
+        var table = pres.Slide(1).Shapes[1] as ITable;
+        
+        // Assert
+		var tableCell = table[3, 2];
+        tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
+        
+        pres.Validate();
+	}
+
+	[Test]
+	public void CellTextAlignment_Setter_cell_alignment()
+	{
+		// Arrange
+		var pres = new Presentation(TestAsset("table-case004.pptx"));
+		var table = pres.Slide(1).Shapes[1] as ITable;
+		var mStream = new MemoryStream();
+
+        // Act
+		var tableCell = table[1, 1];
+		tableCell.TextBox.VerticalAlignment = TextVerticalAlignment.Middle;
+		tableCell.TextBox.Paragraphs[0].HorizontalAlignment = TextHorizontalAlignment.Center;
+
+        // Assert
+		tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
+        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
+		pres.SaveAs(mStream);
+
+		pres = new Presentation(mStream);
+        table = pres.Slide(1).Shapes[1] as ITable;
+		
+        tableCell = table[1, 1];
+		tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
+        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
+		
+		pres.Validate();
+	}
+
+	[Test]
     public void RemoveColumnAt_removes_column_by_specified_index()
     {
         // Arrange

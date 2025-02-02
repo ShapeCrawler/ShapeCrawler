@@ -32,6 +32,8 @@ internal sealed record TextBoxTableCells : ITextBox
 
             var aBodyPr = this.tableCell.TableCellProperties!;
 
+            aBodyPr!.Anchor ??= A.TextAnchoringTypeValues.Top;
+
             if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Center)
             {
                 this.valignment = TextVerticalAlignment.Middle;
