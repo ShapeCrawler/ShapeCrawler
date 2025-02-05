@@ -84,7 +84,7 @@ public class TableTests : SCTest
     }
     
     [Test]
-    public void AddColumn_sets_width_of_all_columns_proportionally()
+    public void Columns_Add_sets_width_of_all_columns_proportionally()
     {
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
@@ -121,7 +121,7 @@ public class TableTests : SCTest
     }
     
     [Test]
-    public void InsertColumnAfter_sets_width_of_all_columns_proportionally()
+    public void Columns_InsertAfter_sets_width_of_all_columns_proportionally()
     {
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
