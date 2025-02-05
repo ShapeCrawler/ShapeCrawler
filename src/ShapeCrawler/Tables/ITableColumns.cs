@@ -83,7 +83,7 @@ internal sealed class TableColumns : ITableColumns
         var tableGrid = this.aTable.TableGrid!;
         var existingColumns = this.Columns().Select(x => x.AGridColumn).ToList();
 
-        var gridColumn = this.CreateColumnWithAdjustedWidth(existingColumns);
+        var gridColumn = Column.CreateNewColumn(tableGrid, existingColumns[columnIndex].Width!.Value);
         var targetColumn = existingColumns[columnIndex];
         tableGrid.InsertAfter(gridColumn, targetColumn);
 
@@ -96,20 +96,6 @@ internal sealed class TableColumns : ITableColumns
     IEnumerator<IColumn> IEnumerable<IColumn>.GetEnumerator() => this.Columns().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.Columns().GetEnumerator();
-
-    private A.GridColumn CreateColumnWithAdjustedWidth(List<A.GridColumn> existingColumns)
-    {
-        var totalWidth = existingColumns.Sum(col => col.Width!.Value);
-        var newColumnWidth = totalWidth / (existingColumns.Count + 1);
-
-        // Adjust existing column widths
-        foreach (var col in existingColumns)
-        {
-            col.Width = newColumnWidth;
-        }
-
-        return new A.GridColumn { Width = newColumnWidth };
-    }
 
     private List<Column> Columns() => this.aTable.TableGrid!.Elements<A.GridColumn>()
         .Select((aGridColumn, index) => new Column(aGridColumn, index)).ToList();
