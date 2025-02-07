@@ -44,33 +44,36 @@ internal sealed class Column : IColumn
 
     public void Duplicate()
     {
-        var tableGrid = this.AGridColumn.Parent!;
+        var tableGrid = this.AGridColumn.Parent as A.TableGrid;
         
-        var totalWidth = tableGrid.Elements<A.GridColumn>()
-            .Sum(col => col.Width!.Value);
+        var newGridColumn = CreateNewColumn(tableGrid!, this.AGridColumn.Width!.Value);
         
-        var newTotalWidth = totalWidth + this.AGridColumn.Width!.Value;
-        var ratio = (double)totalWidth / newTotalWidth;
-        
-        var newGridColumn = new A.GridColumn
-        {
-            Width = (int)Math.Round(this.AGridColumn.Width!.Value * ratio) 
-        };
-        
-        tableGrid.Append(newGridColumn);
-
-        foreach (var col in tableGrid.Elements<A.GridColumn>())
-        {
-            col.Width = (int)Math.Round(col.Width!.Value * ratio);
-        }
+        tableGrid!.Append(newGridColumn);
         
         var table = tableGrid.Parent as A.Table;
+        
         foreach(A.TableRow tr in table!.Elements<A.TableRow>())
         {
             var cells = tr.Elements<A.TableCell>().ToList();
             var cloneCell = cells[this.index].Clone();
             tr.InsertAfter((A.TableCell)cloneCell, cells[^1]);
         }
+    }
+    
+    internal static A.GridColumn CreateNewColumn(A.TableGrid tableGrid, long width)
+    {
+        var totalWidth = tableGrid.Elements<A.GridColumn>().Sum(col => col.Width!.Value);
+        var newTotalWidth = totalWidth + width;
+        var ratio = (double)totalWidth / newTotalWidth;
+
+        var newGridColumn = new A.GridColumn { Width = (int)Math.Round(width * ratio) };
+
+        foreach (var col in tableGrid.Elements<A.GridColumn>())
+        {
+            col.Width = (int)Math.Round(col.Width!.Value * ratio);
+        }
+
+        return newGridColumn;
     }
 
     private int GetWidth()

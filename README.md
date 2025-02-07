@@ -109,5 +109,5 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.63.0 - 2025-01-26
-🍀Added support for adding new table column [#661](https://github.com/ShapeCrawler/ShapeCrawler/issues/661)  
+### Version 0.64.0 - 2025-02-02
+🍀Added support for creating Pie Chart [#907](https://github.com/ShapeCrawler/ShapeCrawler/issues/907)  

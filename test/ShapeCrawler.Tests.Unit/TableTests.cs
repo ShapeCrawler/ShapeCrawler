@@ -212,6 +212,27 @@ public class TableTests : SCTest
     }
     
     [Test]
+    public void Columns_Add_sets_width_of_all_columns_proportionally()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case003.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var columnsCountBefore = table.Columns.Count;
+        var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
+        var totalWidthBefore = table.Columns.Sum(c => c.Width);
+        var newTotalWidth = totalWidthBefore + table.Columns[columnsCountBefore - 1].Width;
+        
+        // Act
+        table.Columns.Add();
+
+        // Assert
+        var widthRatio = (double)totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => c.Width).ToList().Take(columnsCountBefore).Should()
+            .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
+    }
+    
+    [Test]
     public void InsertColumnAfter_inserts_column_after_the_specified_column_number()
     {
         // Arrange
@@ -225,6 +246,27 @@ public class TableTests : SCTest
         // Assert
         cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
         pres.Validate();
+    }
+    
+    [Test]
+    public void Columns_InsertAfter_sets_width_of_all_columns_proportionally()
+    {
+        // Arrange
+        var pptx = TestAsset("table-case003.pptx");
+        var pres = new Presentation(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var columnsCountBefore = table.Columns.Count;
+        var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
+        var totalWidthBefore = table.Columns.Sum(c => c.Width);
+        var newTotalWidth = totalWidthBefore + table.Columns[2].Width;
+        
+        // Act
+        table.Columns.InsertAfter(3);
+
+        // Assert
+        var widthRatio = (double)totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => c.Width).ToList().Take(columnsCountBefore).Should()
+            .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
     }
     
     [Test]
@@ -1186,5 +1228,23 @@ public class TableTests : SCTest
         options.HasFirstColumn.Should().BeFalse();
         options.HasLastColumn.Should().BeFalse();
         options.HasBandedColumns.Should().BeFalse();
+    }
+    
+    [Test]
+    [Explicit("https://github.com/ShapeCrawler/ShapeCrawler/issues/552")]
+    public void Height_Setter_should_proportionally_increase_the_row_heights_When_the_new_table_height_is_bigger()
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var addedTable = pres.Slide(1).Shapes.Last<ITable>();
+        
+        // Act
+        addedTable.Height = 100;
+        
+        // Assert
+        addedTable.Rows[0].Height.Should().Be(40);
+        addedTable.Rows[1].Height.Should().Be(40);
+        pres.Validate();
     }
 }
