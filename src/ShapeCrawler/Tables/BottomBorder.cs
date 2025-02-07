@@ -7,20 +7,10 @@ namespace ShapeCrawler.Tables;
 internal class BottomBorder : IBorder
 {
     private readonly A.TableCellProperties aTableCellProperties;
-    private A.SolidFill? aSolidFill;
-
+   
     internal BottomBorder(A.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
-
-        if (this.aTableCellProperties.BottomBorderLineProperties is not null)
-        {
-            this.aSolidFill = this.aTableCellProperties.BottomBorderLineProperties.GetFirstChild<A.SolidFill>();
-        }
-        else
-        {
-            this.aSolidFill = null;
-        }
     }
 
     public float Width
@@ -33,12 +23,7 @@ internal class BottomBorder : IBorder
 
     private string? GetColor()
     {
-        if (this.aSolidFill is null || this.aSolidFill.RgbColorModelHex is null)
-        {
-            return null;
-        }
-
-        return this.aSolidFill.RgbColorModelHex.Val;
+        return this.aTableCellProperties.BottomBorderLineProperties?.GetFirstChild<A.SolidFill>()?.RgbColorModelHex?.Val;
     }
 
     private void SetColor(string color)
@@ -48,17 +33,17 @@ internal class BottomBorder : IBorder
             Width = new Int32Value(12700) // 1 * 12700 => emu to point
         };
 
-        this.aSolidFill ??= this.aTableCellProperties.BottomBorderLineProperties.GetFirstChild<A.SolidFill>();
+        var aSolidFill = this.aTableCellProperties.BottomBorderLineProperties.GetFirstChild<A.SolidFill>();
 
-        if (this.aSolidFill is null)
+        if (aSolidFill is null)
         {
-            this.aSolidFill = new A.SolidFill();
-            this.aTableCellProperties.BottomBorderLineProperties.AppendChild(this.aSolidFill);
+            aSolidFill = new A.SolidFill();
+            this.aTableCellProperties.BottomBorderLineProperties.AppendChild(aSolidFill);
         }
 
-        this.aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+        aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
 
-        this.aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+        aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
     }
 
     private void UpdateWidth(float points)
@@ -67,8 +52,9 @@ internal class BottomBorder : IBorder
         {
             var aSolidFill = new A.SolidFill
             {
-                SchemeColor = new A.SchemeColor { Val = A.SchemeColorValues.Text1 }
+                RgbColorModelHex = new() { Val = "000000" }
             };
+
             this.aTableCellProperties.BottomBorderLineProperties = new A.BottomBorderLineProperties();
             this.aTableCellProperties.BottomBorderLineProperties.AppendChild(aSolidFill);
         }

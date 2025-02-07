@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -7,20 +8,10 @@ namespace ShapeCrawler.Tables;
 internal class TopBorder : IBorder
 {
     private readonly DocumentFormat.OpenXml.Drawing.TableCellProperties aTableCellProperties;
-    private A.SolidFill? aSolidFill;
-
+  
     internal TopBorder(DocumentFormat.OpenXml.Drawing.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
-
-        if (this.aTableCellProperties.TopBorderLineProperties is not null)
-        {
-            this.aSolidFill = this.aTableCellProperties.TopBorderLineProperties.GetFirstChild<A.SolidFill>();
-        }
-        else
-        {
-            this.aSolidFill = null;
-        }
     }
 
     public float Width
@@ -33,12 +24,7 @@ internal class TopBorder : IBorder
 
     private string? GetColor()
     {
-        if (this.aSolidFill is null || this.aSolidFill.RgbColorModelHex is null)
-        {
-            return null;
-        }
-
-        return this.aSolidFill.RgbColorModelHex.Val;
+        return this.aTableCellProperties?.TopBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
     }
 
     private void SetColor(string color)
@@ -48,17 +34,17 @@ internal class TopBorder : IBorder
             Width = new Int32Value(12700) // 1 * 12700 => emu to point
         };
 
-        this.aSolidFill ??= this.aTableCellProperties.TopBorderLineProperties.GetFirstChild<A.SolidFill>();
+        var solidFill = this.aTableCellProperties.TopBorderLineProperties.GetFirstChild<A.SolidFill>();
 
-        if (this.aSolidFill is null)
+        if (solidFill is null)
         {
-            this.aSolidFill = new A.SolidFill();
-            this.aTableCellProperties.TopBorderLineProperties.AppendChild(this.aSolidFill);
+            solidFill = new A.SolidFill();
+            this.aTableCellProperties.TopBorderLineProperties.AppendChild(solidFill);
         }
 
-        this.aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+        solidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
 
-        this.aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+        solidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
     }
 
     private void UpdateWidth(float points)

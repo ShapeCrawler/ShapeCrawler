@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -7,20 +8,10 @@ namespace ShapeCrawler.Tables;
 internal class RightBorder : IBorder
 {
     private readonly A.TableCellProperties aTableCellProperties;
-    private A.SolidFill? aSolidFill;
 
     internal RightBorder(A.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
-
-        if (this.aTableCellProperties.RightBorderLineProperties is not null)
-        {
-            this.aSolidFill = this.aTableCellProperties.RightBorderLineProperties.GetFirstChild<A.SolidFill>();
-        }
-        else
-        {
-            this.aSolidFill = null;
-        }
     }
 
     public float Width
@@ -33,12 +24,7 @@ internal class RightBorder : IBorder
 
     private string? GetColor()
     {
-        if (this.aSolidFill is null || this.aSolidFill.RgbColorModelHex is null)
-        {
-            return null;
-        }
-
-        return this.aSolidFill.RgbColorModelHex.Val;
+        return this.aTableCellProperties?.RightBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
     }
 
     private void SetColor(string color)
@@ -48,17 +34,17 @@ internal class RightBorder : IBorder
             Width = new Int32Value(12700) // 1 * 12700 => emu to point
         };
 
-        this.aSolidFill ??= this.aTableCellProperties.RightBorderLineProperties.GetFirstChild<A.SolidFill>();
+        var solidFill = this.aTableCellProperties.RightBorderLineProperties.GetFirstChild<A.SolidFill>();
 
-        if (this.aSolidFill is null)
+        if (solidFill is null)
         {
-            this.aSolidFill = new A.SolidFill();
-            this.aTableCellProperties.RightBorderLineProperties.AppendChild(this.aSolidFill);
+            solidFill = new A.SolidFill();
+            this.aTableCellProperties.RightBorderLineProperties.AppendChild(solidFill);
         }
 
-        this.aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+        solidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
 
-        this.aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+        solidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
     }
 
     private void UpdateWidth(float points)
@@ -67,8 +53,9 @@ internal class RightBorder : IBorder
         {
             var aSolidFill = new A.SolidFill
             {
-                SchemeColor = new A.SchemeColor { Val = A.SchemeColorValues.Text1 }
+                RgbColorModelHex = new A.RgbColorModelHex { Val = "000000" }
             };
+
             this.aTableCellProperties.RightBorderLineProperties = new A.RightBorderLineProperties();
             this.aTableCellProperties.RightBorderLineProperties.AppendChild(aSolidFill);
         }

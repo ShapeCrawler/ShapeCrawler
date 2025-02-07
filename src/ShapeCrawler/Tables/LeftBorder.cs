@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -7,20 +8,10 @@ namespace ShapeCrawler.Tables;
 internal class LeftBorder : IBorder
 {
     private readonly A.TableCellProperties aTableCellProperties;
-    private A.SolidFill? aSolidFill;
-
+    
     internal LeftBorder(A.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
-
-        if(this.aTableCellProperties.LeftBorderLineProperties is not null)
-        {
-            this.aSolidFill = this.aTableCellProperties.LeftBorderLineProperties.GetFirstChild<A.SolidFill>();
-        }
-        else
-        {
-            this.aSolidFill = null;
-        }
     }
 
     public float Width
@@ -33,12 +24,7 @@ internal class LeftBorder : IBorder
 
     private string? GetColor()
     {
-        if (this.aSolidFill is null || this.aSolidFill.RgbColorModelHex is null)
-        {
-            return null;
-        }
-
-        return this.aSolidFill.RgbColorModelHex.Val;
+        return this.aTableCellProperties?.LeftBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
     }
 
     private void SetColor(string color)
@@ -48,30 +34,30 @@ internal class LeftBorder : IBorder
             Width = new Int32Value(12700) // 1 * 12700 => emu to point
         };
 
-        this.aSolidFill ??= this.aTableCellProperties.LeftBorderLineProperties.GetFirstChild<A.SolidFill>();
+        var solidFill = this.aTableCellProperties.LeftBorderLineProperties.GetFirstChild<A.SolidFill>();
 
-        if (this.aSolidFill is null)
+        if (solidFill is null)
         {
-            this.aSolidFill = new A.SolidFill();
-            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(this.aSolidFill);
+            solidFill = new A.SolidFill();
+            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(solidFill);
         }
 
-        this.aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+        solidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
 
-        this.aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+        solidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
     }
 
     private void UpdateWidth(float points)
     {
         if (this.aTableCellProperties.LeftBorderLineProperties is null)
         {
-            this.aSolidFill = new A.SolidFill
+            var solidFill = new A.SolidFill
             {
                 RgbColorModelHex = new A.RgbColorModelHex { Val = "000000" } // black by default 
             };
 
             this.aTableCellProperties.LeftBorderLineProperties = new A.LeftBorderLineProperties();
-            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(this.aSolidFill);
+            this.aTableCellProperties.LeftBorderLineProperties.AppendChild(solidFill);
         }
         
         var emus = new Points((decimal)points).AsEmus();
