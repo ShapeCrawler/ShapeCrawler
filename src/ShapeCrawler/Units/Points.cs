@@ -1,19 +1,10 @@
-﻿using System;
+﻿namespace ShapeCrawler.Units;
 
-namespace ShapeCrawler.Units;
-
-internal readonly ref struct Points
+internal readonly ref struct Points(decimal points)
 {
-    private readonly decimal points;
+    internal long AsEmus() => (long)points * 12700;
 
-    internal Points(decimal points)
-    {
-        this.points = points;
-    }
+    internal float AsPixels() => (float)points * 96 / 72;
 
-    internal long AsEmus() => (long)this.points * 12700;
-
-    internal float AsPixels() => (float)this.points * 96 / 72;
-
-    internal int AsHundredsOfPoints() => (int)Math.Round(this.points * 100);
+    internal int AsHundredsOfPoints() => (int)points * 100;
 }
