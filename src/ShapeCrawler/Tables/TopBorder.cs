@@ -1,12 +1,14 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Units;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
 
 internal class TopBorder : IBorder
 {
     private readonly DocumentFormat.OpenXml.Drawing.TableCellProperties aTableCellProperties;
-
+  
     internal TopBorder(DocumentFormat.OpenXml.Drawing.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
@@ -16,6 +18,33 @@ internal class TopBorder : IBorder
     {
         get => this.GetWidth();
         set => this.UpdateWidth(value);
+    }
+
+    public string? Color { get => this.GetColor(); set => this.SetColor(value!); }
+
+    private string? GetColor()
+    {
+        return this.aTableCellProperties?.TopBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
+    }
+
+    private void SetColor(string color)
+    {
+        this.aTableCellProperties.TopBorderLineProperties ??= new A.TopBorderLineProperties
+        {
+            Width = (Int32Value)new Points(1).AsEmus()
+        };
+
+        var solidFill = this.aTableCellProperties.TopBorderLineProperties.GetFirstChild<A.SolidFill>();
+
+        if (solidFill is null)
+        {
+            solidFill = new A.SolidFill();
+            this.aTableCellProperties.TopBorderLineProperties.AppendChild(solidFill);
+        }
+
+        solidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+
+        solidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
     }
 
     private void UpdateWidth(float points)

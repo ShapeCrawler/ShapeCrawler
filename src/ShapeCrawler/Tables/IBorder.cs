@@ -11,4 +11,9 @@ public interface IBorder
     ///     Gets or sets border width in points.
     /// </summary>
     float Width { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the border color.
+    /// </summary>
+    public string? Color { get; set; }
 }

@@ -7,7 +7,7 @@ namespace ShapeCrawler.Tables;
 internal class BottomBorder : IBorder
 {
     private readonly A.TableCellProperties aTableCellProperties;
-
+   
     internal BottomBorder(A.TableCellProperties aTableCellProperties)
     {
         this.aTableCellProperties = aTableCellProperties;
@@ -19,14 +19,42 @@ internal class BottomBorder : IBorder
         set => this.UpdateWidth(value);
     }
 
+    public string? Color { get => this.GetColor(); set => this.SetColor(value!); }
+
+    private string? GetColor()
+    {
+        return this.aTableCellProperties.BottomBorderLineProperties?.GetFirstChild<A.SolidFill>()?.RgbColorModelHex?.Val;
+    }
+
+    private void SetColor(string color)
+    {
+        this.aTableCellProperties.BottomBorderLineProperties ??= new A.BottomBorderLineProperties
+        {
+            Width = (Int32Value)new Points(1).AsEmus()
+        };
+
+        var aSolidFill = this.aTableCellProperties.BottomBorderLineProperties.GetFirstChild<A.SolidFill>();
+
+        if (aSolidFill is null)
+        {
+            aSolidFill = new A.SolidFill();
+            this.aTableCellProperties.BottomBorderLineProperties.AppendChild(aSolidFill);
+        }
+
+        aSolidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+
+        aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+    }
+
     private void UpdateWidth(float points)
     {
         if (this.aTableCellProperties.BottomBorderLineProperties is null)
         {
             var aSolidFill = new A.SolidFill
             {
-                SchemeColor = new A.SchemeColor { Val = A.SchemeColorValues.Text1 }
+                RgbColorModelHex = new() { Val = "000000" }
             };
+
             this.aTableCellProperties.BottomBorderLineProperties = new A.BottomBorderLineProperties();
             this.aTableCellProperties.BottomBorderLineProperties.AppendChild(aSolidFill);
         }
