@@ -30,7 +30,7 @@ internal class BottomBorder : IBorder
     {
         this.aTableCellProperties.BottomBorderLineProperties ??= new A.BottomBorderLineProperties
         {
-            Width = new Int32Value(12700) // 1 * 12700 => emu to point
+            Width = (Int32Value)new Points(1).AsEmus()
         };
 
         var aSolidFill = this.aTableCellProperties.BottomBorderLineProperties.GetFirstChild<A.SolidFill>();

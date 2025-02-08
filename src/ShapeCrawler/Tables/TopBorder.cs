@@ -31,7 +31,7 @@ internal class TopBorder : IBorder
     {
         this.aTableCellProperties.TopBorderLineProperties ??= new A.TopBorderLineProperties
         {
-            Width = new Int32Value(12700) // 1 * 12700 => emu to point
+            Width = (Int32Value)new Points(1).AsEmus()
         };
 
         var solidFill = this.aTableCellProperties.TopBorderLineProperties.GetFirstChild<A.SolidFill>();

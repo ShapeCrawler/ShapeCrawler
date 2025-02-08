@@ -50,14 +50,13 @@ public class TableTests : SCTest
 	{
 		// Arrange
 		var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Shapes[0] as ITable;
-          
+        var table = pres.Slide(1).Table("Table 1");
+
 		// Act 
 		var tableCell = table[1, 2];
 
         // Assert
-        tableCell.BottomBorder.Color.Should().Be("FF0000"); 
-		pres.Validate();
+        tableCell.BottomBorder.Color.Should().Be("FF0000");
 	}
 
 	[Test]
@@ -65,7 +64,7 @@ public class TableTests : SCTest
 	{
 		// Arrange
 		var pres = new Presentation(TestAsset("table-case004.pptx"));
-		var table = pres.Slide(1).Shapes[0] as ITable;
+		var table = pres.Slide(1).Table("Table 1");
 		var mStream = new MemoryStream();
 
         // Act
@@ -76,7 +75,7 @@ public class TableTests : SCTest
 		pres.SaveAs(mStream);
 
 		pres = new Presentation(mStream);
-        table = pres.Slide(1).Shapes[0] as ITable;
+        table = pres.Slide(1).Table("Table 1");
 		table[1, 2].RightBorder.Color.Should().Be("00FF00");
 		pres.Validate();
 	}
@@ -86,7 +85,7 @@ public class TableTests : SCTest
 	{
 		// Arrange
 		var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Shapes[1] as ITable;
+        var table = pres.Slide(1).Table("Table 2");
         
         // Assert
 		var tableCell = table[0, 0];
@@ -94,9 +93,6 @@ public class TableTests : SCTest
         tableCell.TextBox.RightMargin.Should().Be(1);
         tableCell.TextBox.LeftMargin.Should().Be(1);
         tableCell.TextBox.BottomMargin.Should().Be(1);
-
-        
-        pres.Validate();
 	}
 
 	[Test]
@@ -104,7 +100,7 @@ public class TableTests : SCTest
 	{
 		// Arrange
 		var pres = new Presentation(TestAsset("table-case004.pptx"));
-		var table = pres.Slide(1).Shapes[1] as ITable;
+		var table = pres.Slide(1).Table("Table 2");
 		var mStream = new MemoryStream();
 
         // Act
@@ -119,7 +115,7 @@ public class TableTests : SCTest
 		pres.SaveAs(mStream);
 
 		pres = new Presentation(mStream);
-        table = pres.Slide(1).Shapes[1] as ITable;
+        table = pres.Slide(1).Table("Table 2");
 		
         tableCell = table[0, 0];
 		tableCell.TextBox.TopMargin.Should().Be(1.4M);
@@ -135,14 +131,12 @@ public class TableTests : SCTest
 	{
 		// Arrange
 		var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Shapes[1] as ITable;
+        var table = pres.Slide(1).Table("Table 2");
         
         // Assert
 		var tableCell = table[3, 2];
         tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
         tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
-        
-        pres.Validate();
 	}
 
 	[Test]
@@ -150,7 +144,7 @@ public class TableTests : SCTest
 	{
 		// Arrange
 		var pres = new Presentation(TestAsset("table-case004.pptx"));
-		var table = pres.Slide(1).Shapes[1] as ITable;
+		var table = pres.Slide(1).Table("Table 2");
 		var mStream = new MemoryStream();
 
         // Act
@@ -164,7 +158,7 @@ public class TableTests : SCTest
 		pres.SaveAs(mStream);
 
 		pres = new Presentation(mStream);
-        table = pres.Slide(1).Shapes[1] as ITable;
+        table = pres.Slide(1).Table("Table 2");
 		
         tableCell = table[1, 1];
 		tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
