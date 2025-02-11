@@ -477,7 +477,7 @@ internal readonly ref struct ReferencedIndentLevel
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
             if (refMasterPShape == null)
             {
-                if (pPlaceholderShape.Type!.Value == P.PlaceholderValues.CenteredTitle)
+                if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.CenteredTitle)
                 {
                     return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.TitleStyle!
                         .Level1ParagraphProperties!
