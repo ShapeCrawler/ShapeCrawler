@@ -249,7 +249,7 @@ internal sealed class Table : CopyableShape, ITable
         int horizontalMergingCount = maxColIndex - minColIndex + 1;
         for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
         {
-            A.TableCell[] rowATblCells = aTableRows[rowIdx].Elements<A.TableCell>().ToArray();
+            A.TableCell[] rowATblCells = [.. aTableRows[rowIdx].Elements<A.TableCell>()];
             A.TableCell firstMergingCell = rowATblCells[minColIndex];
             firstMergingCell.GridSpan = new Int32Value(horizontalMergingCount);
             Span<A.TableCell> nextMergingCells =
