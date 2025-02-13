@@ -85,6 +85,5 @@ internal sealed class TableRows : ITableRows
     
     IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
 
-    private List<TableRow> Rows() => this.aTable.Elements<A.TableRow>()
-        .Select((aTableRow, index) => new TableRow(this.sdkTypedOpenXmlPart, aTableRow, index)).ToList();
+    private List<TableRow> Rows() => [.. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(this.sdkTypedOpenXmlPart, aTableRow, index))];
 }

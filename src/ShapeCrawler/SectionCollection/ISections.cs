@@ -74,7 +74,6 @@ internal sealed class Sections : ISections
             ?.Descendants<P14.SectionList>().FirstOrDefault();
         return p14SectionList == null
             ? []
-            : p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section))
-                .ToList();
+            : [.. p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section))];
     }
 }

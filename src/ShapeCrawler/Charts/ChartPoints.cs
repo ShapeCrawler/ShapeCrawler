@@ -48,7 +48,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         List<C.NumericValue>? cNumericValues = null;
         if (cNumberReference.NumberingCache != null)
         {
-            cNumericValues = cNumberReference.NumberingCache.Descendants<C.NumericValue>().ToList();
+            cNumericValues = [.. cNumberReference.NumberingCache.Descendants<C.NumericValue>()];
         }
 
         // Generate points

@@ -97,6 +97,5 @@ internal sealed class TableColumns : ITableColumns
 
     IEnumerator IEnumerable.GetEnumerator() => this.Columns().GetEnumerator();
 
-    private List<Column> Columns() => this.aTable.TableGrid!.Elements<A.GridColumn>()
-        .Select((aGridColumn, index) => new Column(aGridColumn, index)).ToList();
+    private List<Column> Columns() => [.. this.aTable.TableGrid!.Elements<A.GridColumn>().Select((aGridColumn, index) => new Column(aGridColumn, index))];
 }

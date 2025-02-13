@@ -64,7 +64,7 @@ internal sealed class Categories : IReadOnlyList<ICategory>
             indexToCategory = nextIndexToCategory;
         }
 
-        return indexToCategory.Select(kvp => kvp.Value).ToList();
+        return [.. indexToCategory.Select(kvp => kvp.Value)];
     }
     
     private List<ICategory> CategoryList()
@@ -88,12 +88,12 @@ internal sealed class Categories : IReadOnlyList<ICategory>
             if (cNumReference is not null)
             {
                 cFormula = cNumReference.Formula!;
-                cachedValues = cNumReference.NumberingCache!.Descendants<C.NumericValue>().ToList();
+                cachedValues = [.. cNumReference.NumberingCache!.Descendants<C.NumericValue>()];
             }
             else
             {
                 cFormula = cStrReference.Formula!;
-                cachedValues = cStrReference.StringCache!.Descendants<C.NumericValue>().ToList();
+                cachedValues = [.. cStrReference.StringCache!.Descendants<C.NumericValue>()];
             }
 
             var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
