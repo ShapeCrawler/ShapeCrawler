@@ -7,7 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Shared;
 
-internal readonly ref struct SOpenXmlPart(OpenXmlPart openXmlPart)
+internal readonly ref struct SCOpenXmlPart(OpenXmlPart openXmlPart)
 {
     internal string NextRelationshipId()
     {

@@ -19,18 +19,15 @@ namespace ShapeCrawler.Presentations;
 
 internal sealed class Slide : ISlide
 {
-    private readonly SlideSize slideSize;
     private Lazy<CustomXmlPart?> sdkCustomXmlPart;
-    private IShapeFill? fill = null;
+    private IShapeFill? fill;
 
     internal Slide(
         SlidePart sdkSlidePart,
         ISlideLayout slideLayout,
-        SlideSize slideSize,
         MediaCollection mediaCollection)
     {
         this.SdkSlidePart = sdkSlidePart;
-        this.slideSize = slideSize;
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart), mediaCollection);
@@ -225,7 +222,7 @@ internal sealed class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = new SOpenXmlPart(this.SdkSlidePart).NextRelationshipId();
+        var rid = new SCOpenXmlPart(this.SdkSlidePart).NextRelationshipId();
         var notesSlidePart1 = this.SdkSlidePart.AddNewPart<NotesSlidePart>(rid);
         var notesSlide = new NotesSlide(
             new CommonSlideData(

@@ -143,7 +143,7 @@ internal sealed class Picture : CopyableShape, IPicture
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...
-        var targetImagePartRId = new SOpenXmlPart(this.SdkTypedOpenXmlPart).NextRelationshipId();
+        var targetImagePartRId = new SCOpenXmlPart(this.SdkTypedOpenXmlPart).NextRelationshipId();
 
         // Adds to current slide parts and update relation id.
         var targetImagePart = this.SdkTypedOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);

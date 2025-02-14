@@ -44,8 +44,7 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
             var pSlideId = pSlideIdList[slideIndex];
             var sdkSlidePart = (SlidePart)sdkPresPart.GetPartById(pSlideId.RelationshipId!);
             var layout = new SlideLayout(sdkSlidePart.SlideLayoutPart!);
-            var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
-            var newSlide = new Slide(sdkSlidePart, layout, slideSize, this.mediaCollection);
+            var newSlide = new Slide(sdkSlidePart, layout, this.mediaCollection);
             slides.Add(newSlide);
         }
 

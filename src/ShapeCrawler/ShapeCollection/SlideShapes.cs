@@ -206,7 +206,7 @@ internal sealed class SlideShapes : ISlideShapes
     
     public void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName)
     {
-        new SSlidePart(this.sdkSlidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
+        new SCSlidePart(this.sdkSlidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
 
     public void AddVideo(int x, int y, Stream stream)

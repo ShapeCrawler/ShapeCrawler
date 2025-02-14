@@ -63,7 +63,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)this.pShape.Parent!;
-        var autoShapes = new SPShapeTree(pShapeTree);
+        var autoShapes = new SCPShapeTree(pShapeTree);
         autoShapes.Add(this.pShape);
     }
 }

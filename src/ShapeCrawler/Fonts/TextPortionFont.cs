@@ -16,7 +16,7 @@ internal sealed class TextPortionFont : ITextPortionFont
     private readonly Lazy<FontColor> fontColor;
     private readonly IFontSize size;
     private readonly ThemeFontScheme themeFontScheme;
-    private readonly SAText sdkSaText;
+    private readonly SCAText sdkScaText;
 
     internal TextPortionFont(
         OpenXmlPart sdkTypedOpenXmlPart,
@@ -41,7 +41,7 @@ internal sealed class TextPortionFont : ITextPortionFont
         this.fontColor = new Lazy<FontColor>(() => new FontColor(sdkTypedOpenXmlPart, this.aText));
         this.size = size;
         this.themeFontScheme = themeFontScheme;
-        this.sdkSaText = new SAText(sdkTypedOpenXmlPart, aText);
+        this.sdkScaText = new SCAText(sdkTypedOpenXmlPart, aText);
     }
 
     #region Public APIs
@@ -68,8 +68,8 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     public string EastAsianName
     {
-        get => this.sdkSaText.EastAsianName();
-        set => this.sdkSaText.UpdateEastAsianName(value);
+        get => this.sdkScaText.EastAsianName();
+        set => this.sdkScaText.UpdateEastAsianName(value);
     }
 
     public bool IsBold

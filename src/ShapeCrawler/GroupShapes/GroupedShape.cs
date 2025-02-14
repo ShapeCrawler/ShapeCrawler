@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection.GroupShapes;
+namespace ShapeCrawler.GroupShapes;
 
 internal sealed class GroupedShape : IShape
 {

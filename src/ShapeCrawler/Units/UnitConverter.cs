@@ -44,11 +44,6 @@ internal static class UnitConverter
     {
         return HorizontalEmuToPixel(CentimeterToEmu(centimeter));
     }
-
-    internal static float CentimeterToPixelF(float centimeter)
-    {
-        return (float)HorizontalEmuToPixel(CentimeterToEmu((decimal)centimeter));
-    }
     
     internal static decimal EmuToPoint(long emu)
     {
@@ -63,10 +58,5 @@ internal static class UnitConverter
     internal static decimal PointToPixel(decimal point)
     {
         return HorizontalEmuToPixel(PointToEmu(point));
-    }
-
-    internal static float InchToPixelF(float inch)
-    {
-        return inch * 96.0f;
     }
 }

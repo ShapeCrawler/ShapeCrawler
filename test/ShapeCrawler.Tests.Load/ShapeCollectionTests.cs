@@ -51,4 +51,17 @@ public class ShapeCollectionTests : SCTest
         imageParts.Length.Should().Be(2,
             "SVG image adds two parts: One for the vector and one for the auto-generated raster");
     }
+
+    [Test]
+    public void WIP()
+    {
+        var pres = new Presentation();
+        var shapeCollection = pres.Slide(1).Shapes;
+        
+        shapeCollection.AddShape(x: 100, y: 50, width: 100, height: 100);
+        var addedShape = shapeCollection.Last();
+        addedShape.Text = "Hello, World!";
+        
+        pres.SaveAs(@"c:\temp\output.pptx");
+    }
 }

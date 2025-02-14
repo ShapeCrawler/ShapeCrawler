@@ -33,7 +33,7 @@ public interface IPresentationProperties
     ISections Sections { get; }
     
     /// <summary>
-    ///     Gets Header and Footer manager.
+    ///     Gets footer.
     /// </summary>
     IFooter Footer { get; }
 

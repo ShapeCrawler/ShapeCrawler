@@ -2,10 +2,11 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.ShapeCollection;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.ShapeCollection.GroupShapes;
+namespace ShapeCrawler.GroupShapes;
 
 internal sealed class GroupShape : Shape, IGroupShape
 {
