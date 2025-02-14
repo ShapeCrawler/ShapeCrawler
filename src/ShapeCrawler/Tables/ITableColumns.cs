@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
@@ -89,7 +88,7 @@ internal sealed class TableColumns : ITableColumns
 
         foreach (var aTableRow in this.aTable.Elements<A.TableRow>())
         {
-            new SaTableRow(aTableRow).InsertNewCellAfter(columnNumber);
+            new SCATableRow(aTableRow).InsertNewCellAfter(columnNumber);
         }
     }
     

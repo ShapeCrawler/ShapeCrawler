@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Shared;
+namespace ShapeCrawler.Presentations;
 
-internal readonly ref struct SOpenXmlPart(OpenXmlPart openXmlPart)
+internal readonly ref struct SCOpenXmlPart(OpenXmlPart openXmlPart)
 {
     internal string NextRelationshipId()
     {

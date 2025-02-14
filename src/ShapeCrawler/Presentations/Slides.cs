@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -52,7 +51,7 @@ internal sealed class Slides : ISlides
         pPresentation.Save();
 
         var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
-        new SPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
+        new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
@@ -73,7 +72,7 @@ internal sealed class Slides : ISlides
     {
         var sdkPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
         var sdkPresPart = sdkPresDocument.PresentationPart!;
-        var rId = new SOpenXmlPart(sdkPresPart).NextRelationshipId();
+        var rId = new SCOpenXmlPart(sdkPresPart).NextRelationshipId();
         var sdkSlidePart = sdkPresPart.AddNewPart<SlidePart>(rId);
         sdkSlidePart.Slide = new P.Slide(
             new P.CommonSlideData(
@@ -157,7 +156,7 @@ internal sealed class Slides : ISlides
         new SSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
             .SlideLayoutPart!);
 
-        var wrappedPresentationPart = new SPresentationPart(targetPresPart);
+        var wrappedPresentationPart = new SCPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
         var addedSlidePart = wrappedPresentationPart.Last<SlidePart>();
         var addedSlideMasterPart = wrappedPresentationPart.Last<SlideMasterPart>();

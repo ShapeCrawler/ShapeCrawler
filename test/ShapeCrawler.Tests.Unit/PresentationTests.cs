@@ -420,7 +420,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void HeaderAndFooter_AddSlideNumber_adds_slide_number()
+    public void Footer_AddSlideNumber_adds_slide_number()
     {
         // Arrange
         var pres = new Presentation();
@@ -433,7 +433,7 @@ public class PresentationTests : SCTest
     }
 
     [Test, Ignore("In Progress #540")]
-    public void HeaderAndFooter_RemoveSlideNumber_removes_slide_number()
+    public void Footer_RemoveSlideNumber_removes_slide_number()
     {
         // Arrange
         var pres = new Presentation();
@@ -447,7 +447,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void HeaderAndFooter_SlideNumberAdded_returns_false_When_slide_number_is_not_added()
+    public void Footer_SlideNumberAdded_returns_false_When_slide_number_is_not_added()
     {
         // Arrange
         var pres = new Presentation();

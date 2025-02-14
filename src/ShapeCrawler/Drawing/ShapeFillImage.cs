@@ -36,5 +36,5 @@ internal sealed class ShapeFillImage : IImage
         this.sdkImagePart.FeedData(stream);
     }
 
-    public byte[] AsByteArray() => new SImagePart(this.sdkImagePart).AsBytes(); 
+    public byte[] AsByteArray() => new SCImagePart(this.sdkImagePart).AsBytes(); 
 }

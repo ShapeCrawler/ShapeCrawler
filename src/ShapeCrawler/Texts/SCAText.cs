@@ -4,12 +4,12 @@ namespace ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once InconsistentNaming
-internal sealed record SAText
+internal sealed record SCAText
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal SAText(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal SCAText(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;

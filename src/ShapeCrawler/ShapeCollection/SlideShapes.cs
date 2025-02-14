@@ -13,6 +13,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
@@ -206,7 +207,7 @@ internal sealed class SlideShapes : ISlideShapes
     
     public void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName)
     {
-        new SSlidePart(this.sdkSlidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
+        new SCSlidePart(this.sdkSlidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
 
     public void AddVideo(int x, int y, Stream stream)

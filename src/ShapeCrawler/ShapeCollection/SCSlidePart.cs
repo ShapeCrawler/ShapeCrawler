@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Units;
 
 namespace ShapeCrawler.ShapeCollection;
@@ -10,7 +10,7 @@ using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-internal readonly ref struct SSlidePart(SlidePart slidePart)
+internal readonly ref struct SCSlidePart(SlidePart slidePart)
 {
     internal void AddPieChart(
         int x, 
@@ -20,7 +20,7 @@ internal readonly ref struct SSlidePart(SlidePart slidePart)
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
-        var rId = new SOpenXmlPart(slidePart).NextRelationshipId();
+        var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
         GeneratePieChartContent(chartPart, categoryValues, seriesName);
         this.InsertChartGraphicFrame(chartPart, x, y, width, height);

@@ -6,8 +6,8 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -143,7 +143,7 @@ internal sealed class Picture : CopyableShape, IPicture
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...
-        var targetImagePartRId = new SOpenXmlPart(this.SdkTypedOpenXmlPart).NextRelationshipId();
+        var targetImagePartRId = new SCOpenXmlPart(this.SdkTypedOpenXmlPart).NextRelationshipId();
 
         // Adds to current slide parts and update relation id.
         var targetImagePart = this.SdkTypedOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);

@@ -6,7 +6,7 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents Header and Footer manager.
+///     Represents Footer.
 /// </summary>
 public interface IFooter
 {
