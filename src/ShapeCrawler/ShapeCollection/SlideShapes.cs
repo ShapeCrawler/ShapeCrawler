@@ -176,7 +176,7 @@ internal sealed class SlideShapes : ISlideShapes
             });
 
             var rasterStream = new MemoryStream();
-            imageMagick.Write(rasterStream);
+            imageMagick.Write(rasterStream, new PngWriteDefines() { IncludeChunks = PngChunkFlags.None });
             image.Position = 0;
             rasterStream.Position = 0;
             var pPicture = VectorImageFormats.Contains(originalFormat)
