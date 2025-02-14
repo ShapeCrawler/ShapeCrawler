@@ -1,4 +1,5 @@
 ﻿using ShapeCrawler.Shared;
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Extensions;
@@ -10,7 +11,7 @@ internal static class ATableExtensions
         var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
-            new SaTableRow(aTableRow).AddNewCell();
+            new SCATableRow(aTableRow).AddNewCell();
         }
         
         aTable.Append(aTableRow);
