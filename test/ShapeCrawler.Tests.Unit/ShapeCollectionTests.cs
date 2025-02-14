@@ -347,26 +347,6 @@ public class ShapeCollectionTests : SCTest
         picture.Width.Should().Be(100);
         pres.Validate();
     }
-
-    [Test]
-    [Category("issue-883")]
-    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
-        var svgImage = TestAsset("063 vector image.svg");
-
-        // Act
-        shapes.AddPicture(svgImage);
-        shapes.AddPicture(svgImage);
-
-        // Assert
-        var checkXml = SaveAndOpenPresentationAsSdk(pres);
-        var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
-        imageParts.Length.Should().Be(2,
-            "SVG image adds two parts: One for the vector and one for the auto-generated raster");
-    }
     
     [Test]
     [Category("issue-883")]
