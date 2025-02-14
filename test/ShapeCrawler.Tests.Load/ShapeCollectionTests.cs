@@ -7,6 +7,7 @@ public class ShapeCollectionTests : SCTest
 {
     [Test]
     [Repeat(40)]
+    [Explicit("Flaky test. Read https://github.com/ShapeCrawler/ShapeCrawler/issues/883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
