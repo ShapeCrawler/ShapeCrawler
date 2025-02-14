@@ -103,7 +103,7 @@ internal sealed class PresentationCore
         };
         var sdkErrors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.sdkPresDocument);
         sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
-        sdkErrors = sdkErrors.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath }).ToList();
+        sdkErrors = [.. sdkErrors.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath })];
 
         if (sdkErrors.Any())
         {
@@ -158,8 +158,12 @@ internal sealed class PresentationCore
     {
         var aText = sdkPres.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.Text>());
-        aText = aText.Concat(sdkPres.PresentationPart!.SlideMasterParts
-            .SelectMany(slidePart => slidePart.SlideMaster.Descendants<A.Text>())).ToList();
+        aText =
+        [
+            .. aText,
+            .. sdkPres.PresentationPart!.SlideMasterParts
+                .SelectMany(slidePart => slidePart.SlideMaster.Descendants<A.Text>()),
+        ];
 
         foreach (var text in aText)
         {
