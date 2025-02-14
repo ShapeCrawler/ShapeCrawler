@@ -9,17 +9,17 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-      <TargetFramework>net9.0</TargetFramework>
-    </PropertyGroup>
-  
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-      <TargetFrameworks>net9.0;net472;net48</TargetFrameworks>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TargetFrameworks>net9.0;net472;net48</TargetFrameworks>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="[7.1.0]" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageReference Include="NUnit" Version="4.3.2" />
     </ItemGroup>
 

@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test
-        run: dotnet test -c Release -f ${{ matrix.framework_version }}
+        run: dotnet test ShapeCrawler.sln -c Release -f ${{ matrix.framework_version }}
 
   publish:
     needs: test
