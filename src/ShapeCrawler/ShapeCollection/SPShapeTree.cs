@@ -61,45 +61,23 @@ internal readonly ref struct SPShapeTree
                 continue;
             }
 
-            if (pPlaceholder.Index is not null
-                && layoutPPlaceholder.Index is not null
-                && pPlaceholder.Index == layoutPPlaceholder.Index)
-            {
-                return layoutPShape;
-            }
-
-            if (pPlaceholder.Type == null || layoutPPlaceholder.Type == null)
-            {
-                return layoutPShape;
-            }
-
-            if (pPlaceholder.Type == P.PlaceholderValues.Body
-                && pPlaceholder.Index is not null
-                && layoutPPlaceholder.Index is not null)
-            {
-                if (pPlaceholder.Index == layoutPPlaceholder.Index)
-                {
-                    return layoutPShape;
-                }
-            }
-
-            if (pPlaceholder.Type == P.PlaceholderValues.Title && layoutPPlaceholder.Type == P.PlaceholderValues.Title)
-            {
-                return layoutPShape;
-            }
-
-            if (pPlaceholder.Type == P.PlaceholderValues.CenteredTitle && layoutPPlaceholder.Type == P.PlaceholderValues.CenteredTitle)
+            if (pPlaceholder.Type?.Value == layoutPPlaceholder.Type?.Value &&
+                pPlaceholder.Index?.Value == layoutPPlaceholder.Index?.Value)
             {
                 return layoutPShape;
             }
         }
 
-        var byType = pShapes.FirstOrDefault(layoutPShape =>
-            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == pPlaceholder.Type?.Value);
-        if (byType != null)
+        if (pPlaceholder.Type?.Value is not null)
         {
-            return byType;
+            var byType = pShapes.FirstOrDefault(layoutPShape => 
+                layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                    .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == pPlaceholder.Type.Value);
+
+            if (byType != null)
+            {
+                return byType;
+            }
         }
 
         return null;

@@ -89,7 +89,7 @@ public class FontTests : SCTest
     [Test]
     [SlideShape("028.pptx", 1, 4098, 32)]
     [SlideShape("029.pptx", 1, "Content Placeholder 2", 25)]
-    // [SlideShape("072 content placeholder.pptx", 1, "Content Placeholder 1", 18)]
+    [SlideShape("072 content placeholder.pptx", 1, "Content Placeholder 1", 18)]
     public void Size_Getter_returns_font_size_of_Placeholder(IShape shape, int expectedSize)
     {
         // Arrange
