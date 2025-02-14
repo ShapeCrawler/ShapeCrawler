@@ -1,6 +1,6 @@
 using System;
 
-namespace ShapeCrawler.Shared;
+namespace ShapeCrawler.Units;
 
 internal static class UnitConverter
 {
@@ -22,12 +22,12 @@ internal static class UnitConverter
 
     internal static long HorizontalPixelToEmu(decimal horizontalPixels)
     {
-        return (long)Math.Round(horizontalPixels * EmusPerInch / (decimal)HorizontalResolutionDpi);
+        return (long)Math.Round(horizontalPixels * EmusPerInch / HorizontalResolutionDpi);
     }
 
     internal static long VerticalPixelToEmu(decimal verticalPixels)
     {
-        return (long)Math.Round(verticalPixels * EmusPerInch / (decimal)VerticalResolutionDpi);
+        return (long)Math.Round(verticalPixels * EmusPerInch / VerticalResolutionDpi);
     }
 
     internal static decimal EmuToCentimeter(long emu)
@@ -44,7 +44,7 @@ internal static class UnitConverter
     {
         return HorizontalEmuToPixel(CentimeterToEmu(centimeter));
     }
-    
+
     internal static decimal EmuToPoint(long emu)
     {
         return emu / (decimal)EmusPerPoint; // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)

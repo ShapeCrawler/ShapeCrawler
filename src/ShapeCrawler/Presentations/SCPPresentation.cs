@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 // ReSharper disable once InconsistentNaming
 internal readonly ref struct SCPPresentation

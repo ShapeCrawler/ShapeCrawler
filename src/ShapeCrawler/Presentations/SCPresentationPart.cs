@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 internal readonly ref struct SCPresentationPart
 {
