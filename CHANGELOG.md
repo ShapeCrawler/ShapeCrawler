@@ -1,7 +1,8 @@
 # Changelog  
 
-## Version 0.64.1 - Unreleased
+## Version 0.64.1 - 2025-02-14
 🐞Fixed updating table cell margins [#916](https://github.com/ShapeCrawler/ShapeCrawler/issues/916)  
+🐞Fixed font size [#905](https://github.com/ShapeCrawler/ShapeCrawler/issues/905)  
 
 ## Version 0.64.0 - 2025-02-02
 🍀Added support for creating Pie Chart [#907](https://github.com/ShapeCrawler/ShapeCrawler/issues/907)  
