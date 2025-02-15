@@ -28,6 +28,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageIcon>package icon.jpg</PackageIcon> 
   </PropertyGroup>
 
+   <ItemGroup>
+    <None Include="Resources/package icon.jpg" Pack="true" PackagePath="" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefineConstants>TRACE</DefineConstants>
