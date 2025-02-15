@@ -47,8 +47,23 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void Add_adds_picture_same_slide()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
+        var copyingShape = pres.Slides[0].Shapes.GetByName("Picture")!;
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        shapes.Add(copyingShape);
+
+        // Assert
+        shapes.GetByName("Picture 1").Should().NotBeNull();
+    }
+
+    [Test]
     [Explicit("Failing test for #935")]
-    public void Add_adds_picture()
+    public void Add_adds_picture_to_another_slide()
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
