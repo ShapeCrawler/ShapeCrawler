@@ -38,12 +38,9 @@ public interface IPresentationProperties
     IFooter Footer { get; }
 
     /// <summary>
-    ///     Gets the properties (meta-data) of the file.
+    ///     Gets the metadata of the presentation file.
     /// </summary>
-    /// <remarks>
-    ///     These properties are not presentation-specific.
-    /// </remarks>
-    IFileProperties FileProperties { get; }
+    IPresentationMetadata Metadata { get; }
     
     /// <summary>
     ///     Returns slide with specified number.
