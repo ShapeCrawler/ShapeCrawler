@@ -6,8 +6,6 @@ namespace ShapeCrawler.Tests.Load;
 public class ShapeCollectionTests : SCTest
 {
     [Test]
-    [Repeat(40)]
-    [Explicit("Flaky test. Read https://github.com/ShapeCrawler/ShapeCrawler/issues/883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
@@ -19,6 +17,7 @@ public class ShapeCollectionTests : SCTest
         var loadedPres = SaveAndOpenPresentation(pres);
 
         // Act
+        Task.Delay(1000).Wait();
         shapes = loadedPres.Slides[0].Shapes;
         shapes.AddPicture(image);
 
@@ -32,8 +31,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Repeat(40)]
-    [Explicit("Flaky test. Read https://github.com/ShapeCrawler/ShapeCrawler/issues/883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
@@ -43,6 +40,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddPicture(svgImage);
+        Task.Delay(1000).Wait();
         shapes.AddPicture(svgImage);
 
         // Assert
@@ -50,5 +48,31 @@ public class ShapeCollectionTests : SCTest
         var imageParts = checkXml.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).ToArray();
         imageParts.Length.Should().Be(2,
             "SVG image adds two parts: One for the vector and one for the auto-generated raster");
+    }
+    
+    [TestCase("08 jpeg image-500w.jpg")]
+    [TestCase("09 png image.png")]
+    [TestCase("03 gif image.gif")]
+    [TestCase("07 tiff image.tiff")]
+    public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
+    {
+        // Arrange
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var shapesSlide1 = pres.Slides[0].Shapes;
+        var shapesSlide2 = pres.Slides[1].Shapes;
+
+        var image = TestAsset(fileName);
+
+        // Act
+        shapesSlide1.AddPicture(image);
+        Task.Delay(1000).Wait();
+        shapesSlide2.AddPicture(image);
+
+        // Assert
+        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
+        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Count.Should().Be(1);
     }
 }

@@ -175,6 +175,8 @@ internal sealed class SlideShapes : ISlideShapes
             {
                 ExcludeChunks = PngChunkFlags.date
             });
+            
+            imageMagick.Settings.SetDefine("png:exclude-chunk", "tIME");
 
             var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
