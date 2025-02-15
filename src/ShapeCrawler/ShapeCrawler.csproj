@@ -21,13 +21,16 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
-    <PackageIcon>package-icon.jpg</PackageIcon>
     <Nullable>enable</Nullable>
     <NoWarn>OOXML0001</NoWarn>
     <IsTrimmable Condition="'$(TargetFramework)' == 'net9.0'">true</IsTrimmable> 
     <Copyright>Copyright (c) 2019-2025 Adam Shakhabov</Copyright> 
-    <PackageLicenseUrl>https://github.com/ShapeCrawler/ShapeCrawler/blob/master/LICENSE</PackageLicenseUrl> 
+    <PackageIcon>package icon.jpg</PackageIcon> 
   </PropertyGroup>
+
+   <ItemGroup>
+    <None Include="Resources/package icon.jpg" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -54,10 +57,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EmbeddedResource Include="Resources\new-rectangle.xml" />
     <None Remove="Resources\new-line.xml" />
     <EmbeddedResource Include="Resources\new-line.xml" />
-    <None Update="Resources\package-icon.jpg">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
