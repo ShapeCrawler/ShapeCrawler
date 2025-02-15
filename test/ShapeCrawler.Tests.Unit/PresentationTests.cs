@@ -480,25 +480,27 @@ public class PresentationTests : SCTest
         File.Delete(originalPath);
         File.Delete(newPath);
     }
-
+    
     [Test]
-    [Parallelizable(ParallelScope.None)]
     public void Slides_Add_adds_slide()
     {
         // Arrange
-        var source = new Presentation(TestAsset("001.pptx"));
-        var targetPath = GetTestPath("008.pptx");
-        var target = new Presentation(targetPath);
-        var copyingSlide = source.Slides[0];
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
+        var pptx = TestAsset("002.pptx");
+        var destPre = new Presentation(pptx);
+        var originSlidesCount = destPre.Slides.Count;
+        var expectedSlidesCount = ++originSlidesCount;
+        MemoryStream savedPre = new ();
 
         // Act
-        var slideAdding = () => target.Slides.Add(copyingSlide);
+        destPre.Slides.Add(sourceSlide);
 
         // Assert
-        slideAdding.Should().NotThrow();
+        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
-        // Clean
-        File.Delete(targetPath);
+        destPre.SaveAs(savedPre);
+        destPre = new Presentation(savedPre);
+        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
     
     [Test]
