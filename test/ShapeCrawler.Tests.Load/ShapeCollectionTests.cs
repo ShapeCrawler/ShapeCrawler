@@ -6,8 +6,6 @@ namespace ShapeCrawler.Tests.Load;
 public class ShapeCollectionTests : SCTest
 {
     [Test]
-    [Repeat(40)]
-    [Explicit("Flaky test. Read https://github.com/ShapeCrawler/ShapeCrawler/issues/883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
@@ -19,6 +17,7 @@ public class ShapeCollectionTests : SCTest
         var loadedPres = SaveAndOpenPresentation(pres);
 
         // Act
+        Thread.Sleep(1000);
         shapes = loadedPres.Slides[0].Shapes;
         shapes.AddPicture(image);
 
@@ -32,8 +31,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Repeat(40)]
-    [Explicit("Flaky test. Read https://github.com/ShapeCrawler/ShapeCrawler/issues/883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
@@ -43,6 +40,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddPicture(svgImage);
+        Thread.Sleep(1000);
         shapes.AddPicture(svgImage);
 
         // Assert
