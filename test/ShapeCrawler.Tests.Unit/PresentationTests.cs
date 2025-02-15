@@ -380,7 +380,7 @@ public class PresentationTests : SCTest
         // Assert
         stream.Position = 0;
         var updatedPres = new Presentation(stream);
-        updatedPres.FileProperties.Created.Should().Be(expectedCreated);
+        updatedPres.Metadata.Created.Should().Be(expectedCreated);
     }
     
     [Test]
@@ -400,7 +400,7 @@ public class PresentationTests : SCTest
         // Assert
         stream.Position = 0;
         var updatedPres = new Presentation(stream);
-        updatedPres.FileProperties.Modified.Should().Be(expectedModified);
+        updatedPres.Metadata.Modified.Should().Be(expectedModified);
     } 
     
     [Test]
@@ -548,12 +548,12 @@ public class PresentationTests : SCTest
         var expectedCreated = new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Local);
 
         // Act
-        pres.FileProperties.Title = "Properties_setter_sets_values";
-        pres.FileProperties.Created = expectedCreated;
+        pres.Metadata.Title = "Properties_setter_sets_values";
+        pres.Metadata.Created = expectedCreated;
         
         // Assert
-        pres.FileProperties.Title.Should().Be("Properties_setter_sets_values");
-        pres.FileProperties.Created.Should().Be(expectedCreated);
+        pres.Metadata.Title.Should().Be("Properties_setter_sets_values");
+        pres.Metadata.Created.Should().Be(expectedCreated);
     }
 
     [Test]
@@ -565,17 +565,17 @@ public class PresentationTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        pres.FileProperties.Title = "Properties_setter_survives_round_trip";
-        pres.FileProperties.Created = expectedCreated;
-        pres.FileProperties.RevisionNumber = 100;
+        pres.Metadata.Title = "Properties_setter_survives_round_trip";
+        pres.Metadata.Created = expectedCreated;
+        pres.Metadata.RevisionNumber = 100;
         pres.SaveAs(stream);
         
         // Assert
         stream.Position = 0;
         var updatePres = new Presentation(stream);
-        updatePres.FileProperties.Title.Should().Be("Properties_setter_survives_round_trip");
-        updatePres.FileProperties.Created.Should().Be(expectedCreated);
-        pres.FileProperties.RevisionNumber.Should().Be(100);
+        updatePres.Metadata.Title.Should().Be("Properties_setter_survives_round_trip");
+        updatePres.Metadata.Created.Should().Be(expectedCreated);
+        pres.Metadata.RevisionNumber.Should().Be(100);
     }
 
     [Test]
@@ -585,10 +585,10 @@ public class PresentationTests : SCTest
         var expectedModified = DateTime.Parse("2024-12-16T17:11:58Z", CultureInfo.InvariantCulture);
 
         // Act-Assert
-        pres.FileProperties.Modified.Should().Be(expectedModified);
-        pres.FileProperties.Title.Should().Be("");
-        pres.FileProperties.RevisionNumber.Should().Be(7);
-        pres.FileProperties.Comments.Should().BeNull();
+        pres.Metadata.Modified.Should().Be(expectedModified);
+        pres.Metadata.Title.Should().Be("");
+        pres.Metadata.RevisionNumber.Should().Be(7);
+        pres.Metadata.Comments.Should().BeNull();
     }
     
     [Test]
@@ -602,6 +602,14 @@ public class PresentationTests : SCTest
         var pres = new Presentation();
 
         // Assert
-        pres.FileProperties.Modified.Should().Be(expectedModified);
+        pres.Metadata.Modified.Should().Be(expectedModified);
+    }
+
+    [Test]
+    public void WIP()
+    {
+        var pres = new Presentation(@"c:\temp\google presentation.pptx");
+
+        var slidesCount = pres.Slides.Count;
     }
 }

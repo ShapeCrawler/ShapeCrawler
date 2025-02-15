@@ -6,12 +6,9 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents the core properties of the presentation file.
+///     Represents the metadata of the presentation file.
 /// </summary>
-/// <remarks>
-///     These properties are not related to the presentation itself, but rather the containing file.
-/// </remarks>
-public interface IFileProperties
+public interface IPresentationMetadata
 {
     /// <summary>
     ///     Gets or sets the categories.
@@ -105,7 +102,7 @@ public interface IFileProperties
     string? Version { get; set; }
 }
 
-internal class FileProperties : IFileProperties
+internal class FileProperties : IPresentationMetadata
 {
     private readonly DocumentFormat.OpenXml.Packaging.IPackageProperties sdkPackageProperties;
 

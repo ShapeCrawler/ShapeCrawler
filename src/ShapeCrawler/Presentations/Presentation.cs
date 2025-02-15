@@ -36,8 +36,8 @@ public sealed class Presentation : IPresentation
         var assets = new Assets(Assembly.GetExecutingAssembly());
         var stream = assets.StreamOf("new-presentation.pptx");
         this.validateable = new StreamPresentation(stream);
-        this.validateable.FileProperties.Modified =
-            this.validateable.FileProperties.Created = SCSettings.TimeProvider.UtcNow;
+        this.validateable.Metadata.Modified =
+            this.validateable.Metadata.Created = SCSettings.TimeProvider.UtcNow;
     }
 
     /// <inheritdoc />
@@ -67,7 +67,7 @@ public sealed class Presentation : IPresentation
     public IFooter Footer => this.validateable.Footer;
     
     /// <inheritdoc />
-    public IFileProperties FileProperties => this.validateable.FileProperties;
+    public IPresentationMetadata Metadata => this.validateable.Metadata;
 
     /// <inheritdoc />
     public void Save() => this.validateable.Save();
