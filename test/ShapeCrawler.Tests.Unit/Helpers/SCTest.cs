@@ -68,20 +68,6 @@ public abstract class SCTest
         return PresentationDocument.Open(stream, true);
     }
 
-#if DEBUG
-
-    protected void SaveResult(IPresentation pres)
-    {
-
-        var testFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "TestResults",
-            TestContext.CurrentContext.Test.MethodName);
-        Directory.CreateDirectory(testFolder);
-
-        pres.SaveAs(Path.Combine(testFolder, "result.pptx"));
-    }
-
-#endif
-
     private static IPresentation GetPresentationFromAssembly(string fileName)
     {
         var stream = TestAsset(fileName);

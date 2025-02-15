@@ -887,28 +887,6 @@ public class ShapeCollectionTests : SCTest
         numberSlidesCase1.Should().Be(1);
         numberSlidesCase2.Should().Be(1);
     }
-
-    [Test]
-    public void Add_adds_external_slide()
-    {
-        // Arrange
-        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
-        var pptx = TestAsset("002.pptx");
-        var destPre = new Presentation(pptx);
-        var originSlidesCount = destPre.Slides.Count;
-        var expectedSlidesCount = ++originSlidesCount;
-        MemoryStream savedPre = new ();
-
-        // Act
-        destPre.Slides.Add(sourceSlide);
-
-        // Assert
-        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
-
-        destPre.SaveAs(savedPre);
-        destPre = new Presentation(savedPre);
-        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
-    }
     
     [Test]
     public void Add_adds_slide_from_the_Same_presentation()

@@ -11,11 +11,6 @@ namespace ShapeCrawler;
 public interface IPresentation : IPresentationProperties
 {
     /// <summary>
-    ///     Saves presentation in the specified file path.
-    /// </summary>
-    void SaveAs(string path);
-
-    /// <summary>
     ///     Saves presentation in specified stream.
     /// </summary>
     void SaveAs(Stream stream);
