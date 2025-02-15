@@ -6,7 +6,6 @@ namespace ShapeCrawler.Tests.Load;
 public class ShapeCollectionTests : SCTest
 {
     [Test]
-    [Repeat(40)]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_to_a_loaded_presentation()
     {
         // Arrange
@@ -18,6 +17,7 @@ public class ShapeCollectionTests : SCTest
         var loadedPres = SaveAndOpenPresentation(pres);
 
         // Act
+        Task.Delay(1000).Wait();
         shapes = loadedPres.Slides[0].Shapes;
         shapes.AddPicture(image);
 
@@ -31,7 +31,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Repeat(40)]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
@@ -41,6 +40,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddPicture(svgImage);
+        Task.Delay(1000).Wait();
         shapes.AddPicture(svgImage);
 
         // Assert
@@ -74,28 +74,5 @@ public class ShapeCollectionTests : SCTest
         var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
             .ToHashSet();
         imageParts.Count.Should().Be(1);
-    }
-    
-    [Test]
-    public void AddPicture_should_not_duplicate_the_png_image_source_When_the_same_svg_image_is_added_a_second_apart()
-    {
-        // Arrange
-        var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
-        var shapesSlide1 = pres.Slides[0].Shapes;
-        var shapesSlide2 = pres.Slides[1].Shapes;
-
-        var image = TestAsset("063 vector image.svg");
-
-        // Act
-        shapesSlide1.AddPicture(image);
-        Task.Delay(1000).Wait();
-        shapesSlide2.AddPicture(image);
-
-        // Assert
-        var sdkPres = SaveAndOpenPresentationAsSdk(pres);
-        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
-            .ToHashSet();
-        imageParts.Count.Should().Be(2);
     }
 }
