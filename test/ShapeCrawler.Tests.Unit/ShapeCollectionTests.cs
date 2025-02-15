@@ -49,7 +49,7 @@ public class ShapeCollectionTests : SCTest
 
     [Test]
     [Explicit("Failing test for #935")]
-    public void Add_throws_exception_when_adding_picture()
+    public void Add_adds_picture()
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
@@ -57,10 +57,10 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[1].Shapes;
 
         // Act
-        var addingPicture = () => shapes.Add(copyingShape);
+        shapes.Add(copyingShape);
 
         // Assert
-        addingPicture.Should().Throw<SCException>();
+        shapes.GetByName("Picture 1").Should().NotBeNull();
     }
 
     [Test]
