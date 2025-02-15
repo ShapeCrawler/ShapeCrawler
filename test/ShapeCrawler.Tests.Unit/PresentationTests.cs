@@ -604,12 +604,4 @@ public class PresentationTests : SCTest
         // Assert
         pres.Metadata.Modified.Should().Be(expectedModified);
     }
-
-    [Test]
-    public void WIP()
-    {
-        var pres = new Presentation(@"c:\temp\google presentation.pptx");
-
-        var slidesCount = pres.Slides.Count;
-    }
 }
