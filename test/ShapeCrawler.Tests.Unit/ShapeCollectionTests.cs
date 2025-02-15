@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Xml;
 using FluentAssertions;
 using ImageMagick;
@@ -44,6 +45,22 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var addedShape = shapes.Last();
         addedShape.Should().BeAssignableTo<ITable>();
+    }
+
+    [Test]
+    [Explicit("Failing test for #935")]
+    public void Add_throws_exception_when_adding_picture()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
+        var copyingShape = pres.Slides[0].Shapes.GetByName("Picture")!;
+        var shapes = pres.Slides[1].Shapes;
+
+        // Act
+        var addingPicture = () => shapes.Add(copyingShape);
+
+        // Assert
+        addingPicture.Should().Throw<SCException>();
     }
 
     [Test]
