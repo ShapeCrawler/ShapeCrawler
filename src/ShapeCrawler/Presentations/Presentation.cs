@@ -13,14 +13,6 @@ public sealed class Presentation : IPresentation
     private IValidateable validateable;
 
     /// <summary>
-    ///     Opens existing presentation from specified path.
-    /// </summary>
-    public Presentation(string path)
-    {
-        this.validateable = new PathPresentation(path);
-    }
-
-    /// <summary>
     ///     Opens existing presentation from specified stream.
     /// </summary>
     public Presentation(Stream stream)

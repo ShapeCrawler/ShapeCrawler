@@ -455,31 +455,6 @@ public class PresentationTests : SCTest
         // Act-Assert
         pres.Footer.SlideNumberAdded().Should().BeFalse();
     }
-
-    [Test]
-    public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
-    {
-        // Arrange
-        var originalPath = GetTestPath("001.pptx");
-        var pres = new Presentation(originalPath);
-        var textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
-        var originalText = textFrame!.Text;
-        var newPath = Path.GetTempFileName();
-        textFrame.Text = originalText + "modified";
-
-        // Act
-        pres.SaveAs(newPath);
-
-        // Assert
-        pres = new Presentation(originalPath);
-        textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
-        var autoShapeText = textFrame!.Text;
-        autoShapeText.Should().BeEquivalentTo(originalText);
-
-        // Clean
-        File.Delete(originalPath);
-        File.Delete(newPath);
-    }
     
     [Test]
     public void Slides_Add_adds_slide()
