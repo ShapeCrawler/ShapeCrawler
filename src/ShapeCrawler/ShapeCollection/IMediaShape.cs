@@ -29,12 +29,12 @@ internal class MediaShape : Shape, IMediaShape
 {
     private readonly P.Picture pPicture;
 
-    internal MediaShape(OpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture)
-        : base(sdkTypedOpenXmlPart, pPicture)
+    internal MediaShape(OpenXmlPart openXmlPart, P.Picture pPicture)
+        : base(openXmlPart, pPicture)
     {
         this.pPicture = pPicture;
-        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
-        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
+        this.Outline = new SlideShapeOutline(openXmlPart, pPicture.ShapeProperties!);
+        this.Fill = new ShapeFill(openXmlPart, pPicture.ShapeProperties!);
     }
 
     public override ShapeType ShapeType => ShapeType.Video;
@@ -56,7 +56,7 @@ internal class MediaShape : Shape, IMediaShape
             var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
                 .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
             var relationship =
-                this.SdkTypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+                this.OpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
             return relationship.DataPart.ContentType;
         }
@@ -66,7 +66,7 @@ internal class MediaShape : Shape, IMediaShape
     {
         var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
             .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.SdkTypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = this.OpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var ms = new MemoryStream();
         stream.CopyTo(ms);

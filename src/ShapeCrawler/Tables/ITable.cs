@@ -65,11 +65,11 @@ internal sealed class Table : CopyableShape, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
 
-    internal Table(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
-        : base(sdkTypedOpenXmlPart, pShapeTreeElement)
+    internal Table(OpenXmlPart openXmlPart, OpenXmlCompositeElement pShapeTreeElement)
+        : base(openXmlPart, pShapeTreeElement)
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-        this.Rows = new TableRows(sdkTypedOpenXmlPart, this.pGraphicFrame);
+        this.Rows = new TableRows(openXmlPart, this.pGraphicFrame);
         this.Columns = new TableColumns(this.pGraphicFrame);
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }

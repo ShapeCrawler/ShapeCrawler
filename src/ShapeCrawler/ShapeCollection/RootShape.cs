@@ -9,10 +9,10 @@ internal sealed class RootShape : CopyableShape, IRootShape
     private readonly P.Shape pShape;
 
     internal RootShape(
-        OpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart openXmlPart,
         P.Shape pShape,
         IShape decoratedShape)
-        : base(sdkTypedOpenXmlPart, pShape)
+        : base(openXmlPart, pShape)
     {
         this.decoratedShape = decoratedShape;
         this.pShape = pShape;

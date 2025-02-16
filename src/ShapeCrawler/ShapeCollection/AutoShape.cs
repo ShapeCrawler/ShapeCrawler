@@ -9,27 +9,21 @@ namespace ShapeCrawler.ShapeCollection;
 internal sealed class AutoShape : CopyableShape
 {
     private readonly P.Shape pShape;
-
     private readonly ShapeGeometry shapeGeometry;
 
-    internal AutoShape(
-        OpenXmlPart sdkTypedOpenXmlPart,
-        P.Shape pShape,
-        TextBox textBox)
-        : this(sdkTypedOpenXmlPart, pShape)
+    internal AutoShape(OpenXmlPart openXmlPart, P.Shape pShape, TextBox textBox)
+        : this(openXmlPart, pShape)
     {
         this.IsTextHolder = true;
         this.TextBox = textBox;
     }
 
-    internal AutoShape(
-        OpenXmlPart sdkTypedOpenXmlPart,
-        P.Shape pShape)
-        : base(sdkTypedOpenXmlPart, pShape)
+    internal AutoShape(OpenXmlPart openXmlPart, P.Shape pShape)
+        : base(openXmlPart, pShape)
     {
         this.pShape = pShape;
-        this.Outline = new SlideShapeOutline(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(this.SdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.Outline = new SlideShapeOutline(this.OpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(this.OpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
         this.shapeGeometry = new ShapeGeometry(pShape.Descendants<P.ShapeProperties>().First());
     }
 
@@ -62,8 +56,6 @@ internal sealed class AutoShape : CopyableShape
         get => this.shapeGeometry.Adjustments;
         set => this.shapeGeometry.Adjustments = value;
     }
-
-    internal ShapeGeometry ShapeGeometry => this.shapeGeometry;
 
     public override void Remove() => this.pShape.Remove();
 }

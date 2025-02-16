@@ -1,18 +1,12 @@
 ﻿namespace ShapeCrawler.Units;
 
-internal readonly ref struct Pixels
+internal readonly ref struct Pixels(decimal pixels)
 {
     private const int HorizontalResolutionDpi = 96;
     private const int VerticalResolutionDpi = 96;
     private const int EmusPerInch = 914400;
-    private readonly decimal pixels;
 
-    internal Pixels(decimal pixels)
-    {
-        this.pixels = pixels;
-    }
-
-    internal long AsHorizontalEmus() => (long)(this.pixels * EmusPerInch / HorizontalResolutionDpi);
+    internal long AsHorizontalEmus() => (long)(pixels * EmusPerInch / HorizontalResolutionDpi);
    
-    internal long AsVerticalEmus() => (long)(this.pixels * EmusPerInch / VerticalResolutionDpi);
+    internal long AsVerticalEmus() => (long)(pixels * EmusPerInch / VerticalResolutionDpi);
 }

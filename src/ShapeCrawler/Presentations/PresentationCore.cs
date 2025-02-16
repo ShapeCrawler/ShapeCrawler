@@ -28,7 +28,7 @@ internal sealed class PresentationCore
         var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;    
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
         this.Sections = new Sections(this.sdkPresDocument);
-        this.Slides = new Slides(this.sdkPresDocument.PresentationPart);
+        this.Slides = new SlideCollection(this.sdkPresDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
         this.FileProperties = new(this.sdkPresDocument.CoreFilePropertiesPart!);
@@ -41,13 +41,13 @@ internal sealed class PresentationCore
         var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
         this.Sections = new Sections(this.sdkPresDocument);
-        this.Slides = new Slides(this.sdkPresDocument.PresentationPart);
+        this.Slides = new SlideCollection(this.sdkPresDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
         this.FileProperties = new(this.sdkPresDocument.CoreFilePropertiesPart!);
     }
 
-    internal ISlides Slides { get; }
+    internal ISlideCollection Slides { get; }
 
     internal decimal SlideHeight
     {

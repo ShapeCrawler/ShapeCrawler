@@ -13,14 +13,6 @@ public sealed class Presentation : IPresentation
     private IValidateable validateable;
 
     /// <summary>
-    ///     Opens existing presentation from specified path.
-    /// </summary>
-    public Presentation(string path)
-    {
-        this.validateable = new PathPresentation(path);
-    }
-
-    /// <summary>
     ///     Opens existing presentation from specified stream.
     /// </summary>
     public Presentation(Stream stream)
@@ -41,7 +33,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public ISlides Slides => this.validateable.Slides;
+    public ISlideCollection Slides => this.validateable.Slides;
 
     /// <inheritdoc />
     public decimal SlideWidth

@@ -30,14 +30,14 @@ internal sealed class Slide : ISlide
         this.SdkSlidePart = sdkSlidePart;
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.SdkSlidePart, new Shapes(sdkSlidePart), mediaCollection);
+        this.Shapes = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection.ShapeCollection(sdkSlidePart), mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
 
     public SlidePart SdkSlidePart { get; }
 
-    public ISlideShapes Shapes { get; }
+    public ISlideShapeCollection Shapes { get; }
 
     public int Number
     {
@@ -185,7 +185,7 @@ internal sealed class Slide : ISlide
             return null;
         }
 
-        var shapes = new Shapes(notes);
+        var shapes = new ShapeCollection.ShapeCollection(notes);
         var notesPlaceholder = shapes
             .FirstOrDefault(x =>
                 x.IsPlaceholder &&

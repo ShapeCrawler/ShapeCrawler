@@ -12,16 +12,16 @@ internal sealed class GroupShape : Shape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
 
-    internal GroupShape(OpenXmlPart sdkTypedOpenXmlPart, P.GroupShape pGroupShape)
-        : base(sdkTypedOpenXmlPart, pGroupShape)
+    internal GroupShape(OpenXmlPart openXmlPart, P.GroupShape pGroupShape)
+        : base(openXmlPart, pGroupShape)
     {
         this.pGroupShape = pGroupShape;
-        this.Shapes = new GroupedShapes(sdkTypedOpenXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
-        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
+        this.Shapes = new GroupedShapeCollection(openXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
+        this.Outline = new SlideShapeOutline(openXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(openXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
     }
 
-    public IShapes Shapes { get; }
+    public IShapeCollection Shapes { get; }
     
     public override Geometry GeometryType => Geometry.Rectangle;
     

@@ -11,14 +11,14 @@ namespace ShapeCrawler;
 public enum ShapeType
 {
     /// <summary>
+    ///     Shape.
+    /// </summary>
+    AutoShape,
+    
+    /// <summary>
     ///     Audio.
     /// </summary>
     Audio,
-
-    /// <summary>
-    ///     AutoShape.
-    /// </summary>
-    AutoShape,
 
     /// <summary>
     ///     Chart.
