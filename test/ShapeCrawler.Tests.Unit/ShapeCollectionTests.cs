@@ -63,7 +63,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit("Failing test for #935")]
+    [Explicit("Failing test for https://github.com/ShapeCrawler/ShapeCrawler/issues/935")]   
     public void Add_adds_picture_to_another_slide()
     {
         // Arrange
