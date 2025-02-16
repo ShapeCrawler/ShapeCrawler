@@ -23,7 +23,7 @@ internal sealed record PathPresentation : IValidateable
     }
 
     public void CopyTo(Stream stream) => this.presentationCore.CopyTo(stream);
-    public ISlideCollection Slides => this.presentationCore.SlideCollection;
+    public ISlideCollection Slides => this.presentationCore.Slides;
 
     public decimal SlideWidth
     {
@@ -40,7 +40,7 @@ internal sealed record PathPresentation : IValidateable
     public ISlideMasterCollection SlideMasters => this.presentationCore.SlideMasters;
     public byte[] AsByteArray() => this.presentationCore.AsByteArray();
     public ISections Sections => this.presentationCore.Sections;
-    public ISlide Slide(int number) => this.presentationCore.SlideCollection[number - 1];
+    public ISlide Slide(int number) => this.presentationCore.Slides[number - 1];
 
     public IFooter Footer => this.presentationCore.Footer;
 

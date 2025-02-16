@@ -13,7 +13,7 @@ public enum ShapeType
     /// <summary>
     ///     Shape.
     /// </summary>
-    Shape,
+    AutoShape,
     
     /// <summary>
     ///     Audio.

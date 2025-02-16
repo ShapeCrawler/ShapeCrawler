@@ -165,7 +165,7 @@ internal sealed class Slide : ISlide
                 case ShapeType.Group:
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
-                case ShapeType.Shape:
+                case ShapeType.AutoShape:
                     if (shape.IsTextHolder)
                     {
                         textBoxes.Add(shape.TextBox);

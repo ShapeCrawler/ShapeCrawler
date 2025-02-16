@@ -35,7 +35,7 @@ internal sealed class AutoShape : CopyableShape
     
     public override IShapeFill Fill { get; }
     
-    public override ShapeType ShapeType => ShapeType.Shape;
+    public override ShapeType ShapeType => ShapeType.AutoShape;
     
     public override bool Removeable => true;
 

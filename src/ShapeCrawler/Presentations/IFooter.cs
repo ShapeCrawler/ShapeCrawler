@@ -37,7 +37,7 @@ internal sealed class Footer : IFooter
 
     public bool SlideNumberAdded() 
     {
-        return this.presentationCore.SlideCollection.Any(slide =>
+        return this.presentationCore.Slides.Any(slide =>
             slide.Shapes.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
     }
 
@@ -48,7 +48,7 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.presentationCore.SlideCollection)
+        foreach (var slide in this.presentationCore.Slides)
         {
             var slideNumberPlaceholder =
                 slide.SlideLayout.Shapes.FirstOrDefault(shape =>
@@ -67,7 +67,7 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.presentationCore.SlideCollection)
+        foreach (var slide in this.presentationCore.Slides)
         {
             var slideNumberPlaceholder =
                 slide.Shapes.FirstOrDefault(shape =>

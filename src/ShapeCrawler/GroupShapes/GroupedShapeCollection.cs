@@ -12,43 +12,41 @@ namespace ShapeCrawler.GroupShapes;
 
 internal sealed record GroupedShapeCollection : IShapeCollection
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart openXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
 
-    internal GroupedShapeCollection(
-        OpenXmlPart sdkTypedOpenXmlPart,
-        IEnumerable<OpenXmlCompositeElement> pGroupElements)
+    internal GroupedShapeCollection(OpenXmlPart openXmlPart, IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.openXmlPart = openXmlPart;
         this.pGroupElements = pGroupElements;
     }
 
-    public int Count => this.GroupedShapesCore().Count;
+    public int Count => this.GetGroupedShapes().Count;
 
-    public IShape this[int index] => this.GroupedShapesCore()[index];
+    public IShape this[int index] => this.GetGroupedShapes()[index];
 
     public T GetById<T>(int id)
-        where T : IShape => (T)this.GroupedShapesCore().First(shape => shape.Id == id);
+        where T : IShape => (T)this.GetGroupedShapes().First(shape => shape.Id == id);
 
     public T? TryGetById<T>(int id) 
-        where T : IShape => (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Id == id);
+        where T : IShape => (T?)this.GetGroupedShapes().FirstOrDefault(shape => shape.Id == id);
 
-    T IShapeCollection.GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
+    T IShapeCollection.GetByName<T>(string name) => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
 
     T? IShapeCollection.TryGetByName<T>(string name) 
-        where T : default => (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Name == name);
+        where T : default => (T?)this.GetGroupedShapes().FirstOrDefault(shape => shape.Name == name);
 
-    public IShape GetByName(string name) => this.GroupedShapesCore().First(shape => shape.Name == name);
+    public IShape GetByName(string name) => this.GetGroupedShapes().First(shape => shape.Name == name);
     public T Last<T>() 
-        where T : IShape => (T)this.GroupedShapesCore().Last(shape => shape is T);
+        where T : IShape => (T)this.GetGroupedShapes().Last(shape => shape is T);
 
-    public T GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
+    public T GetByName<T>(string name) => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
 
-    public IEnumerator<IShape> GetEnumerator() => this.GroupedShapesCore().GetEnumerator();
+    public IEnumerator<IShape> GetEnumerator() => this.GetGroupedShapes().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private List<IShape> GroupedShapesCore()
+    private List<IShape> GetGroupedShapes()
     {
         var groupedShapes = new List<IShape>();
         foreach (var pGroupShapeElement in this.pGroupElements)
@@ -56,7 +54,7 @@ internal sealed record GroupedShapeCollection : IShapeCollection
             IShape? shape = null;
             if (pGroupShapeElement is P.GroupShape pGroupShape)
             {
-                shape = new GroupShape(this.sdkTypedOpenXmlPart, pGroupShape);
+                shape = new GroupShape(this.openXmlPart, pGroupShape);
             }
             else if (pGroupShapeElement is P.Shape pShape)
             {
@@ -65,15 +63,15 @@ internal sealed record GroupedShapeCollection : IShapeCollection
                     shape = new GroupedShape(
                         pShape,
                         new AutoShape(
-                            this.sdkTypedOpenXmlPart,
+                            this.openXmlPart,
                             pShape,
-                            new TextBox(this.sdkTypedOpenXmlPart, pShape.TextBody)));
+                            new TextBox(this.openXmlPart, pShape.TextBody)));
                 }
                 else
                 {
                     shape = new GroupedShape(
                         pShape,
-                        new AutoShape(this.sdkTypedOpenXmlPart, pShape));
+                        new AutoShape(this.openXmlPart, pShape));
                 }
             }
             else if (pGroupShapeElement is P.Picture pPicture)
@@ -82,7 +80,7 @@ internal sealed record GroupedShapeCollection : IShapeCollection
                 var blipEmbed = aBlip?.Embed;
                 if (blipEmbed is not null)
                 {
-                    shape = new Picture(this.sdkTypedOpenXmlPart, pPicture, aBlip!);
+                    shape = new Picture(this.openXmlPart, pPicture, aBlip!);
                 }
             }
 
