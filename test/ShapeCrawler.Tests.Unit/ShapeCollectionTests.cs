@@ -59,6 +59,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.GetByName("Picture 1").Should().NotBeNull();
+        pres.Validate();
     }
 
     [Test]
@@ -75,6 +76,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.GetByName("Picture 1").Should().NotBeNull();
+        pres.Validate();
     }
 
     [Test]
