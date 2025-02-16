@@ -174,7 +174,7 @@ public class TableTests : SCTest
         var ms = new MemoryStream();
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var expectedColumnsCount = table.Columns.Count - 1;
 
         // Act
@@ -184,7 +184,7 @@ public class TableTests : SCTest
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.SaveAs(ms);
         pres = new Presentation(ms);
-        table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Validate();
     }
@@ -211,7 +211,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var columnsCountBefore = table.Columns.Count;
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -248,7 +248,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var columnsCountBefore = table.Columns.Count;
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -269,7 +269,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var column = table.Columns[0];
         var columnsCountBefore = table.Columns.Count;
 
@@ -287,7 +287,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case002.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var column = table.Columns[0];
 
         // Act
@@ -307,7 +307,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var column = table.Columns[1];
 
         // Act
@@ -327,7 +327,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
-        var table = (ITable)pres.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
         int originRowsCount = table.Rows.Count;
         var mStream = new MemoryStream();
 
@@ -337,7 +337,7 @@ public class TableTests : SCTest
         // Assert
         table.Rows.Should().HaveCountLessThan(originRowsCount);
         pres.SaveAs(mStream);
-        table = (ITable)new Presentation(mStream).SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        table = (ITable)new Presentation(mStream).Slides[2].Shapes.First(sp => sp.Id == 3);
         table.Rows.Should().HaveCountLessThan(originRowsCount);
     }
 
@@ -347,7 +347,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var column = table.Columns[0];
         var columWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -368,7 +368,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[0].ShapeCollection.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
 
         // Act
         table.Rows.Add();
@@ -383,7 +383,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("009_table.pptx");
-        var table = (ITable)new Presentation(pptx).SlideCollection[2].ShapeCollection
+        var table = (ITable)new Presentation(pptx).Slides[2].Shapes
             .First(sp => sp.Id == 3);
 
         // Act
@@ -399,7 +399,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = (ITable)pres.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 3);
+        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
 
         // Act
         var rowHeight = table.Rows[0].Height;
@@ -412,7 +412,7 @@ public class TableTests : SCTest
     public void ColumnsCount_ReturnsNumberOfColumnsInTheTable()
     {
         // Arrange
-        ITable table = (ITable)new Presentation(TestAsset("001.pptx")).SlideCollection[1].ShapeCollection.First(sp => sp.Id == 4);
+        ITable table = (ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
 
         // Act
         int columnsCount = table.Columns.Count;
@@ -425,7 +425,7 @@ public class TableTests : SCTest
     public void Column_Width_Getter_returns_width_of_column_in_pixels()
     {
         // Arrange
-        var table = (ITable)new Presentation(TestAsset("001.pptx")).SlideCollection[1].ShapeCollection.First(sp => sp.Id == 4);
+        var table = (ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
 
         // Act
         var columnWidth = table.Columns[0].Width;
@@ -439,7 +439,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 3);
+        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
         const int newColumnWidth = 427;
         var mStream = new MemoryStream();
 
@@ -451,7 +451,7 @@ public class TableTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 3);
+        table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
         table.Columns[0].Width.Should().Be(newColumnWidth);
     }
 
@@ -461,7 +461,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var row = pres.SlideCollection[1].ShapeCollection.GetByName<ITable>("Table 4").Rows[1];
+        var row = pres.Slides[1].Shapes.GetByName<ITable>("Table 4").Rows[1];
         var cell1X0 = row.Cells[0];
         var cell1X1 = row.Cells[1];
 
@@ -484,9 +484,9 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(40, 40, 2, 1);
-        var table = (ITable)slide.ShapeCollection.Last();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(40, 40, 2, 1);
+        var table = (ITable)slide.Shapes.Last();
         var cell = table[0, 1];
         
         // Act
@@ -501,7 +501,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var cell = pres.SlideCollection[0].Table("Table 1")[0, 0];
+        var cell = pres.Slides[0].Table("Table 1")[0, 0];
         
         // Act
         cell.LeftBorder.Width = 2;  
@@ -515,9 +515,9 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(40, 40, 2, 1);
-        var table = (ITable)slide.ShapeCollection.Last();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(40, 40, 2, 1);
+        var table = (ITable)slide.Shapes.Last();
         var cell = table[0, 1];
         
         // Act-Assert
@@ -530,7 +530,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("065 table.pptx");
         var pres = new Presentation(pptx);
-        var targetTable = pres.SlideCollection.First().ShapeCollection.OfType<ITable>().FirstOrDefault();
+        var targetTable = pres.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
         var rowCountBefore = targetTable.Rows.Count;
         var row = targetTable.Rows.Last();
 
@@ -547,7 +547,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.SlideCollection[0].Table("Table 1");
+        var table = pres.Slides[0].Table("Table 1");
         var row = table.Rows[0];
 
         // Act
@@ -563,7 +563,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 5);
+        ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
         var mStream = new MemoryStream();
 
         // Act
@@ -576,7 +576,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 5);
+        table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
@@ -587,7 +587,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
 
         // Act
@@ -597,7 +597,7 @@ public class TableTests : SCTest
         AssertTable(table);
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         AssertTable(table);
 
         static void AssertTable(ITable tableSc)
@@ -614,7 +614,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
 
         // Act
@@ -627,7 +627,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[0, 2].IsMergedCell.Should().BeTrue();
@@ -638,7 +638,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         var mStream = new MemoryStream();
 
         // Act
@@ -651,7 +651,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[0, 2].IsMergedCell.Should().BeTrue();
@@ -663,7 +663,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[2].ShapeCollection.GetById<ITable>(5);
+        var table = pres.Slides[2].Shapes.GetById<ITable>(5);
         var mStream = new MemoryStream();
 
         // Act
@@ -673,7 +673,7 @@ public class TableTests : SCTest
         AssertTable(table);
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 5);
+        table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
         AssertTable(table);
 
         void AssertTable(ITable table)
@@ -692,7 +692,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[2].ShapeCollection.GetById<ITable>(5);
+        var table = pres.Slides[2].Shapes.GetById<ITable>(5);
 
         // Act
         table.MergeCells(table[0, 0], table[1, 0]);
@@ -706,8 +706,8 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.SlideCollection[0].ShapeCollection.AddTable(10, 10, 3, 4);
-        var table = (ITable)pres.SlideCollection[0].ShapeCollection.Last();
+        pres.Slides[0].Shapes.AddTable(10, 10, 3, 4);
+        var table = (ITable)pres.Slides[0].Shapes.Last();
         table[1, 0].TextBox.Text = "A";
         table[3, 0].TextBox.Text = "B";
 
@@ -723,7 +723,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
 
         // Act
@@ -736,7 +736,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3);
+        table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[0, 0].IsMergedCell.Should().BeFalse();
@@ -747,7 +747,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 10);
+        ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 10);
         var mStream = new MemoryStream();
 
         // Act
@@ -762,7 +762,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 10);
+        table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 10);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
@@ -775,7 +775,7 @@ public class TableTests : SCTest
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
-        ITable table = (ITable)presentation.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 5);
+        ITable table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 5);
         var mStream = new MemoryStream();
 
         // Act
@@ -794,7 +794,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 5);
+        table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 5);
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
         
@@ -811,7 +811,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.SlideCollection[3].Table("Table 2");
+        var table = pres.Slides[3].Table("Table 2");
         var mStream = new MemoryStream();
 
         // Act
@@ -831,7 +831,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeFalse();
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.SlideCollection[3].ShapeCollection.First(sp => sp.Id == 2);
+        table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 2);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
@@ -844,7 +844,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.SlideCollection[3].ShapeCollection.First(sp => sp.Id == 3);
+        var table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
         var totalColWidth = table.Columns[0].Width + table.Columns[1].Width;
 
@@ -859,7 +859,7 @@ public class TableTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.SlideCollection[3].ShapeCollection.First(sp => sp.Id == 3);
+        table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 3);
         table.Columns.Should().HaveCount(1);
         table.Columns[0].Width.Should().Be(totalColWidth);
         table.Rows.Should().HaveCount(1);
@@ -871,7 +871,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 5);
+        var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
         var mStream = new MemoryStream();
         var mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
         var mergedRowHeight = table.Rows[0].Height + table.Rows[1].Height;
@@ -884,7 +884,7 @@ public class TableTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = pres.SlideCollection[2].ShapeCollection.GetByName<ITable>("Table 5");
+        table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
         static void AssertTable(ITable table, int expectedMergedColumnWidth, int expectedMergedRowHeight)
@@ -902,7 +902,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var presentation = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)presentation.SlideCollection[3].ShapeCollection.First(sp => sp.Id == 6);
+        var table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         var mStream = new MemoryStream();
         var mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
 
@@ -914,7 +914,7 @@ public class TableTests : SCTest
 
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        table = (ITable)presentation.SlideCollection[3].ShapeCollection.First(sp => sp.Id == 6);
+        table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         AssertTable(table, mergedColumnWidth);
 
         void AssertTable(ITable tableSc, int expectedMergedColumnWidth)
@@ -932,7 +932,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[3].ShapeCollection.GetById<ITable>(6);
+        var table = pres.Slides[3].Shapes.GetById<ITable>(6);
         var mStream = new MemoryStream();
         var expectedNewColumnWidth = table.Columns[1].Width + table.Columns[2].Width;
 
@@ -944,7 +944,7 @@ public class TableTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.SlideCollection[3].ShapeCollection.First(sp => sp.Id == 6);
+        table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 6);
         AssertTable(table, expectedNewColumnWidth);
 
         static void AssertTable(ITable table, int expectedNewColumnWidth)
@@ -961,7 +961,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.SlideCollection[3].ShapeCollection.GetById<ITable>(6);
+        var table = pres.Slides[3].Shapes.GetById<ITable>(6);
 
         // Act
         table.MergeCells(table[0, 1], table[0, 2]);
@@ -975,9 +975,9 @@ public class TableTests : SCTest
     {
         // Arrange
         ITable tableCase1 =
-            (ITable)new Presentation(TestAsset("001.pptx")).SlideCollection[1].ShapeCollection.First(sp => sp.Id == 4);
+            (ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
         ITable tableCase2 =
-            (ITable)new Presentation(TestAsset("001.pptx")).SlideCollection[3].ShapeCollection.First(sp => sp.Id == 4);
+            (ITable)new Presentation(TestAsset("001.pptx")).Slides[3].Shapes.First(sp => sp.Id == 4);
 
         // Act
         ITableCell scCellCase1 = tableCase1[0, 0];
@@ -993,9 +993,9 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(0, 0, 3, 2);
-        var table = slide.ShapeCollection.Last() as ITable;
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 3, 2);
+        var table = slide.Shapes.Last() as ITable;
         
         // Act
         table.MergeCells(table[0, 2], table[1, 2]);
@@ -1009,9 +1009,9 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(0, 0, 4, 2);
-        var table = slide.ShapeCollection.Last() as ITable;
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 4, 2);
+        var table = slide.Shapes.Last() as ITable;
         
         // Act
         table.MergeCells(table[0, 0], table[0, 1]);
@@ -1029,9 +1029,9 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(0, 0, 4, 2);
-        var table = slide.ShapeCollection.Last() as ITable;
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 4, 2);
+        var table = slide.Shapes.Last() as ITable;
         
         // Act
         table.MergeCells(table[0, 1], table[1, 1]);
@@ -1061,7 +1061,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.SlideCollection[1].ShapeCollection.GetById<ITable>(3);
+        var table = pres.Slides[1].Shapes.GetById<ITable>(3);
         var cell1 = table[0, 0];
         var cell2 = table[1, 0];
 
@@ -1083,7 +1083,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.SlideCollection[1].ShapeCollection.GetByName<ITable>("Table 5");
+        var table = pres.Slides[1].Shapes.GetByName<ITable>("Table 5");
         var cell1 = table[1, 1];
         var cell2 = table[2, 1];
 
@@ -1105,7 +1105,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.SlideCollection[3].ShapeCollection.GetById<ITable>(4);
+        var table = pres.Slides[3].Shapes.GetById<ITable>(4);
         var cell1 = table[0, 1];
         var cell2 = table[1, 1];
 
@@ -1129,7 +1129,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 4);
+        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
         var mStream = new MemoryStream();
 
         // Act
@@ -1141,7 +1141,7 @@ public class TableTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.SlideCollection[1].ShapeCollection.First(sp => sp.Id == 4);
+        table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
     }
@@ -1179,9 +1179,9 @@ public class TableTests : SCTest
         // Arrange
         var mStream = new MemoryStream();
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(0, 0, 3, 2);
-        var table = slide.ShapeCollection.Last<ITable>();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 3, 2);
+        var table = slide.Shapes.Last<ITable>();
 
         // Act
         table.TableStyleOptions.HasHeaderRow = hasHeaderRow;
@@ -1194,7 +1194,7 @@ public class TableTests : SCTest
         // Assert
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        table = pres.SlideCollection[0].ShapeCollection.Last<ITable>();
+        table = pres.Slides[0].Shapes.Last<ITable>();
         table.TableStyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);
         table.TableStyleOptions.HasTotalRow.Should().Be(hasTotalRow);
         table.TableStyleOptions.HasBandedRows.Should().Be(hasBandedRows);
@@ -1208,9 +1208,9 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(0, 0, 3, 2);
-        var table = slide.ShapeCollection.Last<ITable>();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(0, 0, 3, 2);
+        var table = slide.Shapes.Last<ITable>();
 
         // Act
         var options = table.TableStyleOptions;
@@ -1230,8 +1230,8 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slide(1).ShapeCollection.AddTable(10, 10, 2, 2);
-        var addedTable = pres.Slide(1).ShapeCollection.Last<ITable>();
+        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var addedTable = pres.Slide(1).Shapes.Last<ITable>();
         
         // Act
         addedTable.Height = 100;

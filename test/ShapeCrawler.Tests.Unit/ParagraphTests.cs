@@ -12,8 +12,8 @@ public class ParagraphTests : SCTest
     {
         // Act
         var pres = new Presentation();
-        pres.SlideCollection[0].ShapeCollection.AddShape(100,100, 500, 100);
-        var addedShape = (IShape)pres.SlideCollection[0].ShapeCollection.Last();
+        pres.Slides[0].Shapes.AddShape(100,100, 500, 100);
+        var addedShape = (IShape)pres.Slides[0].Shapes.Last();
         addedShape.TextBox!.Paragraphs.Add();
         var paragraph = addedShape.TextBox.Paragraphs.Last();
         paragraph.Text = "Test";
@@ -31,7 +31,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptx = TestAsset("002.pptx");
         var pres = new Presentation(pptx);
-        var shapes = pres.SlideCollection[1].ShapeCollection;
+        var shapes = pres.Slides[1].Shapes;
         var shape3Pr1Bullet = ((IShape)shapes.First(x => x.Id == 3)).TextBox.Paragraphs[0].Bullet;
         var shape4Pr2Bullet = ((IShape)shapes.First(x => x.Id == 4)).TextBox.Paragraphs[1].Bullet;
 
@@ -50,7 +50,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptx = TestAsset("002.pptx");
         var pres = new Presentation(pptx);
-        var shapeList = pres.SlideCollection[1].ShapeCollection;
+        var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape5 = shapeList.First(x => x.Id == 5);
         var shape4Pr2Bullet = ((IShape)shape4).TextBox.Paragraphs[1].Bullet;
@@ -73,8 +73,8 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slide(1).ShapeCollection.AddTable(10, 10, 2, 2);
-        var table = pres.Slide(1).ShapeCollection.Last<ITable>();
+        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var table = pres.Slide(1).Shapes.Last<ITable>();
         var textFrame = table.Rows[0].Cells[0].TextBox;
         textFrame.Text = "some-text";
         var paragraph = textFrame.Paragraphs[0];
@@ -93,7 +93,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var autoShape = pres.SlideCollection[0].ShapeCollection.GetById<IShape>(2);
+        var autoShape = pres.Slides[0].Shapes.GetById<IShape>(2);
         var bullet = autoShape.TextBox.Paragraphs[0].Bullet;
 
         // Act
@@ -108,7 +108,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres2 = new Presentation(TestAsset("002.pptx"));
-        var shapeList = pres2.SlideCollection[1].ShapeCollection;
+        var shapeList = pres2.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape4Pr2Bullet = ((IShape)shape4).TextBox.Paragraphs[1].Bullet;
 
@@ -145,9 +145,9 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddShape(10, 10, 10, 10);
-        var addedShape = (IShape)slide.ShapeCollection.Last();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = (IShape)slide.Shapes.Last();
         var paragraph = addedShape.TextBox!.Paragraphs[0];
 
         // Act
@@ -163,7 +163,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
-        var shape = pres.SlideCollection[0].ShapeCollection.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
+        var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
         var paragraph = shape.TextBox.Paragraphs[0];
         
         // Act
@@ -178,8 +178,8 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = ((IShape)new Presentation(TestAsset("008.pptx")).SlideCollection[0].ShapeCollection.First(sp => sp.Id == 37)).TextBox;
-        var textBox2 = ((ITable)new Presentation(TestAsset("009_table.pptx")).SlideCollection[2].ShapeCollection.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var textBox1 = ((IShape)new Presentation(TestAsset("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextBox;
+        var textBox2 = ((ITable)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextBox;
 
         // Act
@@ -199,7 +199,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptxStream = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptxStream);
-        var paragraph = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("AutoShape 3").TextBox!.Paragraphs[0];
+        var paragraph = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 3").TextBox!.Paragraphs[0];
             
         // Act
         paragraph.ReplaceText("Some text", "Some text2");
@@ -213,7 +213,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
     {
         // Arrange
-        var textFrame = new Presentation(TestAsset("009_table.pptx")).SlideCollection[2].ShapeCollection.GetById<IShape>(2).TextBox;
+        var textFrame = new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextBox;
 
         // Act
         var portions = textFrame.Paragraphs[0].Portions;
@@ -269,7 +269,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presName));
-        var paragraph = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
         var mStream = new MemoryStream();
         
         // Act
@@ -280,7 +280,7 @@ public class ParagraphTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
+        paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
     }
 
@@ -294,7 +294,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presName));
-        var paragraph = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
         var mStream = new MemoryStream();
         paraText = paraText.Replace("{NewLine}", Environment.NewLine);
 
@@ -307,7 +307,7 @@ public class ParagraphTests : SCTest
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
+        paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
         paragraph.Text.Should().BeEquivalentTo(paraText);
         paragraph.Portions.Count.Should().Be(expectedPortionsCount);
     }
@@ -371,9 +371,9 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddShape(10, 10, 10, 10);
-        var addedShape = slide.ShapeCollection[0];
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
         var paragraph = addedShape.TextBox.Paragraphs[0];
         paragraph.Text = "test";
         
@@ -386,7 +386,7 @@ public class ParagraphTests : SCTest
         using var mStream = new MemoryStream();
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.SlideCollection[0].ShapeCollection.Last().TextBox.Paragraphs[0];
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
     }
     
@@ -395,9 +395,9 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddShape(10, 10, 10, 10);
-        var addedShape = slide.ShapeCollection[0];
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
         var paragraph = addedShape.TextBox.Paragraphs[0];
         paragraph.Text = "test";
         
@@ -409,7 +409,7 @@ public class ParagraphTests : SCTest
         var mStream = new MemoryStream();
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.SlideCollection[0].ShapeCollection.Last().TextBox.Paragraphs[0];
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
     }
 }

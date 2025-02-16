@@ -13,9 +13,9 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddShape(10, 10, 10, 10);
-        var rectangle = slide.ShapeCollection.Last();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var rectangle = slide.Shapes.Last();
         rectangle.TextBox.Paragraphs[0].Portions.AddText("test");
         var font = rectangle.TextBox!.Paragraphs[0].Portions[0].Font;
 
@@ -32,9 +32,9 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres1 = new Presentation(TestAsset("015.pptx"));
-        var font1 = pres1.SlideCollection[0].ShapeCollection.GetById<IShape>(5).TextBox!.Paragraphs[0].Portions[2].Font;
+        var font1 = pres1.Slides[0].Shapes.GetById<IShape>(5).TextBox!.Paragraphs[0].Portions[2].Font;
         var pres2 = new Presentation(TestAsset("009_table.pptx"));
-        var font2 = pres2.SlideCollection[2].ShapeCollection.GetById<IShape>(2).TextBox!.Paragraphs[0].Portions[1].Font;
+        var font2 = pres2.Slides[2].Shapes.GetById<IShape>(2).TextBox!.Paragraphs[0].Portions[1].Font;
 
         // Act
         var fontSize1 = font1.Size;
@@ -50,7 +50,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var table = pres.SlideCollection[2].ShapeCollection.GetById<ITable>(3);
+        var table = pres.Slides[2].Shapes.GetById<ITable>(3);
         var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act-Assert
@@ -107,7 +107,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var nonPlaceholderautoshapecase1 =
-            new Presentation(TestAsset("020.pptx")).SlideCollection[0].ShapeCollection.First(sp => sp.Id == 3);
+            new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
         ITextPortionFont fontC1 = nonPlaceholderautoshapecase1.TextBox.Paragraphs[0].Portions[0].Font;
 
         // Act-Assert
@@ -119,7 +119,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("020.pptx"));
-        var placeholderAutoShape = pres.SlideCollection[1].ShapeCollection.GetById<IShape>(6);
+        var placeholderAutoShape = pres.Slides[1].Shapes.GetById<IShape>(6);
         var portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -133,7 +133,7 @@ public class FontTests : SCTest
     public void IsBold_GetterReturnsFalse_WhenFontOfNonPlaceholderTextIsNotBold()
     {
         // Arrange
-        IShape nonPlaceholderAutoShape = (IShape)new Presentation(TestAsset("020.pptx")).SlideCollection[0].ShapeCollection.First(sp => sp.Id == 2);
+        IShape nonPlaceholderAutoShape = (IShape)new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
         IParagraphPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -147,7 +147,7 @@ public class FontTests : SCTest
     public void IsBold_GetterReturnsFalse_WhenFontOfPlaceholderTextIsNotBold()
     {
         // Arrange
-        var placeholderAutoShape = new Presentation(TestAsset("020.pptx")).SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        var placeholderAutoShape = new Presentation(TestAsset("020.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
         var portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -164,7 +164,7 @@ public class FontTests : SCTest
         var mStream = new MemoryStream();
         var pres20 = new Presentation(TestAsset("020.pptx"));
         IPresentation presentation = pres20;
-        IShape nonPlaceholderAutoShape = (IShape)presentation.SlideCollection[0].ShapeCollection.First(sp => sp.Id == 2);
+        IShape nonPlaceholderAutoShape = (IShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
         IParagraphPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -174,7 +174,7 @@ public class FontTests : SCTest
         portion.Font.IsBold.Should().BeTrue();
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        nonPlaceholderAutoShape = (IShape)presentation.SlideCollection[0].ShapeCollection.First(sp => sp.Id == 2);
+        nonPlaceholderAutoShape = (IShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
         portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
         portion.Font.IsBold.Should().BeTrue();
     }
@@ -183,7 +183,7 @@ public class FontTests : SCTest
     public void IsItalic_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsItalic()
     {
         // Arrange
-        IShape nonPlaceholderAutoShape = (IShape)new Presentation(TestAsset("020.pptx")).SlideCollection[0].ShapeCollection.First(sp => sp.Id == 3);
+        IShape nonPlaceholderAutoShape = (IShape)new Presentation(TestAsset("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
         ITextPortionFont font = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -197,7 +197,7 @@ public class FontTests : SCTest
     public void IsItalic_GetterReturnsTrue_WhenFontOfPlaceholderTextIsItalic()
     {
         // Arrange
-        IShape placeholderAutoShape = (IShape)new Presentation(TestAsset("020.pptx")).SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        IShape placeholderAutoShape = (IShape)new Presentation(TestAsset("020.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraphPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act-Assert
@@ -210,7 +210,7 @@ public class FontTests : SCTest
         // Arrange
         var mStream = new MemoryStream();
         IPresentation presentation = new Presentation(TestAsset("020.pptx"));
-        IShape nonPlaceholderAutoShape = (IShape)presentation.SlideCollection[0].ShapeCollection.First(sp => sp.Id == 2);
+        IShape nonPlaceholderAutoShape = (IShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
         IParagraphPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -220,7 +220,7 @@ public class FontTests : SCTest
         portion.Font.IsItalic.Should().BeTrue();
         presentation.SaveAs(mStream);
         presentation = new Presentation(mStream);
-        nonPlaceholderAutoShape = (IShape)presentation.SlideCollection[0].ShapeCollection.First(sp => sp.Id == 2);
+        nonPlaceholderAutoShape = (IShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
         portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
         portion.Font.IsItalic.Should().BeTrue();
     }
@@ -231,7 +231,7 @@ public class FontTests : SCTest
         // Arrange
         var mStream = new MemoryStream();
         IPresentation presentation = new Presentation(TestAsset("020.pptx"));
-        IShape placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        IShape placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraphPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -242,7 +242,7 @@ public class FontTests : SCTest
         presentation.SaveAs(mStream);
 
         presentation = new Presentation(mStream);
-        placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
         portion.Font.IsItalic.Should().BeFalse();
     }
@@ -253,7 +253,7 @@ public class FontTests : SCTest
         // Arrange
         var mStream = new MemoryStream();
         IPresentation presentation = new Presentation(TestAsset("020.pptx"));
-        IShape placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        IShape placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraphPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
@@ -264,7 +264,7 @@ public class FontTests : SCTest
         presentation.SaveAs(mStream);
 
         presentation = new Presentation(mStream);
-        placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
+        placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
         portion.Font.Underline.Should().Be(DocumentFormat.OpenXml.Drawing.TextUnderlineValues.Single);
     }
@@ -275,7 +275,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var font = shape.TextBox.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -341,9 +341,9 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.SlideCollection[0];
-        slide.ShapeCollection.AddTable(40, 40, 6, 5);
-        var table = (ITable)slide.ShapeCollection.Last();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(40, 40, 6, 5);
+        var table = (ITable)slide.Shapes.Last();
         var cell = table[1, 2];
         cell.TextBox.Text = "Test";
         var font = cell.TextBox.Paragraphs.First().Portions.First().Font;
@@ -360,7 +360,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var shapes = pres.SlideCollection[0].ShapeCollection;
+        var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10,20,30,40);
         var shape1 = shapes.Last();
         shapes.AddShape(100,20,30,40);
@@ -384,7 +384,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presentation));
-        var font = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
         var oldSize = font.Size;
         var newSize = oldSize + 2.4m;
@@ -396,7 +396,7 @@ public class FontTests : SCTest
         pres.Validate();
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        font = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         font.Size.Should().Be(newSize);
     }
     
@@ -407,7 +407,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presentation));
-        var placeholder = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetById<IShape>(shapeId);
+        var placeholder = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
         var font = placeholder.TextBox.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
 
@@ -418,7 +418,7 @@ public class FontTests : SCTest
         font.IsBold.Should().BeTrue();
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        placeholder = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetById<IShape>(shapeId);
+        placeholder = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
         font = placeholder.TextBox.Paragraphs[0].Portions[0].Font;
         font.IsBold.Should().BeTrue();
     }
@@ -430,7 +430,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presentation));
-        var shape = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var font = shape.TextBox!.Paragraphs[0].Portions[1].Font;
 
         // Act
@@ -447,7 +447,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presentation));
-        var font = pres.SlideCollection[slideNumber - 1].Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        var font = pres.Slides[slideNumber - 1].Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
         var oldOffsetSize = font.OffsetEffect;
 
@@ -457,7 +457,7 @@ public class FontTests : SCTest
 
         // Assert
         pres = new Presentation(mStream);
-        font = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         font.OffsetEffect.Should().NotBe(oldOffsetSize);
         font.OffsetEffect.Should().Be(expectedOffsetEffect);
     }

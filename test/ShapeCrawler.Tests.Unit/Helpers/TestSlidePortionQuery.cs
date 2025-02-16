@@ -26,7 +26,7 @@ public class TestSlidePortionQuery : TestPortionQuery
 
     public override IParagraphPortion Get(IPresentation pres)
     {
-        var shapes = pres.SlideCollection[this.slideNumber - 1].ShapeCollection;
+        var shapes = pres.Slides[this.slideNumber - 1].Shapes;
         var shape = this.shapeName == null
             ? shapes.GetById<IShape>(this.shapeId)
             : shapes.GetByName<IShape>(this.shapeName);

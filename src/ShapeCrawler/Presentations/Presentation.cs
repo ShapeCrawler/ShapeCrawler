@@ -41,7 +41,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public ISlideCollection SlideCollection => this.validateable.SlideCollection;
+    public ISlideCollection Slides => this.validateable.Slides;
 
     /// <inheritdoc />
     public decimal SlideWidth

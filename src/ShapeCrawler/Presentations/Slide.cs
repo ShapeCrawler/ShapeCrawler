@@ -30,14 +30,14 @@ internal sealed class Slide : ISlide
         this.SdkSlidePart = sdkSlidePart;
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.ShapeCollection = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection.ShapeCollection(sdkSlidePart), mediaCollection);
+        this.Shapes = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection.ShapeCollection(sdkSlidePart), mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
 
     public SlidePart SdkSlidePart { get; }
 
-    public ISlideShapeCollection ShapeCollection { get; }
+    public ISlideShapeCollection Shapes { get; }
 
     public int Number
     {
@@ -91,28 +91,28 @@ internal sealed class Slide : ISlide
         }
     }
 
-    public ITable Table(string name) => this.ShapeCollection.GetByName<ITable>(name);
+    public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
 
-    public IPicture Picture(string name) => this.ShapeCollection.GetByName<IPicture>(name);
+    public IPicture Picture(string name) => this.Shapes.GetByName<IPicture>(name);
 
-    public IShape Shape(string name) => this.ShapeCollection.GetByName<IShape>(name);
+    public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
 
     public IShape Shape<T>(string name)
         where T : IShape
-        => this.ShapeCollection.GetByName<T>(name);
+        => this.Shapes.GetByName<T>(name);
 
     public IList<ITextBox> TextFrames()
     {
         var returnList = new List<ITextBox>();
 
-        var frames = this.ShapeCollection
+        var frames = this.Shapes
             .Where(x => x.IsTextHolder)
             .Select(t => t.TextBox)
             .ToList();
         returnList.AddRange(frames);
 
         // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
-        var tablesOnSlide = this.ShapeCollection.OfType<ITable>().ToList();
+        var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
         if (tablesOnSlide.Any())
         {
             returnList.AddRange(tablesOnSlide.SelectMany(table =>
@@ -120,7 +120,7 @@ internal sealed class Slide : ISlide
         }
 
         // if there are groups on that slide, they need to be added as well since those are not direct descendants of the slide either
-        var groupsOnSlide = this.ShapeCollection.OfType<IGroupShape>().ToList();
+        var groupsOnSlide = this.Shapes.OfType<IGroupShape>().ToList();
         if (groupsOnSlide.Any())
         {
             foreach (var group in groupsOnSlide)
