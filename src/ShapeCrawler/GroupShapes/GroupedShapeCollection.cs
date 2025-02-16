@@ -10,12 +10,12 @@ using Picture = ShapeCrawler.Drawing.Picture;
 
 namespace ShapeCrawler.GroupShapes;
 
-internal sealed record GroupedShapes : IShapes
+internal sealed record GroupedShapeCollection : IShapeCollection
 {
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
 
-    internal GroupedShapes(
+    internal GroupedShapeCollection(
         OpenXmlPart sdkTypedOpenXmlPart,
         IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
@@ -33,9 +33,9 @@ internal sealed record GroupedShapes : IShapes
     public T? TryGetById<T>(int id) 
         where T : IShape => (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Id == id);
 
-    T IShapes.GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
+    T IShapeCollection.GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
 
-    T? IShapes.TryGetByName<T>(string name) 
+    T? IShapeCollection.TryGetByName<T>(string name) 
         where T : default => (T?)this.GroupedShapesCore().FirstOrDefault(shape => shape.Name == name);
 
     public IShape GetByName(string name) => this.GroupedShapesCore().First(shape => shape.Name == name);

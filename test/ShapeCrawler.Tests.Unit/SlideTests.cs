@@ -19,7 +19,7 @@ public class SlideTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pre = new Presentation(pptx);
-        var slide = pre.Slides.First();
+        var slide = pre.SlideCollection.First();
 
         // Act
         slide.Hide();
@@ -34,7 +34,7 @@ public class SlideTests : SCTest
         // Arrange
         var pptx = TestAsset("002.pptx");
         var pres = new Presentation(pptx);
-        ISlide slideEx = pres.Slides[2];
+        ISlide slideEx = pres.SlideCollection[2];
 
         // Act
         bool hidden = slideEx.Hidden();
@@ -48,7 +48,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pre = new Presentation(TestAsset("009_table.pptx"));
-        var backgroundImage = pre.Slides[0].Fill.Picture;
+        var backgroundImage = pre.SlideCollection[0].Fill.Picture;
         var image = TestAsset("10 png image.png");
         var bytesBefore = backgroundImage.AsByteArray();
 
@@ -65,8 +65,8 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
-        var slide = pres.Slides[0];
+        pres.SlideCollection.AddEmptySlide(SlideLayoutType.Blank);
+        var slide = pres.SlideCollection[0];
         var image = TestAsset("10 png image.png");
 
         // Act
@@ -120,7 +120,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
         var expected = "ABCDEF";
 
         // Act
@@ -138,7 +138,7 @@ public class SlideTests : SCTest
         // Arrange
         const string customDataString = "Test custom data";
         var originPre = new Presentation(TestAsset("001.pptx"));
-        var slide = originPre.Slides.First();
+        var slide = originPre.SlideCollection.First();
 
         // Act
         slide.CustomData = customDataString;
@@ -146,7 +146,7 @@ public class SlideTests : SCTest
         var savedPreStream = new MemoryStream();
         originPre.SaveAs(savedPreStream);
         var savedPre = new Presentation(savedPreStream);
-        var customData = savedPre.Slides.First().CustomData;
+        var customData = savedPre.SlideCollection.First().CustomData;
 
         // Assert
         customData.Should().Be(customDataString);
@@ -156,7 +156,7 @@ public class SlideTests : SCTest
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = new Presentation(TestAsset("001.pptx")).Slides.First();
+        var slide = new Presentation(TestAsset("001.pptx")).SlideCollection.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -171,8 +171,8 @@ public class SlideTests : SCTest
         // Arrange
         var pptxStream = TestAsset("001.pptx");
         var pres = new Presentation(pptxStream);
-        var slide1 = pres.Slides[0];
-        var slide2 = pres.Slides[1];
+        var slide1 = pres.SlideCollection[0];
+        var slide2 = pres.SlideCollection[1];
         slide1.CustomData = "old-number-1";
 
         // Act
@@ -184,7 +184,7 @@ public class SlideTests : SCTest
 
         pres.Save();
         pres = new Presentation(pptxStream);
-        slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
+        slide2 = pres.SlideCollection.First(s => s.CustomData == "old-number-1");
         slide2.Number.Should().Be(2);
     }
 
@@ -193,7 +193,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
 
         // Act
         slide.Number = 1;
@@ -208,7 +208,7 @@ public class SlideTests : SCTest
         // Arrange
         var pptx = TestAsset("039.pptx");
         var pres = new Presentation(pptx);
-        var slide = pres.Slides.First();
+        var slide = pres.SlideCollection.First();
 
         // Act
         var textboxes = slide.TextFrames();
@@ -222,7 +222,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("011_dt.pptx"));
-        var slide = pres.Slides.First();
+        var slide = pres.SlideCollection.First();
 
         // Act
         var textFrames = slide.TextFrames();
@@ -237,7 +237,7 @@ public class SlideTests : SCTest
         // Arrange
         var pptxStream = TestAsset("056_slide-notes.pptx");
         var pres = new Presentation(pptxStream);
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
 
         // Act
         var notes = slide.Notes;
@@ -252,7 +252,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("056_slide-notes.pptx"));
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
         var expected = string.Join(Environment.NewLine, "0", "1", "2", "3");
 
         // Act
@@ -271,7 +271,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
         slide.AddNotes(new[] { "SlideAddNotes_can_change_notes_with_many_lines" });
         var notes = slide.Notes;
         var expected = string.Join(Environment.NewLine, "1", "2", "3");
@@ -294,7 +294,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
 
         // Act
         slide.AddNotes(Enumerable.Empty<string>());
@@ -310,7 +310,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("003.pptx"));
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
 
         // Act-Assert
         slide.Notes.Should().BeNull();
@@ -321,7 +321,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
 
         // Act-Assert
         slide.Notes.Should().BeNull();
@@ -332,7 +332,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
         var expected = "SlideAddNotes_adds_notes";
 
         // Act
@@ -349,7 +349,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
         var adding = new[] { "1", "2", "3" };
         var expected = string.Join(Environment.NewLine, adding);
 
@@ -366,7 +366,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
+        var slide = pres.SlideCollection[0];
         slide.AddNotes(new[] { "Starting value" });
         var notes = slide.Notes;
         var expected = "SlideAddNotes_can_change_notes";

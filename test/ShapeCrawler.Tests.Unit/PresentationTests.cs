@@ -81,8 +81,8 @@ public class PresentationTests : SCTest
         // Act
         var pres17 = new Presentation(TestAsset("017.pptx"));
         var pres16 = new Presentation(TestAsset("016.pptx"));
-        var numberSlidesCase1 = pres17.Slides.Count;
-        var numberSlidesCase2 = pres16.Slides.Count;
+        var numberSlidesCase1 = pres17.SlideCollection.Count;
+        var numberSlidesCase2 = pres16.SlideCollection.Count;
 
         // Assert
         numberSlidesCase1.Should().Be(1);
@@ -94,8 +94,8 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("007_2 slides.pptx"));
-        var removingSlide = pres.Slides[0];
-        var slides = pres.Slides;
+        var removingSlide = pres.SlideCollection[0];
+        var slides = pres.SlideCollection;
 
         // Act
         slides.Remove(removingSlide);
@@ -108,21 +108,21 @@ public class PresentationTests : SCTest
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
         // Arrange
-        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).SlideCollection[0];
         var destPre = new Presentation(TestAsset("002.pptx"));
-        var originSlidesCount = destPre.Slides.Count;
+        var originSlidesCount = destPre.SlideCollection.Count;
         var expectedSlidesCount = ++originSlidesCount;
         MemoryStream savedPre = new();
 
         // Act
-        destPre.Slides.Add(sourceSlide);
+        destPre.SlideCollection.Add(sourceSlide);
 
         // Assert
-        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+        destPre.SlideCollection.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
         destPre.SaveAs(savedPre);
         destPre = new Presentation(savedPre);
-        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+        destPre.SlideCollection.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
 
     [Test]
@@ -130,21 +130,21 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var sourcePres = new Presentation(TestAsset("pictures-case004.pptx"));
-        var copyingSlide = sourcePres.Slides[0];
+        var copyingSlide = sourcePres.SlideCollection[0];
         var destPres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var expectedCount = destPres.Slides.Count + 1;
+        var expectedCount = destPres.SlideCollection.Count + 1;
         MemoryStream savedPre = new();
 
         // Act
-        destPres.Slides.Add(copyingSlide);
+        destPres.SlideCollection.Add(copyingSlide);
 
         // Assert
-        destPres.Slides.Count.Should().Be(expectedCount);
+        destPres.SlideCollection.Count.Should().Be(expectedCount);
 
         destPres.SaveAs(savedPre);
         destPres = new Presentation(savedPre);
-        destPres.Slides.Count.Should().Be(expectedCount);
-        destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
+        destPres.SlideCollection.Count.Should().Be(expectedCount);
+        destPres.SlideCollection[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
         destPres.Validate();
     }
 
@@ -153,14 +153,14 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var sourcePres = new Presentation(TestAsset("008.pptx"));
-        var copyingSlide = sourcePres.Slides[0];
+        var copyingSlide = sourcePres.SlideCollection[0];
         var destPres = new Presentation(TestAsset("autoshape-case017_slide-number.pptx"));
 
         // Act
-        destPres.Slides.Add(copyingSlide);
+        destPres.SlideCollection.Add(copyingSlide);
 
         // Assert
-        destPres.Slides.Last().Notes!.Text.Should().Be("Test note");
+        destPres.SlideCollection.Last().Notes!.Text.Should().Be("Test note");
         destPres.Validate();
     }
 
@@ -169,14 +169,14 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var removingSlide = pres.Slides[0];
+        var removingSlide = pres.SlideCollection[0];
         
         // Act
-        pres.Slides.Remove(removingSlide);
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        pres.SlideCollection.Remove(removingSlide);
+        pres.SlideCollection.AddEmptySlide(SlideLayoutType.Blank);
         
         // Assert
-        pres.Slides.Count.Should().Be(1);
+        pres.SlideCollection.Count.Should().Be(1);
         pres.Validate();
     }
 
@@ -184,16 +184,16 @@ public class PresentationTests : SCTest
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
-        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).SlideCollection[0];
         string sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
         var destPre = new Presentation(TestAsset("002.pptx"));
 
         // Act
-        destPre.Slides.Insert(2, sourceSlide);
+        destPre.SlideCollection.Insert(2, sourceSlide);
 
         // Assert
-        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
+        destPre.SlideCollection[1].CustomData.Should().Be(sourceSlideId);
     }
     
     [Test]
@@ -205,7 +205,7 @@ public class PresentationTests : SCTest
         var inserting = pres.Slide(1);
 
         // Act
-        pres.Slides.Insert(2, inserting);
+        pres.SlideCollection.Insert(2, inserting);
         
         // Assert
         pres.Validate();
@@ -224,7 +224,7 @@ public class PresentationTests : SCTest
         var mStream = new MemoryStream();
 
         // Act
-        pres.Slides.Remove(removingSlide);
+        pres.SlideCollection.Remove(removingSlide);
 
         // Assert
         sectionSlides.Count.Should().Be(0);
@@ -289,7 +289,7 @@ public class PresentationTests : SCTest
         var removingSection = pres.Sections[0];
 
         // Act
-        pres.Slides.Remove(pres.Slides[0]);
+        pres.SlideCollection.Remove(pres.SlideCollection[0]);
         pres.Sections.Remove(removingSection);
 
         // Assert
@@ -331,7 +331,7 @@ public class PresentationTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptx);
-        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
+        var textBox = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text = "Test";
 
         // Act
@@ -339,7 +339,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres = new Presentation(pptx);
-        textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
+        textBox = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
 
@@ -349,7 +349,7 @@ public class PresentationTests : SCTest
         // Arrange
         var originalStream = TestAsset("001.pptx");
         var pres = new Presentation(originalStream);
-        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
+        var textBox = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("TextBox 3").TextBox;
         var originalText = textBox!.Text;
         var newStream = new MemoryStream();
 
@@ -358,7 +358,7 @@ public class PresentationTests : SCTest
         pres.SaveAs(newStream);
 
         pres = new Presentation(originalStream);
-        textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
+        textBox = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("TextBox 3").TextBox;
         var autoShapeText = textBox!.Text;
 
         // Assert
@@ -409,7 +409,7 @@ public class PresentationTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var chart = pres.SlideCollection[0].ShapeCollection.GetByName<IChart>("Bar Chart 1");
 
         // Act
         chart.SeriesList[0].Points[0].Value = 1;
@@ -462,7 +462,7 @@ public class PresentationTests : SCTest
         // Arrange
         var originalPath = GetTestPath("001.pptx");
         var pres = new Presentation(originalPath);
-        var textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
+        var textFrame = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("TextBox 3").TextBox;
         var originalText = textFrame!.Text;
         var newPath = Path.GetTempFileName();
         textFrame.Text = originalText + "modified";
@@ -472,7 +472,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres = new Presentation(originalPath);
-        textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
+        textFrame = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("TextBox 3").TextBox;
         var autoShapeText = textFrame!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
 
@@ -485,22 +485,22 @@ public class PresentationTests : SCTest
     public void Slides_Add_adds_slide()
     {
         // Arrange
-        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).SlideCollection[0];
         var pptx = TestAsset("002.pptx");
         var destPre = new Presentation(pptx);
-        var originSlidesCount = destPre.Slides.Count;
+        var originSlidesCount = destPre.SlideCollection.Count;
         var expectedSlidesCount = ++originSlidesCount;
         MemoryStream savedPre = new ();
 
         // Act
-        destPre.Slides.Add(sourceSlide);
+        destPre.SlideCollection.Add(sourceSlide);
 
         // Assert
-        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+        destPre.SlideCollection.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
         destPre.SaveAs(savedPre);
         destPre = new Presentation(savedPre);
-        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+        destPre.SlideCollection.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
     
     [Test]
@@ -510,18 +510,18 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var removingSlide = pres.Slides[0];
+        var removingSlide = pres.SlideCollection[0];
         var mStream = new MemoryStream();
 
         // Act
-        pres.Slides.Remove(removingSlide);
+        pres.SlideCollection.Remove(removingSlide);
 
         // Assert
-        pres.Slides.Should().HaveCount(expectedSlidesCount);
+        pres.SlideCollection.Should().HaveCount(expectedSlidesCount);
 
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
-        pres.Slides.Should().HaveCount(expectedSlidesCount);
+        pres.SlideCollection.Should().HaveCount(expectedSlidesCount);
     }
     
     [Test]
@@ -529,17 +529,17 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pptx = TestAsset("001.pptx");
-        var sourceSlide = new Presentation(pptx).Slides[0];
+        var sourceSlide = new Presentation(pptx).SlideCollection[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
         pptx = TestAsset("002.pptx");
         var destPre = new Presentation(pptx);
 
         // Act
-        destPre.Slides.Insert(2, sourceSlide);
+        destPre.SlideCollection.Insert(2, sourceSlide);
 
         // Assert
-        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
+        destPre.SlideCollection[1].CustomData.Should().Be(sourceSlideId);
     }
 
     [Test]

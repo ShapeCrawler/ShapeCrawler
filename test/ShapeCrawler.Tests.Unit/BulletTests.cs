@@ -12,7 +12,7 @@ public class BulletTests : SCTest
         // Arrange
         var pptxStream = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptxStream);
-        var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
+        var shape = pres.SlideCollection[0].ShapeCollection.GetByName<IShape>("AutoShape 1");
         var bullet = shape.TextBox!.Paragraphs[0].Bullet;
 
         // Act
@@ -26,7 +26,7 @@ public class BulletTests : SCTest
         var savedPreStream = new MemoryStream();
         pres.SaveAs(savedPreStream);
         var newPresentation = new Presentation(savedPreStream);
-        shape = newPresentation.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
+        shape = newPresentation.SlideCollection[0].ShapeCollection.GetByName<IShape>("AutoShape 1");
         bullet = shape.TextBox!.Paragraphs[0].Bullet;
         bullet.Type.Should().Be(BulletType.Character);
         bullet.Character.Should().Be("*");
@@ -39,7 +39,7 @@ public class BulletTests : SCTest
         var mStream = new MemoryStream();
         var pptx = TestAsset("020.pptx");
         IPresentation presentation = new Presentation(pptx);
-        IShape placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+        IShape placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
         placeholderAutoShape.TextBox.Paragraphs.Add();
         var addedParagraph = placeholderAutoShape.TextBox.Paragraphs.Last();
 
@@ -58,7 +58,7 @@ public class BulletTests : SCTest
         presentation.SaveAs(mStream);
 
         presentation = new Presentation(mStream);
-        placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+        placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
         addedParagraph = placeholderAutoShape.TextBox.Paragraphs.Last();
         addedParagraph.Bullet.Type.Should().Be(BulletType.Character);
         addedParagraph.Bullet.Character.Should().Be("*");
@@ -73,7 +73,7 @@ public class BulletTests : SCTest
         var mStream = new MemoryStream();
         var pptx = TestAsset("020.pptx");
         IPresentation presentation = new Presentation(pptx);
-        IShape placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+        IShape placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
         placeholderAutoShape.TextBox.Paragraphs.Add();
         var addedParagraph = placeholderAutoShape.TextBox.Paragraphs.Last();
 
@@ -90,7 +90,7 @@ public class BulletTests : SCTest
         presentation.SaveAs(mStream);
 
         presentation = new Presentation(mStream);
-        placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+        placeholderAutoShape = (IShape)presentation.SlideCollection[2].ShapeCollection.First(sp => sp.Id == 7);
         addedParagraph = placeholderAutoShape.TextBox.Paragraphs.Last();
         addedParagraph.Bullet.Type.Should().Be(BulletType.Numbered);
         addedParagraph.Bullet.Size.Should().Be(100);

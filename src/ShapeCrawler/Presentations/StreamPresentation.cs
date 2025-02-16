@@ -16,7 +16,7 @@ internal sealed class StreamPresentation : IValidateable
         this.presentationCore = new PresentationCore(internalStream);
     }
 
-    public ISlides Slides => this.presentationCore.Slides;
+    public ISlideCollection SlideCollection => this.presentationCore.SlideCollection;
 
     public decimal SlideWidth
     {
@@ -38,7 +38,7 @@ internal sealed class StreamPresentation : IValidateable
 
     public IPresentationMetadata Metadata => this.presentationCore.FileProperties;
 
-    public ISlide Slide(int number) => this.presentationCore.Slides[number - 1];
+    public ISlide Slide(int number) => this.presentationCore.SlideCollection[number - 1];
 
     public byte[] AsByteArray() => this.presentationCore.AsByteArray();
 

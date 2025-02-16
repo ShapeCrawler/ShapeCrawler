@@ -43,7 +43,7 @@ public class ShapeOutlineTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName);
         var outline = shape.Outline;
         
         // Act
@@ -82,7 +82,7 @@ public class ShapeOutlineTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName);
         var outline = shape.Outline;
         
         // Act
@@ -99,7 +99,7 @@ public class ShapeOutlineTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.SlideCollection[slideNumber - 1].ShapeCollection.GetByName(shapeName);
         var outline = shape.Outline;
         
         // Act

@@ -13,18 +13,18 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class Shape : IShape
 {
-    protected readonly OpenXmlPart SdkTypedOpenXmlPart;
+    protected readonly OpenXmlPart OpenXmlPart;
     protected readonly OpenXmlElement PShapeTreeElement;
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
 
-    internal Shape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal Shape(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
     {
-        this.SdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.OpenXmlPart = openXmlPart;
         this.PShapeTreeElement = pShapeTreeElement;
-        this.position = new Position(sdkTypedOpenXmlPart, pShapeTreeElement);
-        this.size = new ShapeSize(this.SdkTypedOpenXmlPart, pShapeTreeElement);
+        this.position = new Position(openXmlPart, pShapeTreeElement);
+        this.size = new ShapeSize(this.OpenXmlPart, pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
@@ -217,7 +217,7 @@ internal abstract class Shape : IShape
             var aTransform2D = pSpPr.Transform2D;
             if (aTransform2D == null)
             {
-                aTransform2D = new ReferencedPShape(this.SdkTypedOpenXmlPart, this.PShapeTreeElement).ATransform2D();
+                aTransform2D = new ReferencedPShape(this.OpenXmlPart, this.PShapeTreeElement).ATransform2D();
                 if (aTransform2D.Rotation is null)
                 {
                     return 0;

@@ -11,17 +11,17 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Presentations;
 
-internal sealed class Slides : ISlides
+internal sealed class SlideCollection : ISlideCollection
 {
     private readonly ReadOnlySlides readOnlySlides;
     private readonly PresentationPart presentationPart;
 
-    internal Slides(PresentationPart presentationPart)
+    internal SlideCollection(PresentationPart presentationPart)
         : this(presentationPart, new ReadOnlySlides(presentationPart.SlideParts))
     {
     }
 
-    private Slides(PresentationPart presentationPart, ReadOnlySlides readOnlySlides)
+    private SlideCollection(PresentationPart presentationPart, ReadOnlySlides readOnlySlides)
     {
         this.presentationPart = presentationPart;
         this.readOnlySlides = readOnlySlides;

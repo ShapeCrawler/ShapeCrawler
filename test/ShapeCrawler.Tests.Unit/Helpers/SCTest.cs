@@ -10,8 +10,8 @@ public abstract class SCTest
     protected static T GetShape<T>(string presentation, int slideNumber, int shapeId)
     {
         var scPresentation = GetPresentationFromAssembly(presentation);
-        var slide = scPresentation.Slides[slideNumber - 1];
-        var shape = slide.Shapes.First(sp => sp.Id == shapeId);
+        var slide = scPresentation.SlideCollection[slideNumber - 1];
+        var shape = slide.ShapeCollection.First(sp => sp.Id == shapeId);
 
         return (T)shape;
     }

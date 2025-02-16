@@ -9,12 +9,12 @@ internal sealed class OleObject : Shape
 {
     private readonly P.GraphicFrame pGraphicFrame;
 
-    internal OleObject(OpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
-        : base(sdkTypedOpenXmlPart, pGraphicFrame)
+    internal OleObject(OpenXmlPart openXmlPart, P.GraphicFrame pGraphicFrame)
+        : base(openXmlPart, pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
-        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
+        this.Outline = new SlideShapeOutline(openXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(openXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
     }
 
     public override ShapeType ShapeType => ShapeType.OleObject;

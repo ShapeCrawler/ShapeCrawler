@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collection of slides.
 /// </summary>
-public interface ISlides : IReadOnlyList<ISlide>
+public interface ISlideCollection : IReadOnlyList<ISlide>
 {
     /// <summary>
     ///     Removes specified slide.

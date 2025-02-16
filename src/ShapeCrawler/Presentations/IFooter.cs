@@ -37,8 +37,8 @@ internal sealed class Footer : IFooter
 
     public bool SlideNumberAdded() 
     {
-        return this.presentationCore.Slides.Any(slide =>
-            slide.Shapes.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
+        return this.presentationCore.SlideCollection.Any(slide =>
+            slide.ShapeCollection.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
     }
 
     public void AddSlideNumber()
@@ -48,14 +48,14 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.presentationCore.Slides)
+        foreach (var slide in this.presentationCore.SlideCollection)
         {
             var slideNumberPlaceholder =
                 slide.SlideLayout.Shapes.FirstOrDefault(shape =>
                     shape.PlaceholderType == PlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
-                slide.Shapes.Add(slideNumberPlaceholder);
+                slide.ShapeCollection.Add(slideNumberPlaceholder);
             }
         }
     }
@@ -67,14 +67,14 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.presentationCore.Slides)
+        foreach (var slide in this.presentationCore.SlideCollection)
         {
             var slideNumberPlaceholder =
-                slide.Shapes.FirstOrDefault(shape =>
+                slide.ShapeCollection.FirstOrDefault(shape =>
                     shape.PlaceholderType == PlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
-                slide.Shapes.Remove(slideNumberPlaceholder);
+                slide.ShapeCollection.Remove(slideNumberPlaceholder);
             }
         }
     }

@@ -15,13 +15,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
 
-internal sealed class Shapes : IShapes
+internal sealed class ShapeCollection : IShapeCollection
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart openXmlPart;
 
-    internal Shapes(OpenXmlPart sdkTypedOpenXmlPart)
+    internal ShapeCollection(OpenXmlPart openXmlPart)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.openXmlPart = openXmlPart;
     }
 
     public int Count => this.ShapesCore().Count;
@@ -85,24 +85,24 @@ internal sealed class Shapes : IShapes
 
     private List<IShape> ShapesCore()
     {
-        var pShapeTree = this.sdkTypedOpenXmlPart switch
+        var pShapeTree = this.openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+            _ => ((SlideMasterPart)this.openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
         };
         var shapeList = new List<IShape>(pShapeTree.Count());
         foreach (var pShapeTreeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
             if (pShapeTreeElement is P.GroupShape pGroupShape)
             {
-                var groupShape = new GroupShape(this.sdkTypedOpenXmlPart, pGroupShape);
+                var groupShape = new GroupShape(this.openXmlPart, pGroupShape);
                 shapeList.Add(groupShape);
             }
             else if (pShapeTreeElement is P.ConnectionShape pConnectionShape)
             {
-                var line = new SlideLine(this.sdkTypedOpenXmlPart, pConnectionShape);
+                var line = new SlideLine(this.openXmlPart, pConnectionShape);
                 shapeList.Add(line);
             }
             else if (pShapeTreeElement is P.Shape pShape)
@@ -111,22 +111,22 @@ internal sealed class Shapes : IShapes
                 {
                     shapeList.Add(
                         new RootShape(
-                            this.sdkTypedOpenXmlPart,
+                            this.openXmlPart,
                             pShape,
                             new AutoShape(
-                                this.sdkTypedOpenXmlPart,
+                                this.openXmlPart,
                                 pShape,
                                 new TextBox(
-                                    this.sdkTypedOpenXmlPart, pShape.TextBody))));
+                                    this.openXmlPart, pShape.TextBody))));
                 }
                 else
                 {
                     shapeList.Add(
                         new RootShape(
-                            this.sdkTypedOpenXmlPart,
+                            this.openXmlPart,
                             pShape,
                             new AutoShape(
-                                this.sdkTypedOpenXmlPart,
+                                this.openXmlPart,
                                 pShape)));
                 }
             }
@@ -137,7 +137,7 @@ internal sealed class Shapes : IShapes
                         "http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
-                    var oleObject = new OleObject(this.sdkTypedOpenXmlPart, pGraphicFrame);
+                    var oleObject = new OleObject(this.openXmlPart, pGraphicFrame);
                     shapeList.Add(oleObject);
                     continue;
                 }
@@ -152,7 +152,7 @@ internal sealed class Shapes : IShapes
                         continue;
                     }
 
-                    var picture = new Picture(this.sdkTypedOpenXmlPart, pPicture, aBlip!);
+                    var picture = new Picture(this.openXmlPart, pPicture, aBlip!);
                     shapeList.Add(picture);
                     continue;
                 }
@@ -161,7 +161,7 @@ internal sealed class Shapes : IShapes
                 {
                     aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
                     var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-                    var sdkChartPart = (ChartPart)this.sdkTypedOpenXmlPart.GetPartById(cChartRef.Id!);
+                    var sdkChartPart = (ChartPart)this.openXmlPart.GetPartById(cChartRef.Id!);
                     var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
                     var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
                     pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
@@ -171,7 +171,7 @@ internal sealed class Shapes : IShapes
                     {
                         // Combination chart
                         var combinationChart = new Chart(
-                            this.sdkTypedOpenXmlPart,
+                            this.openXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
                             new Categories(sdkChartPart, cCharts));
@@ -184,7 +184,7 @@ internal sealed class Shapes : IShapes
                     if (chartType is "lineChart" or "barChart" or "pieChart")
                     {
                         var lineChart = new Chart(
-                            this.sdkTypedOpenXmlPart,
+                            this.openXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
                             new Categories(sdkChartPart, cCharts));
@@ -195,7 +195,7 @@ internal sealed class Shapes : IShapes
                     if (chartType is "scatterChart" or "bubbleChart")
                     {
                         var scatterChart = new Chart(
-                            this.sdkTypedOpenXmlPart,
+                            this.openXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
                             new NullCategories());
@@ -204,7 +204,7 @@ internal sealed class Shapes : IShapes
                     }
 
                     var chart = new Chart(
-                        this.sdkTypedOpenXmlPart,
+                        this.openXmlPart,
                         sdkChartPart,
                         pGraphicFrame,
                         new Categories(sdkChartPart, cCharts));
@@ -212,7 +212,7 @@ internal sealed class Shapes : IShapes
                 }
                 else if (IsTablePGraphicFrame(pShapeTreeElement))
                 {
-                    var table = new Table(this.sdkTypedOpenXmlPart, pShapeTreeElement);
+                    var table = new Table(this.openXmlPart, pShapeTreeElement);
                     shapeList.Add(table);
                 }
             }
@@ -229,7 +229,7 @@ internal sealed class Shapes : IShapes
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {
-                            var mediaShape = new MediaShape(this.sdkTypedOpenXmlPart, pPicture);
+                            var mediaShape = new MediaShape(this.openXmlPart, pPicture);
                             shapeList.Add(mediaShape);
                         }
 
@@ -238,7 +238,7 @@ internal sealed class Shapes : IShapes
 
                     case A.VideoFromFile:
                     {
-                        var mediaShape = new MediaShape(this.sdkTypedOpenXmlPart, pPicture);
+                        var mediaShape = new MediaShape(this.openXmlPart, pPicture);
                         shapeList.Add(mediaShape);
                         continue;
                     }
@@ -251,7 +251,7 @@ internal sealed class Shapes : IShapes
                     continue;
                 }
 
-                var picture = new Picture(this.sdkTypedOpenXmlPart, pPicture, aBlip!);
+                var picture = new Picture(this.openXmlPart, pPicture, aBlip!);
                 shapeList.Add(picture);
             }
         }

@@ -37,7 +37,7 @@ public interface ISlide
     /// <summary>
     ///     Gets the shape collection.
     /// </summary>
-    ISlideShapes Shapes { get; }
+    ISlideShapeCollection ShapeCollection { get; }
 
     /// <summary>
     ///     Gets slide notes as a single text frame.

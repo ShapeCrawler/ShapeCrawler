@@ -22,7 +22,7 @@ using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.ShapeCollection;
 
-internal sealed class SlideShapes : ISlideShapes
+internal sealed class SlideShapeCollection : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     
@@ -39,10 +39,10 @@ internal sealed class SlideShapes : ISlideShapes
     private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
 
     private readonly SlidePart sdkSlidePart;
-    private readonly IShapes shapes;
+    private readonly IShapeCollection shapes;
     private readonly MediaCollection mediaCollection;
     
-    internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes, MediaCollection mediaCollection)
+    internal SlideShapeCollection(SlidePart sdkSlidePart, IShapeCollection shapes, MediaCollection mediaCollection)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.shapes = shapes;
@@ -56,12 +56,10 @@ internal sealed class SlideShapes : ISlideShapes
     public void Add(IShape addingShape)
     {
         var pShapeTree = this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
-        var id = this.NextShapeId();
-        var allShapeNames = this.Select(shape => shape.Name);
 
         if (addingShape is CopyableShape copyable)
         {
-            copyable.CopyTo(id, pShapeTree, allShapeNames);
+            copyable.CopyTo(pShapeTree);
         }
         else
         {

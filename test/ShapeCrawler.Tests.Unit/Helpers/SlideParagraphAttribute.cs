@@ -33,7 +33,7 @@ public class SlideParagraphAttribute : Attribute, ITestBuilder
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
         var pres = new Presentation(SCTest.TestAsset(this.pptxName));
-        var paragraph = pres.Slides[this.slideNumber - 1].Shapes.GetByName(this.shapeName).TextBox
+        var paragraph = pres.SlideCollection[this.slideNumber - 1].ShapeCollection.GetByName(this.shapeName).TextBox
             .Paragraphs[this.paragraphNumber - 1];
 
         var parameters = new TestCaseParameters(new[] { paragraph, this.expectedResult });

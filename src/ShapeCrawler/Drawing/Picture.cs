@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -21,22 +20,22 @@ internal sealed class Picture : CopyableShape, IPicture
     private readonly ShapeGeometry shapeGeometry;
 
     internal Picture(
-        OpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart openXmlPart,
         P.Picture pPicture,
         A.Blip aBlip)
-        : this(sdkTypedOpenXmlPart, pPicture, aBlip, new SlidePictureImage(sdkTypedOpenXmlPart, aBlip))
+        : this(openXmlPart, pPicture, aBlip, new SlidePictureImage(openXmlPart, aBlip))
     {
     }
 
-    private Picture(OpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
-        : base(sdkTypedOpenXmlPart, pPicture)
+    private Picture(OpenXmlPart openXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
+        : base(openXmlPart, pPicture)
     {
         this.pPicture = pPicture;
         this.aBlip = aBlip;
         this.Image = image;
         this.blipEmbed = aBlip.Embed!;
-        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
-        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
+        this.Outline = new SlideShapeOutline(openXmlPart, pPicture.ShapeProperties!);
+        this.Fill = new ShapeFill(openXmlPart, pPicture.ShapeProperties!);
         this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
     }
 
@@ -131,22 +130,16 @@ internal sealed class Picture : CopyableShape, IPicture
         pGrpSpPr.InsertAfterSelf(this.pPicture);
     }
 
-    internal override void CopyTo(
-        int id, 
-        P.ShapeTree pShapeTree, 
-        IEnumerable<string> existingShapeNames)
+    internal override void CopyTo(P.ShapeTree pShapeTree)
     {
-        base.CopyTo(id, pShapeTree, existingShapeNames);
+        base.CopyTo(pShapeTree);
 
-        // COPY PARTS
-        var sourceSdkSlidePart = this.SdkTypedOpenXmlPart;
+        var sourceSdkSlidePart = this.OpenXmlPart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
-        // Creates a new part in this slide with a new Id...
-        var targetImagePartRId = new SCOpenXmlPart(this.SdkTypedOpenXmlPart).NextRelationshipId();
+        var targetImagePartRId = new SCOpenXmlPart(this.OpenXmlPart).NextRelationshipId();
 
-        // Adds to current slide parts and update relation id.
-        var targetImagePart = this.SdkTypedOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
+        var targetImagePart = this.OpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);
@@ -188,7 +181,7 @@ internal sealed class Picture : CopyableShape, IPicture
     }
 
     /// <summary>
-    ///     Convert a value from 'per cent mille' (thousandths of a percent) to percent.
+    ///     Convert a value from 'percent mille' (thousandths of a percent) to percent.
     /// </summary>
     /// <param name="int32">Per cent mille value.</param>
     /// <returns>Percent value.</returns>
@@ -196,7 +189,7 @@ internal sealed class Picture : CopyableShape, IPicture
         int32 is not null ? int32 / 1000m : 0;
 
     /// <summary>
-    ///     Convert a value from percentto 'per cent mille' (thousandths of a percent).
+    ///     Convert a value from 'percent mille' (thousandths of a percent).
     /// </summary>
     /// <param name="input">Percent value.</param>
     /// <returns>Per cent mille value.</returns>
@@ -214,7 +207,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.SdkTypedOpenXmlPart.GetPartById(svgId);
+        var imagePart = (ImagePart)this.OpenXmlPart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 

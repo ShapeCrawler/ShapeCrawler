@@ -14,7 +14,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("020.pptx"));
-        var shape = pres.Slides[0].Shapes.First(sp => sp.Id == 4);
+        var shape = pres.SlideCollection[0].ShapeCollection.First(sp => sp.Id == 4);
         var colorFormat = shape.TextBox!.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -26,7 +26,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var titlePlaceholder = pres.Slides[0].SlideLayout.Shapes.GetById<IShape>(2);
+        var titlePlaceholder = pres.SlideCollection[0].SlideLayout.Shapes.GetById<IShape>(2);
         var fontColor = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font!.Color;
 
         // Act-Assert
@@ -60,7 +60,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[1].Shapes.GetById<ITable>(4);
+        var table = pres.SlideCollection[1].ShapeCollection.GetById<ITable>(4);
         var fontColor = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -72,7 +72,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("020.pptx"));
-        var nonPhAutoShape = pres.Slides[0].Shapes.GetById<IShape>(2);
+        var nonPhAutoShape = pres.SlideCollection[0].ShapeCollection.GetById<IShape>(2);
         var fontColor = nonPhAutoShape.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
@@ -87,7 +87,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("014.pptx"));
-        var placeholder = pres.Slides[5].Shapes.GetById<IShape>(52);
+        var placeholder = pres.SlideCollection[5].ShapeCollection.GetById<IShape>(52);
         var fontColor = placeholder.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
