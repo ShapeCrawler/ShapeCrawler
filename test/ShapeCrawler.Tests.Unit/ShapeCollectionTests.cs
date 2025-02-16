@@ -47,7 +47,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Add_adds_picture_same_slide()
+    public void Add_adds_picture_from_same_slide()
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
