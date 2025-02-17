@@ -114,7 +114,7 @@ public class FontColorTests : SCTest
         // Assert
         fontColor.Hex.Should().Be("008000");
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         fontColor = portionQuery.Get(pres).Font!.Color;
         fontColor.Hex.Should().Be("008000");
@@ -132,7 +132,7 @@ public class FontColorTests : SCTest
         fontColor.Update("#007F00");
         
         // Assert
-        pres.SaveAs(stream);
+        pres.Copy(stream);
         pres = new Presentation(stream);
         pres.Validate();
         fontColor = pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
@@ -153,7 +153,7 @@ public class FontColorTests : SCTest
         // Assert
         color.Hex.Should().Be("008000");
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         color = portionQuery.Get(pres).Font!.Color;
         color.Hex.Should().Be("008000");

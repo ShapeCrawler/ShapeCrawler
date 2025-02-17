@@ -54,7 +54,7 @@ public abstract class SCTest
     protected static Presentation SaveAndOpenPresentation(IPresentation presentation)
     {
         var stream = new MemoryStream();
-        presentation.SaveAs(stream);
+        presentation.Copy(stream);
 
         return new Presentation(stream);
     }
@@ -62,7 +62,7 @@ public abstract class SCTest
     protected static PresentationDocument SaveAndOpenPresentationAsSdk(IPresentation presentation)
     {
         var stream = new MemoryStream();
-        presentation.SaveAs(stream);
+        presentation.Copy(stream);
         stream.Position = 0;
 
         return PresentationDocument.Open(stream, true);

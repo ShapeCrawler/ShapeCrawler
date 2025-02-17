@@ -278,7 +278,7 @@ public class ParagraphTests : SCTest
         // Assert
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
@@ -305,7 +305,7 @@ public class ParagraphTests : SCTest
         paragraph.Text.Should().BeEquivalentTo(paraText);
         paragraph.Portions.Count.Should().Be(expectedPortionsCount);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
         paragraph.Text.Should().BeEquivalentTo(paraText);
@@ -384,7 +384,7 @@ public class ParagraphTests : SCTest
         paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
 
         using var mStream = new MemoryStream();
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
@@ -407,7 +407,7 @@ public class ParagraphTests : SCTest
         // Assert
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
         var mStream = new MemoryStream();
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);

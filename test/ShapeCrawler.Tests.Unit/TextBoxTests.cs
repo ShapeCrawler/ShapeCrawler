@@ -64,7 +64,7 @@ namespace ShapeCrawler.Tests.Unit
             textFrame.Text = newText;
 
             // Assert
-            pres.SaveAs(modifiedPres);
+            pres.Copy(modifiedPres);
             pres = new Presentation(modifiedPres);
             textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextBox;
             textFrame.Text.Should().Contain("confirm this");
@@ -124,7 +124,7 @@ namespace ShapeCrawler.Tests.Unit
             
             // Assert
             pres.Validate();
-            pres.SaveAs("output.pptx");
+            pres.Copy("output.pptx");
             // TODO: Add assertion
         }
 
@@ -235,7 +235,7 @@ namespace ShapeCrawler.Tests.Unit
             lastPara.Text.Should().BeEquivalentTo(TEST_TEXT);
             textFrame.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
 
-            pres.SaveAs(mStream);
+            pres.Copy(mStream);
             pres = new Presentation(mStream);
             textFrame = ((IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             textFrame.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
@@ -380,7 +380,7 @@ namespace ShapeCrawler.Tests.Unit
             textFrame.Text.Should().BeEquivalentTo("Test");
             textFrame.Paragraphs.Should().HaveCount(1);
 
-            pres.SaveAs(mStream);
+            pres.Copy(mStream);
             pres = new Presentation(mStream);
             textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
             textFrame.Text.Should().BeEquivalentTo("Test");
@@ -548,7 +548,7 @@ namespace ShapeCrawler.Tests.Unit
 			// Assert
 			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
 
-			pres.SaveAs(mStream);
+			pres.Copy(mStream);
 			pres = new Presentation(mStream);
 			textbox = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
 			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);

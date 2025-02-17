@@ -120,7 +120,7 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
-        destPre.SaveAs(savedPre);
+        destPre.Copy(savedPre);
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
@@ -141,7 +141,7 @@ public class PresentationTests : SCTest
         // Assert
         destPres.Slides.Count.Should().Be(expectedCount);
 
-        destPres.SaveAs(savedPre);
+        destPres.Copy(savedPre);
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
         destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
@@ -209,7 +209,7 @@ public class PresentationTests : SCTest
         
         // Assert
         pres.Validate();
-        pres.SaveAs("output.pptx"); // uncomment for repro
+        pres.Copy("output.pptx"); // uncomment for repro
         // TODO: Add assertion
     }
     
@@ -229,7 +229,7 @@ public class PresentationTests : SCTest
         // Assert
         sectionSlides.Count.Should().Be(0);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         sectionSlides = pres.Sections[0].Slides;
         sectionSlides.Count.Should().Be(0);
@@ -355,7 +355,7 @@ public class PresentationTests : SCTest
 
         // Act
         textBox.Text = originalText + "modified";
-        pres.SaveAs(newStream);
+        pres.Copy(newStream);
 
         pres = new Presentation(originalStream);
         textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
@@ -375,7 +375,7 @@ public class PresentationTests : SCTest
 
         // Act
         var pres = new Presentation();
-        pres.SaveAs(stream);
+        pres.Copy(stream);
 
         // Assert
         stream.Position = 0;
@@ -395,7 +395,7 @@ public class PresentationTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        pres.SaveAs(stream);
+        pres.Copy(stream);
 
         // Assert
         stream.Position = 0;
@@ -473,7 +473,7 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
-        destPre.SaveAs(savedPre);
+        destPre.Copy(savedPre);
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
@@ -494,7 +494,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Slides.Should().HaveCount(expectedSlidesCount);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
     }
@@ -545,7 +545,7 @@ public class PresentationTests : SCTest
         pres.Metadata.Title = "Properties_setter_survives_round_trip";
         pres.Metadata.Created = expectedCreated;
         pres.Metadata.RevisionNumber = 100;
-        pres.SaveAs(stream);
+        pres.Copy(stream);
         
         // Assert
         stream.Position = 0;
