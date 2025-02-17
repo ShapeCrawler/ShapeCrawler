@@ -209,7 +209,6 @@ public class PresentationTests : SCTest
         
         // Assert
         pres.Validate();
-        pres.Copy("output.pptx"); // uncomment for repro
         // TODO: Add assertion
     }
     
@@ -403,22 +402,6 @@ public class PresentationTests : SCTest
         updatedPres.Metadata.Modified.Should().Be(expectedModified);
     } 
     
-    [Test]
-    public void BinaryData_returns_presentation_binary_content_After_updating_series()
-    {
-        // Arrange
-        var pptx = TestAsset("001 bar chart.pptx");
-        var pres = new Presentation(pptx);
-        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
-
-        // Act
-        chart.SeriesList[0].Points[0].Value = 1;
-        var binaryData = pres.AsByteArray();
-
-        // Assert
-        binaryData.Should().NotBeNull();
-    }
-
     [Test]
     public void Footer_AddSlideNumber_adds_slide_number()
     {

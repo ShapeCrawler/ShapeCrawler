@@ -2,6 +2,7 @@
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using NUnit.Framework;
+using ShapeCrawler.Presentations;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 

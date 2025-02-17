@@ -5,7 +5,7 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a presentation properties.
+///     Represents a presentation.
 /// </summary>
 public interface IPresentation
 {
@@ -45,7 +45,7 @@ public interface IPresentation
     IPresentationMetadata Metadata { get; }
     
     /// <summary>
-    ///     Returns slide with specified number.
+    ///     Returns slide with specified order number.
     /// </summary>
     ISlide Slide(int number);
 

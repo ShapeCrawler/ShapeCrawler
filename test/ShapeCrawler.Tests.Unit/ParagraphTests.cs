@@ -1,6 +1,7 @@
 using A = DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit;

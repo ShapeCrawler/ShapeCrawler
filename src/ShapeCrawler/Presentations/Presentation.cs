@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -12,8 +14,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Extensions;
 #endif
 
-namespace ShapeCrawler.Presentations;
+namespace ShapeCrawler;
 
+/// <inheritdoc />
 public sealed class Presentation : IPresentation
 {
     private readonly PresentationDocument presDocument;
@@ -28,57 +31,64 @@ public sealed class Presentation : IPresentation
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.FileProperties = new(this.presDocument.CoreFilePropertiesPart!);
+        this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
     }
     
     public Presentation()
     {
+        var assets = new Assets(Assembly.GetExecutingAssembly());
+        var stream = assets.StreamOf("new-presentation.pptx");
         
+        this.presDocument = PresentationDocument.Open(stream, true);
+        var sdkMasterParts = this.presDocument.PresentationPart!.SlideMasterParts;
+        this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
+        this.Sections = new Sections(this.presDocument);
+        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(this);
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
+        this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
     }
 
+    /// <inheritdoc />
     public ISlideCollection Slides { get; }
 
+    /// <inheritdoc />
     public decimal SlideHeight
     {
         get => this.slideSize.Height();
         set => this.slideSize.UpdateHeight(value);
     }
 
+    /// <inheritdoc />
     public decimal SlideWidth
     {
         get => this.slideSize.Width();
         set => this.slideSize.UpdateWidth(value);
     }
 
+    /// <inheritdoc />
     public ISlideMasterCollection SlideMasters { get; }
 
+    /// <inheritdoc />
     public ISections Sections { get; }
 
+    /// <inheritdoc />
     public IFooter Footer { get; }
+    
+    /// <inheritdoc />
     public IPresentationMetadata Metadata { get; }
-    public ISlide Slide(int number)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Save()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    internal FileProperties FileProperties { get; }
     
-    internal void Copy(Stream stream)
+    /// <inheritdoc />
+    public ISlide Slide(int number) => this.Slides[number - 1];
+
+    /// <inheritdoc />
+    public void Save() => this.presDocument.Save();
+    
+    /// <inheritdoc />
+    public void Copy(Stream stream)
     {
-        this.FileProperties.Modified = SCSettings.TimeProvider.UtcNow;
+        this.Metadata.Modified = SCSettings.TimeProvider.UtcNow;
         this.presDocument.Clone(stream);
-    }
-    
-    internal void Copy(string path)
-    {
-        this.FileProperties.Modified = SCSettings.TimeProvider.UtcNow;
-        var cloned = this.presDocument.Clone(path);
-        cloned.Dispose();
     }
 
     internal void Validate()

@@ -124,7 +124,6 @@ namespace ShapeCrawler.Tests.Unit
             
             // Assert
             pres.Validate();
-            pres.Copy("output.pptx");
             // TODO: Add assertion
         }
 
