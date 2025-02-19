@@ -14,7 +14,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Extensions;
 #endif
 
+#pragma warning disable IDE0130
 namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <inheritdoc />
 public sealed class Presentation : IPresentation
@@ -22,6 +24,9 @@ public sealed class Presentation : IPresentation
     private readonly PresentationDocument presDocument;
     private readonly SlideSize slideSize;
 
+    /// <summary>
+    ///     Opens a presentation from a stream.
+    /// </summary>
     public Presentation(Stream stream)
     {
         this.presDocument = PresentationDocument.Open(stream, true);
@@ -34,6 +39,9 @@ public sealed class Presentation : IPresentation
         this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
     }
     
+    /// <summary>
+    ///     Creates a new presentation.
+    /// </summary>
     public Presentation()
     {
         var assets = new Assets(Assembly.GetExecutingAssembly());
@@ -46,7 +54,10 @@ public sealed class Presentation : IPresentation
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
+        this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!)
+        {
+            Modified = SCSettings.TimeProvider.UtcNow
+        };
     }
 
     /// <inheritdoc />
@@ -80,6 +91,11 @@ public sealed class Presentation : IPresentation
     
     /// <inheritdoc />
     public ISlide Slide(int number) => this.Slides[number - 1];
+    
+    /// <summary>
+    ///     Gets Slide Master by number.
+    /// </summary>
+    public ISlideMaster SlideMaster(int number) => this.SlideMasters[number - 1];
 
     /// <inheritdoc />
     public void Save() => this.presDocument.Save();
@@ -119,9 +135,9 @@ public sealed class Presentation : IPresentation
         }
     }
 
-    private static IEnumerable<string> ValidateATableRows(PresentationDocument sdkPres)
+    private static IEnumerable<string> ValidateATableRows(PresentationDocument presDocument)
     {
-        var aTableRows = sdkPres.PresentationPart!.SlideParts
+        var aTableRows = presDocument.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.TableRow>());
 
         foreach (var aTableRow in aTableRows)
@@ -155,14 +171,14 @@ public sealed class Presentation : IPresentation
         }
     }
     
-    private static IEnumerable<string> ValidateASolidFill(PresentationDocument sdkPres)
+    private static IEnumerable<string> ValidateASolidFill(PresentationDocument presDocument)
     {
-        var aText = sdkPres.PresentationPart!.SlideParts
+        var aText = presDocument.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.Text>());
         aText =
         [
             .. aText,
-            .. sdkPres.PresentationPart!.SlideMasterParts
+            .. presDocument.PresentationPart!.SlideMasterParts
                 .SelectMany(slidePart => slidePart.SlideMaster.Descendants<A.Text>()),
         ];
 

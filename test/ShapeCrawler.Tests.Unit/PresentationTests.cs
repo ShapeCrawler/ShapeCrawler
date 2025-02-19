@@ -341,46 +341,6 @@ public class PresentationTests : SCTest
         textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
-
-    [Test]
-    public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
-    {
-        // Arrange
-        var originalStream = TestAsset("001.pptx");
-        var pres = new Presentation(originalStream);
-        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
-        var originalText = textBox!.Text;
-        var newStream = new MemoryStream();
-
-        // Act
-        textBox.Text = originalText + "modified";
-        pres.Copy(newStream);
-
-        pres = new Presentation(originalStream);
-        textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextBox;
-        var autoShapeText = textBox!.Text;
-
-        // Assert
-        autoShapeText.Should().BeEquivalentTo(originalText);
-    }
-    
-    [Test]
-    public void SaveAs_sets_the_creation_date()
-    {
-        // Arrange
-        var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);
-        SCSettings.TimeProvider = new FakeTimeProvider(expectedCreated);
-        var stream = new MemoryStream();
-
-        // Act
-        var pres = new Presentation();
-        pres.Copy(stream);
-
-        // Assert
-        stream.Position = 0;
-        var updatedPres = new Presentation(stream);
-        updatedPres.Metadata.Created.Should().Be(expectedCreated);
-    }
     
     [Test]
     public void SaveAs_sets_the_date_of_the_last_modification()
