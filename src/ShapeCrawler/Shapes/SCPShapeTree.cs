@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 // ReSharper disable once InconsistentNaming
 internal readonly ref struct SCPShapeTree
@@ -70,7 +70,7 @@ internal readonly ref struct SCPShapeTree
 
         if (pPlaceholder.Type?.Value is not null)
         {
-            var byType = pShapes.FirstOrDefault(layoutPShape => 
+            var byType = pShapes.FirstOrDefault(layoutPShape =>
                 layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
                     .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == pPlaceholder.Type.Value);
 

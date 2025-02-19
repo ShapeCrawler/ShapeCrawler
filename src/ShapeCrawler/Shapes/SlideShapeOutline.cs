@@ -5,17 +5,17 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
+    private readonly OpenXmlPart openXmlPart;
+    private readonly OpenXmlCompositeElement openXmlCompositeElement;
 
-    internal SlideShapeOutline(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
+    internal SlideShapeOutline(OpenXmlPart openXmlPart, OpenXmlCompositeElement openXmlCompositeElement)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;
+        this.openXmlPart = openXmlPart;
+        this.openXmlCompositeElement = openXmlCompositeElement;
     }
 
     public decimal Weight
@@ -25,44 +25,35 @@ internal sealed class SlideShapeOutline : IShapeOutline
     }
 
     /// <inheritdoc/>
-    public string? HexColor
-    {
-        get => this.ParseHexColor();
-    }
+    public string? HexColor => this.ParseHexColor();
 
     /// <inheritdoc/>
-    public void SetHexColor(string value)
-    {
-        this.UpdateFill(new A.SolidFill(new A.RgbColorModelHex { Val = value }));
-    }
+    public void SetHexColor(string value) => this.UpdateFill(new A.SolidFill(new A.RgbColorModelHex { Val = value }));
 
     /// <inheritdoc/>
-    public void SetNoOutline()
-    {
-        this.UpdateFill(new A.NoFill());
-    }
+    public void SetNoOutline() => this.UpdateFill(new A.NoFill());
 
     private void UpdateWeight(decimal points)
     {
-        var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
+        var aOutline = this.openXmlCompositeElement.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
         if (aOutline == null || aNoFill != null)
         {
-            aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
+            aOutline = this.openXmlCompositeElement.AddAOutline();
         }
 
         aOutline.Width = new Int32Value((int)UnitConverter.PointToEmu(points));
     }
-    
+
     private void UpdateFill(OpenXmlElement child)
     {
         // Ensure there is an outline
-        var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
+        var aOutline = this.openXmlCompositeElement.GetFirstChild<A.Outline>();
         if (aOutline is null)
         {
             aOutline = new A.Outline();
-            this.sdkTypedOpenXmlCompositeElement.AppendChild(aOutline);
+            this.openXmlCompositeElement.AppendChild(aOutline);
         }
 
         // Remove any explicit existing kinds of outline
@@ -74,7 +65,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
 
     private decimal ParseWeight()
     {
-        var width = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>()?.Width;
+        var width = this.openXmlCompositeElement.GetFirstChild<A.Outline>()?.Width;
         if (width is null)
         {
             return 0;
@@ -87,7 +78,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
 
     private string? ParseHexColor()
     {
-        var aSolidFill = this.sdkTypedOpenXmlCompositeElement
+        var aSolidFill = this.openXmlCompositeElement
             .GetFirstChild<A.Outline>()?
             .GetFirstChild<A.SolidFill>();
         if (aSolidFill is null)
@@ -95,14 +86,14 @@ internal sealed class SlideShapeOutline : IShapeOutline
             return null;
         }
 
-        var pSlideMaster = this.sdkTypedOpenXmlPart switch
+        var pSlideMaster = this.openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
-            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster
+            _ => ((SlideMasterPart)this.openXmlPart).SlideMaster
         };
         var typeAndHex = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
-        
+
         return typeAndHex.Item2;
     }
 }

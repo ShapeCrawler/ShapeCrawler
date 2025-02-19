@@ -4,7 +4,7 @@ using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;

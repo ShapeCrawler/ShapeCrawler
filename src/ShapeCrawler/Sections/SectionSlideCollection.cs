@@ -5,18 +5,17 @@ using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Presentations;
 using P = DocumentFormat.OpenXml.Presentation;
-using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-namespace ShapeCrawler.SectionCollection;
+namespace ShapeCrawler.Sections;
 
-internal sealed class SectionSlides : IReadOnlyList<ISlide>
+internal sealed class SectionSlideCollection : IReadOnlyList<ISlide>
 {
     private readonly PresentationDocument sdkPresDocument;
     private readonly IEnumerable<SectionSlideIdListEntry> p14SectionSlideIdListEntryList;
 
-    internal SectionSlides(
+    internal SectionSlideCollection(
         PresentationDocument sdkPresDocument,
-        IEnumerable<P14.SectionSlideIdListEntry> p14SectionSlideIdListEntryList)
+        IEnumerable<SectionSlideIdListEntry> p14SectionSlideIdListEntryList)
     {
         this.sdkPresDocument = sdkPresDocument;
         this.p14SectionSlideIdListEntryList = p14SectionSlideIdListEntryList;
@@ -29,7 +28,7 @@ internal sealed class SectionSlides : IReadOnlyList<ISlide>
     public IEnumerator<ISlide> GetEnumerator() => this.ReadOnlySlides().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-    
+
     private ReadOnlySlides ReadOnlySlides()
     {
         var sdkSlideParts = new List<SlidePart>();

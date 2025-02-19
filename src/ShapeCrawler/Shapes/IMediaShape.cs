@@ -2,7 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130

@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130

@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal class ShapeId
 {

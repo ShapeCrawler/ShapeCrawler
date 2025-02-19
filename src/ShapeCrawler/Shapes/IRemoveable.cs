@@ -1,4 +1,4 @@
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 /// <summary>
 ///     Represents a removeable shape.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 #pragma warning disable IDE0130
@@ -13,7 +13,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collection of presentation sections.
 /// </summary>
-public interface ISections : IReadOnlyCollection<ISection>
+public interface ISectionCollection : IReadOnlyCollection<ISection>
 {
     /// <summary>
     ///     Gets the section by index.
@@ -31,13 +31,13 @@ public interface ISections : IReadOnlyCollection<ISection>
     ISection GetByName(string sectionName);
 }
 
-internal sealed class Sections : ISections
+internal sealed class SectionCollectionCollection : ISectionCollection
 {
-    private readonly PresentationDocument sdkPresDocument;
+    private readonly PresentationDocument presDocument;
 
-    internal Sections(PresentationDocument sdkPresDocument)
+    internal SectionCollectionCollection(PresentationDocument presDocument)
     {
-        this.sdkPresDocument = sdkPresDocument;
+        this.presDocument = presDocument;
     }
 
     public int Count => this.SectionList().Count;
@@ -60,7 +60,7 @@ internal sealed class Sections : ISections
 
         if (total == 1)
         {
-            this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
+            this.presDocument.PresentationPart!.Presentation.PresentationExtensionList
                 ?.Descendants<P14.SectionList>().First()
                 .Remove();
         }
@@ -70,10 +70,10 @@ internal sealed class Sections : ISections
     
     private List<Section> SectionList()
     {
-        var p14SectionList = this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
+        var p14SectionList = this.presDocument.PresentationPart!.Presentation.PresentationExtensionList
             ?.Descendants<P14.SectionList>().FirstOrDefault();
         return p14SectionList == null
             ? []
-            : [.. p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section))];
+            : [.. p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.presDocument, p14Section))];
     }
 }

@@ -13,7 +13,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class ShapeCollection : IShapeCollection
 {
@@ -28,23 +28,23 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IShape this[int index] => this.ShapesCore()[index];
 
-    public T GetById<T>(int id) 
+    public T GetById<T>(int id)
         where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
 
-    public T? TryGetById<T>(int id) 
+    public T? TryGetById<T>(int id)
         where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Id == id);
 
-    public T GetByName<T>(string name) 
+    public T GetByName<T>(string name)
         where T : IShape => (T)this.GetByName(name);
 
-    public T? TryGetByName<T>(string name) 
+    public T? TryGetByName<T>(string name)
         where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
 
-    public IShape GetByName(string name) => 
+    public IShape GetByName(string name) =>
         this.ShapesCore().FirstOrDefault(shape => shape.Name == name)
         ?? throw new SCException("Shape not found");
 
-    public T Last<T>() 
+    public T Last<T>()
         where T : IShape => (T)this.ShapesCore().Last(shape => shape is T);
 
     public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();
@@ -224,24 +224,24 @@ internal sealed class ShapeCollection : IShapeCollection
                 switch (element)
                 {
                     case A.AudioFromFile:
-                    {
-                        var aAudioFile = pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
-                            .GetFirstChild<A.AudioFromFile>();
-                        if (aAudioFile is not null)
+                        {
+                            var aAudioFile = pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                                .GetFirstChild<A.AudioFromFile>();
+                            if (aAudioFile is not null)
+                            {
+                                var mediaShape = new MediaShape(this.openXmlPart, pPicture);
+                                shapeList.Add(mediaShape);
+                            }
+
+                            continue;
+                        }
+
+                    case A.VideoFromFile:
                         {
                             var mediaShape = new MediaShape(this.openXmlPart, pPicture);
                             shapeList.Add(mediaShape);
+                            continue;
                         }
-
-                        continue;
-                    }
-
-                    case A.VideoFromFile:
-                    {
-                        var mediaShape = new MediaShape(this.openXmlPart, pPicture);
-                        shapeList.Add(mediaShape);
-                        continue;
-                    }
                 }
 
                 var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;

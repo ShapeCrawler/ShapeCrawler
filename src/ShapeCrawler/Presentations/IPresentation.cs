@@ -32,7 +32,7 @@ public interface IPresentation
     /// <summary>
     ///     Gets the collection of sections.
     /// </summary>
-    ISections Sections { get; }
+    ISectionCollection Sections { get; }
     
     /// <summary>
     ///     Gets footer.

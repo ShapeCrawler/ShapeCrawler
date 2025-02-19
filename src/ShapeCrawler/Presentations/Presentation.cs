@@ -31,7 +31,7 @@ public sealed class Presentation : IPresentation
     {
         this.presDocument = PresentationDocument.Open(stream, true);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new Sections(this.presDocument);
+        this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
@@ -48,7 +48,7 @@ public sealed class Presentation : IPresentation
         
         this.presDocument = PresentationDocument.Open(stream, true);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new Sections(this.presDocument);
+        this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
@@ -79,7 +79,7 @@ public sealed class Presentation : IPresentation
     public ISlideMasterCollection SlideMasters { get; }
 
     /// <inheritdoc />
-    public ISections Sections { get; }
+    public ISectionCollection Sections { get; }
 
     /// <inheritdoc />
     public IFooter Footer { get; }

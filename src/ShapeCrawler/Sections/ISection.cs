@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.SectionCollection;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Sections;
+using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 #pragma warning disable IDE0130
@@ -26,10 +26,10 @@ public interface ISection
 
 internal sealed class Section : ISection, IRemoveable
 {
-    internal Section(PresentationDocument sdkPresDocument, P14.Section p14Section)
+    internal Section(PresentationDocument presDocument, P14.Section p14Section)
         : this(
             p14Section,
-            new SectionSlides(sdkPresDocument, p14Section.Descendants<P14.SectionSlideIdListEntry>()))
+            new SectionSlideCollection(presDocument, p14Section.Descendants<P14.SectionSlideIdListEntry>()))
     {
     }
 

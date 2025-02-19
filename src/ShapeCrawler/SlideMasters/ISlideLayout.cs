@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
@@ -86,7 +87,7 @@ internal sealed class SlideLayout : ISlideLayout
     {
         this.sdkLayoutPart = sdkLayoutPart;
         this.SlideMaster = slideMaster;
-        this.Shapes = new ShapeCollection.ShapeCollection(this.sdkLayoutPart);
+        this.Shapes = new ShapeCollection(this.sdkLayoutPart);
     }
 
     public string Name => this.sdkLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;

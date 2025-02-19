@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class RootShape : CopyableShape, IRootShape
 {
@@ -21,19 +21,19 @@ internal sealed class RootShape : CopyableShape, IRootShape
     #region Decorated Shape
 
     public override ShapeType ShapeType => this.decoratedShape.ShapeType;
-    
+
     public override bool HasOutline => this.decoratedShape.HasOutline;
-    
+
     public override IShapeOutline Outline => this.decoratedShape.Outline;
-    
+
     public override bool HasFill => this.decoratedShape.HasFill;
-    
+
     public override IShapeFill Fill => this.decoratedShape.Fill;
-    
+
     public override bool IsTextHolder => this.decoratedShape.IsTextHolder;
-    
+
     public override ITextBox TextBox => this.decoratedShape.TextBox;
-    
+
     public override Geometry GeometryType
     {
         get => this.decoratedShape.GeometryType;
@@ -48,7 +48,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
 
     public override decimal X
     {
-        get => this.decoratedShape.X; 
+        get => this.decoratedShape.X;
         set => this.decoratedShape.X = value;
     }
 

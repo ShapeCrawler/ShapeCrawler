@@ -9,7 +9,7 @@ using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal abstract class Shape : IShape
 {
@@ -120,7 +120,7 @@ internal abstract class Shape : IShape
             {
                 return PlaceholderType.DateAndTime;
             }
- 
+
             if (value == "ftr")
             {
                 return PlaceholderType.Footer;
@@ -130,27 +130,27 @@ internal abstract class Shape : IShape
             {
                 return PlaceholderType.SlideNumber;
             }
-            
-            if(value == "pic")
+
+            if (value == "pic")
             {
                 return PlaceholderType.Picture;
             }
-            
-            if(value == "tbl")
+
+            if (value == "tbl")
             {
                 return PlaceholderType.Table;
             }
-            
+
             return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), value, true);
         }
-    } 
-        
+    }
+
     public virtual Geometry GeometryType
     {
         get => Geometry.Rectangle;
         set => throw new SCException("Changing geometry of this shape is not supported");
     }
-     
+
     public virtual decimal CornerSize
     {
         get => 0;
@@ -183,7 +183,7 @@ internal abstract class Shape : IShape
 
             return elementText.Value;
         }
-        
+
         set
         {
             var customDataElement =
@@ -193,7 +193,7 @@ internal abstract class Shape : IShape
     }
 
     public abstract ShapeType ShapeType { get; }
-    
+
     public virtual bool HasOutline => false;
 
     public virtual IShapeOutline Outline => throw new SCException(
@@ -206,7 +206,7 @@ internal abstract class Shape : IShape
             $"Shape does not have fill. Use {nameof(IShape.HasFill)} property to check if the shape has fill.");
 
     public virtual bool IsTextHolder { get; protected init; }
-    
+
     public virtual ITextBox TextBox { get; protected init; } = default(NullTextFrame);
 
     public virtual double Rotation
@@ -225,15 +225,15 @@ internal abstract class Shape : IShape
 
                 return aTransform2D.Rotation.Value / 60000d; // OpenXML rotation angles are stored in units of 1/60,000th of a degree
             }
-            
+
             return pSpPr.Transform2D!.Rotation!.Value / 60000d;
         }
     }
 
     public virtual bool Removeable => false;
-    
+
     public string SdkXPath => new XmlPath(this.PShapeTreeElement).XPath;
-    
+
     public OpenXmlElement SdkOpenXmlElement => this.PShapeTreeElement.CloneNode(true);
 
     public string Text
@@ -248,6 +248,6 @@ internal abstract class Shape : IShape
     public virtual IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
-    
+
     public virtual void Remove() => this.PShapeTreeElement.Remove();
 }

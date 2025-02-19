@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Units;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -13,10 +13,10 @@ using A = DocumentFormat.OpenXml.Drawing;
 internal readonly ref struct SCSlidePart(SlidePart slidePart)
 {
     internal void AddPieChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
+        int x,
+        int y,
+        int width,
+        int height,
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
@@ -27,7 +27,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
     }
 
     private static void GeneratePieChartContent(
-        ChartPart chartPart, 
+        ChartPart chartPart,
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
@@ -38,7 +38,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var chart = new Chart();
         chart.Append(new AutoTitleDeleted { Val = false });
 
-        PlotArea plotArea = new PlotArea();
+        var plotArea = new PlotArea();
         plotArea.Append(new Layout());
 
         var pieChart = new PieChart();
@@ -57,30 +57,33 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         {
             stringLiteral.Append(new StringPoint
             {
-                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Key)
+                Index = catIndex,
+                NumericValue = new NumericValue(categoryToValue.Key)
             });
             catIndex++;
         }
 
-        CategoryAxisData categoryAxisData = new CategoryAxisData();
+        var categoryAxisData = new CategoryAxisData();
         categoryAxisData.Append(stringLiteral);
 
         // --- Values ---
         var numberLiteral = new NumberLiteral
         {
-            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = categoriesCount }
+            FormatCode = new FormatCode("General"),
+            PointCount = new PointCount { Val = categoriesCount }
         };
         catIndex = 0;
         foreach (var categoryToValue in categoryValues)
         {
             numberLiteral.Append(new NumericPoint
             {
-                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Value.ToString())
+                Index = catIndex,
+                NumericValue = new NumericValue(categoryToValue.Value.ToString())
             });
             catIndex++;
         }
 
-        Values values = new Values();
+        var values = new Values();
         values.Append(numberLiteral);
 
         // Append categories and values to the series
@@ -110,7 +113,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 new ShowBubbleSize { Val = false },
                 new ShowLeaderLines { Val = true }));
     }
-    
+
     private void InsertChartGraphicFrame(ChartPart chartPart, int x, int y, int width, int height)
     {
         // Create a new GraphicFrame
@@ -121,16 +124,16 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 new NonVisualDrawingProperties { Id = 2U, Name = "Pie Chart" },
                 new NonVisualGraphicFrameDrawingProperties(),
                 new ApplicationNonVisualDrawingProperties()),
-            
+
             Transform = new Transform(
                 new A.Offset { X = new Pixels(x).AsHorizontalEmus(), Y = new Pixels(y).AsVerticalEmus() },
                 new A.Extents { Cx = new Pixels(width).AsHorizontalEmus(), Cy = new Pixels(height).AsVerticalEmus() }),
             Graphic = new A.Graphic(
                 new A.GraphicData(
                         new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
-                    {
-                        Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"
-                    })
+                {
+                    Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"
+                })
         };
 
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);

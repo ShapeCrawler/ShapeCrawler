@@ -20,31 +20,31 @@ using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
-    
-    private static readonly MagickFormat[] SupportedImageFormats = 
+
+    private static readonly MagickFormat[] SupportedImageFormats =
     [
-        MagickFormat.Jpeg, 
+        MagickFormat.Jpeg,
         MagickFormat.Png,
         MagickFormat.Gif,
-        MagickFormat.Tif, 
+        MagickFormat.Tif,
         MagickFormat.Tiff,
         MagickFormat.Svg
     ];
-    
+
     private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
 
-    private readonly SlidePart sdkSlidePart;
+    private readonly SlidePart slidePart;
     private readonly IShapeCollection shapes;
     private readonly MediaCollection mediaCollection;
-    
-    internal SlideShapeCollection(SlidePart sdkSlidePart, IShapeCollection shapes, MediaCollection mediaCollection)
+
+    internal SlideShapeCollection(SlidePart slidePart, IShapeCollection shapes, MediaCollection mediaCollection)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.slidePart = slidePart;
         this.shapes = shapes;
         this.mediaCollection = mediaCollection;
     }
@@ -55,7 +55,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public void Add(IShape addingShape)
     {
-        var pShapeTree = this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
+        var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
 
         if (addingShape is CopyableShape copyable)
         {
@@ -89,14 +89,14 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart(contentType, extension);
         audio.Position = 0;
         mediaDataPart.FeedData(audio);
         var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("audio-image.png");
 
-        var audioRef = this.sdkSlidePart.AddAudioReferenceRelationship(mediaDataPart);
-        var mediaRef = this.sdkSlidePart.AddMediaReferenceRelationship(mediaDataPart);
+        var audioRef = this.slidePart.AddAudioReferenceRelationship(mediaDataPart);
+        var mediaRef = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
         var audioFromFile = new A.AudioFromFile() { Link = audioRef.Id };
 
@@ -147,7 +147,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
                 imageMagick.Format = MagickFormat.Png;
                 imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
             }
-            
+
             var width = imageMagick.Width;
             var height = imageMagick.Height;
 
@@ -170,10 +170,10 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
             imageMagick.Settings.SetDefines(
                 new PngWriteDefines
-            {
-                ExcludeChunks = PngChunkFlags.date
-            });
-            
+                {
+                    ExcludeChunks = PngChunkFlags.date
+                });
+
             imageMagick.Settings.SetDefine("png:exclude-chunk", "tIME");
 
             var rasterStream = new MemoryStream();
@@ -204,15 +204,15 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             throw new SCException("The stream is not an image or a non-supported image format. You can raise a discussion at https://github.com/ShapeCrawler/ShapeCrawler/discussions to find out about the possibilities supporting it.");
         }
     }
-    
+
     public void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName)
     {
-        new SCSlidePart(this.sdkSlidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
+        new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
 
     public void AddVideo(int x, int y, Stream stream)
     {
-        var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var sdkPresDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
 
@@ -221,11 +221,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
         var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
-        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+        var imagePart = this.slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("video-image.bmp");
         imagePart.FeedData(imageStream);
-        var videoRr = this.sdkSlidePart.AddVideoReferenceRelationship(mediaDataPart);
-        var mediaRr = this.sdkSlidePart.AddMediaReferenceRelationship(mediaDataPart);
+        var videoRr = this.slidePart.AddVideoReferenceRelationship(mediaDataPart);
+        var mediaRr = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
         var pPicture = new P.Picture();
 
@@ -308,7 +308,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         pPicture.Append(blipFill1);
         pPicture.Append(shapeProperties1);
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
@@ -323,11 +323,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
         cNvPr.Name = geometry.ToString();
 
-        var position = new Position(this.sdkSlidePart, sdkPShape);
+        var position = new Position(this.slidePart, sdkPShape);
         position.UpdateX(x);
         position.UpdateY(y);
 
-        var size = new ShapeSize(this.sdkSlidePart, sdkPShape);
+        var size = new ShapeSize(this.slidePart, sdkPShape);
         size.UpdateWidth(width);
         size.UpdateHeight(height);
 
@@ -338,21 +338,21 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         new ShapeId(sdkPShape).Update(this.NextShapeId());
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
     }
 
     public void AddLine(string xml)
     {
         var newPConnectionShape = new P.ConnectionShape(xml);
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-line.xml");
         var pConnectionShape = new P.ConnectionShape(xml);
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
 
         var deltaY = endPointY - startPointY;
         var cx = endPointX;
@@ -474,7 +474,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         graphicFrame.Append(pTransform);
         graphicFrame.Append(graphic);
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
     public void Remove(IShape shape)
@@ -483,21 +483,21 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         removingShape.Remove();
     }
 
-    public T GetById<T>(int id) 
+    public T GetById<T>(int id)
         where T : IShape => this.shapes.GetById<T>(id);
 
-    public T? TryGetById<T>(int id) 
+    public T? TryGetById<T>(int id)
         where T : IShape => this.shapes.TryGetById<T>(id);
 
-    public T GetByName<T>(string name) 
+    public T GetByName<T>(string name)
         where T : IShape => this.shapes.GetByName<T>(name);
 
-    public T? TryGetByName<T>(string name) 
+    public T? TryGetByName<T>(string name)
         where T : IShape => this.shapes.TryGetByName<T>(name);
 
     public IShape GetByName(string name) => this.shapes.GetByName(name);
 
-    public T Last<T>() 
+    public T Last<T>()
         where T : IShape => this.shapes.Last<T>();
 
     public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
@@ -507,7 +507,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     private static string GetMimeType(MagickFormat format)
     {
         var mime = MagickFormatInfo.Create(format)?.MimeType;
-        
+
         return mime ?? throw new SCException("Unsupported image format.");
     }
 
@@ -558,19 +558,19 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     {
         if (this.mediaCollection.TryGetImagePart(hash, out var imagePart))
         {
-            // Image already exists in the presentation sofar.
+            // Image already exists in the presentation so far.
             // Do we have a reference to it on this slide?
-            var found = this.sdkSlidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
+            var found = this.slidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
             if (found.Any())
             {
                 // Yes, we already have a relationship with this part on this slide
                 // So use that relationship ID
-                imgPartRId = this.sdkSlidePart.GetIdOfPart(imagePart);
+                imgPartRId = this.slidePart.GetIdOfPart(imagePart);
             }
             else
             {
                 // No, so let's create a relationship to it
-                imgPartRId = this.sdkSlidePart.CreateRelationshipToPart(imagePart);
+                imgPartRId = this.slidePart.CreateRelationshipToPart(imagePart);
             }
 
             return true;
@@ -590,7 +590,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             // No, let's create it!;
-            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(image, mimeType);
+            (imgPartRId, var imagePart) = this.slidePart.AddImagePart(image, mimeType);
             this.mediaCollection.SetImagePart(hash, imagePart);
         }
 
@@ -629,7 +629,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         return pPicture;
     }
@@ -640,7 +640,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var svgHash = new ImageStream(svgStream).Base64Hash;
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
-            (svgPartRId, var svgPart) = this.sdkSlidePart.AddImagePart(svgStream, "image/svg+xml");
+            (svgPartRId, var svgPart) = this.slidePart.AddImagePart(svgStream, "image/svg+xml");
             this.mediaCollection.SetImagePart(svgHash, svgPart);
         }
 
@@ -652,7 +652,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var imgHash = new ImageStream(rasterStream).Base64Hash;
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
-            (imgPartRId, var imagePart) = this.sdkSlidePart.AddImagePart(rasterStream, "image/png");
+            (imgPartRId, var imagePart) = this.slidePart.AddImagePart(rasterStream, "image/png");
             this.mediaCollection.SetImagePart(imgHash, imagePart);
         }
 
@@ -666,13 +666,13 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
 
-        A.NonVisualDrawingPropertiesExtensionList aNonVisualDrawingPropertiesExtensionList =
+        var aNonVisualDrawingPropertiesExtensionList =
             new A.NonVisualDrawingPropertiesExtensionList();
 
-        A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension =
+        var aNonVisualDrawingPropertiesExtension =
             new A.NonVisualDrawingPropertiesExtension { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
-        A16.CreationId a16CreationId = new A16.CreationId();
+        var a16CreationId = new A16.CreationId();
 
         // "http://schemas.microsoft.com/office/drawing/2014/main"
         var a16 = DocumentFormat.OpenXml.Linq.A16.a16;
@@ -691,13 +691,13 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         var blipFill = new P.BlipFill();
 
-        A.Blip aBlip = new A.Blip() { Embed = imgPartRId };
+        var aBlip = new A.Blip() { Embed = imgPartRId };
 
-        A.BlipExtensionList aBlipExtensionList = new A.BlipExtensionList();
+        var aBlipExtensionList = new A.BlipExtensionList();
 
-        A.BlipExtension aBlipExtension = new A.BlipExtension { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
+        var aBlipExtension = new A.BlipExtension { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
 
-        A14.UseLocalDpi a14UseLocalDpi = new A14.UseLocalDpi();
+        var a14UseLocalDpi = new A14.UseLocalDpi();
 
         // "http://schemas.microsoft.com/office/drawing/2010/main"
         var a14 = DocumentFormat.OpenXml.Linq.A14.a14;
@@ -727,9 +727,9 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         blipFill.AppendChild(aBlip);
 
-        A.Stretch aStretch = new A.Stretch();
+        var aStretch = new A.Stretch();
 
-        A.FillRectangle aFillRectangle = new A.FillRectangle();
+        var aFillRectangle = new A.FillRectangle();
 
         aStretch.AppendChild(aFillRectangle);
 
@@ -742,7 +742,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var presetGeometry = new A.PresetGeometry
         { Preset = A.ShapeTypeValues.Rectangle };
 
-        A.AdjustValueList aAdjustValueList = new A.AdjustValueList();
+        var aAdjustValueList = new A.AdjustValueList();
 
         presetGeometry.AppendChild(aAdjustValueList);
 
@@ -755,7 +755,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         pPicture.AppendChild(blipFill);
         pPicture.AppendChild(shapeProperties);
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
 
         return pPicture;
     }
