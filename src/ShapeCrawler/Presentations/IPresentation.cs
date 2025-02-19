@@ -40,9 +40,9 @@ public interface IPresentation
     IFooter Footer { get; }
 
     /// <summary>
-    ///     Gets the metadata of the presentation file.
+    ///     Gets presentation properties.
     /// </summary>
-    IPresentationMetadata Metadata { get; }
+    IPresentationProperties Properties { get; }
     
     /// <summary>
     ///     Returns slide with specified order number.

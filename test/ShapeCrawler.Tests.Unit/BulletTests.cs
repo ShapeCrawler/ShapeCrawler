@@ -58,7 +58,7 @@ public class BulletTests : SCTest
         presentation.Copy(mStream);
 
         presentation = new Presentation(mStream);
-        placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+        placeholderAutoShape = presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         addedParagraph = placeholderAutoShape.TextBox.Paragraphs.Last();
         addedParagraph.Bullet.Type.Should().Be(BulletType.Character);
         addedParagraph.Bullet.Character.Should().Be("*");

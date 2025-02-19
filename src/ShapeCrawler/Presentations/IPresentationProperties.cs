@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents the metadata of the presentation file.
 /// </summary>
-public interface IPresentationMetadata
+public interface IPresentationProperties
 {
     /// <summary>
     ///     Gets or sets the categories.
@@ -102,7 +102,7 @@ public interface IPresentationMetadata
     string? Version { get; set; }
 }
 
-internal class FileProperties : IPresentationMetadata
+internal class FileProperties : IPresentationProperties
 {
     private readonly DocumentFormat.OpenXml.Packaging.IPackageProperties sdkPackageProperties;
 

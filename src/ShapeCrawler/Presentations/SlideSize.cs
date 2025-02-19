@@ -4,28 +4,21 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Presentations;
 
-internal sealed class SlideSize
+internal sealed class SlideSize(P.SlideSize pSlideSize)
 {
-    private readonly P.SlideSize pSlideSize;
+    internal decimal Width() => new Emus(pSlideSize.Cx!.Value).AsHorizontalPixels();
 
-    internal SlideSize(P.SlideSize pSlideSize)
-    {
-        this.pSlideSize = pSlideSize;
-    }
-
-    internal decimal Width() => UnitConverter.HorizontalEmuToPixel(this.pSlideSize.Cx!.Value);
-
-    internal decimal Height() => UnitConverter.HorizontalEmuToPixel(this.pSlideSize.Cy!.Value);
+    internal decimal Height() => new Emus(pSlideSize.Cy!.Value).AsVerticalPixels();
 
     internal void UpdateWidth(decimal pixels)
     {
-        var emu = UnitConverter.HorizontalPixelToEmu(pixels);
-        this.pSlideSize.Cx = new Int32Value((int)emu);
+        var emus = new Pixels(pixels).AsHorizontalEmus();
+        pSlideSize.Cx = new Int32Value((int)emus);
     }
 
     internal void UpdateHeight(decimal pixels)
     {
-        var emu = UnitConverter.VerticalPixelToEmu(pixels);
-        this.pSlideSize.Cy = new Int32Value((int)emu);
+        var emus = new Pixels(pixels).AsVerticalEmus();
+        pSlideSize.Cy = new Int32Value((int)emus);
     }
 }

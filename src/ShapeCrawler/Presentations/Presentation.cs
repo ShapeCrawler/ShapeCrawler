@@ -36,7 +36,7 @@ public sealed class Presentation : IPresentation
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
+        this.Properties = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
     }
     
     /// <summary>
@@ -54,7 +54,7 @@ public sealed class Presentation : IPresentation
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Metadata = new FileProperties(this.presDocument.CoreFilePropertiesPart!)
+        this.Properties = new FileProperties(this.presDocument.CoreFilePropertiesPart!)
         {
             Modified = SCSettings.TimeProvider.UtcNow
         };
@@ -87,7 +87,7 @@ public sealed class Presentation : IPresentation
     public IFooter Footer { get; }
     
     /// <inheritdoc />
-    public IPresentationMetadata Metadata { get; }
+    public IPresentationProperties Properties { get; }
     
     /// <inheritdoc />
     public ISlide Slide(int number) => this.Slides[number - 1];
@@ -103,7 +103,7 @@ public sealed class Presentation : IPresentation
     /// <inheritdoc />
     public void Copy(Stream stream)
     {
-        this.Metadata.Modified = SCSettings.TimeProvider.UtcNow;
+        this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
         this.presDocument.Clone(stream);
     }
 
@@ -143,30 +143,30 @@ public sealed class Presentation : IPresentation
         foreach (var aTableRow in aTableRows)
         {
             var aExtLst = aTableRow.GetFirstChild<A.ExtensionList>();
-            if (aExtLst != null)
+            if (aExtLst == null)
             {
-                var lastTableCellIndex = -1;
-                var extListIndex = -1;
+                continue;
+            }
 
-                // Find indices of last TableCell and ExtensionList
-                for (int i = 0; i < aTableRow.ChildElements.Count; i++)
-                {
-                    var element = aTableRow.ChildElements[i];
-                    if (element is A.TableCell)
-                    {
-                        lastTableCellIndex = i;
-                    }
-                    else if (element is A.ExtensionList)
-                    {
-                        extListIndex = i;
-                    }
-                }
+            var lastTableCellIndex = -1;
+            var extListIndex = -1;
 
-                // If ExtensionList appears before the last TableCell, yield the error
-                if (extListIndex < lastTableCellIndex)
+            for (int i = 0; i < aTableRow.ChildElements.Count; i++)
+            {
+                var element = aTableRow.ChildElements[i];
+                if (element is A.TableCell)
                 {
-                    yield return "Invalid table row structure: ExtensionList element must appear after all TableCell elements in a TableRow";
+                    lastTableCellIndex = i;
                 }
+                else if (element is A.ExtensionList)
+                {
+                    extListIndex = i;
+                }
+            }
+
+            if (extListIndex < lastTableCellIndex)
+            {
+                yield return "Invalid table row structure: ExtensionList element must appear after all TableCell elements in a TableRow";
             }
         }
     }
