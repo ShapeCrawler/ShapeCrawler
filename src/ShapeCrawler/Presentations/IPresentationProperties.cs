@@ -6,7 +6,7 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents the metadata of the presentation file.
+///     Represents the presentation properties.
 /// </summary>
 public interface IPresentationProperties
 {
@@ -102,92 +102,85 @@ public interface IPresentationProperties
     string? Version { get; set; }
 }
 
-internal class FileProperties : IPresentationProperties
+internal class PresentationProperties(IPackageProperties packageProperties): IPresentationProperties
 {
-    private readonly DocumentFormat.OpenXml.Packaging.IPackageProperties sdkPackageProperties;
-
-    internal FileProperties(CoreFilePropertiesPart sdkPart)
-    {
-        this.sdkPackageProperties = sdkPart.OpenXmlPackage.PackageProperties;
-    }
-
     public string? Author
     {
-        get => this.sdkPackageProperties.Creator;
-        set => this.sdkPackageProperties.Creator = value;
+        get => packageProperties.Creator;
+        set => packageProperties.Creator = value;
     }
 
     public string? Categories 
     {
-        get => this.sdkPackageProperties.Category;
-        set => this.sdkPackageProperties.Category = value;
+        get => packageProperties.Category;
+        set => packageProperties.Category = value;
     }
     
     public string? ContentType 
     {
-        get => this.sdkPackageProperties.ContentType;
-        set => this.sdkPackageProperties.ContentType = value;
+        get => packageProperties.ContentType;
+        set => packageProperties.ContentType = value;
     }
     
     public string? ContentStatus 
     {
-        get => this.sdkPackageProperties.ContentStatus;
-        set => this.sdkPackageProperties.ContentStatus = value;
+        get => packageProperties.ContentStatus;
+        set => packageProperties.ContentStatus = value;
     }
     
     public DateTime? Created 
     {
-        get => this.sdkPackageProperties.Created;
-        set => this.sdkPackageProperties.Created = value;
+        get => packageProperties.Created;
+        set => packageProperties.Created = value;
     }
     
     public string? Comments 
     {
-        get => this.sdkPackageProperties.Description;
-        set => this.sdkPackageProperties.Description = value;
+        get => packageProperties.Description;
+        set => packageProperties.Description = value;
     }
     
     public string? Identifier 
     {
-        get => this.sdkPackageProperties.Identifier;
-        set => this.sdkPackageProperties.Identifier = value;
+        get => packageProperties.Identifier;
+        set => packageProperties.Identifier = value;
     }
     
     public string? Tags 
     {
-        get => this.sdkPackageProperties.Keywords;
-        set => this.sdkPackageProperties.Keywords = value;
+        get => packageProperties.Keywords;
+        set => packageProperties.Keywords = value;
     }
     
     public string? Language 
     {
-        get => this.sdkPackageProperties.Language;
-        set => this.sdkPackageProperties.Language = value;
+        get => packageProperties.Language;
+        set => packageProperties.Language = value;
     }
     
     public string? LastModifiedBy 
     {
-        get => this.sdkPackageProperties.LastModifiedBy;
-        set => this.sdkPackageProperties.LastModifiedBy = value;
+        get => packageProperties.LastModifiedBy;
+        set => packageProperties.LastModifiedBy = value;
     }
     
     public DateTime? LastPrinted 
     {
-        get => this.sdkPackageProperties.LastPrinted;
-        set => this.sdkPackageProperties.LastPrinted = value;
+        get => packageProperties.LastPrinted;
+        set => packageProperties.LastPrinted = value;
     }
     
     public DateTime? Modified 
     {
-        get => this.sdkPackageProperties.Modified;
-        set => this.sdkPackageProperties.Modified = value;
+        get => packageProperties.Modified;
+        set => packageProperties.Modified = value;
     }
     
     public int? RevisionNumber 
     {
         get
         {
-            var revision = this.sdkPackageProperties.Revision;
+            var revision = packageProperties.Revision;
             if (string.IsNullOrWhiteSpace(revision) || !int.TryParse(revision, out var result))
             {
                 return null;
@@ -197,24 +190,24 @@ internal class FileProperties : IPresentationProperties
                 return result;
             }
         }
-        set => this.sdkPackageProperties.Revision = value?.ToString();
+        set => packageProperties.Revision = value?.ToString();
     }
     
     public string? Subject 
     {
-        get => this.sdkPackageProperties.Subject;
-        set => this.sdkPackageProperties.Subject = value;
+        get => packageProperties.Subject;
+        set => packageProperties.Subject = value;
     }
     
     public string? Title 
     {
-        get => this.sdkPackageProperties.Title;
-        set => this.sdkPackageProperties.Title = value;
+        get => packageProperties.Title;
+        set => packageProperties.Title = value;
     }
     
     public string? Version 
     {
-        get => this.sdkPackageProperties.Version;
-        set => this.sdkPackageProperties.Version = value;
+        get => packageProperties.Version;
+        set => packageProperties.Version = value;
     }    
 }

@@ -30,13 +30,12 @@ public sealed class Presentation : IPresentation
     public Presentation(Stream stream)
     {
         this.presDocument = PresentationDocument.Open(stream, true);
-        var sdkMasterParts = this.presDocument.PresentationPart!.SlideMasterParts;
-        this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
+        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new Sections(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Properties = new FileProperties(this.presDocument.CoreFilePropertiesPart!);
+        this.Properties = new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
     
     /// <summary>
@@ -48,13 +47,12 @@ public sealed class Presentation : IPresentation
         var stream = assets.StreamOf("new-presentation.pptx");
         
         this.presDocument = PresentationDocument.Open(stream, true);
-        var sdkMasterParts = this.presDocument.PresentationPart!.SlideMasterParts;
-        this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
+        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new Sections(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Properties = new FileProperties(this.presDocument.CoreFilePropertiesPart!)
+        this.Properties = new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
         {
             Modified = SCSettings.TimeProvider.UtcNow
         };
@@ -66,15 +64,15 @@ public sealed class Presentation : IPresentation
     /// <inheritdoc />
     public decimal SlideHeight
     {
-        get => this.slideSize.Height();
-        set => this.slideSize.UpdateHeight(value);
+        get => this.slideSize.Height;
+        set => this.slideSize.Height = value;
     }
 
     /// <inheritdoc />
     public decimal SlideWidth
     {
-        get => this.slideSize.Width();
-        set => this.slideSize.UpdateWidth(value);
+        get => this.slideSize.Width;
+        set => this.slideSize.Width = value;
     }
 
     /// <inheritdoc />
