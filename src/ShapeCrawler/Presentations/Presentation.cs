@@ -25,7 +25,7 @@ public sealed class Presentation : IPresentation
     private readonly SlideSize slideSize;
 
     /// <summary>
-    ///     Opens a presentation from a stream.
+    ///    Opens presentation from the stream.
     /// </summary>
     public Presentation(Stream stream)
     {
