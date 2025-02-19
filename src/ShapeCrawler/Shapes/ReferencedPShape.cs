@@ -6,23 +6,23 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal readonly ref struct ReferencedPShape
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart openXmlPart;
     private readonly OpenXmlElement pShapeTreeElement;
 
-    internal ReferencedPShape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal ReferencedPShape(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.openXmlPart = openXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
     internal Transform2D ATransform2D()
     {
         var pShape = (P.Shape)this.pShapeTreeElement;
-        if (this.sdkTypedOpenXmlPart is SlidePart sdkSlidePart)
+        if (this.openXmlPart is SlidePart sdkSlidePart)
         {
             var layoutPShape = LayoutPShapeOrNullOf(pShape, sdkSlidePart);
             if (layoutPShape != null && layoutPShape.ShapeProperties!.Transform2D != null)
@@ -32,7 +32,7 @@ internal readonly ref struct ReferencedPShape
 
             return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
         }
-        
+
         return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
     }
 
@@ -71,8 +71,8 @@ internal readonly ref struct ReferencedPShape
             {
                 return pShape;
             }
-            
-            if(source.Type == P.PlaceholderValues.CenteredTitle && target.Type == P.PlaceholderValues.CenteredTitle)
+
+            if (source.Type == P.PlaceholderValues.CenteredTitle && target.Type == P.PlaceholderValues.CenteredTitle)
             {
                 return pShape;
             }
@@ -81,8 +81,8 @@ internal readonly ref struct ReferencedPShape
             {
                 return pShape;
             }
-            
-            if(source.Type != null && source.Type == P.PlaceholderValues.Title 
+
+            if (source.Type != null && source.Type == P.PlaceholderValues.Title
                                    && target.Type != null && target.Type == P.PlaceholderValues.CenteredTitle)
             {
                 return pShape;
@@ -99,7 +99,7 @@ internal readonly ref struct ReferencedPShape
 
         return null;
     }
-    
+
     private static P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
@@ -108,7 +108,7 @@ internal readonly ref struct ReferencedPShape
         {
             return null;
         }
-        
+
         var layoutPShapes =
             sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
 
@@ -125,11 +125,11 @@ internal readonly ref struct ReferencedPShape
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>() !;
-        var masterPShapes = this.sdkTypedOpenXmlPart switch
+        var masterPShapes = this.openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
                 .ShapeTree!.Elements<P.Shape>(),
-            _ => ((SlideLayoutPart)this.sdkTypedOpenXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
+            _ => ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
                 .ShapeTree!.Elements<P.Shape>()
         };
 

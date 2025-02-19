@@ -4,7 +4,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class AutoShape : CopyableShape
 {
@@ -28,15 +28,15 @@ internal sealed class AutoShape : CopyableShape
     }
 
     public override bool HasOutline => true;
-   
+
     public override IShapeOutline Outline { get; }
-    
+
     public override bool HasFill => true;
-    
+
     public override IShapeFill Fill { get; }
-    
+
     public override ShapeType ShapeType => ShapeType.AutoShape;
-    
+
     public override bool Removeable => true;
 
     public override Geometry GeometryType

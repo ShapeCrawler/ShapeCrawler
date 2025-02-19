@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 

@@ -8,7 +8,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -30,7 +30,7 @@ internal sealed class Slide : ISlide
         this.SdkSlidePart = sdkSlidePart;
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection.ShapeCollection(sdkSlidePart), mediaCollection);
+        this.Shapes = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection(sdkSlidePart), mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
@@ -185,7 +185,7 @@ internal sealed class Slide : ISlide
             return null;
         }
 
-        var shapes = new ShapeCollection.ShapeCollection(notes);
+        var shapes = new ShapeCollection(notes);
         var notesPlaceholder = shapes
             .FirstOrDefault(x =>
                 x.IsPlaceholder &&

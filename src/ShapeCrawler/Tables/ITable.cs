@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.ShapeCollection;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;

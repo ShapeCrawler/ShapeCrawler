@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.ShapeCollection;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class OleObject : Shape
 {
@@ -20,14 +20,14 @@ internal sealed class OleObject : Shape
     public override ShapeType ShapeType => ShapeType.OleObject;
 
     public override bool HasOutline => true;
-    
+
     public override IShapeOutline Outline { get; }
-    
+
     public override bool HasFill => true;
-    
+
     public override IShapeFill Fill { get; }
-    
+
     public override bool Removeable => true;
-    
+
     public override void Remove() => this.pGraphicFrame.Remove();
 }
