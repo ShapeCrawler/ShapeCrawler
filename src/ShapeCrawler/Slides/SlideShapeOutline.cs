@@ -5,7 +5,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {

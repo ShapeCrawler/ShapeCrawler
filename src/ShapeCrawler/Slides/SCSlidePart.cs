@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Units;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Slides;
 
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;

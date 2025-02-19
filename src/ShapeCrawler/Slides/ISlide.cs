@@ -10,6 +10,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 
 #if DEBUG
 using System.Threading.Tasks;
