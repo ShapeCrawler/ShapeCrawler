@@ -1,6 +1,6 @@
 using System;
 
-namespace ShapeCrawler.Shared;
+namespace ShapeCrawler.Presentations;
 
 /// <summary>
 ///     Provides the current date and time.
@@ -13,7 +13,7 @@ internal interface ITimeProvider
     DateTime UtcNow { get; }
 }
 
-internal class SystemTimeProvider: ITimeProvider
+internal class SystemTimeProvider : ITimeProvider
 {
     DateTime ITimeProvider.UtcNow => DateTime.UtcNow;
 }

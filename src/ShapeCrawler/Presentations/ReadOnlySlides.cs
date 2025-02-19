@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shapes;
+using ShapeCrawler.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Presentations;

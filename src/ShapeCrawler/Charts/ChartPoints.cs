@@ -5,19 +5,19 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Excel;
+using ShapeCrawler.Spreadsheets;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
 internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 {
-    private readonly ChartPart sdkChartPart;
+    private readonly ChartPart chartPart;
     private readonly List<ChartPoint> chartPoints;
 
-    internal ChartPoints(ChartPart sdkChartPart, OpenXmlElement cSerXmlElement)
+    internal ChartPoints(ChartPart chartPart, OpenXmlElement cSerXmlElement)
     {
-        this.sdkChartPart = sdkChartPart;
+        this.chartPart = chartPart;
         
         var cVal = cSerXmlElement.GetFirstChild<Values>();
         var cNumberReference =
@@ -34,7 +34,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         {
             if (match.Value.Contains(":"))
             {
-                var rangePointAddresses = new ExcelCellsRange(match.Value).Addresses();
+                var rangePointAddresses = new CellsRange(match.Value).Addresses();
                 addresses.AddRange(rangePointAddresses);
             }
             else
@@ -57,7 +57,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         {
             foreach (var cNumericValue in cNumericValues)
             {
-                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValue, sheetName, addresses[0]));
+                chartPoints.Add(new ChartPoint(this.chartPart, cNumericValue, sheetName, addresses[0]));
             }
         }
         else
@@ -66,7 +66,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
             var quPoints = System.Math.Min(addresses.Count, cNumericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
-                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValues?[i]!, sheetName, addresses[i]));
+                chartPoints.Add(new ChartPoint(this.chartPart, cNumericValues?[i]!, sheetName, addresses[i]));
             }
         }
 

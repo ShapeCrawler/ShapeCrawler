@@ -2,25 +2,11 @@
 using System.Globalization;
 using System.Linq;
 
-namespace ShapeCrawler.Excel;
+namespace ShapeCrawler.Spreadsheets;
 
-internal readonly record struct ExcelCellsRange
+internal readonly ref struct CellsRange(string range)
 {
-    private readonly string range;
-    private readonly LinkedList<string> tempList = new ();
-
-    #region Constructors
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ExcelCellsRange"/> class.
-    /// </summary>
-    /// <param name="range">Cells range (eg. "A2:A5").</param>
-    internal ExcelCellsRange(string range)
-    {
-        this.range = range;
-    }
-
-    #endregion Constructors
+    private readonly LinkedList<string> tempList = new();
 
     /// <summary>
     ///     Gets collection of the cell's addresses like ['B10','B11','B12'].
@@ -29,14 +15,14 @@ internal readonly record struct ExcelCellsRange
     internal List<string> Addresses()
     {
         this.Letter();
-        return[.. this.tempList];
+        return [.. this.tempList];
     }
 
     #region Private Methods
 
     private void Letter(int startIndex = 0)
     {
-        var letterCharacters = this.range[startIndex..].TakeWhile(char.IsLetter);
+        var letterCharacters = range[startIndex..].TakeWhile(char.IsLetter);
         var letterStr = string.Concat(letterCharacters);
         var nextStart = startIndex + letterCharacters.Count();
 
@@ -45,22 +31,22 @@ internal readonly record struct ExcelCellsRange
 
     private void Digit(string letterPart, int startIndex)
     {
-        int digitInt = this.Digit(startIndex);
+        var digitInt = this.Digit(startIndex);
         this.tempList.AddLast(letterPart + digitInt); // e.g. 'B'+'10' -> B10
 
-        int endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
-        if (endIndex >= this.range.Length)
+        var endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
+        if (endIndex >= range.Length)
         {
             return;
         }
 
         var nextStart = endIndex + letterPart.Length + 1; // skip separator and letter lengths
-        if (this.range[endIndex] == ':')
+        if (range[endIndex] == ':')
         {
             this.LetterAfterColon(letterPart, digitInt, nextStart);
         }
 
-        if (this.range[endIndex] == ',')
+        if (range[endIndex] == ',')
         {
             this.Letter(nextStart);
         }
@@ -77,7 +63,7 @@ internal readonly record struct ExcelCellsRange
         var nextStart =
             startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length +
             1; // skip last digit and separator characters
-        if (nextStart < this.range.Length)
+        if (nextStart < range.Length)
         {
             this.Letter(nextStart);
         }
@@ -85,7 +71,7 @@ internal readonly record struct ExcelCellsRange
 
     private int Digit(int startIndex)
     {
-        var digitChars = this.range[startIndex..].TakeWhile(char.IsDigit);
+        var digitChars = range[startIndex..].TakeWhile(char.IsDigit);
         return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
     }
 

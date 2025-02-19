@@ -7,18 +7,18 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Excel;
+namespace ShapeCrawler.Spreadsheets;
 
-internal readonly record struct ExcelBook
+internal readonly record struct Spreadsheet
 {
-    private readonly ChartPart sdkChartPart;
+    private readonly ChartPart chartPart;
 
-    internal ExcelBook(ChartPart sdkChartPart)
+    internal Spreadsheet(ChartPart chartPart)
     {
-        this.sdkChartPart = sdkChartPart;
+        this.chartPart = chartPart;
     }
 
-    internal ExcelSheet Sheet(string sheetName) => new(this.sdkChartPart, sheetName);
+    internal Sheet Sheet(string sheetName) => new(this.chartPart, sheetName);
 
     internal List<double> FormulaValues(string formula)
     {
@@ -26,21 +26,21 @@ internal readonly record struct ExcelBook
         var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
         var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> A2:A5
 
-        var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
+        var stream = this.chartPart.EmbeddedPackagePart!.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, false);
-        var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!; 
+        var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!;
         var sdkSheet = sdkWorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkWorkbookPart.GetPartById(sdkSheet.Id!);
         var sheetXCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
 
-        var addresses = new ExcelCellsRange(cellsRange).Addresses();
+        var addresses = new CellsRange(cellsRange).Addresses();
         var rangeXCells = new List<X.Cell>(addresses.Count);
         foreach (var address in addresses)
         {
             var xCell = sheetXCells.First(xCell => xCell.CellReference == address);
             rangeXCells.Add(xCell);
         }
-        
+
         var pointValues = new List<double>(rangeXCells.Count);
         foreach (var xCell in rangeXCells)
         {
@@ -50,16 +50,16 @@ internal readonly record struct ExcelBook
 
         sdkSpreadsheetDocument.Dispose();
         stream.Close();
-        
+
         return pointValues;
     }
-    
+
     internal byte[] AsByteArray()
     {
-        var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
+        var stream = this.chartPart.EmbeddedPackagePart!.GetStream();
         var mStream = new MemoryStream();
         stream.CopyTo(mStream);
-        
+
         return mStream.ToArray();
     }
 }

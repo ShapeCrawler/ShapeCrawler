@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.Shared;
-using ShapeCrawler.Tables;
+﻿using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Extensions;

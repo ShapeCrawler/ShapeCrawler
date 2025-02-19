@@ -1,4 +1,4 @@
-namespace ShapeCrawler.Shared;
+namespace ShapeCrawler.Presentations;
 
 internal static class SCSettings
 {

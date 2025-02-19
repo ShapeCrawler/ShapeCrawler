@@ -6,16 +6,16 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Excel;
+namespace ShapeCrawler.Spreadsheets;
 
-internal record ExcelSheet
+internal record Sheet
 {
-    private readonly ChartPart sdkChartPart;
+    private readonly ChartPart chartPart;
     private readonly string sheetName;
 
-    internal ExcelSheet(ChartPart sdkChartPart, string sheetName)
+    internal Sheet(ChartPart chartPart, string sheetName)
     {
-        this.sdkChartPart = sdkChartPart;
+        this.chartPart = chartPart;
         this.sheetName = sheetName;
     }
 
@@ -23,16 +23,16 @@ internal record ExcelSheet
     {
         this.UpdateCell(address, value, X.CellValues.Number);
     }
-    
+
     internal void UpdateCell(string address, string value, X.CellValues type)
     {
-        var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
+        var stream = this.chartPart.EmbeddedPackagePart!.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, true);
         var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == this.sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkSpreadsheetDocument.WorkbookPart!.GetPartById(xSheet.Id!);
         var xCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
         var xCell = xCells.FirstOrDefault(xCell => xCell.CellReference == address);
-        
+
         if (xCell != null)
         {
             xCell.DataType = new EnumValue<X.CellValues>(type);
@@ -47,7 +47,9 @@ internal record ExcelSheet
             var xRow = xSheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
             var newXCell = new X.Cell
             {
-                CellReference = address, DataType = new EnumValue<X.CellValues>(type), CellValue = new X.CellValue(value)
+                CellReference = address,
+                DataType = new EnumValue<X.CellValues>(type),
+                CellValue = new X.CellValue(value)
             };
 
             // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.
@@ -63,7 +65,7 @@ internal record ExcelSheet
 
             xRow.InsertBefore(newXCell, refCell);
         }
-        
+
         sdkSpreadsheetDocument.Dispose();
         stream.Close();
     }
