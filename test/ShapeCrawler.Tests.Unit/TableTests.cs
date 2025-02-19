@@ -38,7 +38,7 @@ public class TableTests : SCTest
 
 		// Assert
 		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
-		pres.SaveAs(mStream);
+		pres.Copy(mStream);
 		pres = new Presentation(mStream);
         table = pres.Slide(3).Table("Таблица 4");
 		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
@@ -72,7 +72,7 @@ public class TableTests : SCTest
 
 		// Assert
 		table[1, 2].RightBorder.Color.Should().Be("00FF00");
-		pres.SaveAs(mStream);
+		pres.Copy(mStream);
 
 		pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 1");
@@ -112,7 +112,7 @@ public class TableTests : SCTest
 
 		// Assert
 		tableCell.TextBox.TopMargin.Should().Be(1.4M);
-		pres.SaveAs(mStream);
+		pres.Copy(mStream);
 
 		pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 2");
@@ -155,7 +155,7 @@ public class TableTests : SCTest
         // Assert
 		tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
         tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
-		pres.SaveAs(mStream);
+		pres.Copy(mStream);
 
 		pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 2");
@@ -182,7 +182,7 @@ public class TableTests : SCTest
 
         // Assert
         table.Columns.Should().HaveCount(expectedColumnsCount);
-        pres.SaveAs(ms);
+        pres.Copy(ms);
         pres = new Presentation(ms);
         table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         table.Columns.Should().HaveCount(expectedColumnsCount);
@@ -336,7 +336,7 @@ public class TableTests : SCTest
 
         // Assert
         table.Rows.Should().HaveCountLessThan(originRowsCount);
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         table = (ITable)new Presentation(mStream).Slides[2].Shapes.First(sp => sp.Id == 3);
         table.Rows.Should().HaveCountLessThan(originRowsCount);
     }
@@ -449,7 +449,7 @@ public class TableTests : SCTest
         // Assert
         table.Columns[0].Width.Should().Be(newColumnWidth);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
         table.Columns[0].Width.Should().Be(newColumnWidth);
@@ -574,7 +574,7 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
         table[0, 0].IsMergedCell.Should().BeTrue();
@@ -595,7 +595,7 @@ public class TableTests : SCTest
 
         // Assert
         AssertTable(table);
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         AssertTable(table);
@@ -625,7 +625,7 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[0, 2].IsMergedCell.Should().BeTrue();
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         table[0, 0].IsMergedCell.Should().BeTrue();
@@ -649,7 +649,7 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[0, 2].IsMergedCell.Should().BeTrue();
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         table[0, 0].IsMergedCell.Should().BeTrue();
@@ -671,7 +671,7 @@ public class TableTests : SCTest
 
         // Assert
         AssertTable(table);
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
         AssertTable(table);
@@ -734,7 +734,7 @@ public class TableTests : SCTest
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[0, 0].IsMergedCell.Should().BeFalse();
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         table[0, 1].IsMergedCell.Should().BeTrue();
@@ -760,7 +760,7 @@ public class TableTests : SCTest
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[0, 2].IsMergedCell.Should().BeFalse();
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 10);
         table[0, 0].IsMergedCell.Should().BeTrue();
@@ -792,7 +792,7 @@ public class TableTests : SCTest
         
         table[3, 2].IsMergedCell.Should().BeFalse();
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 5);
         table[1, 1].IsMergedCell.Should().BeTrue();
@@ -829,7 +829,7 @@ public class TableTests : SCTest
         cell_0_0.ColumnIndex.Should().Be(cell_1_1.ColumnIndex);
         
         table[0, 2].IsMergedCell.Should().BeFalse();
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 2);
         table[0, 0].IsMergedCell.Should().BeTrue();
@@ -857,7 +857,7 @@ public class TableTests : SCTest
         table.Rows.Should().HaveCount(1);
         table.Rows[0].Cells.Should().HaveCount(1);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 3);
         table.Columns.Should().HaveCount(1);
@@ -882,7 +882,7 @@ public class TableTests : SCTest
         // Assert
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
@@ -912,7 +912,7 @@ public class TableTests : SCTest
         // Assert
         AssertTable(table, mergedColumnWidth);
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
         presentation = new Presentation(mStream);
         table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         AssertTable(table, mergedColumnWidth);
@@ -942,7 +942,7 @@ public class TableTests : SCTest
         // Assert
         AssertTable(table, expectedNewColumnWidth);
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 6);
         AssertTable(table, expectedNewColumnWidth);
@@ -1139,7 +1139,7 @@ public class TableTests : SCTest
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
 
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
@@ -1192,7 +1192,7 @@ public class TableTests : SCTest
         table.TableStyleOptions.HasBandedColumns = hasBandedColumns;
 
         // Assert
-        pres.SaveAs(mStream);
+        pres.Copy(mStream);
         pres = new Presentation(mStream);
         table = pres.Slides[0].Shapes.Last<ITable>();
         table.TableStyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);

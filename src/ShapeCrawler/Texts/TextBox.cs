@@ -262,9 +262,6 @@ internal sealed record TextBox : ITextBox
             }
 
             requiredHeight += integerPart * textHeight;
-
-            // TODO
-            // requiredHeight += (integerPart * textHeight) + (decimal)SpacingBefore + (decimal) SpacingAfter;
         }
 
         this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);

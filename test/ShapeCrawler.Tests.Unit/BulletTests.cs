@@ -24,7 +24,7 @@ public class BulletTests : SCTest
         bullet.Character.Should().Be("*");
 
         var savedPreStream = new MemoryStream();
-        pres.SaveAs(savedPreStream);
+        pres.Copy(savedPreStream);
         var newPresentation = new Presentation(savedPreStream);
         shape = newPresentation.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
         bullet = shape.TextBox!.Paragraphs[0].Bullet;
@@ -55,10 +55,10 @@ public class BulletTests : SCTest
         addedParagraph.Bullet.Size.Should().Be(100);
         addedParagraph.Bullet.FontName.Should().Be("Tahoma");
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
 
         presentation = new Presentation(mStream);
-        placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+        placeholderAutoShape = presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         addedParagraph = placeholderAutoShape.TextBox.Paragraphs.Last();
         addedParagraph.Bullet.Type.Should().Be(BulletType.Character);
         addedParagraph.Bullet.Character.Should().Be("*");
@@ -87,7 +87,7 @@ public class BulletTests : SCTest
         addedParagraph.Bullet.Size.Should().Be(100);
         addedParagraph.Bullet.FontName.Should().Be("Tahoma");
 
-        presentation.SaveAs(mStream);
+        presentation.Copy(mStream);
 
         presentation = new Presentation(mStream);
         placeholderAutoShape = (IShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);

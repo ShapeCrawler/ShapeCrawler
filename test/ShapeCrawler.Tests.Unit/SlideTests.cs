@@ -144,7 +144,7 @@ public class SlideTests : SCTest
         slide.CustomData = customDataString;
 
         var savedPreStream = new MemoryStream();
-        originPre.SaveAs(savedPreStream);
+        originPre.Copy(savedPreStream);
         var savedPre = new Presentation(savedPreStream);
         var customData = savedPre.Slides.First().CustomData;
 

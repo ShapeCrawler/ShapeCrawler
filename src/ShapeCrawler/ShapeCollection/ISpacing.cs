@@ -49,7 +49,7 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         set => this.SetAfterSpacingPoints(value);
     }
 
-    private static double ConvertHundredsOfPointsToPoints(int hundredsOfPoints) => hundredsOfPoints * 1.0 / 100;
+    private static double ConvertHundredsOfPointsToPoints(int hundredsOfPoints) => (double)hundredsOfPoints / 100;
 
     private double GetBeforeSpacingPoints()
     {
