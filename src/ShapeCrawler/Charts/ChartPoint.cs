@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Excel;
+using ShapeCrawler.Spreadsheets;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
@@ -43,7 +43,7 @@ internal sealed class ChartPoint : IChartPoint
             return;
         }
 
-        new ExcelBook(this.sdkChartPart).Sheet(this.sheet)
+        new Spreadsheet(this.sdkChartPart).Sheet(this.sheet)
             .UpdateCell(this.address, value.ToString(CultureInfo.InvariantCulture));
     }
 }

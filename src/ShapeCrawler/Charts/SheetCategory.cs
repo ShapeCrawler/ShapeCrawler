@@ -1,8 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Spreadsheets;
 
 namespace ShapeCrawler.Charts;
 
@@ -31,7 +31,7 @@ internal sealed class SheetCategory : ICategory
         set
         {
             this.cachedValue.Text = value;
-            new ExcelBook(this.sdkChartPart).Sheet(this.sheetName).UpdateCell(this.cellAddress, value, CellValues.String);
+            new Spreadsheet(this.sdkChartPart).Sheet(this.sheetName).UpdateCell(this.cellAddress, value, CellValues.String);
         }
     }
 }

@@ -3,8 +3,8 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Spreadsheets;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 #pragma warning disable IDE0130
@@ -63,6 +63,6 @@ internal sealed class Series : ISeries
         var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
         var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
 
-        return fromCache ?? new ExcelBook(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
+        return fromCache ?? new Spreadsheet(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
     }
 }

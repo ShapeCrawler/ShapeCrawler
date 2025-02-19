@@ -7,8 +7,9 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Presentations;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
+
 
 #if NETSTANDARD2_0
 using ShapeCrawler.Extensions;

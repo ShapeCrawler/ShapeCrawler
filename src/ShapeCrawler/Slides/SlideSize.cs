@@ -2,7 +2,7 @@
 using ShapeCrawler.Units;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Presentations;
+namespace ShapeCrawler.Slides;
 
 internal sealed class SlideSize(P.SlideSize pSlideSize)
 {

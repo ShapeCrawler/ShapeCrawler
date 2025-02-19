@@ -5,25 +5,26 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-namespace ShapeCrawler.Presentations;
+namespace ShapeCrawler.Slides;
 
 internal sealed class SlideCollection : ISlideCollection
 {
     private readonly ReadOnlySlides readOnlySlides;
-    private readonly PresentationPart presentationPart;
+    private readonly PresentationPart presPart;
 
-    internal SlideCollection(PresentationPart presentationPart)
-        : this(presentationPart, new ReadOnlySlides(presentationPart.SlideParts))
+    internal SlideCollection(PresentationPart presPart)
+        : this(presPart, new ReadOnlySlides(presPart.SlideParts))
     {
     }
 
-    private SlideCollection(PresentationPart presentationPart, ReadOnlySlides readOnlySlides)
+    private SlideCollection(PresentationPart presPart, ReadOnlySlides readOnlySlides)
     {
-        this.presentationPart = presentationPart;
+        this.presPart = presPart;
         this.readOnlySlides = readOnlySlides;
     }
 
@@ -38,7 +39,7 @@ internal sealed class SlideCollection : ISlideCollection
     public void Remove(ISlide slide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var presDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
+        var presDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
         var pPresentation = presPart.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
@@ -61,7 +62,7 @@ internal sealed class SlideCollection : ISlideCollection
 
     public void AddEmptySlide(SlideLayoutType layoutType)
     {
-        var sdkPresDoc = (PresentationDocument)this.presentationPart.OpenXmlPackage;
+        var sdkPresDoc = (PresentationDocument)this.presPart.OpenXmlPackage;
         var slideMasters = new SlideMasterCollection(sdkPresDoc.PresentationPart!.SlideMasterParts);
         var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 
@@ -70,10 +71,8 @@ internal sealed class SlideCollection : ISlideCollection
 
     public void AddEmptySlide(ISlideLayout layout)
     {
-        var sdkPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
-        var sdkPresPart = sdkPresDocument.PresentationPart!;
-        var rId = new SCOpenXmlPart(sdkPresPart).NextRelationshipId();
-        var sdkSlidePart = sdkPresPart.AddNewPart<SlidePart>(rId);
+        var rId = new SCOpenXmlPart(this.presPart).NextRelationshipId();
+        var sdkSlidePart = this.presPart.AddNewPart<SlidePart>(rId);
         sdkSlidePart.Slide = new P.Slide(
             new P.CommonSlideData(
                 new P.ShapeTree(
@@ -120,7 +119,7 @@ internal sealed class SlideCollection : ISlideCollection
             };
         }
 
-        var pSlideIdList = sdkPresPart.Presentation.SlideIdList!;
+        var pSlideIdList = this.presPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
             ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
             : 256; // according to the scheme, this id starts at 256
@@ -136,7 +135,7 @@ internal sealed class SlideCollection : ISlideCollection
         }
 
         this.Add(slide);
-        int addedSlideIndex = this.Count - 1;
+        var addedSlideIndex = this.Count - 1;
         this.readOnlySlides[addedSlideIndex].Number = position;
     }
 
@@ -144,7 +143,7 @@ internal sealed class SlideCollection : ISlideCollection
     {
         var addingSlide = (Slide)slide;
         var addingSlidePresStream = new MemoryStream();
-        var targetPresDocument = (PresentationDocument)this.presentationPart.OpenXmlPackage;
+        var targetPresDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
         var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
@@ -171,12 +170,12 @@ internal sealed class SlideCollection : ISlideCollection
         // Creates a new TextBody
         if (shape.TextBody is null)
         {
-            return new P.TextBody(new DocumentFormat.OpenXml.Drawing.Paragraph([
-                new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties()
+            return new P.TextBody(new A.Paragraph([
+                new A.EndParagraphRunProperties()
             ]))
             {
-                BodyProperties = new DocumentFormat.OpenXml.Drawing.BodyProperties(),
-                ListStyle = new DocumentFormat.OpenXml.Drawing.ListStyle(),
+                BodyProperties = new A.BodyProperties(),
+                ListStyle = new A.ListStyle(),
             };
         }
 
@@ -187,7 +186,7 @@ internal sealed class SlideCollection : ISlideCollection
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
         {
-            foreach (P.SlideLayoutId pSlideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!
+            foreach (var pSlideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!
                          .OfType<P.SlideLayoutId>())
             {
                 masterId++;
@@ -206,7 +205,8 @@ internal sealed class SlideCollection : ISlideCollection
         var masterId = CreateId(sdkPresDest.SlideMasterIdList!);
         P.SlideMasterId slideMaterId = new()
         {
-            Id = masterId, RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
+            Id = masterId,
+            RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
         };
         sdkPresDocDest.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
         sdkPresDocDest.PresentationPart.Presentation.Save();
@@ -226,7 +226,7 @@ internal sealed class SlideCollection : ISlideCollection
     private static uint CreateId(P.SlideIdList slideIdList)
     {
         uint currentId = 0;
-        foreach (P.SlideId slideId in slideIdList.OfType<P.SlideId>())
+        foreach (var slideId in slideIdList.OfType<P.SlideId>())
         {
             if (slideId.Id! > currentId)
             {

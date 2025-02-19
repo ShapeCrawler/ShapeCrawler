@@ -5,9 +5,9 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Excel;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
+using ShapeCrawler.Spreadsheets;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -105,7 +105,7 @@ internal sealed class Chart : Shape, IChart
         {
             if (this.ParseXValues() == null)
             {
-                throw new NotSupportedException(ExceptionMessages.NotXValues);
+                throw new NotSupportedException($"This chart type has not {nameof(this.XValues)} property. You can check it via {nameof(this.HasXValues)} property.");
             }
 
             return this.ParseXValues() !;
@@ -118,7 +118,7 @@ internal sealed class Chart : Shape, IChart
     
     public override bool Removeable => true;
     
-    public byte[] BookByteArray() => new ExcelBook(this.SdkChartPart).AsByteArray();
+    public byte[] BookByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
     
     public override void Remove() => this.SdkGraphicFrame.Remove();
     
@@ -198,7 +198,7 @@ internal sealed class Chart : Shape, IChart
             return cachedPointValues;
         }
 
-        return new ExcelBook(this.SdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
+        return new Spreadsheet(this.SdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
     }
 
     private OpenXmlElement? GetFirstSeries()

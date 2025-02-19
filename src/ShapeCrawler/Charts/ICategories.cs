@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Excel;
+using ShapeCrawler.Spreadsheets;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
@@ -99,7 +99,7 @@ internal sealed class Categories : IReadOnlyList<ICategory>
             var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
             var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
             var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> A2:A5
-            var addresses = new ExcelCellsRange(cellsRange).Addresses();
+            var addresses = new CellsRange(cellsRange).Addresses();
             for (var i = 0; i < addresses.Count; i++)
             {
                 var category = new SheetCategory(this.sdkChartPart, sheetName, addresses[i], cachedValues[i]);

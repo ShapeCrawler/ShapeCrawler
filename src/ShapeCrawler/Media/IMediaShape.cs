@@ -3,6 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130

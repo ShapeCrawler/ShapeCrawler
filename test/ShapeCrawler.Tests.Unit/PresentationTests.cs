@@ -1,7 +1,7 @@
 using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit;

@@ -9,10 +9,11 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
@@ -20,7 +21,7 @@ using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
 {

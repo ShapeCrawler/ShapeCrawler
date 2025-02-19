@@ -2,7 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Drawing;
 
 internal readonly record struct ImageStream(Stream Stream)
 {

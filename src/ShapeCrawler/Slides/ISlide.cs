@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,18 +8,106 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Shared;
-using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Slides;
 
-// ReSharper disable CheckNamespace
-// ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Presentations;
+#if DEBUG
+using System.Threading.Tasks;
+#endif
+
+#pragma warning disable IDE0130
+namespace ShapeCrawler;
+#pragma warning restore IDE0130
+
+/// <summary>
+///     Represents a slide.
+/// </summary>
+public interface ISlide
+{
+    /// <summary>
+    ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.
+    /// </summary>
+    string? CustomData { get; set; }
+    
+    /// <summary>
+    ///     Gets referenced Slide Layout.
+    /// </summary>
+    ISlideLayout SlideLayout { get; }
+    
+    /// <summary>
+    ///     Gets or sets slide number.
+    /// </summary>
+    int Number { get; set; }
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
+    /// </summary>
+    SlidePart SdkSlidePart { get; }
+    
+    /// <summary>
+    ///     Gets the shape collection.
+    /// </summary>
+    ISlideShapeCollection Shapes { get; }
+
+    /// <summary>
+    ///     Gets slide notes as a single text frame.
+    /// </summary>
+    ITextBox? Notes { get; }
+
+    /// <summary>
+    ///     Gets the fill of the slide.
+    /// </summary>
+    IShapeFill Fill { get; }
+    
+    /// <summary>
+    ///     List of all text frames on that slide.
+    /// </summary>
+    public IList<ITextBox> TextFrames();
+
+    /// <summary>
+    ///     Hides slide.
+    /// </summary>
+    void Hide();
+    
+    /// <summary>
+    ///     Gets a value indicating whether the slide is hidden.
+    /// </summary>
+    bool Hidden();
+    
+    /// <summary>
+    ///     Gets table by name.
+    /// </summary>
+    ITable Table(string name);
+    
+    /// <summary>
+    ///     Gets picture by name.
+    /// </summary>
+    IPicture Picture(string picture);
+    
+    /// <summary>
+    ///     Adds specified lines to the slide notes.
+    /// </summary>
+    void AddNotes(IEnumerable<string> lines);
+    
+    /// <summary>
+    ///     Returns shape with specified name.
+    /// </summary>
+    /// <param name="name">Shape name.</param>
+    /// <returns> An instance of <see cref="IShape"/>.</returns>
+    IShape Shape(string name);
+
+    /// <summary>
+    ///     Returns shape with specified name.
+    /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
+    IShape Shape<T>(string name)
+        where T : IShape;
+}
 
 internal sealed class Slide : ISlide
 {
-    private Lazy<CustomXmlPart?> sdkCustomXmlPart;
+    private CustomXmlPart? customXmlPart;
     private IShapeFill? fill;
 
     internal Slide(
@@ -28,7 +116,7 @@ internal sealed class Slide : ISlide
         MediaCollection mediaCollection)
     {
         this.SdkSlidePart = sdkSlidePart;
-        this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
+        this.customXmlPart = this.GetSldCustomXmlPart();
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection(sdkSlidePart), mediaCollection);
     }
@@ -60,14 +148,14 @@ internal sealed class Slide : ISlide
             if (this.fill is null)
             {
                 var pcSld = this.SdkSlidePart.Slide.CommonSlideData
-                    ?? this.SdkSlidePart.Slide.AppendChild<P.CommonSlideData>(new());
+                    ?? this.SdkSlidePart.Slide.AppendChild<DocumentFormat.OpenXml.Presentation.CommonSlideData>(new());
 
                 // Background element needs to be first, else it gets ignored.
-                var pBg = pcSld.GetFirstChild<P.Background>()
-                    ?? pcSld.InsertAt<P.Background>(new(), 0);
+                var pBg = pcSld.GetFirstChild<DocumentFormat.OpenXml.Presentation.Background>()
+                    ?? pcSld.InsertAt<DocumentFormat.OpenXml.Presentation.Background>(new(), 0);
 
-                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>()
-                    ?? pBg.AppendChild<P.BackgroundProperties>(new());
+                var pBgPr = pBg.GetFirstChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>()
+                    ?? pBg.AppendChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>(new());
 
                 this.fill = new ShapeFill(this.SdkSlidePart, pBgPr);
             }
@@ -206,18 +294,18 @@ internal sealed class Slide : ISlide
         // Add in the text lines
         textBodyChildren.AddRange(
             lines
-                .Select(line => new A.Paragraph(
+                .Select(line => new DocumentFormat.OpenXml.Drawing.Paragraph(
                     new ParagraphProperties(),
                     new Run(
                         new RunProperties(),
-                        new A.Text(line)),
+                        new DocumentFormat.OpenXml.Drawing.Text(line)),
                     new EndParagraphRunProperties())));
 
         // Always add at least one paragraph, even if empty
         if (!lines.Any())
         {
             textBodyChildren.Add(
-                new A.Paragraph(
+                new DocumentFormat.OpenXml.Drawing.Paragraph(
                     new EndParagraphRunProperties()));
         }
 
@@ -227,18 +315,18 @@ internal sealed class Slide : ISlide
         var notesSlide = new NotesSlide(
             new CommonSlideData(
                 new ShapeTree(
-                    new P.NonVisualGroupShapeProperties(
-                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
-                        new P.NonVisualGroupShapeDrawingProperties(),
+                    new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeProperties(
+                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
+                        new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeDrawingProperties(),
                         new ApplicationNonVisualDrawingProperties()),
                     new GroupShapeProperties(new TransformGroup()),
-                    new P.Shape(
-                        new P.NonVisualShapeProperties(
-                            new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
+                    new DocumentFormat.OpenXml.Presentation.Shape(
+                        new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties(
+                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
+                            new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
                             new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
-                        new P.ShapeProperties(),
-                        new P.TextBody(
+                        new DocumentFormat.OpenXml.Presentation.ShapeProperties(),
+                        new DocumentFormat.OpenXml.Presentation.TextBody(
                             textBodyChildren)))),
             new ColorMapOverride(new MasterColorMapping()));
         notesSlidePart1.NotesSlide = notesSlide;
@@ -314,12 +402,12 @@ internal sealed class Slide : ISlide
 
     private string? GetCustomData()
     {
-        if (this.sdkCustomXmlPart.Value == null)
+        if (this.customXmlPart == null)
         {
             return null;
         }
 
-        var customXmlPartStream = this.sdkCustomXmlPart.Value.GetStream();
+        var customXmlPartStream = this.customXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
         return raw[Constants.CustomDataElementName.Length..];
@@ -328,15 +416,15 @@ internal sealed class Slide : ISlide
     private void SetCustomData(string? value)
     {
         Stream customXmlPartStream;
-        if (this.sdkCustomXmlPart.Value == null)
+        if (this.customXmlPart == null)
         {
             var newSlideCustomXmlPart = this.SdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
+            this.customXmlPart = newSlideCustomXmlPart;
         }
         else
         {
-            customXmlPartStream = this.sdkCustomXmlPart.Value.GetStream();
+            customXmlPartStream = this.customXmlPart.GetStream();
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);

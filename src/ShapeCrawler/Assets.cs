@@ -1,21 +1,17 @@
 using System.IO;
 using System.Reflection;
 
-namespace ShapeCrawler.Shared;
+namespace ShapeCrawler;
 
-internal readonly ref struct Assets
+internal readonly ref struct Assets(Assembly assembly)
 {
-    private readonly Assembly assembly;
-
-    internal Assets(Assembly assembly) => this.assembly = assembly;
-    
     internal MemoryStream StreamOf(string file)
     {
-        var stream = this.assembly.GetManifestResourceStream($"ShapeCrawler.Resources.{file}") !;
+        var stream = assembly.GetManifestResourceStream($"ShapeCrawler.Resources.{file}") !;
         var asset = new MemoryStream();
         stream.CopyTo(asset);
         asset.Position = 0;
-        
+
         return asset;
     }
 
