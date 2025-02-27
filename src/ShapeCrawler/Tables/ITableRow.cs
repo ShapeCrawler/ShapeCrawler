@@ -23,7 +23,7 @@ public interface ITableRow
     ///     Gets or sets height in points.
     /// </summary>
     int Height { get; set; }
-
+    
     /// <summary>
     ///     Creates a duplicate of the current row and adds this at the table end.
     /// </summary>
@@ -58,7 +58,7 @@ internal sealed class TableRow : ITableRow
             var columnIdx = 0;
             foreach (var aTc in aTcList)
             {
-                var mergedWithPreviousHorizontal = aTc.HorizontalMerge is not null; 
+                var mergedWithPreviousHorizontal = aTc.HorizontalMerge is not null;
                 if (mergedWithPreviousHorizontal)
                 {
                     cells.Add(addedCell);
@@ -104,6 +104,19 @@ internal sealed class TableRow : ITableRow
         return this.ATableRow;
     }
 
+    internal void SetHeight(int newPixels)
+    {
+        var currentPixels = this.GetHeight();
+
+        if (currentPixels == newPixels)
+        {
+            return;
+        }
+
+        var newEmu = UnitConverter.PointToEmu(newPixels);
+        this.ATableRow.Height!.Value = newEmu;
+    }
+
     private int GetHeight()
     {
         return (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);
@@ -126,13 +139,13 @@ internal sealed class TableRow : ITableRow
         {
             var diffPoints = newPoints - currentPoints;
             var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            parentTable.Height += diffPixels;
+            parentTable.SetTableHeight(parentTable.Height + diffPixels);
         }
         else
         {
             var diffPoints = currentPoints - newPoints;
             var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            parentTable.Height -= diffPixels;
+            parentTable.SetTableHeight(parentTable.Height - diffPixels);
         }
     }
 }
