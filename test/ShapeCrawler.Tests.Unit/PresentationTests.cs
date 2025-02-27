@@ -120,7 +120,7 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
-        destPre.Copy(savedPre);
+        destPre.Save(savedPre);
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
@@ -141,7 +141,7 @@ public class PresentationTests : SCTest
         // Assert
         destPres.Slides.Count.Should().Be(expectedCount);
 
-        destPres.Copy(savedPre);
+        destPres.Save(savedPre);
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
         destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
@@ -228,7 +228,7 @@ public class PresentationTests : SCTest
         // Assert
         sectionSlides.Count.Should().Be(0);
 
-        pres.Copy(mStream);
+        pres.Save(mStream);
         pres = new Presentation(mStream);
         sectionSlides = pres.Sections[0].Slides;
         sectionSlides.Count.Should().Be(0);
@@ -354,7 +354,7 @@ public class PresentationTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        pres.Copy(stream);
+        pres.Save(stream);
 
         // Assert
         stream.Position = 0;
@@ -416,7 +416,7 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
-        destPre.Copy(savedPre);
+        destPre.Save(savedPre);
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
@@ -437,7 +437,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Slides.Should().HaveCount(expectedSlidesCount);
 
-        pres.Copy(mStream);
+        pres.Save(mStream);
         pres = new Presentation(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
     }
@@ -488,7 +488,7 @@ public class PresentationTests : SCTest
         pres.Properties.Title = "Properties_setter_survives_round_trip";
         pres.Properties.Created = expectedCreated;
         pres.Properties.RevisionNumber = 100;
-        pres.Copy(stream);
+        pres.Save(stream);
         
         // Assert
         stream.Position = 0;
@@ -523,5 +523,19 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Properties.Modified.Should().Be(expectedModified);
+    }
+
+    [Test]
+    [Explicit]
+    public void Discussion_950()
+    {
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        shapes.AddTable(100,100,2,2);
+        var table = shapes.Last<ITable>();
+
+        table.Rows[0].Cells[0].TextBox.Text = "Paragraph 1\nParagraph 2";
+        
+        pres.Save(@"c:\temp\output.pptx");
     }
 }

@@ -89,7 +89,7 @@ public class ShapeTests : SCTest
         int pic6LengthAfter = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
 
-        presentation.Copy(modifiedPresentation);
+        presentation.Save(modifiedPresentation);
         presentation = new Presentation(modifiedPresentation);
         picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         pic6LengthBefore = picture6.Image.AsByteArray().Length;
@@ -285,7 +285,7 @@ public class ShapeTests : SCTest
 
         // Act
         shape.CustomData = customDataString;
-        presentation.Copy(savedPreStream);
+        presentation.Save(savedPreStream);
 
         // Assert
         presentation = new Presentation(savedPreStream);
@@ -370,7 +370,7 @@ public class ShapeTests : SCTest
         shape.X = 400;
 
         // Assert
-        pres.Copy(stream);
+        pres.Save(stream);
         pres = new Presentation(stream);
         shape = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName);
         shape.X.Should().Be(400);
@@ -391,7 +391,7 @@ public class ShapeTests : SCTest
         shape.Width = 600;
 
         // Assert
-        pres.Copy(stream);
+        pres.Save(stream);
         pres = new Presentation(stream);
         shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         shape.Width.Should().Be(600);
@@ -741,7 +741,7 @@ public class ShapeTests : SCTest
         shape.Name = "New Name";
 
         // Assert
-        pres.Copy(stream);
+        pres.Save(stream);
         pres = new Presentation(stream);
         shape = pres.Slides[0].Shapes.GetByName("New Name");
         shape.Name.Should().Be("New Name");
@@ -761,7 +761,7 @@ public class ShapeTests : SCTest
         groupShape.Name = "New Group Name";
 
         // Assert
-        pres.Copy(stream);
+        pres.Save(stream);
         pres = new Presentation(stream);
         groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("New Group Name");
         groupShape.Name.Should().Be("New Group Name");

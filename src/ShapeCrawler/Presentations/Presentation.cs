@@ -100,10 +100,19 @@ public sealed class Presentation : IPresentation
     public void Save() => this.presDocument.Save();
     
     /// <inheritdoc />
-    public void Copy(Stream stream)
+    public void Save(Stream stream)
     {
+        this.Save();
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
         this.presDocument.Clone(stream);
+    }
+    
+    /// <inheritdoc />
+    public void Save(string file)
+    {
+        this.Save();
+        using var stream = new FileStream(file, FileMode.Create);
+        this.Save(stream);
     }
 
     internal void Validate()

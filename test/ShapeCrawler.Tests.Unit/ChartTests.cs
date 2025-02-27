@@ -189,7 +189,7 @@ public class ChartTests : SCTest
 
         // Assert
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
-        pres.Copy(mStream);
+        pres.Save(mStream);
         pres = new Presentation(mStream);
         pieChart = pres.Slides[0].Shapes.GetById<IChart>(7);
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
@@ -327,7 +327,7 @@ public class ChartTests : SCTest
         barChart.Axes.ValueAxis.Minimum = 1;
 
         // Assert
-        pres.Copy(mStream);
+        pres.Save(mStream);
         barChart = new Presentation(mStream).Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         barChart.Axes.ValueAxis.Minimum.Should().Be(1);
         pres.Validate();
