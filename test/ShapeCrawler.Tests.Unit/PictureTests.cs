@@ -92,7 +92,7 @@ public class PictureTests : SCTest
         image.Update(pngStream);
 
         // Assert
-        pres.Copy(mStream);
+        pres.Save(mStream);
         pres = new Presentation(mStream);
         picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
         var lengthAfter = picture.Image!.AsByteArray().Length;
@@ -130,7 +130,7 @@ public class PictureTests : SCTest
         groupedPicture1.Image!.Update(image);
 
         // Assert
-        pres.Copy(stream);
+        pres.Save(stream);
         var pictureContent1 = groupedPicture1.Image.AsByteArray();
         var pictureContent2 = groupedPicture2.Image!.AsByteArray();
         pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();

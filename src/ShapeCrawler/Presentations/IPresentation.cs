@@ -55,7 +55,12 @@ public interface IPresentation
     void Save();
 
     /// <summary>
-    ///     Copies presentation to the specified stream.
+    ///     Saves presentation to the stream.
     /// </summary>
-    void Copy(Stream stream);
+    void Save(Stream stream);
+
+    /// <summary>
+    ///     Saves presentation to the file.
+    /// </summary>
+    public void Save(string file);
 }
