@@ -524,18 +524,4 @@ public class PresentationTests : SCTest
         // Assert
         pres.Properties.Modified.Should().Be(expectedModified);
     }
-
-    [Test]
-    [Explicit]
-    public void Discussion_950()
-    {
-        var pres = new Presentation();
-        var shapes = pres.Slide(1).Shapes;
-        shapes.AddTable(100,100,2,2);
-        var table = shapes.Last<ITable>();
-
-        table.Rows[0].Cells[0].TextBox.Text = "Paragraph 1\nParagraph 2";
-        
-        pres.Save(@"c:\temp\output.pptx");
-    }
 }
