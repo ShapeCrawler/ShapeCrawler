@@ -26,19 +26,35 @@ public sealed class Presentation : IPresentation
     private readonly SlideSize slideSize;
 
     /// <summary>
-    ///    Opens presentation from the stream.
+    ///    Opens presentation from the specified stream.
     /// </summary>
     public Presentation(Stream stream)
     {
         this.presDocument = PresentationDocument.Open(stream, true);
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Properties = new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
+        this.Properties =
+            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
-    
+
+    /// <summary>
+    ///    Opens presentation from the specified file.
+    /// </summary>
+    public Presentation(string file)
+    {
+        this.presDocument = PresentationDocument.Open(file, true);
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollectionCollection(this.presDocument);
+        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(this);
+        this.Properties =
+            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
+    }
+
     /// <summary>
     ///     Creates a new presentation.
     /// </summary>
@@ -46,17 +62,18 @@ public sealed class Presentation : IPresentation
     {
         var assets = new Assets(Assembly.GetExecutingAssembly());
         var stream = assets.StreamOf("new-presentation.pptx");
-        
+
         this.presDocument = PresentationDocument.Open(stream, true);
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(this);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.Properties = new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
-        {
-            Modified = SCSettings.TimeProvider.UtcNow
-        };
+        this.Properties =
+            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
+            {
+                Modified = SCSettings.TimeProvider.UtcNow
+            };
     }
 
     /// <inheritdoc />
@@ -84,13 +101,13 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public IFooter Footer { get; }
-    
+
     /// <inheritdoc />
     public IPresentationProperties Properties { get; }
-    
+
     /// <inheritdoc />
     public ISlide Slide(int number) => this.Slides[number - 1];
-    
+
     /// <summary>
     ///     Gets Slide Master by number.
     /// </summary>
@@ -98,15 +115,26 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public void Save() => this.presDocument.Save();
-    
+
     /// <inheritdoc />
     public void Save(Stream stream)
     {
         this.Save();
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
-        this.presDocument.Clone(stream);
+
+        if (stream is FileStream fileStream)
+        {
+            var mStream = new MemoryStream();
+            this.presDocument.Clone(mStream);
+            mStream.Position = 0;
+            mStream.CopyTo(fileStream);
+        }
+        else
+        {
+            this.presDocument.Clone(stream);
+        }
     }
-    
+
     /// <inheritdoc />
     public void Save(string file)
     {
@@ -119,12 +147,12 @@ public sealed class Presentation : IPresentation
     {
         var nonCriticalErrors = new List<string>
         {
-                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
-                "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
-                "The 'uri' attribute is not declared.",
-                "The 'mod' attribute is not declared.",
-                "The 'mod' attribute is not declared.",
-                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
+            "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
+            "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
+            "The 'uri' attribute is not declared.",
+            "The 'mod' attribute is not declared.",
+            "The 'mod' attribute is not declared.",
+            "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
         };
         var sdkErrors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
         sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
@@ -134,7 +162,7 @@ public sealed class Presentation : IPresentation
         {
             throw new SCException("Presentation is invalid.");
         }
-        
+
         var errors = ValidateATableRows(this.presDocument);
         errors = errors.Concat(ValidateASolidFill(this.presDocument));
         if (errors.Any())
@@ -174,11 +202,12 @@ public sealed class Presentation : IPresentation
 
             if (extListIndex < lastTableCellIndex)
             {
-                yield return "Invalid table row structure: ExtensionList element must appear after all TableCell elements in a TableRow";
+                yield return
+                    "Invalid table row structure: ExtensionList element must appear after all TableCell elements in a TableRow";
             }
         }
     }
-    
+
     private static IEnumerable<string> ValidateASolidFill(PresentationDocument presDocument)
     {
         var aText = presDocument.PresentationPart!.SlideParts
@@ -193,7 +222,7 @@ public sealed class Presentation : IPresentation
         foreach (var text in aText)
         {
             var runProperties = text.Parent!.GetFirstChild<A.RunProperties>();
-            if ((runProperties?.Descendants<A.SolidFill>().Any() ?? false) 
+            if ((runProperties?.Descendants<A.SolidFill>().Any() ?? false)
                 && runProperties.ChildElements.Take(2).All(x => x is not A.SolidFill))
             {
                 yield return "Invalid solid fill structure: SolidFill element must be index 0";

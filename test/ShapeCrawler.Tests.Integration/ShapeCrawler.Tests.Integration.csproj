@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <IsPackable>false</IsPackable>
-        <Configurations>Debug;Release</Configurations>
-        <Platforms>AnyCPU</Platforms>
-        <OutputType>Library</OutputType>
-        <LangVersion>latest</LangVersion>
-        <WarningLevel>0</WarningLevel>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Library</OutputType>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TargetFramework>net9.0</TargetFramework>
@@ -17,19 +18,20 @@
     <TargetFrameworks>net9.0;net472;net48</TargetFrameworks>
   </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="FluentAssertions" Version="[7.1.0]" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-        <PackageReference Include="NUnit" Version="4.3.2" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="7.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\ShapeCrawler\ShapeCrawler.csproj" />
-      <ProjectReference Include="..\ShapeCrawler.Tests.Unit\ShapeCrawler.Tests.Unit.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <Using Include="NUnit.Framework" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ShapeCrawler\ShapeCrawler.csproj" />
+  </ItemGroup>
 
 </Project>
