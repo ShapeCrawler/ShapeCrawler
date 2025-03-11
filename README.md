@@ -63,7 +63,7 @@ var addedShape = shapes.Last();
 
 addedShape.TextBox!.Text = "Hello World!";
 
-pres.SaveAs("my_pres.pptx");
+pres.Save("my pres.pptx");
 ```
 
 ### Update picture

@@ -27,16 +27,16 @@ public interface IFooter
 
 internal sealed class Footer : IFooter
 {
-    private readonly Presentation presentationCore;
+    private readonly Presentation pres;
 
-    internal Footer(Presentation presentationCore)
+    internal Footer(Presentation pres)
     {
-        this.presentationCore = presentationCore;
+        this.pres = pres;
     }
 
     public bool SlideNumberAdded() 
     {
-        return this.presentationCore.Slides.Any(slide =>
+        return this.pres.Slides.Any(slide =>
             slide.Shapes.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
     }
 
@@ -47,7 +47,7 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.presentationCore.Slides)
+        foreach (var slide in this.pres.Slides)
         {
             var slideNumberPlaceholder =
                 slide.SlideLayout.Shapes.FirstOrDefault(shape =>
@@ -66,7 +66,7 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.presentationCore.Slides)
+        foreach (var slide in this.pres.Slides)
         {
             var slideNumberPlaceholder =
                 slide.Shapes.FirstOrDefault(shape =>

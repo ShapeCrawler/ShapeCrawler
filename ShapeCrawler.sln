@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Unit", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Load", "test\ShapeCrawler.Tests.Load\ShapeCrawler.Tests.Load.csproj", "{5363B6DC-3E0F-4E7F-9471-704FB550CCED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Integration", "ShapeCrawler.Tests.Integration\ShapeCrawler.Tests.Integration.csproj", "{B37B31A3-C0B0-4233-A58B-F5391B8CC213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B37B31A3-C0B0-4233-A58B-F5391B8CC213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B37B31A3-C0B0-4233-A58B-F5391B8CC213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B37B31A3-C0B0-4233-A58B-F5391B8CC213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B37B31A3-C0B0-4233-A58B-F5391B8CC213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
 		{5363B6DC-3E0F-4E7F-9471-704FB550CCED} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
+		{B37B31A3-C0B0-4233-A58B-F5391B8CC213} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3EF7405-B847-4B4B-83E6-A381625353B1}
