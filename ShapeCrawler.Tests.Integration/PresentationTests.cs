@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 namespace ShapeCrawler.Tests.Integration;
 
 public class PresentationTests
@@ -10,8 +12,11 @@ public class PresentationTests
         var file = Path.GetTempFileName();
         using var stream = File.OpenWrite(file);
         
-        // Act & Assert
-        pres.Save(stream);
+        // Act
+        var saving = () => pres.Save(stream);
+        
+        // Assert
+        saving.Should().NotThrow();
         
         // Cleanup
         stream.Close();
