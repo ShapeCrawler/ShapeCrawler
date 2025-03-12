@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.64.2 - Unreleased
+## Version 0.64.2 - 2025-03-12
 🐞Fixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)
 
 ## Version 0.64.1 - 2025-02-15
