@@ -109,8 +109,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.64.1 - 2025-02-15
-🐞Fixed updating table cell margins [#916](https://github.com/ShapeCrawler/ShapeCrawler/issues/916)  
-🐞Fixed font size [#905](https://github.com/ShapeCrawler/ShapeCrawler/issues/905) 
+### Version 0.64.2 - 2025-03-12
+🐞Fixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)
 
 Visit [CHANGELO.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
