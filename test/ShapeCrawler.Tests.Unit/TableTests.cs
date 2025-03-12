@@ -1225,7 +1225,6 @@ public class TableTests : SCTest
     }
     
     [Test]
-    [Explicit("https://github.com/ShapeCrawler/ShapeCrawler/issues/552")]
     public void Height_Setter_should_proportionally_increase_the_row_heights_When_the_new_table_height_is_bigger()
     {
         // Arrange
@@ -1234,11 +1233,12 @@ public class TableTests : SCTest
         var addedTable = pres.Slide(1).Shapes.Last<ITable>();
         
         // Act
-        addedTable.Height = 100;
+        var currentRowsHeight = addedTable.Rows[0].Height;
+        addedTable.Height *= 1.5m;
         
         // Assert
-        addedTable.Rows[0].Height.Should().Be(40);
-        addedTable.Rows[1].Height.Should().Be(40);
+        addedTable.Rows[0].Height.Should().Be((int)(currentRowsHeight * 1.5));
+        addedTable.Rows[1].Height.Should().Be((int)(currentRowsHeight * 1.5));
         pres.Validate();
     }
 }

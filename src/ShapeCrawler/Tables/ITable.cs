@@ -86,6 +86,12 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
 
+    public new decimal Height 
+    { 
+        get => base.Height;
+        set => this.UpdateTableHeight(value); 
+    }
+
     public ITableStyleOptions TableStyleOptions { get; }
 
     public override bool Removeable => true;
@@ -144,6 +150,11 @@ internal sealed class Table : CopyableShape, ITable
 
     public override ITable AsTable() => this;
 
+    internal void SetTableHeight(decimal value)
+    {
+        base.Height = value;
+    }
+
     private void SetTableStyle(ITableStyle style)
     {
         this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = ((TableStyle)style).Guid;
@@ -160,6 +171,18 @@ internal sealed class Table : CopyableShape, ITable
         }
 
         return this.tableStyle;
+    }
+
+    private void UpdateTableHeight(decimal value)
+    {
+        var percent_new_height = value / base.Height;
+
+        base.Height = value;
+
+        foreach (TableRow row in this.Rows)
+        {
+            row.SetHeight((int)(row.Height * percent_new_height));
+        }
     }
 
     private void RemoveRowIfNeeded()
