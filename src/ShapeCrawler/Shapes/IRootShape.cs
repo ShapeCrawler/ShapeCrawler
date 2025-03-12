@@ -57,7 +57,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
         set => this.decoratedShape.CornerSize = value;
     }
 
-    public override decimal X
+    public override float X
     {
         get => this.decoratedShape.X;
         set => this.decoratedShape.X = value;

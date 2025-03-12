@@ -18,23 +18,33 @@ internal sealed class Position
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
-    internal decimal X() => new Emus(this.AOffset().X!.Value).AsHorizontalPixels();
-   
-    internal void UpdateX(decimal pixels)
+    internal float X
     {
-        var emus = new Pixels(pixels).AsHorizontalEmus();
-        this.AOffset().X = new Int64Value(emus);
+        get
+        {
+            return new Emus(this.GetAOffset().X!.Value).AsPoints();
+        }
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            this.GetAOffset().X = new Int64Value(emus);    
+        }
     }
     
-    internal decimal Y() => new Emus(this.AOffset().Y!.Value).AsVerticalPixels();
-
-    internal void UpdateY(decimal pixels)
+    internal float Y
     {
-        var emus = new Pixels(pixels).AsVerticalEmus();
-        this.AOffset().Y = new Int64Value(emus);
+        get
+        {
+            return new Emus(this.GetAOffset().Y!.Value).AsPoints();
+        }
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            this.GetAOffset().Y = new Int64Value(emus);
+        }
     }
 
-    private A.Offset AOffset()
+    private A.Offset GetAOffset()
     {
         var aOffset = this.pShapeTreeElement.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset != null)

@@ -10,14 +10,14 @@ namespace ShapeCrawler;
 public interface IShape : IPosition, IShapeGeometry
 {
     /// <summary>
-    ///     Gets or sets the width of the shape in pixels.
+    ///     Gets or sets the width of the shape in points.
     /// </summary>
-    decimal Width { get; set; }
+    float Width { get; set; }
 
     /// <summary>
-    ///     Gets or sets the height of the shape in pixels.
+    ///     Gets or sets the height of the shape in points.
     /// </summary>
-    decimal Height { get; set; }
+    float Height { get; set; }
 
     /// <summary>
     ///     Gets identifier of the shape.

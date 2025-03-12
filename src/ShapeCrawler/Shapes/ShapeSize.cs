@@ -17,14 +17,32 @@ internal sealed class ShapeSize
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
-    internal decimal Height() => UnitConverter.VerticalEmuToPixel(this.AExtents().Cy!);
-
-    internal void UpdateHeight(decimal heightPixels) => this.AExtents().Cy = UnitConverter.VerticalPixelToEmu(heightPixels);
-
-    internal decimal Width() => UnitConverter.HorizontalEmuToPixel(this.AExtents().Cx!);
-
-    internal void UpdateWidth(decimal widthPixels) => this.AExtents().Cx = UnitConverter.HorizontalPixelToEmu(widthPixels);
-
+    internal float Width
+    {
+        get
+        {
+            return new Emus(this.AExtents().Cx!).AsPoints();
+        }
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            this.AExtents().Cx = emus;
+        }
+    }
+    
+    internal float Height
+    {
+        get
+        {
+            return new Emus(this.AExtents().Cy!).AsPoints();
+        }
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            this.AExtents().Cy = emus;
+        }
+    }
+    
     private A.Extents AExtents()
     {
         var aExtents = this.pShapeTreeElement.Descendants<A.Extents>().FirstOrDefault();

@@ -28,28 +28,28 @@ internal abstract class Shape : IShape
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
-    public virtual decimal X
+    public virtual float X
     {
-        get => this.position.X();
-        set => this.position.UpdateX(value);
+        get => this.position.X;
+        set => this.position.X = value;
     }
 
-    public virtual decimal Y
+    public virtual float Y
     {
-        get => this.position.Y();
-        set => this.position.UpdateY(value);
+        get => this.position.Y;
+        set => this.position.Y = value;
     }
 
-    public decimal Width
+    public float Width
     {
-        get => this.size.Width();
-        set => this.size.UpdateWidth(value);
+        get => this.size.Width;
+        set => this.size.Width = value;
     }
 
-    public decimal Height
+    public float Height
     {
-        get => this.size.Height();
-        set => this.size.UpdateHeight(value);
+        get => this.size.Height;
+        set => this.size.Height = value;
     }
 
     public int Id => this.shapeId.Value();
