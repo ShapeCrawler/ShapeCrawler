@@ -1,9 +1,9 @@
-﻿namespace ShapeCrawler.Positions;
+﻿namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a point in 2D space.
 /// </summary>
-public class Point
+public sealed class Point
 {
     internal Point(decimal x, decimal y)
     {

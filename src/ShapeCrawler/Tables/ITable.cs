@@ -77,7 +77,7 @@ internal sealed class Table : CopyableShape, ITable
     public override ShapeType ShapeType => ShapeType.Table;
 
     public ITableColumns Columns { get; }
-    
+
     public ITableRows Rows { get; }
 
     public ITableStyle TableStyle
@@ -86,10 +86,10 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
 
-    public new decimal Height 
-    { 
+    public new decimal Height
+    {
         get => base.Height;
-        set => this.UpdateTableHeight(value); 
+        set => this.UpdateTableHeight(value);
     }
 
     public ITableStyleOptions TableStyleOptions { get; }
@@ -98,7 +98,7 @@ internal sealed class Table : CopyableShape, ITable
 
     public override Geometry GeometryType => Geometry.Rectangle;
 
-    private A.Table ATable => this.pGraphicFrame.ATable();
+    private A.Table ATable => this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
 
     public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
@@ -150,7 +150,7 @@ internal sealed class Table : CopyableShape, ITable
 
     public override ITable AsTable() => this;
 
-    internal void SetTableHeight(decimal value)
+    internal void SetTableHeight(float value)
     {
         base.Height = value;
     }
@@ -173,15 +173,15 @@ internal sealed class Table : CopyableShape, ITable
         return this.tableStyle;
     }
 
-    private void UpdateTableHeight(decimal value)
+    private void UpdateTableHeight(float value)
     {
-        var percent_new_height = value / base.Height;
+        var percentNewHeight = value / base.Height;
 
         base.Height = value;
 
         foreach (TableRow row in this.Rows)
         {
-            row.SetHeight((int)(row.Height * percent_new_height));
+            row.SetHeight((int)(row.Height * percentNewHeight));
         }
     }
 

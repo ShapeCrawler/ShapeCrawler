@@ -10,37 +10,37 @@ namespace ShapeCrawler.Sections;
 
 internal sealed class SectionSlideCollection : IReadOnlyList<ISlide>
 {
-    private readonly PresentationDocument sdkPresDocument;
+    private readonly PresentationDocument presDocument;
     private readonly IEnumerable<SectionSlideIdListEntry> p14SectionSlideIdListEntryList;
 
     internal SectionSlideCollection(
-        PresentationDocument sdkPresDocument,
+        PresentationDocument presDocument,
         IEnumerable<SectionSlideIdListEntry> p14SectionSlideIdListEntryList)
     {
-        this.sdkPresDocument = sdkPresDocument;
+        this.presDocument = presDocument;
         this.p14SectionSlideIdListEntryList = p14SectionSlideIdListEntryList;
     }
 
-    public int Count => this.ReadOnlySlides().Count;
+    public int Count => this.GetSlides().Count;
 
-    public ISlide this[int index] => this.ReadOnlySlides()[index];
+    public ISlide this[int index] => this.GetSlides()[index];
 
-    public IEnumerator<ISlide> GetEnumerator() => this.ReadOnlySlides().GetEnumerator();
+    public IEnumerator<ISlide> GetEnumerator() => this.GetSlides().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private ReadOnlySlides ReadOnlySlides()
+    private ReadOnlySlides GetSlides()
     {
-        var sdkSlideParts = new List<SlidePart>();
-        var idToRId = this.sdkPresDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>()
-            .ToDictionary(x => x.Id!, x => x.RelationshipId);
+        var slideParts = new List<SlidePart>();
+        var idToRId = this.presDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>()
+            .ToDictionary(slideId => slideId.Id!, slideId => slideId.RelationshipId);
         foreach (var p14SectionSlideIdListEntry in this.p14SectionSlideIdListEntryList)
         {
             var rId = idToRId[p14SectionSlideIdListEntry.Id!]!.Value!;
-            var slidePart = (SlidePart)this.sdkPresDocument.PresentationPart!.GetPartById(rId);
-            sdkSlideParts.Add(slidePart);
+            var slidePart = (SlidePart)this.presDocument.PresentationPart!.GetPartById(rId);
+            slideParts.Add(slidePart);
         }
 
-        return new ReadOnlySlides(sdkSlideParts);
+        return new ReadOnlySlides(slideParts);
     }
 }

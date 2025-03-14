@@ -10,9 +10,6 @@ internal static class UnitConverter
     private const int EmusPerCentimeter = 360000;
     private const int EmusPerPoint = 12700;
 
-    internal static decimal HorizontalEmuToPixel(long horizontalEmus) =>
-        horizontalEmus * HorizontalResolutionDpi / (decimal)EmusPerInch;
-
     internal static long HorizontalPixelToEmu(decimal horizontalPixels) =>
         (long)Math.Round(horizontalPixels * EmusPerInch / HorizontalResolutionDpi);
 
@@ -32,4 +29,7 @@ internal static class UnitConverter
         (long)Math.Round(point * EmusPerPoint);
 
     internal static decimal PointToPixel(decimal point) => HorizontalEmuToPixel(PointToEmu(point));
+    
+    private static decimal HorizontalEmuToPixel(long horizontalEmus) =>
+        horizontalEmus * HorizontalResolutionDpi / (decimal)EmusPerInch;
 }

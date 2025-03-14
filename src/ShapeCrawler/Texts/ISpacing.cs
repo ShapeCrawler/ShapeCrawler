@@ -40,13 +40,13 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
     public double BeforeSpacingPoints
     {
         get => this.GetBeforeSpacingPoints();
-        set => this.SetBeforeSpacingPoints(value);
+        set => this.SetBeforeSpacingPoints((float)value);
     }
 
     public double AfterSpacingPoints
     {
         get => this.GetAfterSpacingPoints();
-        set => this.SetAfterSpacingPoints(value);
+        set => this.SetAfterSpacingPoints((float)value);
     }
 
     private static double ConvertHundredsOfPointsToPoints(int hundredsOfPoints) => (double)hundredsOfPoints / 100;
@@ -58,14 +58,14 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         return aSpcBef != null ? ConvertHundredsOfPointsToPoints(aSpcBef) : 0;
     }
 
-    private void SetBeforeSpacingPoints(double points)
+    private void SetBeforeSpacingPoints(float points)
     {
         var aSpcBef = aParagraph.ParagraphProperties;
         aSpcBef ??= new A.ParagraphProperties();
         aSpcBef.SpaceBefore ??= new A.SpaceBefore();
         aSpcBef.SpaceBefore.SpacingPoints ??= new A.SpacingPoints();
 
-        var hundredsOfPoints = new Points((decimal)points).AsHundredsOfPoints();
+        var hundredsOfPoints = new Points(points).AsHundredsOfPoints();
 
         if (hundredsOfPoints == 0)
         {
@@ -84,14 +84,14 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         return aSpcAft != null ? ConvertHundredsOfPointsToPoints(aSpcAft) : 0;
     }
 
-    private void SetAfterSpacingPoints(double points)
+    private void SetAfterSpacingPoints(float points)
     {
         var aSpcAft = aParagraph.ParagraphProperties;
         aSpcAft ??= new A.ParagraphProperties();
         aSpcAft.SpaceAfter ??= new A.SpaceAfter();
         aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
 
-        var hundredsOfPoints = new Points((decimal)points).AsHundredsOfPoints();
+        var hundredsOfPoints = new Points(points).AsHundredsOfPoints();
 
         if (hundredsOfPoints == 0)
         {

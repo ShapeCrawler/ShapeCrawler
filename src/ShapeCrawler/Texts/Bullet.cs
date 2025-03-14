@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a paragraph bullet.
 /// </summary>
-public sealed class Bullet // TODO: extract interface
+public sealed class Bullet
 {
     private readonly A.ParagraphProperties aParagraphProperties;
     private readonly Lazy<string?> character;
@@ -39,15 +39,14 @@ public sealed class Bullet // TODO: extract interface
     public string? ColorHex => this.colorHex.Value;
 
     /// <summary>
-    ///     Gets or sets bullet character.
+    ///     Gets or sets bullet character. Returns <see langword="null"/> if bullet doesn't exist.
     /// </summary>
     public string? Character
     {
         get => this.character.Value;
-
         set
         {
-            if (this.aParagraphProperties == null || this.Type != BulletType.Character)
+            if (this.Type != BulletType.Character)
             {
                 return;
             }
@@ -69,10 +68,9 @@ public sealed class Bullet // TODO: extract interface
     public string? FontName
     {
         get => this.fontName.Value;
-
         set
         {
-            if (this.aParagraphProperties == null || this.Type == BulletType.None)
+            if (this.Type == BulletType.None)
             {
                 return;
             }
@@ -212,7 +210,7 @@ public sealed class Bullet // TODO: extract interface
             return null;
         }
 
-        A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>() ?? throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
+        A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>() ?? throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
         return aCharBullet.Char?.Value;
     }
 

@@ -60,7 +60,7 @@ internal class LeftBorder : IBorder
             this.aTableCellProperties.LeftBorderLineProperties.AppendChild(solidFill);
         }
         
-        var emus = new Points((decimal)points).AsEmus();
+        var emus = new Points(points).AsEmus();
         this.aTableCellProperties.LeftBorderLineProperties!.Width = new Int32Value((int)emus);
     }
 

@@ -230,8 +230,8 @@ internal sealed record TextBox : ITextBox
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
-        var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
-        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
+        var currentBlockWidth = shapeSize.Width - lMarginPixel - rMarginPixel;
+        var currentBlockHeight = shapeSize.Height - tMarginPixel - bMarginPixel;
 
         decimal requiredHeight = 0;
         foreach (var paragraph in this.Paragraphs)

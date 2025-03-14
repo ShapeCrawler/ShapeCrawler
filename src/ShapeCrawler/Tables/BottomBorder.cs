@@ -59,7 +59,7 @@ internal class BottomBorder : IBorder
             this.aTableCellProperties.BottomBorderLineProperties.AppendChild(aSolidFill);
         }
         
-        var emus = new Points((decimal)points).AsEmus();
+        var emus = new Points(points).AsEmus();
         this.aTableCellProperties.BottomBorderLineProperties!.Width = new Int32Value((int)emus);
     }
 

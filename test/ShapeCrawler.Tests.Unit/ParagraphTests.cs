@@ -14,7 +14,7 @@ public class ParagraphTests : SCTest
         // Act
         var pres = new Presentation();
         pres.Slides[0].Shapes.AddShape(100,100, 500, 100);
-        var addedShape = (IShape)pres.Slides[0].Shapes.Last();
+        var addedShape = pres.Slides[0].Shapes.Last();
         addedShape.TextBox!.Paragraphs.Add();
         var paragraph = addedShape.TextBox.Paragraphs.Last();
         paragraph.Text = "Test";
