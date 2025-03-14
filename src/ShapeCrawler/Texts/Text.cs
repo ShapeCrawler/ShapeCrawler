@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ShapeCrawler.Units;
 using SkiaSharp;
 
@@ -16,9 +15,23 @@ internal readonly ref struct Text
         this.font = font;
     }
 
-    public decimal FontSize => this.font.Size;
+    public float FontSize => this.font.Size;
 
-    internal decimal PxWidth => this.GetPxWidth();
+    internal decimal WidthPx
+    {
+        get
+        {
+            var fontFamily = this.font.LatinName == "Calibri Light"
+                ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
+                : this.font.LatinName;
+            var skFont = new SKFont
+            {
+                Size = new Points(this.font.Size).AsPixels(), Typeface = SKTypeface.FromFamilyName(fontFamily)
+            };
+
+            return (decimal)skFont.MeasureText(this.text);
+        }
+    }
 
     internal void FitInto(decimal width, decimal height)
     {
@@ -29,14 +42,15 @@ internal readonly ref struct Text
         paint.IsAntialias = true;
 
         using var skFont = new SKFont();
-        skFont.Size = (float)this.font.Size;
+        skFont.Size = this.font.Size;
         skFont.Typeface = SKTypeface.FromFamilyName(this.font.LatinName);
 
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
         var wordMaxY = height - topBottomPadding;
 
-        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, (int)width - defaultPaddingSize, (int)height - defaultPaddingSize);
+        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, (int)width - defaultPaddingSize,
+            (int)height - defaultPaddingSize);
 
         var spaceWidth = skFont.MeasureText(" ");
 
@@ -60,7 +74,7 @@ internal readonly ref struct Text
 
                 if (wordY > (float)wordMaxY)
                 {
-                    if (skFont.Size <= 5) 
+                    if (skFont.Size <= 5)
                     {
                         break;
                     }
@@ -80,22 +94,6 @@ internal readonly ref struct Text
             i++;
         }
 
-        const int dpi = 96;
-        var points = Math.Round(skFont.Size * 72 / dpi, 0);
-
-        this.font.Size = (decimal)points;
-    }
-
-    private decimal GetPxWidth()
-    {
-        var fontFamily = this.font.LatinName == "Calibri Light"
-            ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
-            : this.font.LatinName;
-        var skFont = new SKFont
-        {
-            Size = new Points(this.font.Size).AsPixels(), Typeface = SKTypeface.FromFamilyName(fontFamily)
-        };
-
-        return (decimal)skFont.MeasureText(this.text);
+        this.font.Size = skFont.Size;
     }
 }

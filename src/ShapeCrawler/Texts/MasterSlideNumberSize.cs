@@ -6,22 +6,22 @@ namespace ShapeCrawler.Texts;
 internal record MasterSlideNumberSize : IFontSize
 {
     private readonly A.DefaultRunProperties aDefaultRunProperties;
-    private const decimal HalfPointsInPoint = 100m;
 
     internal MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunProperties)
     {
         this.aDefaultRunProperties = aDefaultRunProperties;
     }
 
-    public decimal Size()
+    public float Size()
     {
-        var halfPoints = this.aDefaultRunProperties.FontSize!.Value;
-        return halfPoints / HalfPointsInPoint;
+        var hundredsOfPoint = this.aDefaultRunProperties.FontSize!.Value;
+        
+        return hundredsOfPoint / 100f;
     }
 
-    public void Update(decimal points)
+    public void Update(float points)
     {
-        var halfPoints = points * HalfPointsInPoint;
+        var halfPoints = points * 100;
         this.aDefaultRunProperties.FontSize!.Value = (int)halfPoints;
     }
 }

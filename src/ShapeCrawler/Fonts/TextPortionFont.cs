@@ -46,7 +46,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     #region Public APIs
 
-    public decimal Size
+    public float Size
     {
         get => this.size.Size();
         set => this.size.Update(value);

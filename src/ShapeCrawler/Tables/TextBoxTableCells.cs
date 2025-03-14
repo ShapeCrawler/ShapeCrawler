@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -13,7 +14,7 @@ internal sealed record TextBoxTableCells : ITextBox
     private readonly A.TableCell tableCell;
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
 
-    private TextVerticalAlignment? valignment;
+    private TextVerticalAlignment? vAlignment;
 
     internal TextBoxTableCells(OpenXmlPart sdkTypedOpenXmlPart, A.TableCell tableCell)
     {
@@ -25,9 +26,9 @@ internal sealed record TextBoxTableCells : ITextBox
     {
         get
         {
-            if (this.valignment.HasValue)
+            if (this.vAlignment.HasValue)
             {
-                return this.valignment.Value;
+                return this.vAlignment.Value;
             }
 
             var aBodyPr = this.tableCell.TableCellProperties!;
@@ -36,18 +37,18 @@ internal sealed record TextBoxTableCells : ITextBox
 
             if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Center)
             {
-                this.valignment = TextVerticalAlignment.Middle;
+                this.vAlignment = TextVerticalAlignment.Middle;
             }
             else if (aBodyPr!.Anchor!.Value == A.TextAnchoringTypeValues.Bottom)
             {
-                this.valignment = TextVerticalAlignment.Bottom;
+                this.vAlignment = TextVerticalAlignment.Bottom;
             }
             else
             {
-                this.valignment = TextVerticalAlignment.Top;
+                this.vAlignment = TextVerticalAlignment.Top;
             }
 
-            return this.valignment.Value;
+            return this.vAlignment.Value;
         }
 
         set => this.SetVerticalAlignment(value);
@@ -65,30 +66,30 @@ internal sealed record TextBoxTableCells : ITextBox
 
         var aCellProperties = this.tableCell.TableCellProperties!;
         aCellProperties.Anchor = aTextAlignmentTypeValue;
-        this.valignment = alignmentValue;
+        this.vAlignment = alignmentValue;
     }
 
-    public decimal LeftMargin
+    public float LeftMargin
     {
-        get => this.GetLeftMargin();
+        get => new LeftRightMargin(this.tableCell.TableCellProperties!.LeftMargin).Value;
         set => this.SetLeftMargin(value);
     }
 
-    public decimal RightMargin
+    public float RightMargin
     {
-        get => this.GetRightMargin();
+        get => new LeftRightMargin(this.tableCell.TableCellProperties!.RightMargin).Value;
         set => this.SetRightMargin(value);
     }
 
-    public decimal TopMargin
+    public float TopMargin
     {
-        get => this.GetTopMargin();
+        get => new TopBottomMargin(this.tableCell.TableCellProperties!.TopMargin).Value;
         set => this.SetTopMargin(value);
     }
 
-    public decimal BottomMargin
+    public float BottomMargin
     {
-        get => this.GetBottomMargin();
+        get => new TopBottomMargin(this.tableCell.TableCellProperties!.BottomMargin).Value;
         set => this.SetBottomMargin(value);
     }
 
@@ -144,59 +145,31 @@ internal sealed record TextBoxTableCells : ITextBox
 
     public string SdkXPath => new XmlPath(this.tableCell.TextBody!).XPath;
 
-    private decimal GetLeftMargin()
-    {
-        var cellProperty = this.tableCell.TableCellProperties!;
-        var margin = cellProperty.LeftMargin;
-        return margin is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(margin.Value);
-    }
-
-    private decimal GetRightMargin()
-    {
-        var cellProperty = this.tableCell.TableCellProperties!;
-        var margin = cellProperty.RightMargin;
-        return margin is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(margin.Value);
-    }
-
-    private void SetLeftMargin(decimal centimetre)
+    private void SetLeftMargin(float points)
     {
         var cellProperties = this.tableCell.TableCellProperties!;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
+        var emu = new Points(points).AsEmus();
         cellProperties.LeftMargin = new Int32Value((int)emu);
     }
 
-    private void SetRightMargin(decimal centimetre)
+    private void SetRightMargin(float points)
     {
         var cellProperties = this.tableCell.TableCellProperties!;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
+        var emu = new Points(points).AsEmus();
         cellProperties.RightMargin = new Int32Value((int)emu);
     }
 
-    private void SetTopMargin(decimal centimetre)
+    private void SetTopMargin(float points)
     {
         var cellProperties = this.tableCell.TableCellProperties!;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
+        var emu = new Points(points).AsEmus();
         cellProperties.TopMargin = new Int32Value((int)emu);
     }
 
-    private void SetBottomMargin(decimal centimetre)
+    private void SetBottomMargin(float points)
     {
         var cellProperties = this.tableCell.TableCellProperties!;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
+        var emu = new Points(points).AsEmus();
         cellProperties.BottomMargin = new Int32Value((int)emu);
-    }
-
-    private decimal GetTopMargin()
-    {
-        var cellProperties = this.tableCell.TableCellProperties!;
-        var margins = cellProperties.TopMargin;
-        return margins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(margins.Value);
-    }
-
-    private decimal GetBottomMargin()
-    {
-        var cellProperties = this.tableCell.TableCellProperties!;
-        var margins = cellProperties.BottomMargin;
-        return margins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(margins.Value);
     }
 }

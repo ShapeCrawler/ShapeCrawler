@@ -9,7 +9,6 @@ namespace ShapeCrawler.Fonts;
 
 internal class PortionFontSize : IFontSize
 {
-    private const decimal HalfPointsInPoint = 100m;
     private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
@@ -19,19 +18,19 @@ internal class PortionFontSize : IFontSize
         this.aText = aText;
     }
 
-    decimal IFontSize.Size()
+    float IFontSize.Size()
     {
-        var fontSize = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize
+        var hundredsOfPoint = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize
             ?.Value;
-        if (fontSize != null)
+        if (hundredsOfPoint != null)
         {
-            return fontSize.Value / HalfPointsInPoint;
+            return hundredsOfPoint.Value / 100f;
         }
  
-        var size = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).FontSizeOrNull();
-        if (size != null)
+        hundredsOfPoint = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).FontSizeOrNull();
+        if (hundredsOfPoint is not null)
         {
-            return size.Value / HalfPointsInPoint;
+            return hundredsOfPoint.Value / 100f; 
         }
 
         var indentLevel = new SCAParagraph(this.aText.Ancestors<A.Paragraph>().First()).IndentLevel();
@@ -58,7 +57,8 @@ internal class PortionFontSize : IFontSize
             {
                 var titleFontSize = sdkSlideMasterPart.SlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
                     .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
-                return titleFontSize / HalfPointsInPoint;
+                
+                return titleFontSize / 100f;
             }
             
             var indentFonts =
@@ -66,7 +66,7 @@ internal class PortionFontSize : IFontSize
             var indentFont = indentFonts.FontOrNull(indentLevel);
             if (indentFont != null)
             {
-                return indentFont.Value.Size!.Value / HalfPointsInPoint;
+                return indentFont.Value.Size!.Value / 100f;
             }    
         }
         
@@ -78,7 +78,7 @@ internal class PortionFontSize : IFontSize
             var defaultTextStyleFont = defaultTextStyleFonts.FontOrNull(indentLevel);
             if (defaultTextStyleFont.HasValue && defaultTextStyleFont.Value.Size != null)
             {
-                return defaultTextStyleFont.Value.Size!.Value / HalfPointsInPoint;
+                return defaultTextStyleFont.Value.Size!.Value / 100f;
             }
 
             var aTextDefault2 = pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault;
@@ -89,7 +89,7 @@ internal class PortionFontSize : IFontSize
                 var listStyleFontsFont = listStyleFonts.FontOrNull(indentLevel);
                 if (listStyleFontsFont.HasValue && listStyleFontsFont.Value.Size != null)
                 {
-                    return listStyleFontsFont.Value.Size!.Value / HalfPointsInPoint;
+                    return listStyleFontsFont.Value.Size!.Value / 100f;
                 }
             }
         }
@@ -101,7 +101,7 @@ internal class PortionFontSize : IFontSize
             var indentFont2 = indentFonts2.FontOrNull(indentLevel);
             if (indentFont2 != null && indentFont2.Value.Size != null)
             {
-                return indentFont2.Value.Size!.Value / HalfPointsInPoint;
+                return indentFont2.Value.Size!.Value / 100f;
             }
         }
 
@@ -112,14 +112,14 @@ internal class PortionFontSize : IFontSize
             var listStyleFont = listStyleFonts.FontOrNull(indentLevel);
             if (listStyleFont.HasValue && listStyleFont.Value.Size != null)
             {
-                return listStyleFont.Value.Size!.Value / HalfPointsInPoint;
+                return listStyleFont.Value.Size!.Value / 100f;
             }
         }
         
         return 18; // default: https://bit.ly/37Tjjlo
     }
 
-    void IFontSize.Update(decimal points)
+    void IFontSize.Update(float points)
     {
         var parent = this.aText.Parent!;
         var aRunPr = parent.GetFirstChild<A.RunProperties>();
@@ -129,6 +129,6 @@ internal class PortionFontSize : IFontSize
             parent.InsertAt(aRunPr, 0);
         }
 
-        aRunPr.FontSize = (int)(points * HalfPointsInPoint);
+        aRunPr.FontSize = (int)(points * 100);
     }
 }

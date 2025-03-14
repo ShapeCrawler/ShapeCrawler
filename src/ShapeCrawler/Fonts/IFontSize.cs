@@ -8,10 +8,10 @@ internal interface IFontSize
     /// <summary>
     ///     Font size in points.
     /// </summary>
-    decimal Size();
+    float Size();
     
     /// <summary>
     ///     Updates font size in points.
     /// </summary>
-    void Update(decimal points);
+    void Update(float points);
 }

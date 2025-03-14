@@ -86,7 +86,7 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
 
-    public new decimal Height
+    public new float Height
     {
         get => base.Height;
         set => this.UpdateTableHeight(value);

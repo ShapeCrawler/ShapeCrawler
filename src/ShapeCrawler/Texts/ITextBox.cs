@@ -29,24 +29,24 @@ public interface ITextBox
     AutofitType AutofitType { get; set; }
 
     /// <summary>
-    ///     Gets or sets the left margin in centimeters.
+    ///     Gets or sets the left margin in points.
     /// </summary>
-    decimal LeftMargin { get; set; }
+    float LeftMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets the right margin in centimeters.
+    ///     Gets or sets the right margin in points.
     /// </summary>
-    decimal RightMargin { get; set; }
+    float RightMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets the top margin in centimeters.
+    ///     Gets or sets the top margin in points.
     /// </summary>
-    decimal TopMargin { get; set; }
+    float TopMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets the bottom margin in centimeters.
+    ///     Gets or sets the bottom margin in points.
     /// </summary>
-    decimal BottomMargin { get; set; }
+    float BottomMargin { get; set; }
 
     /// <summary>
     ///     Gets a value indicating whether the text is wrapped in the shape.

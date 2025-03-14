@@ -10,5 +10,5 @@ public interface IFont
     /// <summary>
     ///     Gets or sets font size in points.
     /// </summary>
-    decimal Size { get; set; }
+    float Size { get; set; }
 }

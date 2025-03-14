@@ -19,31 +19,17 @@ internal sealed class ShapeSize
 
     internal float Width
     {
-        get
-        {
-            return new Emus(this.AExtents().Cx!).AsPoints();
-        }
-        set
-        {
-            var emus = new Points(value).AsEmus();
-            this.AExtents().Cx = emus;
-        }
+        get => new Emus(this.GetAExtents().Cx!).AsPoints();
+        set => this.GetAExtents().Cx = new Points(value).AsEmus();
     }
-    
+
     internal float Height
     {
-        get
-        {
-            return new Emus(this.AExtents().Cy!).AsPoints();
-        }
-        set
-        {
-            var emus = new Points(value).AsEmus();
-            this.AExtents().Cy = emus;
-        }
+        get => new Emus(this.GetAExtents().Cy!).AsPoints();
+        set => this.GetAExtents().Cy = new Points(value).AsEmus();
     }
-    
-    private A.Extents AExtents()
+
+    private A.Extents GetAExtents()
     {
         var aExtents = this.pShapeTreeElement.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents != null)

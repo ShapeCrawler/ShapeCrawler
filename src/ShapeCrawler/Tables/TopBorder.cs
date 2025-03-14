@@ -51,15 +51,15 @@ internal class TopBorder : IBorder
     {
         if (this.aTableCellProperties.TopBorderLineProperties is null)
         {
-            var aSolidFill = new DocumentFormat.OpenXml.Drawing.SolidFill
+            var aSolidFill = new A.SolidFill
             {
-                SchemeColor = new DocumentFormat.OpenXml.Drawing.SchemeColor { Val = DocumentFormat.OpenXml.Drawing.SchemeColorValues.Text1 }
+                SchemeColor = new A.SchemeColor { Val = SchemeColorValues.Text1 }
             };
-            this.aTableCellProperties.TopBorderLineProperties = new DocumentFormat.OpenXml.Drawing.TopBorderLineProperties();
+            this.aTableCellProperties.TopBorderLineProperties = new A.TopBorderLineProperties();
             this.aTableCellProperties.TopBorderLineProperties.AppendChild(aSolidFill);
         }
         
-        var emus = new Points((decimal)points).AsEmus();
+        var emus = new Points(points).AsEmus();
         this.aTableCellProperties.TopBorderLineProperties.Width = new Int32Value((int)emus);
     }
 
