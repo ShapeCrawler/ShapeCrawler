@@ -422,7 +422,7 @@ public class ParagraphTests : SCTest
         shape.Text = shape.Text.Replace("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello\r\n\r\nEarth");
+        shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
     }
 
     [Test]
@@ -433,7 +433,7 @@ public class ParagraphTests : SCTest
         shape.TextBox.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello\r\n\r\nEarth");
+        shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
     }
 
     [Test]
@@ -444,7 +444,7 @@ public class ParagraphTests : SCTest
         shape.TextBox.Paragraphs[0].ReplaceText("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello\r\n\r\nEarth");
+        shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
     }
 
 }
