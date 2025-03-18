@@ -13,7 +13,7 @@ internal class MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunPropertie
         
             return hundredPoints / 100m;
         }
-        init
+        set
         {
             var hundredPoints = value * 100;
             aDefaultRunProperties.FontSize!.Value = (int)hundredPoints;

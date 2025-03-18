@@ -114,7 +114,7 @@ internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText) : IFontSiz
 
             return 18; // default: https://bit.ly/37Tjjlo
         }
-        init
+        set
         {
             var parent = aText.Parent!;
             var aRunPr = parent.GetFirstChild<A.RunProperties>();

@@ -120,7 +120,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         transform2D.Extents!.Cy = 609600L;
 
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
-        var nonVisualDrawingProps = pPicture.NonVisualDrawingProperties();
+        var nonVisualDrawingProps = GetPNonVisualDrawingProperties(pPicture);
+        
         var hyperlinkOnClick = new A.HyperlinkOnClick
         { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
@@ -769,5 +770,18 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
 
         return 1;
+    }
+    
+    private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
+    {
+        return compositeElement switch
+        {
+            P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!.NonVisualDrawingProperties!,
+            P.Shape pShape => pShape.NonVisualShapeProperties!.NonVisualDrawingProperties!,
+            P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
+            P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
+            P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
+            _ => throw new SCException()
+        };
     }
 }

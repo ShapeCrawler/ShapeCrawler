@@ -4,46 +4,36 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Texts;
 
-internal readonly ref struct Text
+internal readonly ref struct Text(string content, ITextPortionFont font)
 {
-    private readonly string text;
-    private readonly ITextPortionFont font;
-
-    internal Text(string text, ITextPortionFont font)
-    {
-        this.text = text;
-        this.font = font;
-    }
-
-    public float FontSize => this.font.Size;
+    internal decimal FontSize => font.Size;
 
     internal decimal WidthPx
     {
         get
         {
-            var fontFamily = this.font.LatinName == "Calibri Light"
+            var fontFamily = font.LatinName == "Calibri Light"
                 ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
-                : this.font.LatinName;
+                : font.LatinName;
             var skFont = new SKFont
             {
-                Size = new Points(this.font.Size).AsPixels(), Typeface = SKTypeface.FromFamilyName(fontFamily)
+                Size = new Points(font.Size).AsPixels(), Typeface = SKTypeface.FromFamilyName(fontFamily)
             };
 
-            return (decimal)skFont.MeasureText(this.text);
+            return (decimal)skFont.MeasureText(content);
         }
     }
 
-    internal void FitInto(float width, float height)
+    internal void Fit(decimal width, decimal height)
     {
         using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
         var canvas = surface.Canvas;
-
         using var paint = new SKPaint();
         paint.IsAntialias = true;
 
         using var skFont = new SKFont();
-        skFont.Size = this.font.Size;
-        skFont.Typeface = SKTypeface.FromFamilyName(this.font.LatinName);
+        skFont.Size = (float)font.Size;
+        skFont.Typeface = SKTypeface.FromFamilyName(font.LatinName);
 
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
@@ -57,7 +47,7 @@ internal readonly ref struct Text
         var wordX = rect.Left;
         var wordY = rect.Top + skFont.Size;
 
-        var words = this.text.Split(' ').ToList();
+        var words = content.Split(' ').ToList();
         for (var i = 0; i < words.Count;)
         {
             var word = words[i];
@@ -72,7 +62,7 @@ internal readonly ref struct Text
                 wordY += skFont.Spacing;
                 wordX = rect.Left;
 
-                if (wordY > (float)wordMaxY)
+                if ((decimal)wordY > wordMaxY)
                 {
                     if (skFont.Size <= 5)
                     {
@@ -94,6 +84,6 @@ internal readonly ref struct Text
             i++;
         }
 
-        this.font.Size = skFont.Size;
+        font.Size = (decimal)skFont.Size;
     }
 }

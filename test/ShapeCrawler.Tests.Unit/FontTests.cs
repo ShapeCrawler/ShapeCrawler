@@ -74,7 +74,7 @@ public class FontTests : SCTest
     [SlideShape("014.pptx", 5, 4, 12)]
     [SlideShape("014.pptx", 6, 52, 27)]
     [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
-    public void Size_Getter_returns_font_size(IShape shape, float expectedSize)
+    public void Size_Getter_returns_font_size(IShape shape, decimal expectedSize)
     {
         // Arrange
         var autoShape =  shape;

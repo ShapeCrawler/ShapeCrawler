@@ -410,7 +410,7 @@ internal sealed class Slide : ISlide
         var customXmlPartStream = this.customXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
-        return raw[Constants.CustomDataElementName.Length..];
+        return raw[3..];
     }
 
     private void SetCustomData(string? value)
@@ -428,7 +428,7 @@ internal sealed class Slide : ISlide
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
-        customXmlStreamReader.Write($"{Constants.CustomDataElementName}{value}");
+        customXmlStreamReader.Write($"ctd{value}");
     }
 
     private CustomXmlPart? GetSldCustomXmlPart()
@@ -438,7 +438,7 @@ internal sealed class Slide : ISlide
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             var customXmlPartText = customXmlPartStream.ReadToEnd();
             if (customXmlPartText.StartsWith(
-                    Constants.CustomDataElementName,
+                    "ctd",
                     StringComparison.CurrentCulture))
             {
                 return customXmlPart;

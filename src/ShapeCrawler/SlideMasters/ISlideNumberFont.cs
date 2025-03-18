@@ -35,8 +35,8 @@ internal sealed class SlideNumberFont : ISlideNumberFont
 
     public decimal Size
     {
-        get => this.masterSlideNumberSize.Size();
-        set => this.masterSlideNumberSize.Update(value);
+        get => this.masterSlideNumberSize.Size;
+        set => this.masterSlideNumberSize.Size = value;
     }
 
     private void UpdateColor(Color color)

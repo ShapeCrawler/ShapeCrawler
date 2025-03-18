@@ -83,7 +83,7 @@ internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
             aSpcAft.SpaceAfter ??= new A.SpaceAfter();
             aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
 
-            var hundredsOfPoints = new Points(value).AsHundredsOfPoints();
+            var hundredsOfPoints = new Points(value).AsHundredPoints();
 
             if (hundredsOfPoints == 0)
             {
@@ -103,7 +103,7 @@ internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
         aSpcBef.SpaceBefore ??= new A.SpaceBefore();
         aSpcBef.SpaceBefore.SpacingPoints ??= new A.SpacingPoints();
 
-        var hundredsOfPoints = new Points(points).AsHundredsOfPoints();
+        var hundredsOfPoints = new Points(points).AsHundredPoints();
 
         if (hundredsOfPoints == 0)
         {

@@ -6,17 +6,8 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeSize
+internal sealed class ShapeSize(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
 {
-    private readonly OpenXmlPart openXmlPart;
-    private readonly OpenXmlElement pShapeTreeElement;
-
-    internal ShapeSize(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
-    {
-        this.openXmlPart = openXmlPart;
-        this.pShapeTreeElement = pShapeTreeElement;
-    }
-
     internal decimal Width
     {
         get => new Emus(this.GetAExtents().Cx!).AsPoints();
@@ -31,12 +22,12 @@ internal sealed class ShapeSize
 
     private A.Extents GetAExtents()
     {
-        var aExtents = this.pShapeTreeElement.Descendants<A.Extents>().FirstOrDefault();
+        var aExtents = pShapeTreeElement.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents != null)
         {
             return aExtents;
         }
 
-        return new ReferencedPShape(this.openXmlPart, this.pShapeTreeElement).ATransform2D().Extents!;
+        return new ReferencedPShape(openXmlPart, pShapeTreeElement).ATransform2D().Extents!;
     }
 }

@@ -5,5 +5,5 @@
 /// </summary>
 internal interface IFontSize
 {
-    decimal Size { get; init; }
+    decimal Size { get; set; }
 }
