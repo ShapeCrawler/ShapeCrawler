@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ShapeCrawler.Slides;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -25,18 +26,11 @@ public interface IFooter
     void RemoveSlideNumber();
 }
 
-internal sealed class Footer : IFooter
+internal sealed class Footer(SlideCollection slides) : IFooter
 {
-    private readonly Presentation pres;
-
-    internal Footer(Presentation pres)
-    {
-        this.pres = pres;
-    }
-
     public bool SlideNumberAdded() 
     {
-        return this.pres.Slides.Any(slide =>
+        return slides.Any(slide =>
             slide.Shapes.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
     }
 
@@ -47,7 +41,7 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.pres.Slides)
+        foreach (var slide in slides)
         {
             var slideNumberPlaceholder =
                 slide.SlideLayout.Shapes.FirstOrDefault(shape =>
@@ -66,7 +60,7 @@ internal sealed class Footer : IFooter
             return;
         }
 
-        foreach (var slide in this.pres.Slides)
+        foreach (var slide in slides)
         {
             var slideNumberPlaceholder =
                 slide.Shapes.FirstOrDefault(shape =>

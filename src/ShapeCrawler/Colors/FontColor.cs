@@ -43,7 +43,7 @@ internal sealed class FontColor : IFontColor
 
             // TryFromTextBody()
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+            var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
             var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
@@ -96,7 +96,7 @@ internal sealed class FontColor : IFontColor
 
             // From TextBody
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+            var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()
                 !).FontOrNull(indentLevel);

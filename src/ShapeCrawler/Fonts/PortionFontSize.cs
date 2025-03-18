@@ -26,7 +26,7 @@ internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText) : IFontSiz
                 return hundredsPoints.Value / 100m;
             }
 
-            var indentLevel = new SCAParagraph(aText.Ancestors<A.Paragraph>().First()).IndentLevel();
+            var indentLevel = new SCAParagraph(aText.Ancestors<A.Paragraph>().First()).GetIndentLevel();
             SlideMasterPart slideMasterPart;
             if (openXmlPart is SlideMasterPart)
             {

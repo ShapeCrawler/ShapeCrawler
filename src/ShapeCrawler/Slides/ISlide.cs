@@ -310,7 +310,7 @@ internal sealed class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = new SCOpenXmlPart(this.SlidePart).NextRelationshipId();
+        var rid = new SCOpenXmlPart(this.SlidePart).GetNextRelationshipId();
         var notesSlidePart1 = this.SlidePart.AddNewPart<NotesSlidePart>(rid);
         var notesSlide = new NotesSlide(
             new CommonSlideData(

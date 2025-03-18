@@ -9,7 +9,7 @@ namespace ShapeCrawler.Presentations;
 
 internal readonly ref struct SCOpenXmlPart(OpenXmlPart openXmlPart)
 {
-    internal string NextRelationshipId()
+    internal string GetNextRelationshipId()
     {
         var idNums = new List<long>();
         var relationships = openXmlPart.ExternalRelationships.Select(r => r.Id)

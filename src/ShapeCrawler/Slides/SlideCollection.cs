@@ -39,8 +39,6 @@ internal sealed class SlideCollection : ISlideCollection
     public void Remove(ISlide slide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var presDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
-        var presPart = presDocument.PresentationPart!;
         var pPresentation = presPart.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
         var removingPSlideId = (P.SlideId)slideIdList.ChildElements[slide.Number - 1];
@@ -71,7 +69,7 @@ internal sealed class SlideCollection : ISlideCollection
 
     public void AddEmptySlide(ISlideLayout layout)
     {
-        var rId = new SCOpenXmlPart(this.presPart).NextRelationshipId();
+        var rId = new SCOpenXmlPart(this.presPart).GetNextRelationshipId();
         var sdkSlidePart = this.presPart.AddNewPart<SlidePart>(rId);
         sdkSlidePart.Slide = new P.Slide(
             new P.CommonSlideData(
@@ -170,9 +168,7 @@ internal sealed class SlideCollection : ISlideCollection
         // Creates a new TextBody
         if (shape.TextBody is null)
         {
-            return new P.TextBody(new A.Paragraph([
-                new A.EndParagraphRunProperties()
-            ]))
+            return new P.TextBody(new A.Paragraph(new A.EndParagraphRunProperties()))
             {
                 BodyProperties = new A.BodyProperties(),
                 ListStyle = new A.ListStyle(),

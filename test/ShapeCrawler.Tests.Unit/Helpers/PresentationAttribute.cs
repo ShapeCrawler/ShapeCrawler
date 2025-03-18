@@ -6,25 +6,18 @@ using ShapeCrawler.Presentations;
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class PresentationAttribute : Attribute, ITestBuilder
+public class PresentationAttribute(string pptxName) : Attribute, ITestBuilder
 {
-    private readonly string pptxName;
-
-    public PresentationAttribute(string pptxName)
-    {
-        this.pptxName = pptxName;
-    }
-
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
         IPresentation pres;
-        if (this.pptxName == "new")
+        if (pptxName == "new")
         {
             pres = new Presentation();
         }
         else
         {
-            var pptxStream = SCTest.TestAsset(this.pptxName);
+            var pptxStream = SCTest.TestAsset(pptxName);
             pres = new Presentation(pptxStream);
         }
 

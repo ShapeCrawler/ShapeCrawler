@@ -15,13 +15,13 @@ internal readonly ref struct SCPresentationPart
 
     internal void AddSlidePart(SlidePart slidePart)
     {
-        var rId = new SCOpenXmlPart(this.presentationPart).NextRelationshipId();
+        var rId = new SCOpenXmlPart(this.presentationPart).GetNextRelationshipId();
         var addedSlidePart = this.presentationPart.AddPart(slidePart, rId);
 
         var notesSlidePartAddedSlidePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
         notesSlidePartAddedSlidePart?.DeletePart(notesSlidePartAddedSlidePart.NotesMasterPart!);
 
-        rId = new SCOpenXmlPart(this.presentationPart).NextRelationshipId();
+        rId = new SCOpenXmlPart(this.presentationPart).GetNextRelationshipId();
         var addedSlideMasterPart = this.presentationPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
         var layoutIdList = addedSlideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
         foreach (var layoutId in layoutIdList.ToList())

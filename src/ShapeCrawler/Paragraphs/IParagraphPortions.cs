@@ -48,17 +48,8 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     void Remove(IList<IParagraphPortion> portions);
 }
 
-internal sealed class ParagraphPortions : IParagraphPortions
+internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aParagraph) : IParagraphPortions
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly A.Paragraph aParagraph;
-
-    internal ParagraphPortions(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
-    {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.aParagraph = aParagraph;
-    }
-
     public int Count => this.Portions().Count;
     
     public IParagraphPortion this[int index] => this.Portions()[index];
@@ -71,13 +62,13 @@ internal sealed class ParagraphPortions : IParagraphPortions
                 $"Text can not contain New Line. Use {nameof(IParagraphPortions.AddLineBreak)} to add Line Break.");
         }
 
-        var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
+        var lastARunOrABreak = aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
         var textPortions = this.Portions().OfType<TextParagraphPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
-        AddText(ref lastARunOrABreak, aTextParent, text, this.aParagraph);
+        AddText(ref lastARunOrABreak, aTextParent, text, aParagraph);
     }
 
     public void AddLineBreak()
@@ -104,7 +95,7 @@ internal sealed class ParagraphPortions : IParagraphPortions
 
     internal void AddNewLine()
     {
-        var lastARunOrABreak = this.aParagraph.Last();
+        var lastARunOrABreak = aParagraph.Last();
         lastARunOrABreak.InsertAfterSelf(new A.Break());
     }
 
@@ -130,17 +121,17 @@ internal sealed class ParagraphPortions : IParagraphPortions
     private List<IParagraphPortion> Portions()
     {
         var portions = new List<IParagraphPortion>();
-        foreach (var aParagraphElement in this.aParagraph.Elements())
+        foreach (var aParagraphElement in aParagraph.Elements())
         {
             switch (aParagraphElement)
             {
                 case A.Run aRun:
-                    var runPortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, aRun);
+                    var runPortion = new TextParagraphPortion(openXmlPart, aRun);
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
                 {
-                    var fieldPortion = new Field(this.sdkTypedOpenXmlPart, aField);
+                    var fieldPortion = new Field(openXmlPart, aField);
                     portions.Add(fieldPortion);
                     break;
                 }

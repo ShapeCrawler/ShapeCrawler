@@ -358,13 +358,13 @@ public class ParagraphTests : SCTest
     
     [Test]
     [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
-    public void Spacing_AfterSpacingPoints_returns_after_spacing_in_points(IShape shape, decimal expectedPoints)
+    public void Spacing_AfterSpacingPoints_returns_after_spacing_in_points(IShape shape, double expectedPoints)
     {
         // Arrange
         var paragraph = shape.TextBox!.Paragraphs[0];
             
         // Act-Assert
-        paragraph.Spacing.AfterSpacingPoints.Should().Be(expectedPoints);
+        paragraph.Spacing.AfterSpacingPoints.Should().Be((decimal)expectedPoints);
     }
     
     [Test]

@@ -80,15 +80,13 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Contains_particular_shape_Types()
+    public void Contains_expected_count_of_each_shape_type()
     {
         // Arrange
         var pres = new Presentation(TestAsset("003.pptx"));
-
-        // Act
         var shapes = pres.Slides.First().Shapes;
 
-        // Assert
+        // Act & Assert
         shapes.Count(sp => sp.ShapeType == ShapeType.Chart).Should().Be(1);
         shapes.Count(sp => sp.ShapeType == ShapeType.Picture).Should().Be(1);
         shapes.Count(sp => sp.ShapeType == ShapeType.Table).Should().Be(1);
@@ -96,13 +94,14 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Contains_Picture_shape()
+    public void Contains_picture()
     {
         // Arrange
-        IShape shape = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var pres = new Presentation(TestAsset("009_table.pptx"));
+        var shape = pres.Slide(2).Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert
-        IPicture picture = shape as IPicture;
+        var picture = shape as IPicture;
         picture.Should().NotBeNull();
     }
 
@@ -124,12 +123,11 @@ public class ShapeCollectionTests : SCTest
     [Test]
     public void Contains_Connection_shape()
     {
-        var pptxStream = TestAsset("001.pptx");
-        var presentation = new Presentation(pptxStream);
-        var shapesCollection = presentation.Slides[0].Shapes;
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var shapes = pres.Slides[0].Shapes;
 
         // Act-Assert
-        shapesCollection.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
+        shapes.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
     }
 
     [Test]

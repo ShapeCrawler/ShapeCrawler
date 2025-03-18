@@ -59,26 +59,26 @@ public interface IParagraph
 
 internal sealed class Paragraph : IParagraph
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart openXmlPart;
     private readonly Lazy<Bullet> bullet;
     private readonly SCAParagraph scaParagraph;
     private readonly A.Paragraph aParagraph;
 
     private TextHorizontalAlignment? alignment;
     
-    internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
-        : this(sdkTypedOpenXmlPart, aParagraph, new SCAParagraph(aParagraph))
+    internal Paragraph(OpenXmlPart openXmlPart, A.Paragraph aParagraph)
+        : this(openXmlPart, aParagraph, new SCAParagraph(aParagraph))
     {
     }
 
-    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, SCAParagraph scaParagraph)
+    private Paragraph(OpenXmlPart openXmlPart, A.Paragraph aParagraph, SCAParagraph scaParagraph)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.openXmlPart = openXmlPart;
         this.aParagraph = aParagraph;
         this.scaParagraph = scaParagraph;
         this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.aParagraph);
+        this.Portions = new ParagraphPortions(openXmlPart, this.aParagraph);
     }
 
     public bool IsRemoved { get; set; }
@@ -106,7 +106,7 @@ internal sealed class Paragraph : IParagraph
 #else
             var textLines = value.Split(Environment.NewLine);
 #endif
-            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun) { Text = textLines.First() };
+            var basePortion = new TextParagraphPortion(this.openXmlPart, baseARun) { Text = textLines.First() };
             foreach (var textLine in textLines.Skip(1))
             {
                 if (!string.IsNullOrEmpty(textLine))
@@ -122,7 +122,7 @@ internal sealed class Paragraph : IParagraph
 
             // Resize
             var sdkTextBody = this.aParagraph.Parent!;
-            var textFrame = new TextBox(this.sdkTypedOpenXmlPart, sdkTextBody);
+            var textFrame = new TextBox(this.openXmlPart, sdkTextBody);
             textFrame.ResizeParentShapeOnDemand();
         }
     }
@@ -143,7 +143,7 @@ internal sealed class Paragraph : IParagraph
             var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.aParagraph.Ancestors<P.Shape>().First());
+                var parentShape = new AutoShape(this.openXmlPart, this.aParagraph.Ancestors<P.Shape>().First());
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextHorizontalAlignment.Center;
@@ -179,7 +179,7 @@ internal sealed class Paragraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.scaParagraph.IndentLevel();
+        get => this.scaParagraph.GetIndentLevel();
         set => this.scaParagraph.UpdateIndentLevel(value);
     }
 

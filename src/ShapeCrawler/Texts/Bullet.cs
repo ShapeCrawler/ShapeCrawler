@@ -210,7 +210,7 @@ public sealed class Bullet
             return null;
         }
 
-        A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>() ?? throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
+        A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>() ?? throw new SCException($"This is not {nameof(BulletType.Character)} type bullet.");
         return aCharBullet.Char?.Value;
     }
 

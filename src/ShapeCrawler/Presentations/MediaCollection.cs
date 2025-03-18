@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Presentations;
 
-internal class MediaCollection
+internal sealed class MediaCollection
 {
     private readonly Dictionary<string, ImagePart> imagePartByHash = [];
 

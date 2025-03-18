@@ -182,7 +182,7 @@ internal readonly ref struct ReferencedIndentLevel
 
         var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         if (referencedMasterPShape != null)
         {
             var masterIndentFonts = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
@@ -230,7 +230,7 @@ internal readonly ref struct ReferencedIndentLevel
 
         var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNull(pShape);
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         if (referencedLayoutPShape == null)
         {
             var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
@@ -315,7 +315,7 @@ internal readonly ref struct ReferencedIndentLevel
         }
 
         var referencedLayoutPShapeOrNull = this.ReferencedLayoutPShapeOrNull(slidePShape);
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         if (referencedLayoutPShapeOrNull == null)
         {
             return this.MasterOfSlideIndentColorType(slidePShape, indentLevel);
@@ -342,7 +342,7 @@ internal readonly ref struct ReferencedIndentLevel
     private bool? SlideFontBoldFlagOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().First();
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -386,7 +386,7 @@ internal readonly ref struct ReferencedIndentLevel
     private int? SlideFontSizeOrNull()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
         if (slidePShape == null)
         {
@@ -457,7 +457,7 @@ internal readonly ref struct ReferencedIndentLevel
     private A.LatinFont? SlideALatinFontOrNull(SlidePart sdkSlidePart)
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
         if (pShape == null)
         {
@@ -514,7 +514,7 @@ internal readonly ref struct ReferencedIndentLevel
     private A.LatinFont SlideMasterALatinFont()
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).IndentLevel();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var fonts = new IndentFonts(pShape.TextBody!.ListStyle!);
 
