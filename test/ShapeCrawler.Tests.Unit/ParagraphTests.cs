@@ -415,7 +415,6 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    [Explicit("Failing test for https://github.com/ShapeCrawler/ShapeCrawler/issues/960")]
     [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
     public void Replacing_Shape_Text_Preserves_Newlines(IShape shape)
     {
@@ -423,11 +422,10 @@ public class ParagraphTests : SCTest
         shape.Text = shape.Text.Replace("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello\r\n\rEarth");
+        shape.Text.Should().Be("Hello\r\n\r\nEarth");
     }
 
     [Test]
-    [Explicit("Failing test for https://github.com/ShapeCrawler/ShapeCrawler/issues/960")]
     [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
     public void Replacing_Paragraph_Text_Preserves_Newlines(IShape shape)
     {
@@ -435,6 +433,6 @@ public class ParagraphTests : SCTest
         shape.TextBox.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello\r\n\rEarth");
+        shape.Text.Should().Be("Hello\r\n\r\nEarth");
     }
 }
