@@ -435,4 +435,16 @@ public class ParagraphTests : SCTest
         // Assert
         shape.Text.Should().Be("Hello\r\n\r\nEarth");
     }
+
+    [Test]
+    [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
+    public void Replacing_Paragraph_Text_Directly_Preserves_Newlines(IShape shape)
+    {
+        // Act
+        shape.TextBox.Paragraphs[0].ReplaceText("World","Earth");
+
+        // Assert
+        shape.Text.Should().Be("Hello\r\n\r\nEarth");
+    }
+
 }
