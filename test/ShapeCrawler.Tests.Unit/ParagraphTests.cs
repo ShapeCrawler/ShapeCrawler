@@ -413,4 +413,28 @@ public class ParagraphTests : SCTest
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
     }
+
+    [Test]
+    [Explicit("Failing test for https://github.com/ShapeCrawler/ShapeCrawler/issues/960")]
+    [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
+    public void Replacing_Shape_Text_Preserves_Newlines(IShape shape)
+    {
+        // Act
+        shape.Text = shape.Text.Replace("World","Earth");
+
+        // Assert
+        shape.Text.Should().Be("Hello\r\n\rEarth");
+    }
+
+    [Test]
+    [Explicit("Failing test for https://github.com/ShapeCrawler/ShapeCrawler/issues/960")]
+    [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
+    public void Replacing_Paragraph_Text_Preserves_Newlines(IShape shape)
+    {
+        // Act
+        shape.TextBox.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World","Earth");
+
+        // Assert
+        shape.Text.Should().Be("Hello\r\n\rEarth");
+    }
 }
