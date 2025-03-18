@@ -9,6 +9,7 @@ using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Texts;
@@ -113,31 +114,65 @@ internal sealed record TextBox : ITextBox
         }
     }
 
-    public float LeftMargin
+    public decimal LeftMargin
     {
         get => new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
-        set => this.SetLeftMargin(value);
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.LeftInset = new Int32Value((int)emu);
+        }
     }
 
-    public float RightMargin
+    public decimal RightMargin
     {
         get => new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.RightInset).Value;
-        set => this.SetRightMargin(value);
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.RightInset = new Int32Value((int)emu);
+        }
     }
 
-    public float TopMargin
+    public decimal TopMargin
     {
         get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.TopInset).Value;
-        set => this.SetTopMargin(value);
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.TopInset = new Int32Value((int)emu);
+        }
     }
 
-    public float BottomMargin
+    public decimal BottomMargin
     {
         get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.BottomInset).Value;
-        set => this.SetBottomMargin(value);
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.BottomInset = new Int32Value((int)emu);
+        }
     }
 
-    public bool TextWrapped => this.IsTextWrapped();
+    public bool TextWrapped
+    {
+        get
+        {
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
+
+            if (wrap.Value == "none")
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
 
     public string SdkXPath => new XmlPath(this.textBody).XPath;
 
@@ -260,48 +295,15 @@ internal sealed record TextBox : ITextBox
         }
 
         this.UpdateShapeHeight(textHeightPx, shapeHeightPtCapacity);
-        this.UpdateShapeWidthOnDemand(this.LeftMargin, rMarginPoints);
-    }
-
-    private void SetLeftMargin(float points)
-    {
-        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = new Points(points).AsEmus();
-        bodyProperties.LeftInset = new Int32Value((int)emu);
-    }
-
-    private void SetRightMargin(float points)
-    {
-        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = new Points(points).AsEmus();
-        bodyProperties.RightInset = new Int32Value((int)emu);
+        this.UpdateShapeWidthOnDemand();
     }
 
     private void SetTopMargin(float points)
     {
-        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = new Points(points).AsEmus();
-        bodyProperties.TopInset = new Int32Value((int)emu);
     }
 
     private void SetBottomMargin(float points)
     {
-        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = new Points(points).AsEmus();
-        bodyProperties.BottomInset = new Int32Value((int)emu);
-    }
-
-    private bool IsTextWrapped()
-    {
-        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
-        var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
-
-        if (wrap.Value == "none")
-        {
-            return false;
-        }
-
-        return true;
     }
 
     private void ShrinkText(string newText, IParagraph baseParagraph)
@@ -318,7 +320,7 @@ internal sealed record TextBox : ITextBox
         internalPara.SetFontSize((int)text.FontSize);
     }
 
-    private void UpdateShapeWidthOnDemand(decimal lMarginPixel, decimal rMarginPixel)
+    private void UpdateShapeWidthOnDemand()
     {
         if (!this.TextWrapped)
         {
@@ -335,15 +337,17 @@ internal sealed record TextBox : ITextBox
 
             var widthInPixels = new Text(longerText, font).WidthPx;
 
+            var leftMarginPx = new Points(this.LeftMargin).AsPixels();
+            var rightMarginPx = new Points(this.RightMargin).AsPixels();
             var newWidth =
                 (int)(widthInPixels *
                       1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
-                + lMarginPixel + rMarginPixel;
+                + leftMarginPx + rightMarginPx;
             new ShapeSize(this.openXmlPart, this.textBody.Parent!).Width = newWidth;
         }
     }
 
-    private void UpdateShapeHeight(decimal textHeightPx, float shapeHeightPtCapacity)
+    private void UpdateShapeHeight(decimal textHeightPx, decimal shapeHeightPtCapacity)
     {
         var textHeightPt = new Pixels(textHeightPx).AsPoints();
         var parentShape = this.textBody.Parent!;
@@ -355,6 +359,6 @@ internal sealed record TextBox : ITextBox
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
         var position = new Position(this.openXmlPart, parentShape);
         var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
-        position.Y -= yOffset;
+        position.Y -= (decimal)yOffset;
     }
 }

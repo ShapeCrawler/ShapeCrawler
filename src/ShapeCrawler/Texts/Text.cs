@@ -33,7 +33,7 @@ internal readonly ref struct Text
         }
     }
 
-    internal void FitInto(decimal width, decimal height)
+    internal void FitInto(float width, float height)
     {
         using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
         var canvas = surface.Canvas;

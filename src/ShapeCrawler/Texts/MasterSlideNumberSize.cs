@@ -3,25 +3,20 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal record MasterSlideNumberSize : IFontSize
+internal class MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunProperties) : IFontSize
 {
-    private readonly A.DefaultRunProperties aDefaultRunProperties;
-
-    internal MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunProperties)
+    public decimal Size
     {
-        this.aDefaultRunProperties = aDefaultRunProperties;
-    }
-
-    public float Size()
-    {
-        var hundredsOfPoint = this.aDefaultRunProperties.FontSize!.Value;
+        get
+        {
+            var hundredPoints = aDefaultRunProperties.FontSize!.Value;
         
-        return hundredsOfPoint / 100f;
-    }
-
-    public void Update(float points)
-    {
-        var halfPoints = points * 100;
-        this.aDefaultRunProperties.FontSize!.Value = (int)halfPoints;
+            return hundredPoints / 100m;
+        }
+        init
+        {
+            var hundredPoints = value * 100;
+            aDefaultRunProperties.FontSize!.Value = (int)hundredPoints;
+        }
     }
 }

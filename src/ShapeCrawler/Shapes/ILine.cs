@@ -66,7 +66,7 @@ internal sealed class SlideLine : Shape, ILine
 
             if (flipH && (this.Height == 0 || flipV))
             {
-                return new Point((decimal)this.X, (decimal)this.Y);
+                return new Point(this.X, (decimal)this.Y);
             }
 
             if (flipH)
@@ -74,7 +74,7 @@ internal sealed class SlideLine : Shape, ILine
                 return new Point((decimal)(this.X + this.Width), (decimal)this.Y);
             }
 
-            return new Point((decimal)this.X, (decimal)Y);
+            return new Point(this.X, (decimal)Y);
         }
     }
 

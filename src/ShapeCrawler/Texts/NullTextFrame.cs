@@ -20,25 +20,25 @@ internal readonly struct NullTextFrame : ITextBox
         set => throw new Exception(Error);
     }
     
-    public float LeftMargin 
+    public decimal LeftMargin 
     { 
         get => throw new Exception(Error); 
         set => throw new Exception(Error);
     }
 
-    public float RightMargin
+    public decimal RightMargin
     {
         get => throw new Exception(Error); 
         set => throw new Exception(Error);
     }
 
-    public float TopMargin
+    public decimal TopMargin
     {
         get => throw new Exception(Error); 
         set => throw new Exception(Error);
     }
 
-    public float BottomMargin
+    public decimal BottomMargin
     {
         get => throw new Exception(Error); 
         set => throw new Exception(Error);

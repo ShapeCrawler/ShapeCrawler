@@ -37,13 +37,13 @@ internal sealed class MasterSlideNumber : IMasterSlideNumber
 
     public ISlideNumberFont Font { get; }
 
-    public float X
+    public decimal X
     {
         get => this.position.X;
         set => this.position.X = value;
     }
 
-    public float Y
+    public decimal Y
     {
         get => this.position.Y;
         set => this.position.Y = value;

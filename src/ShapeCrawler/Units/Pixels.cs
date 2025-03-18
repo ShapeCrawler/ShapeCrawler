@@ -10,6 +10,6 @@ internal readonly ref struct Pixels(decimal pixels)
    
     internal long AsVerticalEmus() => (long)(pixels * EmusPerInch / VerticalResolutionDpi);
 
-    internal float AsPoints() => (float)pixels * 72 / 96;
+    internal decimal AsPoints() => pixels * 72 / 96;
     
 }

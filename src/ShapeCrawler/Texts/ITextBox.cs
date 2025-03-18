@@ -31,22 +31,22 @@ public interface ITextBox
     /// <summary>
     ///     Gets or sets the left margin in points.
     /// </summary>
-    float LeftMargin { get; set; }
+    decimal LeftMargin { get; set; }
 
     /// <summary>
     ///     Gets or sets the right margin in points.
     /// </summary>
-    float RightMargin { get; set; }
+    decimal RightMargin { get; set; }
 
     /// <summary>
     ///     Gets or sets the top margin in points.
     /// </summary>
-    float TopMargin { get; set; }
+    decimal TopMargin { get; set; }
 
     /// <summary>
     ///     Gets or sets the bottom margin in points.
     /// </summary>
-    float BottomMargin { get; set; }
+    decimal BottomMargin { get; set; }
 
     /// <summary>
     ///     Gets a value indicating whether the text is wrapped in the shape.

@@ -18,11 +18,12 @@ internal sealed class Position
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
-    internal float X
+    internal decimal X
     {
         get
         {
-            return new Emus(this.GetAOffset().X!.Value).AsPoints();
+            var emus = this.GetAOffset().X!.Value;
+            return new Emus(emus).AsPoints();
         }
         set
         {
@@ -31,7 +32,7 @@ internal sealed class Position
         }
     }
     
-    internal float Y
+    internal decimal Y
     {
         get
         {

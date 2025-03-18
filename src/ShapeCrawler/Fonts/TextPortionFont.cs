@@ -46,10 +46,10 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     #region Public APIs
 
-    public float Size
+    public decimal Size
     {
-        get => this.size.Size();
-        set => this.size.Update(value);
+        get => this.size.Size;
+        set => this.size.Size = value;
     }
 
     public string? LatinName

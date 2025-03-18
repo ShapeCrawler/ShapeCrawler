@@ -86,10 +86,20 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
 
-    public new float Height
+    public new decimal Height
     {
         get => base.Height;
-        set => this.UpdateTableHeight(value);
+        set
+        {
+            var percentNewHeight = value / base.Height;
+
+            base.Height = value;
+
+            foreach (TableRow row in this.Rows)
+            {
+                row.SetHeight((int)(row.Height * percentNewHeight));
+            }
+        }
     }
 
     public ITableStyleOptions TableStyleOptions { get; }
@@ -143,14 +153,14 @@ internal sealed class Table : CopyableShape, ITable
         }
 
         this.RemoveColumnIfNeeded(aTableRows);
-        this.RemoveRowIfNeeded();
+        this.RemoveRowOnDemand();
     }
 
     public override void Remove() => this.pGraphicFrame.Remove();
 
     public override ITable AsTable() => this;
 
-    internal void SetTableHeight(float value)
+    internal void SetTableHeight(decimal value)
     {
         base.Height = value;
     }
@@ -173,19 +183,7 @@ internal sealed class Table : CopyableShape, ITable
         return this.tableStyle;
     }
 
-    private void UpdateTableHeight(float value)
-    {
-        var percentNewHeight = value / base.Height;
-
-        base.Height = value;
-
-        foreach (TableRow row in this.Rows)
-        {
-            row.SetHeight((int)(row.Height * percentNewHeight));
-        }
-    }
-
-    private void RemoveRowIfNeeded()
+    private void RemoveRowOnDemand()
     {
         int rowIdx = 0;
 

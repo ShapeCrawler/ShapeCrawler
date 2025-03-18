@@ -17,7 +17,7 @@ internal sealed class GroupedShape : IShape
         this.decoratedShape = decoratedShape;
     }
 
-    public float X
+    public decimal X
     {
         get
         {
@@ -66,7 +66,7 @@ internal sealed class GroupedShape : IShape
         }
     }
 
-    public float Y
+    public decimal Y
     {
         get => this.decoratedShape.Y;
         set
@@ -104,13 +104,13 @@ internal sealed class GroupedShape : IShape
 
     #region Decorated Shape
 
-    public float Width
+    public decimal Width
     {
         get => this.decoratedShape.Width;
         set => this.decoratedShape.Width = value;
     }
 
-    public float Height
+    public decimal Height
     {
         get => this.decoratedShape.Height;
         set => this.decoratedShape.Height = value;

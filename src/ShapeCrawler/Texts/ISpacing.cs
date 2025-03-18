@@ -23,42 +23,80 @@ public interface ISpacing
     /// <summary>
     ///    Gets or sets the number of spaces in points before the paragraph.
     /// </summary>
-    double BeforeSpacingPoints { get; set; }
+    decimal BeforeSpacingPoints { get; set; }
 
     /// <summary>
     ///    Gets or sets the number of spaces in points after the paragraph.
     /// </summary>
-    double AfterSpacingPoints { get; set; }
+    decimal AfterSpacingPoints { get; set; }
 }
 
-internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
+internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
 {
     public double? LineSpacingLines => this.GetLineSpacingLines();
 
-    public double? LineSpacingPoints => this.GetLineSpacingPoints();
-
-    public double BeforeSpacingPoints
+    public double? LineSpacingPoints
     {
-        get => this.GetBeforeSpacingPoints();
-        set => this.SetBeforeSpacingPoints((float)value);
+        get
+        {
+            var aLnSpc = aParagraph.ParagraphProperties!.LineSpacing?.SpacingPoints;
+            if (aLnSpc is not null)
+            {
+                return aLnSpc.Val! / 100;
+            }
+
+            return null;
+        }
     }
 
-    public double AfterSpacingPoints
+    public decimal BeforeSpacingPoints
     {
-        get => this.GetAfterSpacingPoints();
-        set => this.SetAfterSpacingPoints((float)value);
+        get
+        {
+            var hundredsOfPoints = aParagraph.ParagraphProperties?.SpaceBefore?.SpacingPoints?.Val;
+            if (hundredsOfPoints is null)
+            {
+                return 0;
+            }
+
+            return hundredsOfPoints / 100m;
+        }
+        set => this.SetBeforeSpacingPoints(value);
     }
 
-    private static double ConvertHundredsOfPointsToPoints(int hundredsOfPoints) => (double)hundredsOfPoints / 100;
-
-    private double GetBeforeSpacingPoints()
+    public decimal AfterSpacingPoints
     {
-        var aSpcBef = aParagraph.ParagraphProperties?.SpaceBefore?.SpacingPoints?.Val;
+        get
+        {
+            var hundredsOfPoints = aParagraph.ParagraphProperties?.SpaceAfter?.SpacingPoints?.Val;
+            if (hundredsOfPoints is null)
+            {
+                return 0;
+            }
 
-        return aSpcBef != null ? ConvertHundredsOfPointsToPoints(aSpcBef) : 0;
+            return hundredsOfPoints / 100m;
+        }
+        set
+        {
+            var aSpcAft = aParagraph.ParagraphProperties;
+            aSpcAft ??= new A.ParagraphProperties();
+            aSpcAft.SpaceAfter ??= new A.SpaceAfter();
+            aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
+
+            var hundredsOfPoints = new Points(value).AsHundredsOfPoints();
+
+            if (hundredsOfPoints == 0)
+            {
+                aSpcAft.SpaceAfter = null;
+            }
+            else
+            {
+                aSpcAft.SpaceAfter.SpacingPoints.Val = hundredsOfPoints;
+            }
+        }
     }
 
-    private void SetBeforeSpacingPoints(float points)
+    private void SetBeforeSpacingPoints(decimal points)
     {
         var aSpcBef = aParagraph.ParagraphProperties;
         aSpcBef ??= new A.ParagraphProperties();
@@ -77,32 +115,6 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         }
     }
 
-    private double GetAfterSpacingPoints()
-    {
-        var aSpcAft = aParagraph.ParagraphProperties?.SpaceAfter?.SpacingPoints?.Val;
-
-        return aSpcAft != null ? ConvertHundredsOfPointsToPoints(aSpcAft) : 0;
-    }
-
-    private void SetAfterSpacingPoints(float points)
-    {
-        var aSpcAft = aParagraph.ParagraphProperties;
-        aSpcAft ??= new A.ParagraphProperties();
-        aSpcAft.SpaceAfter ??= new A.SpaceAfter();
-        aSpcAft.SpaceAfter.SpacingPoints ??= new A.SpacingPoints();
-
-        var hundredsOfPoints = new Points(points).AsHundredsOfPoints();
-
-        if (hundredsOfPoints == 0)
-        {
-            aSpcAft.SpaceAfter = null;
-        }
-        else
-        {
-            aSpcAft.SpaceAfter.SpacingPoints.Val = hundredsOfPoints;
-        }
-    }
-
     private double? GetLineSpacingLines()
     {
         var aLnSpc = aParagraph.ParagraphProperties!.LineSpacing;
@@ -115,18 +127,6 @@ internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
         if (aSpcPct != null)
         {
             return aSpcPct.Val! * 1.0 / 100000;
-        }
-
-        return null;
-    }
-
-    private double? GetLineSpacingPoints()
-    {
-        var aLnSpc = aParagraph.ParagraphProperties!.LineSpacing?.SpacingPoints;
-
-        if (aLnSpc != null)
-        {
-            return ConvertHundredsOfPointsToPoints(aLnSpc.Val!);
         }
 
         return null;

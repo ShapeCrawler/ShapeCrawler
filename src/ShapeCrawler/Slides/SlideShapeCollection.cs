@@ -318,28 +318,28 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
-        var sdkPShape = new P.Shape(xml);
+        var pShape = new P.Shape(xml);
 
-        var cNvPr = sdkPShape.Descendants<P.NonVisualDrawingProperties>().FirstOrDefault()
+        var cNvPr = pShape.Descendants<P.NonVisualDrawingProperties>().FirstOrDefault()
             ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
         cNvPr.Name = geometry.ToString();
 
-        var position = new Position(this.slidePart, sdkPShape);
-        position.UpdateX(x);
-        position.UpdateY(y);
+        var position = new Position(this.slidePart, pShape);
+        position.X = x;
+        position.Y = y;
 
-        var size = new ShapeSize(this.slidePart, sdkPShape);
-        size.UpdateWidth(width);
-        size.UpdateHeight(height);
+        var size = new ShapeSize(this.slidePart, pShape);
+        size.Width = width;
+        size.Height = height;
 
-        var spPr = sdkPShape.GetFirstChild<P.ShapeProperties>()
+        var spPr = pShape.GetFirstChild<P.ShapeProperties>()
             ?? throw new SCException("Malformed shape: No shape properties");
         var shapeGeometry = new ShapeGeometry(spPr);
         shapeGeometry.UpdateGeometry(geometry);
 
-        new ShapeId(sdkPShape).Update(this.NextShapeId());
+        new ShapeId(pShape).Update(this.NextShapeId());
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
     }
 
     public void AddLine(string xml)

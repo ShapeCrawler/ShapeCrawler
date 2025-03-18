@@ -13,9 +13,20 @@ internal class BottomBorder : IBorder
         this.aTableCellProperties = aTableCellProperties;
     }
 
-    public float Width
+    public decimal Width
     {
-        get => this.GetWidth();
+        get
+        {
+            if (this.aTableCellProperties.BottomBorderLineProperties is null)
+            {
+                return 1; // default value
+            }
+
+            var emus = this.aTableCellProperties.BottomBorderLineProperties!.Width!.Value;
+        
+            return new Emus(emus).AsPoints();
+
+        }
         set => this.UpdateWidth(value);
     }
 
@@ -46,7 +57,7 @@ internal class BottomBorder : IBorder
         aSolidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
     }
 
-    private void UpdateWidth(float points)
+    private void UpdateWidth(decimal points)
     {
         if (this.aTableCellProperties.BottomBorderLineProperties is null)
         {
@@ -61,17 +72,5 @@ internal class BottomBorder : IBorder
         
         var emus = new Points(points).AsEmus();
         this.aTableCellProperties.BottomBorderLineProperties!.Width = new Int32Value((int)emus);
-    }
-
-    private float GetWidth()
-    {
-        if (this.aTableCellProperties.BottomBorderLineProperties is null)
-        {
-            return 1; // default value
-        }
-
-        var emus = this.aTableCellProperties.BottomBorderLineProperties!.Width!.Value;
-        
-        return new Emus(emus).AsPoints();
     }
 }

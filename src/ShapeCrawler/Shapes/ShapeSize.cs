@@ -17,13 +17,13 @@ internal sealed class ShapeSize
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
-    internal float Width
+    internal decimal Width
     {
         get => new Emus(this.GetAExtents().Cx!).AsPoints();
         set => this.GetAExtents().Cx = new Points(value).AsEmus();
     }
 
-    internal float Height
+    internal decimal Height
     {
         get => new Emus(this.GetAExtents().Cy!).AsPoints();
         set => this.GetAExtents().Cy = new Points(value).AsEmus();

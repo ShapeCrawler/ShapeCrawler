@@ -12,12 +12,12 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets or sets the width of the shape in points.
     /// </summary>
-    float Width { get; set; }
+    decimal Width { get; set; }
 
     /// <summary>
     ///     Gets or sets the height of the shape in points.
     /// </summary>
-    float Height { get; set; }
+    decimal Height { get; set; }
 
     /// <summary>
     ///     Gets identifier of the shape.
