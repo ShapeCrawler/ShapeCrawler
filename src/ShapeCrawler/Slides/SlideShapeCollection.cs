@@ -88,8 +88,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
                 throw new SCException("Unsupported audio type.");
         }
 
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
         var sdkPresentationDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart(contentType, extension);
         audio.Position = 0;
@@ -215,8 +215,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     public void AddVideo(int x, int y, Stream stream)
     {
         var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
 
         var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
@@ -405,10 +405,10 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var idAndName = this.GenerateIdAndName();
         pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)idAndName.Item1;
 
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(cx);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(cy);
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
+        var cxEmu = new Points(cx).AsEmus();
+        var cyEmu = new Points(cy).AsEmus();
         var aXfrm = pConnectionShape.ShapeProperties!.Transform2D!;
         aXfrm.Offset!.X = xEmu;
         aXfrm.Offset!.Y = yEmu;

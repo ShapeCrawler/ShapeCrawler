@@ -18,7 +18,7 @@ public interface ISpacing
     /// <summary>
     ///     Gets the number of spaces in points appears between lines of text. Returns <see langword="null"/> if the spaces are not specified in points. 
     /// </summary>
-    double? LineSpacingPoints { get; }
+    decimal? LineSpacingPoints { get; }
 
     /// <summary>
     ///    Gets or sets the number of spaces in points before the paragraph.
@@ -35,14 +35,14 @@ internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
 {
     public double? LineSpacingLines => this.GetLineSpacingLines();
 
-    public double? LineSpacingPoints
+    public decimal? LineSpacingPoints
     {
         get
         {
             var aLnSpc = aParagraph.ParagraphProperties!.LineSpacing?.SpacingPoints;
             if (aLnSpc is not null)
             {
-                return aLnSpc.Val! / 100;
+                return aLnSpc.Val! / 100m;
             }
 
             return null;

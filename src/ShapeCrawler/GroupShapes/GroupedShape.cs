@@ -41,12 +41,12 @@ internal sealed class GroupedShape : IShape
             var aExtents = aTransformGroup.Extents!;
             var aChildOffset = aTransformGroup.ChildOffset!;
             var aChildExtents = aTransformGroup.ChildExtents!;
-            var xGroupedShapeEmu = new Points(value).AsEmus();
-            var xGroupShapeEmu = aOffset.X!;
+            var groupedShapeXEmus = new Points(value).AsEmus();
+            var groupShapeXEmus = aOffset.X!;
 
-            if (xGroupedShapeEmu < xGroupShapeEmu)
+            if (groupedShapeXEmus < groupShapeXEmus)
             {
-                var diff = xGroupShapeEmu - xGroupedShapeEmu;
+                var diff = groupShapeXEmus - groupedShapeXEmus;
                 aOffset.X = new Int64Value(aOffset.X! - diff);
                 aExtents.Cx = new Int64Value(aExtents.Cx! + diff);
                 aChildOffset.X = new Int64Value(aChildOffset.X! - diff);
@@ -188,6 +188,7 @@ internal sealed class GroupedShape : IShape
         set => this.TextBox.Text = value;
     }
 
+    public IPresentation Presentation => this.decoratedShape.Presentation;
     public void Remove() => this.decoratedShape.Remove();
     
     public ITable AsTable() => this.decoratedShape.AsTable();

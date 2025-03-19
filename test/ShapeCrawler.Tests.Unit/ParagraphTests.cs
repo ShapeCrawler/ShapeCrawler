@@ -137,8 +137,8 @@ public class ParagraphTests : SCTest
         paragraph.Text = "AutoShape 4 some text";
 
         // Assert
-        shape.Height.Should().BeApproximately(51.48m,0.01m);
-        shape.Y.Should().Be(145m);
+        shape.Height.Should().BeApproximately(43m,0.01m);
+        shape.Y.Should().Be(107m);
     }
 
     [Test]
@@ -336,24 +336,26 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var paragraph = shape.TextBox!.Paragraphs[0];
+        var decimalExpectedPoints = (decimal)expectedPoints;
             
         // Act
-        var spacingPoints = paragraph.Spacing.LineSpacingPoints;
+        var spacingPoints = paragraph.Spacing.LineSpacingPoints!.Value;
             
         // Assert
-        spacingPoints.Should().Be(expectedPoints);
+        spacingPoints.Should().Be(decimalExpectedPoints);
         paragraph.Spacing.LineSpacingLines.Should().BeNull();
     }
     
     [Test]
     [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
-    public void Spacing_BeforeSpacingPoints_returns_before_spacing_in_points(IShape shape, decimal expectedPoints)
+    public void Spacing_BeforeSpacingPoints_returns_before_spacing_in_points(IShape shape, double expectedPoints)
     {
         // Arrange
         var paragraph = shape.TextBox!.Paragraphs[0];
+        var expectedPointsDecimal = (decimal)expectedPoints;
             
         // Act-Assert
-        paragraph.Spacing.BeforeSpacingPoints.Should().Be(expectedPoints);
+        paragraph.Spacing.BeforeSpacingPoints.Should().Be(expectedPointsDecimal);
     }
     
     [Test]

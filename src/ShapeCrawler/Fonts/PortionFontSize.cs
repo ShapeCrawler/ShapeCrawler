@@ -123,6 +123,8 @@ internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText) : IFontSiz
                 aRunPr = new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
                 parent.InsertAt(aRunPr, 0);
             }
+            
+            aRunPr.FontSize = (int)(value * 100);
         }
     }
 }

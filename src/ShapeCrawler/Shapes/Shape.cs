@@ -52,6 +52,8 @@ internal abstract class Shape : IShape
         set => this.size.Height = value;
     }
 
+    public IPresentation Presentation => new Presentation((PresentationDocument)OpenXmlPart.OpenXmlPackage);
+
     public int Id => this.shapeId.Value();
 
     public string Name
@@ -248,6 +250,5 @@ internal abstract class Shape : IShape
     public virtual IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
-
     public virtual void Remove() => this.PShapeTreeElement.Remove();
 }

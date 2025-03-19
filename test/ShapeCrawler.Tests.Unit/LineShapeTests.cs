@@ -19,7 +19,7 @@ public class LineShapeTests : SCTest
         var startPoint = line.StartPoint;
 
         // Assert
-        startPoint.X.Should().Be(50);
-        startPoint.Y.Should().Be(60);
+        startPoint.X.Should().Be(37);
+        startPoint.Y.Should().Be(45);
     }
 }

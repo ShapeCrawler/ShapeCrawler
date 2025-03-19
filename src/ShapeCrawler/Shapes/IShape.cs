@@ -113,6 +113,11 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets or sets the text content of the shape.
     /// </summary>
     string Text { get; set; }
+    
+    /// <summary>
+    ///     Gets the parent presentation.
+    /// </summary>
+    IPresentation Presentation { get;}
 
     /// <summary>
     ///     Removes the shape from the slide.

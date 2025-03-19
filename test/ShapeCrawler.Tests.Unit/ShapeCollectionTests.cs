@@ -305,19 +305,19 @@ public class ShapeCollectionTests : SCTest
         var mp3 = TestAsset("064 mp3.mp3");
         var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
-        int xPxCoordinate = 300;
-        int yPxCoordinate = 100;
+        int xPtCoordinate = 225;
+        int yPtCoordinate = 75;
 
         // Act
-        shapes.AddAudio(xPxCoordinate, yPxCoordinate, mp3);
+        shapes.AddAudio(xPtCoordinate, yPtCoordinate, mp3);
 
         pres.Save();
         pres = new Presentation(pptx);
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
 
         // Assert
-        addedAudio.X.Should().Be(xPxCoordinate);
-        addedAudio.Y.Should().Be(yPxCoordinate);
+        addedAudio.X.Should().Be(xPtCoordinate);
+        addedAudio.Y.Should().Be(yPtCoordinate);
     }
 
     [Test]
@@ -374,8 +374,8 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
-        picture.Height.Should().Be(100);
-        picture.Width.Should().Be(100);
+        picture.Height.Should().Be(75);
+        picture.Width.Should().Be(75);
         pres.Validate();
     }
     
@@ -563,8 +563,8 @@ public class ShapeCollectionTests : SCTest
         // These values are the viewbox size of the test image, which is what
         // we'll be using since the image has no width or height tags
         var picture = (IPicture)shapes.Last();
-        picture.Height.Should().Be(90);
-        picture.Width.Should().Be(280);
+        picture.Height.Should().BeApproximately(67.5m, 0.1m);
+        picture.Width.Should().Be(210);
         pres.Validate();
     }
     
@@ -711,7 +711,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         var addedPicture = shapes.Last();
-        addedPicture.Height.Should().Be(300);
+        addedPicture.Height.Should().Be(225);
     }
 
     [Test]
