@@ -89,10 +89,10 @@ public class TableTests : SCTest
         
         // Assert
 		var tableCell = table[0, 0];
-        tableCell.TextBox.TopMargin.Should().Be(1);
-        tableCell.TextBox.RightMargin.Should().Be(1);
-        tableCell.TextBox.LeftMargin.Should().Be(1);
-        tableCell.TextBox.BottomMargin.Should().Be(1);
+        tableCell.TextBox.TopMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.TextBox.RightMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.TextBox.LeftMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.TextBox.BottomMargin.Should().BeApproximately(28.34m, 0.01m);
 	}
 
 	[Test]
@@ -105,23 +105,23 @@ public class TableTests : SCTest
 
         // Act
 		var tableCell = table[0, 0];
-		tableCell.TextBox.TopMargin = 1.4M;
-		tableCell.TextBox.RightMargin = 1.33M;
-		tableCell.TextBox.LeftMargin = 1.21M;
-		tableCell.TextBox.BottomMargin = 1.45M;
+        tableCell.TextBox.LeftMargin = 10m;
+        tableCell.TextBox.RightMargin = 10m;
+        tableCell.TextBox.TopMargin = 20m;		
+		tableCell.TextBox.BottomMargin = 20m;
 
 		// Assert
-		tableCell.TextBox.TopMargin.Should().Be(1.4M);
+		tableCell.TextBox.TopMargin.Should().Be(20m);
 		pres.Save(mStream);
 
 		pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 2");
 		
         tableCell = table[0, 0];
-		tableCell.TextBox.TopMargin.Should().Be(1.4M);
-		tableCell.TextBox.RightMargin.Should().Be(1.33M);
-		tableCell.TextBox.LeftMargin.Should().Be(1.21M);
-		tableCell.TextBox.BottomMargin.Should().Be(1.45M);
+        tableCell.TextBox.LeftMargin.Should().Be(10m);
+        tableCell.TextBox.RightMargin.Should().Be(10m);
+        tableCell.TextBox.TopMargin.Should().Be(20m);
+		tableCell.TextBox.BottomMargin.Should().Be(20m);
 
 		pres.Validate();
 	}
@@ -1031,14 +1031,14 @@ public class TableTests : SCTest
         var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 4, 2);
-        var table = slide.Shapes.Last() as ITable;
+        var table = (ITable)slide.Shapes.Last();
         
         // Act
         table.MergeCells(table[0, 1], table[1, 1]);
 
         // Assert
-        var aTableRow = table.Rows[0].ATableRow();
-        aTableRow.Elements<A.TableCell>().ToList()[2].RowSpan.Should().BeNull();
+        var aTableRow = (TableRow)table.Rows[0];
+        aTableRow.ATableRow.Elements<A.TableCell>().ToList()[2].RowSpan.Should().BeNull();
     }
     
     [Test]

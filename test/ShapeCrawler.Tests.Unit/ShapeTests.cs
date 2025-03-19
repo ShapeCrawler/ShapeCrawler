@@ -97,23 +97,21 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void Y_Getter_returns_y_coordinate_in_pixels()
+    public void Y_Getter_returns_y_coordinate()
     {
         // Arrange
-        IShape shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IShape shapeCase2 = new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
-        IShape shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        var pres1 = new Presentation(TestAsset("006_1 slides.pptx"));
+        var pres2 = new Presentation(TestAsset("018.pptx"));
+        var pres3 = new Presentation(TestAsset("009_table.pptx"));
+        var shapeCase1 = pres1.Slide(1).Shapes.First(sp => sp.Id == 2);
+        var shapeCase2 = pres2.Slide(1).Shapes.First(sp => sp.Id == 7);
+        var shapeCase3 = pres3.Slide(2).Shapes.First(sp => sp.Id == 9);
         float verticalResolution = 96;
 
-        // Act
-        decimal yCoordinate1 = shapeCase1.Y;
-        decimal yCoordinate2 = shapeCase2.Y;
-        decimal yCoordinate3 = shapeCase3.Y;
-
-        // Assert
-        yCoordinate1.Should().Be((int)(1122363 * 96 / 914400));
-        yCoordinate2.Should().Be((int)(4 * 96 / 914400));
-        yCoordinate3.Should().Be((int)(3463288 * 96 / 914400));
+        // Act & Assert
+        shapeCase1.Y.Should().BeApproximately(88.37m, 0.01m);
+        shapeCase2.Y.Should().BeApproximately(0.00031m, 0.00001m);
+        shapeCase3.Y.Should().BeApproximately(272.69m, 0.01m);
     }
 
     [Test]

@@ -517,12 +517,13 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.13)]
-        public void BottomMargin_getter_returns_bottom_margin_of_text_frame_in_centimeters(IShape shape,
+        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 3.69)]
+        public void BottomMargin_getter_returns_bottom_margin_of_text_frame(
+            IShape shape,
             double expectedMargin)
         {
             // Arrange
-            var autoShape = (IShape)shape;
+            var autoShape = shape;
             var textFrame = autoShape.TextBox;
 
             // Act
