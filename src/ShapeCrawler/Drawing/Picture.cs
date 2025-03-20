@@ -24,7 +24,7 @@ internal sealed class Picture : CopyableShape, IPicture
         OpenXmlPart openXmlPart,
         P.Picture pPicture,
         A.Blip aBlip)
-        : this(openXmlPart, pPicture, aBlip, new SlidePictureImage(openXmlPart, aBlip))
+        : this(openXmlPart, pPicture, aBlip, new SlidePictureImage(aBlip))
     {
     }
 

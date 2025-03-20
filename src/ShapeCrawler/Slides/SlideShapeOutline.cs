@@ -40,7 +40,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
 
         if (aOutline == null || aNoFill != null)
         {
-            aOutline = this.openXmlCompositeElement.AddAOutline();
+            aOutline = this.openXmlCompositeElement.AddOutline();
         }
 
         aOutline.Width = new Int32Value((int)UnitConverter.PointToEmu(points));

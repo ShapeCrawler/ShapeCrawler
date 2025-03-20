@@ -8,30 +8,28 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal record ShapeFill : IShapeFill
+internal sealed class ShapeFill : IShapeFill
 {
-    private readonly OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlCompositeElement openXmlCompositeElement;
+    private readonly OpenXmlPart openXmlPart;
 
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
-    private A.PatternFill? aPattFill;
+    private A.PatternFill? aPatternFill;
     private A.BlipFill? aBlipFill;
 
-    internal ShapeFill(
-        OpenXmlPart sdkTypedOpenXmlPart,
-        OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
+    internal ShapeFill(OpenXmlPart openXmlPart, OpenXmlCompositeElement openXmlCompositeElement)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;
+        this.openXmlPart = openXmlPart;
+        this.openXmlCompositeElement = openXmlCompositeElement;
     }
 
     public string? Color
     {
         get
         {
-            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -49,13 +47,13 @@ internal record ShapeFill : IShapeFill
 
     private string? ColorHexOrNullOf(string schemeColor)
     {
-        var aColorScheme = this.sdkTypedOpenXmlPart switch
+        var aColorScheme = this.openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
-            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+            _ => ((SlideMasterPart)this.openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
         };
 
         var aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == schemeColor);
@@ -74,7 +72,7 @@ internal record ShapeFill : IShapeFill
         get
         {
             const int defaultAlphaPercentages = 100;
-            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -98,7 +96,7 @@ internal record ShapeFill : IShapeFill
         get
         {
             const double luminanceModulation = 100;
-            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -121,7 +119,7 @@ internal record ShapeFill : IShapeFill
         get
         {
             const double defaultValue = 0;
-            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -139,37 +137,37 @@ internal record ShapeFill : IShapeFill
         }
     }
 
-    public IImage? Picture => this.GetPicture();
+    public IImage? Picture => this.GetPictureImage();
 
     public FillType Type => this.GetFillType();
 
     private FillType GetFillType()
     {
-        var aSolidFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+        var aSolidFillLocal = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
         if (aSolidFillLocal != null)
         {
             return FillType.Solid;
         }
 
-        var aGradFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.GradientFill>();
+        var aGradFillLocal = this.openXmlCompositeElement.GetFirstChild<A.GradientFill>();
         if (aGradFillLocal != null)
         {
             return FillType.Gradient;
         }
 
-        var aBlipFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        var aBlipFillLocal = this.openXmlCompositeElement.GetFirstChild<A.BlipFill>();
         if (aBlipFillLocal is not null)
         {
             return FillType.Picture;
         }
 
-        var aPattFillLocal = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
+        var aPattFillLocal = this.openXmlCompositeElement.GetFirstChild<A.PatternFill>();
         if (aPattFillLocal != null)
         {
             return FillType.Pattern;
         }
 
-        if (this.sdkTypedOpenXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
+        if (this.openXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
         {
             return FillType.SlideBackground;
         }
@@ -185,7 +183,7 @@ internal record ShapeFill : IShapeFill
         }
         else
         {
-            (var rId, _) = this.sdkTypedOpenXmlPart.AddImagePart(image, "image/png");
+            (var rId, _) = this.openXmlPart.AddImagePart(image, "image/png");
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
@@ -195,40 +193,35 @@ internal record ShapeFill : IShapeFill
             aBlipFill.Append(new A.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.sdkTypedOpenXmlCompositeElement.Append(aBlipFill);
+            this.openXmlCompositeElement.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
             this.aGradFill?.Remove();
             this.aGradFill = null;
-            this.aPattFill?.Remove();
-            this.aPattFill = null;
+            this.aPatternFill?.Remove();
+            this.aPatternFill = null;
         }
     }
 
     public void SetColor(string hex)
     {
-        this.Initialize();
-        this.sdkTypedOpenXmlCompositeElement.AddASolidFill(hex);
+        this.InitSolidFillOr();
+        this.openXmlCompositeElement.AddSolidFill(hex);
     }
 
     public void SetNoFill()
     {
-        this.Initialize();
-        this.sdkTypedOpenXmlCompositeElement.AddANoFill();
-    }
-
-    private void Initialize()
-    {
         this.InitSolidFillOr();
+        this.openXmlCompositeElement.AddNoFill();
     }
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+        this.aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
         if (this.aSolidFill == null)
         {
-            this.aGradFill = this.sdkTypedOpenXmlCompositeElement!.GetFirstChild<A.GradientFill>();
+            this.aGradFill = this.openXmlCompositeElement!.GetFirstChild<A.GradientFill>();
             if (this.aGradFill == null)
             {
                 this.InitPictureFillOr();
@@ -238,18 +231,18 @@ internal record ShapeFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        this.aBlipFill = this.openXmlCompositeElement.GetFirstChild<A.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
-            var image = new SlidePictureImage(this.sdkTypedOpenXmlPart, this.aBlipFill.Blip!);
+            var image = new SlidePictureImage(this.aBlipFill.Blip!);
             this.pictureImage = image;
         }
     }
 
-    private SlidePictureImage? GetPicture()
+    private SlidePictureImage? GetPictureImage()
     {
-        this.Initialize();
+        this.InitSolidFillOr();
 
         return this.pictureImage;
     }

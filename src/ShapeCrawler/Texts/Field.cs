@@ -11,29 +11,27 @@ internal sealed class Field : IParagraphPortion
     private readonly Lazy<ITextPortionFont> font;
     private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Field aField;
-    private readonly PortionText portionText;
+    private readonly FieldPortionText fieldPortionText;
     private readonly A.Text? aText;
 
-    internal Field(OpenXmlPart sdkTypedOpenXmlPart, A.Field aField)
+    internal Field(OpenXmlPart openXmlPart, A.Field aField)
     {
         this.aText = aField.GetFirstChild<A.Text>();
         this.aField = aField;
-
         this.font = new Lazy<ITextPortionFont>(() =>
         {
-            var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.aText!);
-            return new TextPortionFont(sdkTypedOpenXmlPart, this.aText!, textPortionSize);
+            var textPortionSize = new PortionFontSize(openXmlPart, this.aText!);
+            return new TextPortionFont(openXmlPart, this.aText!, textPortionSize);
         });
-
-        this.portionText = new PortionText(this.aField);
+        this.fieldPortionText = new FieldPortionText(this.aField);
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aField.RunProperties!));
     }
 
     /// <inheritdoc/>
     public string Text
     {
-        get => this.portionText.Text();
-        set => this.portionText.Update(value!);
+        get => this.fieldPortionText.Value;
+        set => this.fieldPortionText.Update(value);
     }
 
     /// <inheritdoc/>

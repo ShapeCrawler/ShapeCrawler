@@ -19,6 +19,4 @@ internal static class UnitConverter
         emu / (decimal)EmusPerPoint;
 
     internal static long PointToEmu(decimal point) => (long)Math.Round(point * EmusPerPoint);
-
-    private static decimal HorizontalEmuToPixel(long horizontalEmus) => horizontalEmus * HorizontalResolutionDpi / (decimal)EmusPerInch;
 }

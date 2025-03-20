@@ -8,6 +8,8 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
+// ReSharper disable PossibleMultipleEnumeration
+
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
 #pragma warning disable IDE0130
@@ -36,74 +38,46 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     ///     Adds Line Break.
     /// </summary>
     void AddLineBreak();
-
-    /// <summary>
-    ///     Removes portion item from collection.
-    /// </summary>
-    void Remove(IParagraphPortion removingPortion);
-
-    /// <summary>
-    ///     Removes portion items from collection.
-    /// </summary>
-    void Remove(IList<IParagraphPortion> portions);
 }
 
 internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aParagraph) : IParagraphPortions
 {
-    public int Count => this.Portions().Count;
-    
-    public IParagraphPortion this[int index] => this.Portions()[index];
+    public int Count => this.GetPortions().Count;
+
+    public IParagraphPortion this[int index] => this.GetPortions()[index];
 
     public void AddText(string text)
     {
         if (text.Contains(Environment.NewLine))
         {
             throw new SCException(
-                $"Text can not contain New Line. Use {nameof(IParagraphPortions.AddLineBreak)} to add Line Break.");
+                $"The adding text should not contain symbol New Line. Use {nameof(IParagraphPortions.AddLineBreak)} to add Line Break.");
         }
 
-        var lastARunOrABreak = aParagraph.LastOrDefault(p => p is A.Run or A.Break);
+        var lastRunOrBreak = aParagraph.LastOrDefault(p => p is A.Run or A.Break);
+        var textPortions = this.GetPortions().OfType<TextParagraphPortion>();
+        var aTextParent = textPortions.LastOrDefault()?.AText.Parent;
+        if (aTextParent is null)
+        {
+            var aRunProperties = new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
+            var aText = new A.Text { Text = string.Empty };
+            aTextParent = new A.Run(aRunProperties, aText);
+        }
 
-        var textPortions = this.Portions().OfType<TextParagraphPortion>();
-        var lastPortion = textPortions.Any() ? textPortions.Last() : null;
-        var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
-
-        AddText(ref lastARunOrABreak, aTextParent, text, aParagraph);
+        AddText(ref lastRunOrBreak, aTextParent, text);
     }
 
     public void AddLineBreak()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Remove(IParagraphPortion removingPortion)
-    {
-        removingPortion.Remove();
-    }
-
-    public void Remove(IList<IParagraphPortion> portions)
-    {
-        foreach (var portion in portions)
-        {
-            this.Remove(portion);
-        }
-    }
-
-    public IEnumerator<IParagraphPortion> GetEnumerator() => this.Portions().GetEnumerator();
-    
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    internal void AddNewLine()
     {
         var lastARunOrABreak = aParagraph.Last();
         lastARunOrABreak.InsertAfterSelf(new A.Break());
     }
 
-    private static void AddText(
-        ref OpenXmlElement? lastElement, 
-        OpenXmlElement aTextParent, 
-        string text,
-        A.Paragraph aParagraph)
+    public IEnumerator<IParagraphPortion> GetEnumerator() => this.GetPortions().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+    private void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text)
     {
         var newARun = (A.Run)aTextParent.CloneNode(true);
         newARun.Text!.Text = text;
@@ -118,7 +92,7 @@ internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aPa
         }
     }
 
-    private List<IParagraphPortion> Portions()
+    private List<IParagraphPortion> GetPortions()
     {
         var portions = new List<IParagraphPortion>();
         foreach (var aParagraphElement in aParagraph.Elements())
@@ -130,12 +104,11 @@ internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aPa
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
-                {
-                    var fieldPortion = new Field(openXmlPart, aField);
-                    portions.Add(fieldPortion);
-                    break;
-                }
-                
+                    {
+                        var fieldPortion = new Field(openXmlPart, aField);
+                        portions.Add(fieldPortion);
+                        break;
+                    }
                 case A.Break aBreak:
                     var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);

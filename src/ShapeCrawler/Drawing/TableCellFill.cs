@@ -80,7 +80,7 @@ internal class TableCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.sdkATableCellProperties.AddASolidFill(hex);
+        this.sdkATableCellProperties.AddSolidFill(hex);
         
         this.isDirty = true;
     }
@@ -93,7 +93,7 @@ internal class TableCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.sdkATableCellProperties.AddANoFill();
+        this.sdkATableCellProperties.AddNoFill();
 
         this.isDirty = true;
     }

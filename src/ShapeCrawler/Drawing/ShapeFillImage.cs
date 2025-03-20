@@ -27,7 +27,7 @@ internal sealed class ShapeFillImage : IImage
         var isSharedImagePart = this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(imagePart => imagePart == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {            
-            var rId = default(RelationshipId).New();
+            var rId = RelationshipId.New();
             this.sdkImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
