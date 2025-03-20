@@ -154,6 +154,11 @@ public sealed class Presentation : IPresentation
         using var stream = new FileStream(file, FileMode.Create);
         this.Save(stream);
     }
+    
+    /// <summary>
+    ///     Releases all resources used by the presentation.
+    /// </summary>
+    public void Dispose() => this.presDocument.Dispose();
 
     internal void Validate()
     {
