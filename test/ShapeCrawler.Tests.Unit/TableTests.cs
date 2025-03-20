@@ -971,21 +971,20 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Indexer_ReturnsCellByRowAndColumnIndexes()
+    public void Indexer_returns_cell_by_row_and_column_indexes()
     {
         // Arrange
-        ITable tableCase1 =
-            (ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
-        ITable tableCase2 =
-            (ITable)new Presentation(TestAsset("001.pptx")).Slides[3].Shapes.First(sp => sp.Id == 4);
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var tableCase1 = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
+        var tableCase2 = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 4);
 
         // Act
-        ITableCell scCellCase1 = tableCase1[0, 0];
-        ITableCell scCellCase2 = tableCase2[1, 1];
+        var cell1 = tableCase1[0, 0];
+        var cell2 = tableCase2[1, 1];
 
         // Assert
-        scCellCase1.Should().NotBeNull();
-        scCellCase2.Should().NotBeNull();
+        cell1.Should().NotBeNull();
+        cell2.Should().NotBeNull();
     }
 
     [Test]

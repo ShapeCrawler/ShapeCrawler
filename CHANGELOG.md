@@ -1,7 +1,8 @@
 # Changelog  
 
 ## Version 0.64.3 - Unreleased
-🐞Fixed updating table height [#552](https://github.com/ShapeCrawler/ShapeCrawler/issues/552)
+🐞Fixed updating table height [#552](https://github.com/ShapeCrawler/ShapeCrawler/issues/552)  
+🐞Fixed New Line issue [#960](https://github.com/ShapeCrawler/ShapeCrawler/issues/960)
 
 ## Version 0.64.2 - 2025-03-12
 🐞Fixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)
