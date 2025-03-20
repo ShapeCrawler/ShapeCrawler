@@ -146,7 +146,7 @@ public sealed class Presentation : IPresentation
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>
-    public void Dispose() => presDocument.Dispose();
+    public void Dispose() => this.presDocument.Dispose();
 
     internal void Validate()
     {
