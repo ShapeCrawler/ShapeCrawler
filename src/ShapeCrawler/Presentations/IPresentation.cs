@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -7,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a presentation.
 /// </summary>
-public interface IPresentation
+public interface IPresentation : IDisposable
 {
     /// <summary>
     ///     Gets the presentation slides.
