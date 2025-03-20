@@ -454,11 +454,10 @@ namespace ShapeCrawler.Tests.Unit
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 0.30)]
-        public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape,
-            double expectedMargin)
+        public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = (IShape)shape;
+            var autoShape = shape;
             var textFrame = autoShape.TextBox;
 
             // Act

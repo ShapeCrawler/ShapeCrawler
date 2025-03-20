@@ -440,10 +440,13 @@ public class ParagraphTests : SCTest
 
     [Test]
     [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
-    public void Replacing_Paragraph_Text_Directly_Preserves_Newlines(IShape shape)
+    public void ReplaceText_preserves_New_Lines(IShape shape)
     {
+        // Arrange
+        var paragraph = shape.TextBox.Paragraphs[0];
+        
         // Act
-        shape.TextBox.Paragraphs[0].ReplaceText("World","Earth");
+        paragraph.ReplaceText("World","Earth");
 
         // Assert
         shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");

@@ -129,38 +129,36 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void Y_Setter_moves_the_Up_hand_grouped_shape_to_Up()
-    {
-        // Arrange
-        var pptx = TestAsset("autoshape-grouping.pptx");
-        var pres = new Presentation(pptx);
-        var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
-        var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
-
-        // Act
-        groupedShape.Y = 359;
-
-        // Assert
-        groupedShape.Y.Should().Be(359);
-        parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
-        parentGroupShape.Height.Should().BeApproximately(172.84m, 0.01m);
-    }
-
-    [Test]
-    public void Y_Setter_moves_the_Down_hand_grouped_shape_to_Down()
+    public void Grouped_Shape_Y_Setter_raises_up_group_shape()
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
+        var groupShape = pres.Slide(1).Shape<IGroupShape>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
+
+        // Act
+        groupedShape.Y = 307;
+
+        // Assert
+        groupedShape.Y.Should().Be(307);
+        groupShape.Y.Should().Be(307, "because the moved grouped shape was on the up-hand side");
+        groupShape.Height.Should().BeApproximately(91.87m, 0.01m);
+    }
+
+    [Test]
+    public void Y_Setter_increases_the_height_of_the_group_shape()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
+        var groupShape = pres.Slide(1).Shape<IGroupShape>("Group 2");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
 
         // Act
-        groupedShape.Y = 555;
+        groupedShape.Y = 372;
 
         // Assert
-        groupedShape.Y.Should().Be(555);
-        groupShape.Height.Should().BeApproximately(179.11m, 0.01m,
-            "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+        groupedShape.Y.Should().Be(372);
+        groupShape.Height.Should().BeApproximately(89.13m, 0.01m);
     }
 
     [Test]

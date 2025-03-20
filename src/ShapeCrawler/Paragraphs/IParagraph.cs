@@ -192,9 +192,9 @@ internal sealed class Paragraph : IParagraph
     
     public void ReplaceText(string oldValue, string newValue)
     {
-        foreach (var portion in this.Portions)
+        foreach (var portion in this.Portions.Where(portion => portion is not ParagraphLineBreak))
         {
-            portion.Text = portion.Text!.Replace(oldValue, newValue);
+            portion.Text = portion.Text.Replace(oldValue, newValue);
         }
 
         if (this.Text.Contains(oldValue))

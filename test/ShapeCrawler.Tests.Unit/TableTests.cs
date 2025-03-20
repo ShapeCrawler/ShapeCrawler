@@ -543,7 +543,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Row_Height_Setter_sets_height_of_table_row_in_points()
+    public void Row_Height_Setter_sets_height_of_the_table_row_in_points()
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
@@ -551,11 +551,11 @@ public class TableTests : SCTest
         var row = table.Rows[0];
 
         // Act
-        row.Height = 58;
+        row.Height = 39;
 
         // Assert
-        row.Height.Should().Be(58);
-        table.Height.Should().BeApproximately(76.93m, 0.01m, "because table height was 38px.");
+        row.Height.Should().Be(39);
+        table.Height.Should().Be(39);
     }
 
     [Test(Description = "MergeCells #1")]

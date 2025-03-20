@@ -101,7 +101,7 @@ public interface ISlide
     ///     Returns shape with specified name.
     /// </summary>
     /// <typeparam name="T">Shape type.</typeparam>
-    IShape Shape<T>(string name)
+    T Shape<T>(string name)
         where T : IShape;
 }
 
@@ -185,7 +185,7 @@ internal sealed class Slide : ISlide
 
     public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
 
-    public IShape Shape<T>(string name)
+    public T Shape<T>(string name)
         where T : IShape
         => this.Shapes.GetByName<T>(name);
 

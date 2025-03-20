@@ -107,7 +107,7 @@ internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, in
             return;
         }
 
-        var newEmu = UnitConverter.PointToEmu(newPoints);
+        var newEmu = new Points(newPoints).AsEmus();
         this.ATableRow.Height!.Value = newEmu;
 
         var pGraphicalFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
@@ -115,14 +115,12 @@ internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, in
         if (newPoints > currentPoints)
         {
             var diffPoints = newPoints - currentPoints;
-            var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            parentTable.SetTableHeight(parentTable.Height + diffPixels);
+            parentTable.SetTableHeight(parentTable.Height + diffPoints);
         }
         else
         {
             var diffPoints = currentPoints - newPoints;
-            var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            parentTable.SetTableHeight(parentTable.Height - diffPixels);
+            parentTable.SetTableHeight(parentTable.Height - diffPoints);
         }
     }
 }
