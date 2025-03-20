@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -95,7 +96,11 @@ internal sealed class Paragraph : IParagraph
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             var baseARun = this.aParagraph.GetFirstChild<A.Run>() !;
-            var remainingRuns = this.aParagraph.OfType<A.Run>().Where(run => run != baseARun).ToList();
+            var remainingRuns = new List<OpenXmlCompositeElement>();
+
+            remainingRuns.AddRange(this.aParagraph.OfType<A.Run>().Skip(1));
+            remainingRuns.AddRange(this.aParagraph.OfType<A.Break>());
+
             foreach (var removingRun in remainingRuns)
             {
                 removingRun.Remove();
