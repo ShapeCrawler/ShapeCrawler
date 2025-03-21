@@ -17,7 +17,7 @@ internal class TopBorder(A.TableCellProperties aTableCellProperties): IBorder
 
     private string? GetColor()
     {
-        return aTableCellProperties?.TopBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
+        return aTableCellProperties.TopBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
     }
 
     private void SetColor(string color)
