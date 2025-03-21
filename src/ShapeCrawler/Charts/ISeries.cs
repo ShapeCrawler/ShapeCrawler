@@ -3,8 +3,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Exceptions;
-using ShapeCrawler.Spreadsheets;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 #pragma warning disable IDE0130

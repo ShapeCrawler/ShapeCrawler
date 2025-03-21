@@ -5,7 +5,6 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;

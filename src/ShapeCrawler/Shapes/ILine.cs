@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -74,7 +73,7 @@ internal sealed class SlideLine : Shape, ILine
                 return new Point((decimal)(this.X + this.Width), (decimal)this.Y);
             }
 
-            return new Point(this.X, (decimal)Y);
+            return new Point(this.X, (decimal)this.Y);
         }
     }
 

@@ -76,15 +76,14 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var pres = new Presentation(TestAsset("001.pptx"));
-            var textFrame = pres.Slide(1).Shape("TextBox 8").TextBox;
-            var newText = "Shrink text on overflow";
+            var textBox = pres.Slide(1).Shape("TextBox 8").TextBox;
 
             // Act
-            textFrame.Text = newText;
+            textBox.Text = "Shrink text on overflow";
 
             // Assert
-            textFrame.Text.Should().BeEquivalentTo(newText);
-            textFrame.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
+            textBox.Text.Should().BeEquivalentTo("Shrink text on overflow");
+            textBox.Paragraphs[0].Portions[0].Font!.Size.Should().Be(7);
         }
 
         [Test]
@@ -100,8 +99,8 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().BeApproximately(51.48m, 0.01m);
-            shape.Y.Should().Be(149m);
+            shape.Height.Should().BeApproximately(43m, 0.01m);
+            shape.Y.Should().Be(110m);
             pres.Validate();
         }
 
@@ -157,7 +156,7 @@ namespace ShapeCrawler.Tests.Unit
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Width.Should().BeApproximately(136.89m, 0.01m);
+            shape.Width.Should().BeApproximately(102m, 0.01m);
             pres.Validate();
         }
 
@@ -173,7 +172,7 @@ namespace ShapeCrawler.Tests.Unit
             textBox.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Height.Should().BeApproximately(40.48m, 0.01m);
+            shape.Height.Should().BeApproximately(32m, 0.01m);
             pres.Validate();
         }
 
@@ -303,11 +302,10 @@ namespace ShapeCrawler.Tests.Unit
             var shape = pres.Slide(1).Shape("AutoShape 1");
 
             // Act
-            var text = shape.TextBox.Text;
             shape.TextBox.Text = "Some sentence. Some sentence";
 
             // Assert
-            shape.Height.Should().BeApproximately(93.48m, 0.01m);
+            shape.Height.Should().BeApproximately(85m, 0.01m);
         }
 
         [Test]
@@ -452,19 +450,15 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
-        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 0.30)]
-        public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 7.09)]
+        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 8.50)]
+        public void LeftMargin_getter_returns_left_margin(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = shape;
-            var textFrame = autoShape.TextBox;
+            var expectedMarginDecimal = (decimal)expectedMargin;
 
-            // Act
-            var leftMargin = textFrame.LeftMargin;
-
-            // Assert
-            leftMargin.Should().Be((decimal)expectedMargin);
+            // Act & Assert
+            shape.TextBox.LeftMargin.Should().BeApproximately(expectedMarginDecimal, 0.01m);
         }
 
         [Test]
@@ -472,64 +466,47 @@ namespace ShapeCrawler.Tests.Unit
         public void LeftMargin_setter_sets_left_margin_of_text_frame_in_centimeters(IShape shape)
         {
             // Arrange
-            var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextBox;
+            var textBox = shape.TextBox;
 
             // Act
-            textFrame.LeftMargin = 0.5m;
+            textBox.LeftMargin = 10m;
 
             // Assert
-            textFrame.LeftMargin.Should().Be(0.5m);
+            textBox.LeftMargin.Should().Be(10m);
         }
 
         [Test]
-        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
-        public void RightMargin_getter_returns_right_margin_of_text_frame_in_centimeters(IShape shape,
-            double expectedMargin)
+        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 7.09)]
+        public void RightMargin_getter_returns_right_margin(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextBox;
-
-            // Act
-            var rightMargin = textFrame.RightMargin;
-
-            // Assert
-            rightMargin.Should().Be((decimal)expectedMargin);
-        }
-
-        [Test]
-        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 0.13)]
-        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 0.14)]
-        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape,
-            double expectedMargin)
-        {
-            // Arrange
-            var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextBox;
-
-            // Act
-            var topMargin = textFrame.TopMargin;
-
-            // Assert
-            topMargin.Should().Be((decimal)expectedMargin);
+            var expectedMarginDecimal = (decimal)expectedMargin;
+            
+            // Act & Assert
+            shape.TextBox.RightMargin.Should().Be(expectedMarginDecimal);
         }
 
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 3.69)]
-        public void BottomMargin_getter_returns_bottom_margin_of_text_frame(
-            IShape shape,
-            double expectedMargin)
+        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 3.96)]
+        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = shape;
-            var textFrame = autoShape.TextBox;
+            var expectedMarginDecimal = (decimal)expectedMargin;
 
-            // Act
-            var bottomMargin = textFrame.BottomMargin;
+            // Act & Assert
+            shape.TextBox.TopMargin.Should().BeApproximately(expectedMarginDecimal, 0.01m);
+        }
 
-            // Assert
-            bottomMargin.Should().Be((decimal)expectedMargin);
+        [Test]
+        [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 3.69)]
+        public void BottomMargin_getter_returns_bottom_margin_of_text_frame(IShape shape, double expectedMargin)
+        {
+            // Arrange
+            var expectedMarginDecimal = (decimal)expectedMargin;
+
+            // Act & Assert
+            shape.TextBox.BottomMargin.Should().Be(expectedMarginDecimal);
         }
 
 		[Test]

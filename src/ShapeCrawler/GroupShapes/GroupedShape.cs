@@ -189,6 +189,7 @@ internal sealed class GroupedShape : IShape
     }
 
     public IPresentation Presentation => this.decoratedShape.Presentation;
+
     public void Remove() => this.decoratedShape.Remove();
     
     public ITable AsTable() => this.decoratedShape.AsTable();

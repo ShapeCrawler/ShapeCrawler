@@ -3,7 +3,6 @@ using System.Xml;
 using FluentAssertions;
 using ImageMagick;
 using NUnit.Framework;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes

@@ -11,7 +11,7 @@ public interface ITextBox
     /// <summary>
     ///     Gets the collection of paragraphs.
     /// </summary>
-    IParagraphs Paragraphs { get; }
+    IParagraphCollection Paragraphs { get; }
 
     /// <summary>
     ///     Gets or sets text.

@@ -10,7 +10,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
@@ -322,16 +321,12 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
         cNvPr.Name = geometry.ToString();
 
-        var position = new Position(this.slidePart, pShape);
-        position.X = x;
-        position.Y = y;
+        new Position(this.slidePart, pShape) { X = x, Y = y };
 
-        var size = new ShapeSize(this.slidePart, pShape);
-        size.Width = width;
-        size.Height = height;
+        new ShapeSize(this.slidePart, pShape) { Width = width, Height = height };
 
         var spPr = pShape.GetFirstChild<P.ShapeProperties>()
-            ?? throw new SCException("Malformed shape: No shape properties");
+                   ?? throw new SCException("Malformed shape: No shape properties");
         var shapeGeometry = new ShapeGeometry(spPr);
         shapeGeometry.UpdateGeometry(geometry);
 
@@ -508,6 +503,19 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var mime = MagickFormatInfo.Create(format)?.MimeType;
 
         return mime ?? throw new SCException("Unsupported image format.");
+    }
+    
+    private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
+    {
+        return compositeElement switch
+        {
+            P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!.NonVisualDrawingProperties!,
+            P.Shape pShape => pShape.NonVisualShapeProperties!.NonVisualDrawingProperties!,
+            P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
+            P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
+            P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
+            _ => throw new SCException()
+        };
     }
 
     private (int, string) GenerateIdAndName()
@@ -767,18 +775,5 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
 
         return 1;
-    }
-    
-    private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
-    {
-        return compositeElement switch
-        {
-            P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!.NonVisualDrawingProperties!,
-            P.Shape pShape => pShape.NonVisualShapeProperties!.NonVisualDrawingProperties!,
-            P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
-            P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
-            P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
-            _ => throw new SCException()
-        };
     }
 }

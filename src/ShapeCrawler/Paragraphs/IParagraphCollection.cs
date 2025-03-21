@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collection of paragraphs.
 /// </summary>
-public interface IParagraphs : IReadOnlyList<IParagraph>
+public interface IParagraphCollection : IReadOnlyList<IParagraph>
 {
     /// <summary>
     ///     Adds a new paragraph in collection.
@@ -20,7 +20,7 @@ public interface IParagraphs : IReadOnlyList<IParagraph>
     void Add();
 }
 
-internal readonly struct Paragraphs(OpenXmlPart openXmlPart, OpenXmlElement sdkTextBody) : IParagraphs
+internal readonly struct ParagraphCollection(OpenXmlPart openXmlPart, OpenXmlElement sdkTextBody): IParagraphCollection
 {
     public int Count => this.ParagraphsCore().Count;
     

@@ -31,7 +31,7 @@ public interface ISpacing
     decimal AfterSpacingPoints { get; set; }
 }
 
-internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
+internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
 {
     public double? LineSpacingLines => this.GetLineSpacingLines();
 
@@ -76,6 +76,7 @@ internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
 
             return hundredsOfPoints / 100m;
         }
+
         set
         {
             var aSpcAft = aParagraph.ParagraphProperties;

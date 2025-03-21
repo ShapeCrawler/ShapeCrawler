@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
@@ -11,14 +12,13 @@ using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody) : ITextBox
+internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody): ITextBox
 {
     private TextVerticalAlignment? vAlignment;
 
-    public IParagraphs Paragraphs => new Paragraphs(openXmlPart, textBody);
+    public IParagraphCollection Paragraphs => new ParagraphCollection(openXmlPart, textBody);
 
     public string Text
     {
@@ -222,27 +222,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody) 
 
         set => this.SetVerticalAlignment(value);
     }
-
-    private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
-    {
-        var aTextAlignmentTypeValue = alignmentValue switch
-        {
-            TextVerticalAlignment.Top => A.TextAnchoringTypeValues.Top,
-            TextVerticalAlignment.Middle => A.TextAnchoringTypeValues.Center,
-            TextVerticalAlignment.Bottom => A.TextAnchoringTypeValues.Bottom,
-            _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
-        };
-
-        var aBodyPr = textBody.GetFirstChild<A.BodyProperties>();
-
-        if (aBodyPr is not null)
-        {
-            aBodyPr.Anchor = aTextAlignmentTypeValue;
-        }
-
-        this.vAlignment = alignmentValue;
-    }
-
+    
     internal void ResizeParentShapeOnDemand()
     {
         if (this.AutofitType != AutofitType.Resize)
@@ -290,6 +270,26 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody) 
         }
     }
 
+    private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
+    {
+        var aTextAlignmentTypeValue = alignmentValue switch
+        {
+            TextVerticalAlignment.Top => A.TextAnchoringTypeValues.Top,
+            TextVerticalAlignment.Middle => A.TextAnchoringTypeValues.Center,
+            TextVerticalAlignment.Bottom => A.TextAnchoringTypeValues.Bottom,
+            _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
+        };
+
+        var aBodyPr = textBody.GetFirstChild<A.BodyProperties>();
+
+        if (aBodyPr is not null)
+        {
+            aBodyPr.Anchor = aTextAlignmentTypeValue;
+        }
+
+        this.vAlignment = alignmentValue;
+    }
+
     private void ShrinkText(string newText, IParagraph paragraph)
     {
         var popularFont = paragraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
@@ -332,8 +332,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody) 
         var parentShape = textBody.Parent!;
         var requiredHeightPt = textHeightPt + this.TopMargin + this.BottomMargin;
         var newHeight = requiredHeightPt + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
-        var size = new ShapeSize(openXmlPart, parentShape);
-        size.Height = newHeight;
+        new ShapeSize(openXmlPart, parentShape) { Height = newHeight };
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
         var position = new Position(openXmlPart, parentShape);

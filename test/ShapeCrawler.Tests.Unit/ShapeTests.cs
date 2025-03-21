@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
-using ShapeCrawler.Exceptions;
 using System.Text.Json;
 using ShapeCrawler.Shapes;
 

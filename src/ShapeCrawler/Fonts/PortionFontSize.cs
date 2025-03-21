@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText) : IFontSize
+internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText): IFontSize
 {
     decimal IFontSize.Size
     {
@@ -114,6 +114,7 @@ internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText) : IFontSiz
 
             return 18; // default: https://bit.ly/37Tjjlo
         }
+
         set
         {
             var parent = aText.Parent!;

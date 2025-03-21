@@ -45,28 +45,6 @@ internal sealed class ShapeFill : IShapeFill
         }
     }
 
-    private string? ColorHexOrNullOf(string schemeColor)
-    {
-        var aColorScheme = this.openXmlPart switch
-        {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .ColorScheme!,
-            _ => ((SlideMasterPart)this.openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
-        };
-
-        var aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == schemeColor);
-        var hex = aColor2Type?.RgbColorModelHex?.Val?.Value ?? aColor2Type?.SystemColor?.LastColor?.Value;
-
-        if (hex != null)
-        {
-            return hex;
-        }
-
-        return null;
-    }
-
     public double Alpha
     {
         get
@@ -141,40 +119,6 @@ internal sealed class ShapeFill : IShapeFill
 
     public FillType Type => this.GetFillType();
 
-    private FillType GetFillType()
-    {
-        var aSolidFillLocal = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
-        if (aSolidFillLocal != null)
-        {
-            return FillType.Solid;
-        }
-
-        var aGradFillLocal = this.openXmlCompositeElement.GetFirstChild<A.GradientFill>();
-        if (aGradFillLocal != null)
-        {
-            return FillType.Gradient;
-        }
-
-        var aBlipFillLocal = this.openXmlCompositeElement.GetFirstChild<A.BlipFill>();
-        if (aBlipFillLocal is not null)
-        {
-            return FillType.Picture;
-        }
-
-        var aPattFillLocal = this.openXmlCompositeElement.GetFirstChild<A.PatternFill>();
-        if (aPattFillLocal != null)
-        {
-            return FillType.Pattern;
-        }
-
-        if (this.openXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
-        {
-            return FillType.SlideBackground;
-        }
-
-        return FillType.NoFill;
-    }
-
     public void SetPicture(Stream image)
     {
         if (this.Type == FillType.Picture)
@@ -227,6 +171,62 @@ internal sealed class ShapeFill : IShapeFill
                 this.InitPictureFillOr();
             }
         }
+    }
+    
+    private FillType GetFillType()
+    {
+        var aSolidFillLocal = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+        if (aSolidFillLocal != null)
+        {
+            return FillType.Solid;
+        }
+
+        var aGradFillLocal = this.openXmlCompositeElement.GetFirstChild<A.GradientFill>();
+        if (aGradFillLocal != null)
+        {
+            return FillType.Gradient;
+        }
+
+        var aBlipFillLocal = this.openXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        if (aBlipFillLocal is not null)
+        {
+            return FillType.Picture;
+        }
+
+        var aPattFillLocal = this.openXmlCompositeElement.GetFirstChild<A.PatternFill>();
+        if (aPattFillLocal != null)
+        {
+            return FillType.Pattern;
+        }
+
+        if (this.openXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
+        {
+            return FillType.SlideBackground;
+        }
+
+        return FillType.NoFill;
+    }
+    
+    private string? ColorHexOrNullOf(string schemeColor)
+    {
+        var aColorScheme = this.openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            _ => ((SlideMasterPart)this.openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+        };
+
+        var aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == schemeColor);
+        var hex = aColor2Type?.RgbColorModelHex?.Val?.Value ?? aColor2Type?.SystemColor?.LastColor?.Value;
+
+        if (hex != null)
+        {
+            return hex;
+        }
+
+        return null;
     }
 
     private void InitPictureFillOr()

@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.GroupShapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;

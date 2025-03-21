@@ -3,9 +3,9 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

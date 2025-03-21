@@ -39,7 +39,7 @@ internal sealed class SlideCollection : ISlideCollection
     public void Remove(ISlide slide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var pPresentation = presPart.Presentation;
+        var pPresentation = this.presPart.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
         var removingPSlideId = (P.SlideId)slideIdList.ChildElements[slide.Number - 1];
         var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
@@ -52,10 +52,10 @@ internal sealed class SlideCollection : ISlideCollection
         var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
         new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
-        var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
-        presPart.DeletePart(removingSlidePart);
+        var removingSlidePart = (SlidePart)this.presPart.GetPartById(removingSlideIdRelationshipId!);
+        this.presPart.DeletePart(removingSlidePart);
 
-        presPart.Presentation.Save();
+        this.presPart.Presentation.Save();
     }
 
     public void AddEmptySlide(SlideLayoutType layoutType)

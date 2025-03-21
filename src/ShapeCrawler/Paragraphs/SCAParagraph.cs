@@ -1,8 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
-// ReSharper disable InconsistentNaming
 
-namespace ShapeCrawler.Texts;
+// ReSharper disable InconsistentNaming
+namespace ShapeCrawler.Paragraphs;
 
 internal sealed class SCAParagraph(A.Paragraph aParagraph)
 {

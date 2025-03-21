@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Spreadsheets;
+namespace ShapeCrawler.Charts;
 
 internal sealed class Spreadsheet(ChartPart chartPart)
 {

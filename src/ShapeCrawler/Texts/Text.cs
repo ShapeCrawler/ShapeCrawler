@@ -39,7 +39,10 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
         const int topBottomPadding = defaultPaddingSize * 2;
         var wordMaxY = height - topBottomPadding;
 
-        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, (int)width - defaultPaddingSize,
+        var rect = new SKRect(
+            defaultPaddingSize, 
+            defaultPaddingSize, 
+            (int)width - defaultPaddingSize,
             (int)height - defaultPaddingSize);
 
         var spaceWidth = skFont.MeasureText(" ");

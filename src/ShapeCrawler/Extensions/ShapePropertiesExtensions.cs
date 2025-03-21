@@ -77,9 +77,7 @@ internal static class ShapePropertiesExtensions
 
         aOutline = new A.Outline(
             new A.SolidFill(
-                new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) }
-            )
-        );
+                new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) }));
         pSpPr.Append(aOutline);
 
         return aOutline;

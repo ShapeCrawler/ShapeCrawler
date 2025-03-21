@@ -16,6 +16,7 @@ internal sealed class Position(OpenXmlPart openXmlPart, OpenXmlElement pShapeTre
             var emus = this.GetAOffset().X!.Value;
             return new Emus(emus).AsPoints();
         }
+
         set
         {
             var emus = new Points(value).AsEmus();
@@ -30,6 +31,7 @@ internal sealed class Position(OpenXmlPart openXmlPart, OpenXmlElement pShapeTre
             var emus = this.GetAOffset().Y!.Value;
             return new Emus(emus).AsPoints();
         }
+
         set
         {
             var emus = new Points(value).AsEmus();

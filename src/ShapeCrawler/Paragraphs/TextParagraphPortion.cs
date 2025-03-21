@@ -4,7 +4,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Texts;
+namespace ShapeCrawler.Paragraphs;
 
 internal sealed class TextParagraphPortion : IParagraphPortion
 {

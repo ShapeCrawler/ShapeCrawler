@@ -1,5 +1,3 @@
-using ShapeCrawler.Exceptions;
-
 namespace ShapeCrawler.Drawing;
 
 /// <summary>

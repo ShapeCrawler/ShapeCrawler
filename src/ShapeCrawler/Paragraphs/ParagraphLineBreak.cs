@@ -1,10 +1,9 @@
 ﻿using System;
-using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Texts;
+namespace ShapeCrawler.Paragraphs;
 
-internal sealed class ParagraphLineBreak(A.Break aBreak) : IParagraphPortion
+internal sealed class ParagraphLineBreak(A.Break aBreak): IParagraphPortion
 {
     public string Text
     {
@@ -15,7 +14,7 @@ internal sealed class ParagraphLineBreak(A.Break aBreak) : IParagraphPortion
         }
     }
 
-    public ITextPortionFont Font => throw new SCException("New Line portion does not support this property."); 
+    public ITextPortionFont Font => throw new SCException("New Line portion does not support this property.");
 
     public IHyperlink? Link => throw new SCException("New Line portion does not support this property.");
 

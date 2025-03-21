@@ -9,7 +9,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
 
-internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTableCell) : ITextBox
+internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTableCell): ITextBox
 {
     private TextVerticalAlignment? vAlignment;
 
@@ -101,7 +101,7 @@ internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTab
         }
     }
 
-    public IParagraphs Paragraphs => new Paragraphs(openXmlPart, aTableCell.TextBody!);
+    public IParagraphCollection Paragraphs => new ParagraphCollection(openXmlPart, aTableCell.TextBody!);
 
     public string Text
     {
@@ -126,6 +126,12 @@ internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTab
         set => this.SetText(value);
     }
 
+    public AutofitType AutofitType { get => AutofitType.None; set => throw new NotSupportedException(); }
+
+    public bool TextWrapped => true;
+
+    public string SdkXPath => new XmlPath(aTableCell.TextBody!).XPath;
+    
     private void SetText(string value)
     {
         var paragraphs = this.Paragraphs.ToList();
@@ -146,10 +152,4 @@ internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTab
             portionPara.Text = value;
         }
     }
-
-    public AutofitType AutofitType { get => AutofitType.None; set => throw new NotSupportedException(); }
-
-    public bool TextWrapped => true;
-
-    public string SdkXPath => new XmlPath(aTableCell.TextBody!).XPath;
 }

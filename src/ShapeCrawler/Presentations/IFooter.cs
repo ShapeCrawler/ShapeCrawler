@@ -26,7 +26,7 @@ public interface IFooter
     void RemoveSlideNumber();
 }
 
-internal sealed class Footer(SlideCollection slides) : IFooter
+internal sealed class Footer(SlideCollection slides): IFooter
 {
     public bool SlideNumberAdded() 
     {

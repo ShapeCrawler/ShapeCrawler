@@ -1,5 +1,4 @@
-﻿using System;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Units;
 
 namespace ShapeCrawler.Tables;

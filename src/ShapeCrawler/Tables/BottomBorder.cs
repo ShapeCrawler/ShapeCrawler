@@ -25,7 +25,6 @@ internal class BottomBorder : IBorder
             var emus = this.aTableCellProperties.BottomBorderLineProperties!.Width!.Value;
         
             return new Emus(emus).AsPoints();
-
         }
         set => this.UpdateWidth(value);
     }

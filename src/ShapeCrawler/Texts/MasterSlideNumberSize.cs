@@ -3,7 +3,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal class MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunProperties) : IFontSize
+internal class MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunProperties): IFontSize
 {
     public decimal Size
     {
@@ -13,6 +13,7 @@ internal class MasterSlideNumberSize(A.DefaultRunProperties aDefaultRunPropertie
         
             return hundredPoints / 100m;
         }
+
         set
         {
             var hundredPoints = value * 100;

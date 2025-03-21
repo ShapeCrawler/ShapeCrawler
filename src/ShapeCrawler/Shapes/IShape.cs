@@ -117,7 +117,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets the parent presentation.
     /// </summary>
-    IPresentation Presentation { get;}
+    IPresentation Presentation { get; }
 
     /// <summary>
     ///     Removes the shape from the slide.

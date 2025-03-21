@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Exceptions;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable PossibleMultipleEnumeration
-
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
 #pragma warning disable IDE0130
@@ -40,7 +39,7 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     void AddLineBreak();
 }
 
-internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aParagraph) : IParagraphPortions
+internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aParagraph): IParagraphPortions
 {
     public int Count => this.GetPortions().Count;
 
@@ -64,7 +63,7 @@ internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aPa
             aTextParent = new A.Run(aRunProperties, aText);
         }
 
-        AddText(ref lastRunOrBreak, aTextParent, text);
+        this.AddText(ref lastRunOrBreak, aTextParent, text);
     }
 
     public void AddLineBreak()
@@ -109,6 +108,7 @@ internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aPa
                         portions.Add(fieldPortion);
                         break;
                     }
+
                 case A.Break aBreak:
                     var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);

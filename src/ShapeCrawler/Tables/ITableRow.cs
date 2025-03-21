@@ -30,7 +30,7 @@ public interface ITableRow
     void Duplicate();
 }
 
-internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, int index) : ITableRow
+internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, int index): ITableRow
 {
     public IReadOnlyList<ITableCell> Cells
     {

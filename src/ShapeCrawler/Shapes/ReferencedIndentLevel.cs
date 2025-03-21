@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Fonts;
-using ShapeCrawler.Texts;
+using ShapeCrawler.Paragraphs;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

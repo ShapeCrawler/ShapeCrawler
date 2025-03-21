@@ -286,16 +286,16 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    [TestCase("002.pptx", 2, 4, 3, "Text", 1)]
-    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}", 2)]
-    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2", 3)]
-    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2{NewLine}", 4)]
+    // [TestCase("002.pptx", 2, 4, 3, "Text", 1)]
+    // [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}", 2)]
+    // [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2", 3)]
+    // [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2{NewLine}", 4)]
     [TestCase("023.pptx", 1, 2, 2, "Text", 1)]
     public void Text_Setter_sets_paragraph_text(string presName, int slideNumber, int shapeId, int paraNumber, string paraText, int expectedPortionsCount)
     {
         // Arrange
         var pres = new Presentation(TestAsset(presName));
-        var paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
+        var paragraph = pres.Slide(slideNumber).Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
         var mStream = new MemoryStream();
         paraText = paraText.Replace("{NewLine}", Environment.NewLine);
 

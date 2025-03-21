@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -83,7 +83,16 @@ internal sealed class Paragraph : IParagraph
 
     public string Text
     {
-        get => this.aParagraph.InnerText;
+        get
+        {
+            if (this.Portions.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
+        }
+
         set
         {
             if (!this.Portions.Any())
@@ -91,9 +100,14 @@ internal sealed class Paragraph : IParagraph
                 this.Portions.AddText(" ");
             }
 
-            var removings = this.aParagraph.OfType<A.Run>().Skip(1) // to preserve text formatting
-                .OfType<OpenXmlCompositeElement>().Union(aParagraph.OfType<A.Break>());
-            foreach (var removing in removings)
+            var removingRuns = this.aParagraph.OfType<A.Run>().Skip(1); // to preserve text formatting
+            var removingBreaks = this.aParagraph.OfType<A.Break>();
+            foreach (var removing in removingRuns.ToList())
+            {
+                removing.Remove();
+            }
+
+            foreach (var removing in removingBreaks.ToList())
             {
                 removing.Remove();
             }

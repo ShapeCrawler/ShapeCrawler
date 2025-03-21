@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Spreadsheets;
+namespace ShapeCrawler.Charts;
 
 internal sealed class Sheet(EmbeddedPackagePart embeddedPackagePart, string sheetName)
 {

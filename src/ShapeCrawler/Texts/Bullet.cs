@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing;
-using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130

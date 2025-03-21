@@ -5,7 +5,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
 
-internal class TopBorder(A.TableCellProperties aTableCellProperties) : IBorder
+internal class TopBorder(A.TableCellProperties aTableCellProperties): IBorder
 {
     public decimal Width
     {

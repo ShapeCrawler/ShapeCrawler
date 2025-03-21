@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
