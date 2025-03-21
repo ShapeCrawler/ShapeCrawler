@@ -321,9 +321,13 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
         cNvPr.Name = geometry.ToString();
 
-        new Position(this.slidePart, pShape) { X = x, Y = y };
+        var position = new Position(this.slidePart, pShape);
+        position.X = x;
+        position.Y = y;
 
-        new ShapeSize(this.slidePart, pShape) { Width = width, Height = height };
+        var size = new ShapeSize(this.slidePart, pShape);
+        size.Width = width;
+        size.Height = height;
 
         var spPr = pShape.GetFirstChild<P.ShapeProperties>()
                    ?? throw new SCException("Malformed shape: No shape properties");

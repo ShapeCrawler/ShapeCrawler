@@ -332,7 +332,8 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
         var parentShape = textBody.Parent!;
         var requiredHeightPt = textHeightPt + this.TopMargin + this.BottomMargin;
         var newHeight = requiredHeightPt + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
-        new ShapeSize(openXmlPart, parentShape) { Height = newHeight };
+        var size = new ShapeSize(openXmlPart, parentShape);
+        size.Height = newHeight;
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
         var position = new Position(openXmlPart, parentShape);

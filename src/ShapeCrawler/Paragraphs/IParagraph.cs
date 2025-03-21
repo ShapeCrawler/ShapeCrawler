@@ -118,7 +118,8 @@ internal sealed class Paragraph : IParagraph
             var textLines = value.Split(Environment.NewLine);
 #endif
             var mainRun = this.aParagraph.GetFirstChild<A.Run>() !;
-            new TextParagraphPortion(this.openXmlPart, mainRun) { Text = textLines.First() };
+            var textParagraphPortion = new TextParagraphPortion(this.openXmlPart, mainRun);
+            textParagraphPortion.Text = textLines.First();
             foreach (var textLine in textLines.Skip(1))
             {
                 if (!string.IsNullOrEmpty(textLine))
