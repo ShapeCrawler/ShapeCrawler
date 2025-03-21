@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
@@ -13,13 +12,13 @@ internal sealed class GroupShape : Shape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
 
-    internal GroupShape(OpenXmlPart openXmlPart, P.GroupShape pGroupShape)
-        : base(openXmlPart, pGroupShape)
+    internal GroupShape(P.GroupShape pGroupShape)
+        : base(pGroupShape)
     {
         this.pGroupShape = pGroupShape;
-        this.Shapes = new GroupedShapeCollection(openXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
-        this.Outline = new SlideShapeOutline(openXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(openXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
+        this.Shapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
+        this.Outline = new SlideShapeOutline(pGroupShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(pGroupShape.Descendants<P.ShapeProperties>().First());
     }
 
     public IShapeCollection Shapes { get; }

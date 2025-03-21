@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
 using ShapeCrawler.Fonts;
@@ -10,30 +11,29 @@ namespace ShapeCrawler.Shapes;
 
 internal readonly ref struct ReferencedIndentLevel
 {
-    private readonly OpenXmlPart openXmlPart;
     private readonly A.Text aText;
     private readonly PresentationColor presColor;
 
-    internal ReferencedIndentLevel(OpenXmlPart openXmlPart, A.Text aText)
-        : this(openXmlPart, aText, new PresentationColor(openXmlPart))
+    internal ReferencedIndentLevel(A.Text aText)
+        : this(aText, new PresentationColor(aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!))
     {
     }
 
-    private ReferencedIndentLevel(OpenXmlPart openXmlPart, A.Text aText, PresentationColor presColor)
+    private ReferencedIndentLevel(A.Text aText, PresentationColor presColor)
     {
-        this.openXmlPart = openXmlPart;
         this.aText = aText;
         this.presColor = presColor;
     }
 
     internal string? ColorHexOrNull()
     {
-        if (this.openXmlPart is SlidePart)
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        if (openXmlPart is SlidePart)
         {
             return this.SlideColorHexOrNull();
         }
 
-        if (this.openXmlPart is SlideLayoutPart)
+        if (openXmlPart is SlideLayoutPart)
         {
             return this.LayoutColorHexOrNull();
         }
@@ -43,7 +43,8 @@ internal readonly ref struct ReferencedIndentLevel
 
     internal ColorType? ColorTypeOrNull()
     {
-        if (this.openXmlPart is SlidePart)
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        if (openXmlPart is SlidePart)
         {
             return this.SlideColorTypeOrNull();
         }
@@ -53,7 +54,8 @@ internal readonly ref struct ReferencedIndentLevel
 
     internal bool? FontBoldFlagOrNull()
     {
-        if (this.openXmlPart is SlidePart)
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        if (openXmlPart is SlidePart)
         {
             return this.SlideFontBoldFlagOrNull();
         }
@@ -65,7 +67,8 @@ internal readonly ref struct ReferencedIndentLevel
 
     internal A.LatinFont? ALatinFontOrNull()
     {
-        return this.openXmlPart switch
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        return openXmlPart switch
         {
             SlidePart sdkSlidePart => this.SlideALatinFontOrNull(sdkSlidePart),
             SlideMasterPart => this.SlideMasterALatinFont(),
@@ -98,7 +101,8 @@ internal readonly ref struct ReferencedIndentLevel
     /// </summary>
     private P.Shape? ReferencedLayoutPShapeOrNull(P.Shape pShape)
     {
-        if (this.openXmlPart is not SlidePart slidePart)
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        if (openXmlPart is not SlidePart slidePart)
         {
             return null;
         }
@@ -119,11 +123,12 @@ internal readonly ref struct ReferencedIndentLevel
             return null;
         }
 
-        var slideOrLayoutPShapeTree = this.openXmlPart switch
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var slideOrLayoutPShapeTree = openXmlPart switch
         {
             SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
                 .ShapeTree!,
-            _ => ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
+            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
                 .ShapeTree!
         };
 
@@ -192,9 +197,10 @@ internal readonly ref struct ReferencedIndentLevel
             }
         }
 
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            var pTitleStyle = ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
+            var pTitleStyle = ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
                 .TitleStyle!;
             var masterTitleFonts = new IndentFonts(pTitleStyle);
             var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
@@ -205,7 +211,7 @@ internal readonly ref struct ReferencedIndentLevel
         }
         else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            var pBodyStyle = ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!;
+            var pBodyStyle = ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!;
             var masterBodyFonts = new IndentFonts(pBodyStyle);
             var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterBodyFont, out var masterTitleColor))
@@ -219,6 +225,7 @@ internal readonly ref struct ReferencedIndentLevel
 
     private string? SlideColorHexOrNull()
     {
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -269,11 +276,11 @@ internal readonly ref struct ReferencedIndentLevel
 
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            var pTitleStyle = this.openXmlPart switch
+            var pTitleStyle = openXmlPart switch
             {
                 SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
                     .TitleStyle!,
-                _ => ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
+                _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
                     .TitleStyle!
             };
             var masterTitleFonts = new IndentFonts(pTitleStyle);
@@ -285,11 +292,11 @@ internal readonly ref struct ReferencedIndentLevel
         }
         else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            var pBodyStyle = this.openXmlPart switch
+            var pBodyStyle = openXmlPart switch
             {
                 SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
                     .BodyStyle!,
-                _ => ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
+                _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
             };
             var masterBodyFonts = new IndentFonts(pBodyStyle);
             var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
@@ -384,6 +391,7 @@ internal readonly ref struct ReferencedIndentLevel
 
     private int? SlideFontSizeOrNull()
     {
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         var slidePShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
@@ -413,7 +421,7 @@ internal readonly ref struct ReferencedIndentLevel
                 }
             }
 
-            var sdkSlidePart = (SlidePart)this.openXmlPart;
+            var sdkSlidePart = (SlidePart)openXmlPart;
             var bodyStyleFonts =
                 new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
             var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -30,7 +29,7 @@ public interface ITableRow
     void Duplicate();
 }
 
-internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, int index): ITableRow
+internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
 {
     public IReadOnlyList<ITableCell> Cells
     {
@@ -51,7 +50,7 @@ internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, in
                 else if (aTc.VerticalMerge is not null)
                 {
                     var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-                    var table = new Table(openXmlPart, pGraphicFrame);
+                    var table = new Table(pGraphicFrame);
                     var upRowIdx = index - 1;
                     var upNeighborCell = (TableCell)table[upRowIdx, columnIdx];
                     cells.Add(upNeighborCell);
@@ -59,7 +58,7 @@ internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, in
                 }
                 else
                 {
-                    addedCell = new TableCell(openXmlPart, aTc, index, columnIdx);
+                    addedCell = new TableCell(aTc, index, columnIdx);
                     cells.Add(addedCell);
                 }
 
@@ -111,7 +110,7 @@ internal sealed class TableRow(OpenXmlPart openXmlPart, A.TableRow aTableRow, in
         this.ATableRow.Height!.Value = newEmu;
 
         var pGraphicalFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-        var parentTable = new Table(openXmlPart, pGraphicalFrame);
+        var parentTable = new Table(pGraphicalFrame);
         if (newPoints > currentPoints)
         {
             var diffPoints = newPoints - currentPoints;

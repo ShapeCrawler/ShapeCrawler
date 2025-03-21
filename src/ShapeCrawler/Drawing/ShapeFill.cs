@@ -8,28 +8,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class ShapeFill : IShapeFill
+internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement): IShapeFill
 {
-    private readonly OpenXmlCompositeElement openXmlCompositeElement;
-    private readonly OpenXmlPart openXmlPart;
-
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPatternFill;
     private A.BlipFill? aBlipFill;
 
-    internal ShapeFill(OpenXmlPart openXmlPart, OpenXmlCompositeElement openXmlCompositeElement)
-    {
-        this.openXmlPart = openXmlPart;
-        this.openXmlCompositeElement = openXmlCompositeElement;
-    }
-
     public string? Color
     {
         get
         {
-            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -50,7 +41,7 @@ internal sealed class ShapeFill : IShapeFill
         get
         {
             const int defaultAlphaPercentages = 100;
-            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -74,7 +65,7 @@ internal sealed class ShapeFill : IShapeFill
         get
         {
             const double luminanceModulation = 100;
-            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -97,7 +88,7 @@ internal sealed class ShapeFill : IShapeFill
         get
         {
             const double defaultValue = 0;
-            var aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -121,13 +112,14 @@ internal sealed class ShapeFill : IShapeFill
 
     public void SetPicture(Stream image)
     {
+        var openXmlPart = openXmlCompositeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (this.Type == FillType.Picture)
         {
             this.pictureImage!.Update(image);
         }
         else
         {
-            (var rId, _) = this.openXmlPart.AddImagePart(image, "image/png");
+            (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
@@ -137,7 +129,7 @@ internal sealed class ShapeFill : IShapeFill
             aBlipFill.Append(new A.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.openXmlCompositeElement.Append(aBlipFill);
+            openXmlCompositeElement.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
@@ -151,21 +143,21 @@ internal sealed class ShapeFill : IShapeFill
     public void SetColor(string hex)
     {
         this.InitSolidFillOr();
-        this.openXmlCompositeElement.AddSolidFill(hex);
+        openXmlCompositeElement.AddSolidFill(hex);
     }
 
     public void SetNoFill()
     {
         this.InitSolidFillOr();
-        this.openXmlCompositeElement.AddNoFill();
+        openXmlCompositeElement.AddNoFill();
     }
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+        this.aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
         if (this.aSolidFill == null)
         {
-            this.aGradFill = this.openXmlCompositeElement!.GetFirstChild<A.GradientFill>();
+            this.aGradFill = openXmlCompositeElement!.GetFirstChild<A.GradientFill>();
             if (this.aGradFill == null)
             {
                 this.InitPictureFillOr();
@@ -175,31 +167,31 @@ internal sealed class ShapeFill : IShapeFill
     
     private FillType GetFillType()
     {
-        var aSolidFillLocal = this.openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+        var aSolidFillLocal = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
         if (aSolidFillLocal != null)
         {
             return FillType.Solid;
         }
 
-        var aGradFillLocal = this.openXmlCompositeElement.GetFirstChild<A.GradientFill>();
+        var aGradFillLocal = openXmlCompositeElement.GetFirstChild<A.GradientFill>();
         if (aGradFillLocal != null)
         {
             return FillType.Gradient;
         }
 
-        var aBlipFillLocal = this.openXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        var aBlipFillLocal = openXmlCompositeElement.GetFirstChild<A.BlipFill>();
         if (aBlipFillLocal is not null)
         {
             return FillType.Picture;
         }
 
-        var aPattFillLocal = this.openXmlCompositeElement.GetFirstChild<A.PatternFill>();
+        var aPattFillLocal = openXmlCompositeElement.GetFirstChild<A.PatternFill>();
         if (aPattFillLocal != null)
         {
             return FillType.Pattern;
         }
 
-        if (this.openXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
+        if (openXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill is not null)
         {
             return FillType.SlideBackground;
         }
@@ -209,13 +201,14 @@ internal sealed class ShapeFill : IShapeFill
     
     private string? ColorHexOrNullOf(string schemeColor)
     {
-        var aColorScheme = this.openXmlPart switch
+        var openXmlPart = openXmlCompositeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var aColorScheme = openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
-            _ => ((SlideMasterPart)this.openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
         };
 
         var aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == schemeColor);
@@ -231,7 +224,7 @@ internal sealed class ShapeFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.openXmlCompositeElement.GetFirstChild<A.BlipFill>();
+        this.aBlipFill = openXmlCompositeElement.GetFirstChild<A.BlipFill>();
 
         if (this.aBlipFill is not null)
         {

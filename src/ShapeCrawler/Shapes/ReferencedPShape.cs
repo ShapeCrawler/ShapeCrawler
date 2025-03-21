@@ -9,19 +9,18 @@ namespace ShapeCrawler.Shapes;
 
 internal readonly ref struct ReferencedPShape
 {
-    private readonly OpenXmlPart openXmlPart;
     private readonly OpenXmlElement pShapeTreeElement;
 
-    internal ReferencedPShape(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
+    internal ReferencedPShape(OpenXmlElement pShapeTreeElement)
     {
-        this.openXmlPart = openXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
     internal Transform2D ATransform2D()
     {
         var pShape = (P.Shape)this.pShapeTreeElement;
-        if (this.openXmlPart is SlidePart sdkSlidePart)
+        var openXmlPart = pShape.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        if (openXmlPart is SlidePart sdkSlidePart)
         {
             var layoutPShape = LayoutPShapeOrNullOf(pShape, sdkSlidePart);
             if (layoutPShape != null && layoutPShape.ShapeProperties!.Transform2D != null)
@@ -124,11 +123,12 @@ internal readonly ref struct ReferencedPShape
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>() !;
-        var masterPShapes = this.openXmlPart switch
+        var openXmlPart = pShape.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var masterPShapes = openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
                 .ShapeTree!.Elements<P.Shape>(),
-            _ => ((SlideLayoutPart)this.openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
+            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
                 .ShapeTree!.Elements<P.Shape>()
         };
 

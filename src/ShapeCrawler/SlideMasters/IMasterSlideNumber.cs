@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Positions;
+﻿using ShapeCrawler.Positions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -22,16 +21,16 @@ internal sealed class MasterSlideNumber : IMasterSlideNumber
 {
     private readonly Position position;
 
-    internal MasterSlideNumber(OpenXmlPart sdkTypedOpenXmlPart, P.Shape sdkPShape)
-        : this(sdkPShape, new Position(sdkTypedOpenXmlPart, sdkPShape))
+    internal MasterSlideNumber(P.Shape pShape)
+        : this(pShape, new Position(pShape))
     {
     }
 
-    private MasterSlideNumber(P.Shape sdkPShape, Position position)
+    private MasterSlideNumber(P.Shape pShape, Position position)
     {
         this.position = position;
         var aDefaultRunProperties =
-            sdkPShape.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
+            pShape.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
         this.Font = new SlideNumberFont(aDefaultRunProperties);
     }
 

@@ -1,12 +1,11 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeSize(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
+internal sealed class ShapeSize(OpenXmlElement pShapeTreeElement)
 {
     internal decimal Width
     {
@@ -28,6 +27,6 @@ internal sealed class ShapeSize(OpenXmlPart openXmlPart, OpenXmlElement pShapeTr
             return aExtents;
         }
 
-        return new ReferencedPShape(openXmlPart, pShapeTreeElement).ATransform2D().Extents!;
+        return new ReferencedPShape(pShapeTreeElement).ATransform2D().Extents!;
     }
 }

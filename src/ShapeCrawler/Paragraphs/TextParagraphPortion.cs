@@ -1,5 +1,4 @@
 using System;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -12,13 +11,13 @@ internal sealed class TextParagraphPortion : IParagraphPortion
     private readonly Lazy<Hyperlink> hyperlink;
     private readonly A.Run aRun;
 
-    internal TextParagraphPortion(OpenXmlPart openXmlPart, A.Run aRun)
+    internal TextParagraphPortion(A.Run aRun)
     {
         this.AText = aRun.Text!;
         this.aRun = aRun;
-        var textPortionSize = new PortionFontSize(openXmlPart, this.AText);
+        var textPortionSize = new PortionFontSize(this.AText);
         this.font = new Lazy<TextPortionFont>(() =>
-            new TextPortionFont(openXmlPart, this.AText, textPortionSize));
+            new TextPortionFont(this.AText, textPortionSize));
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -20,7 +19,7 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     void Add();
 }
 
-internal readonly struct ParagraphCollection(OpenXmlPart openXmlPart, OpenXmlElement sdkTextBody): IParagraphCollection
+internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagraphCollection
 {
     public int Count => this.ParagraphsCore().Count;
     
@@ -32,7 +31,7 @@ internal readonly struct ParagraphCollection(OpenXmlPart openXmlPart, OpenXmlEle
 
     public void Add()
     {
-        var lastAParagraph = sdkTextBody.Elements<A.Paragraph>().Last();
+        var lastAParagraph = textBody.Elements<A.Paragraph>().Last();
         var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
         newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         lastAParagraph.InsertAfterSelf(newAParagraph);
@@ -40,7 +39,7 @@ internal readonly struct ParagraphCollection(OpenXmlPart openXmlPart, OpenXmlEle
 
     private List<Paragraph> ParagraphsCore()
     {
-        var aParagraphs = sdkTextBody.Elements<A.Paragraph>().ToList();
+        var aParagraphs = textBody.Elements<A.Paragraph>().ToList();
         if (!aParagraphs.Any())
         {
             return [];
@@ -49,7 +48,7 @@ internal readonly struct ParagraphCollection(OpenXmlPart openXmlPart, OpenXmlEle
         var paraList = new List<Paragraph>();
         foreach (var aPara in aParagraphs)
         {
-            var para = new Paragraph(openXmlPart, aPara);
+            var para = new Paragraph(aPara);
             paraList.Add(para);
         }
 

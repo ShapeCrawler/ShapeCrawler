@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
@@ -60,25 +59,23 @@ public interface IParagraph
 
 internal sealed class Paragraph : IParagraph
 {
-    private readonly OpenXmlPart openXmlPart;
     private readonly Lazy<Bullet> bullet;
     private readonly SCAParagraph scAParagraph;
     private readonly A.Paragraph aParagraph;
     private TextHorizontalAlignment? alignment;
 
-    internal Paragraph(OpenXmlPart openXmlPart, A.Paragraph aParagraph)
-        : this(openXmlPart, aParagraph, new SCAParagraph(aParagraph))
+    internal Paragraph(A.Paragraph aParagraph)
+        : this(aParagraph, new SCAParagraph(aParagraph))
     {
     }
 
-    private Paragraph(OpenXmlPart openXmlPart, A.Paragraph aParagraph, SCAParagraph scAParagraph)
+    private Paragraph(A.Paragraph aParagraph, SCAParagraph scAParagraph)
     {
-        this.openXmlPart = openXmlPart;
         this.aParagraph = aParagraph;
         this.scAParagraph = scAParagraph;
         this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(openXmlPart, this.aParagraph);
+        this.Portions = new ParagraphPortions(this.aParagraph);
     }
 
     public string Text
@@ -118,8 +115,8 @@ internal sealed class Paragraph : IParagraph
             var textLines = value.Split(Environment.NewLine);
 #endif
             var mainRun = this.aParagraph.GetFirstChild<A.Run>() !;
-            var textParagraphPortion = new TextParagraphPortion(this.openXmlPart, mainRun);
-            textParagraphPortion.Text = textLines.First();
+            mainRun.Text!.Text = textLines.First();
+
             foreach (var textLine in textLines.Skip(1))
             {
                 if (!string.IsNullOrEmpty(textLine))
@@ -134,8 +131,8 @@ internal sealed class Paragraph : IParagraph
             }
 
             // Resize
-            var sdkTextBody = this.aParagraph.Parent!;
-            var textBox = new TextBox(this.openXmlPart, sdkTextBody);
+            var textBody = this.aParagraph.Parent!;
+            var textBox = new TextBox(textBody);
             textBox.ResizeParentShapeOnDemand();
         }
     }
@@ -156,7 +153,7 @@ internal sealed class Paragraph : IParagraph
             var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new AutoShape(this.openXmlPart, this.aParagraph.Ancestors<P.Shape>().First());
+                var parentShape = new AutoShape(this.aParagraph.Ancestors<P.Shape>().First());
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextHorizontalAlignment.Center;

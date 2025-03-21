@@ -156,7 +156,7 @@ internal sealed class Slide : ISlide
                 var pBgPr = pBg.GetFirstChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>()
                     ?? pBg.AppendChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>(new());
 
-                this.fill = new ShapeFill(this.SlidePart, pBgPr);
+                this.fill = new ShapeFill(pBgPr);
             }
 
             return this.fill!;

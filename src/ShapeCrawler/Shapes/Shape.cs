@@ -12,18 +12,16 @@ namespace ShapeCrawler.Shapes;
 
 internal abstract class Shape : IShape
 {
-    protected readonly OpenXmlPart OpenXmlPart;
     protected readonly OpenXmlElement PShapeTreeElement;
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
 
-    internal Shape(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
+    internal Shape(OpenXmlElement pShapeTreeElement)
     {
-        this.OpenXmlPart = openXmlPart;
         this.PShapeTreeElement = pShapeTreeElement;
-        this.position = new Position(openXmlPart, pShapeTreeElement);
-        this.size = new ShapeSize(this.OpenXmlPart, pShapeTreeElement);
+        this.position = new Position(pShapeTreeElement);
+        this.size = new ShapeSize(pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
@@ -51,7 +49,7 @@ internal abstract class Shape : IShape
         set => this.size.Height = value;
     }
 
-    public IPresentation Presentation => new Presentation((PresentationDocument)this.OpenXmlPart.OpenXmlPackage);
+    public IPresentation Presentation => new Presentation((PresentationDocument)this.PShapeTreeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!.OpenXmlPackage);
 
     public int Id => this.shapeId.Value();
 
@@ -218,7 +216,7 @@ internal abstract class Shape : IShape
             var aTransform2D = pSpPr.Transform2D;
             if (aTransform2D == null)
             {
-                aTransform2D = new ReferencedPShape(this.OpenXmlPart, this.PShapeTreeElement).ATransform2D();
+                aTransform2D = new ReferencedPShape(this.PShapeTreeElement).ATransform2D();
                 if (aTransform2D.Rotation is null)
                 {
                     return 0;

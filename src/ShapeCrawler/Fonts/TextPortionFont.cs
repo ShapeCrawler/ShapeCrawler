@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
@@ -11,7 +11,6 @@ namespace ShapeCrawler.Fonts;
 
 internal sealed class TextPortionFont : ITextPortionFont
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
     private readonly Lazy<FontColor> fontColor;
     private readonly IFontSize size;
@@ -19,29 +18,22 @@ internal sealed class TextPortionFont : ITextPortionFont
     private readonly SCAText scAText;
 
     internal TextPortionFont(
-        OpenXmlPart sdkTypedOpenXmlPart,
         A.Text aText,
         IFontSize size)
         : this(
-            sdkTypedOpenXmlPart,
             aText,
             size,
-            new ThemeFontScheme(sdkTypedOpenXmlPart))
+            new ThemeFontScheme(aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!))
     {
     }
 
-    private TextPortionFont(
-        OpenXmlPart sdkTypedOpenXmlPart,
-        A.Text aText,
-        IFontSize size,
-        ThemeFontScheme themeFontScheme)
+    private TextPortionFont(A.Text aText, IFontSize size, ThemeFontScheme themeFontScheme)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;
-        this.fontColor = new Lazy<FontColor>(() => new FontColor(sdkTypedOpenXmlPart, this.aText));
+        this.fontColor = new Lazy<FontColor>(() => new FontColor(this.aText));
         this.size = size;
         this.themeFontScheme = themeFontScheme;
-        this.scAText = new SCAText(sdkTypedOpenXmlPart, aText);
+        this.scAText = new SCAText(aText);
     }
 
     #region Public APIs
@@ -193,6 +185,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     private A.LatinFont ALatinFont()
     {
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
@@ -201,13 +194,13 @@ internal sealed class TextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        aLatinFont = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).ALatinFontOrNull();
+        aLatinFont = new ReferencedIndentLevel(this.aText).ALatinFontOrNull();
         if (aLatinFont != null)
         {
             return aLatinFont;
         }
 
-        return new ThemeFontScheme(this.sdkTypedOpenXmlPart).MinorLatinFont();
+        return new ThemeFontScheme(openXmlPart).MinorLatinFont();
     }
 
     private bool ParseBoldFlag()
@@ -223,7 +216,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return true;
         }
 
-        bool? isFontBold = new ReferencedIndentLevel(this.sdkTypedOpenXmlPart, this.aText).FontBoldFlagOrNull();
+        bool? isFontBold = new ReferencedIndentLevel(this.aText).FontBoldFlagOrNull();
         if (isFontBold.HasValue)
         {
             return isFontBold.Value;

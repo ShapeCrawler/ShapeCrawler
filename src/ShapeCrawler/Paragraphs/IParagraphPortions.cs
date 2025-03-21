@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -39,7 +38,7 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     void AddLineBreak();
 }
 
-internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aParagraph): IParagraphPortions
+internal sealed class ParagraphPortions(A.Paragraph aParagraph): IParagraphPortions
 {
     public int Count => this.GetPortions().Count;
 
@@ -99,12 +98,12 @@ internal sealed class ParagraphPortions(OpenXmlPart openXmlPart, A.Paragraph aPa
             switch (aParagraphElement)
             {
                 case A.Run aRun:
-                    var runPortion = new TextParagraphPortion(openXmlPart, aRun);
+                    var runPortion = new TextParagraphPortion(aRun);
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
                     {
-                        var fieldPortion = new Field(openXmlPart, aField);
+                        var fieldPortion = new Field(aField);
                         portions.Add(fieldPortion);
                         break;
                     }

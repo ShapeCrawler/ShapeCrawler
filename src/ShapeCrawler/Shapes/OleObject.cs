@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -10,12 +9,12 @@ internal sealed class OleObject : Shape
 {
     private readonly P.GraphicFrame pGraphicFrame;
 
-    internal OleObject(OpenXmlPart openXmlPart, P.GraphicFrame pGraphicFrame)
-        : base(openXmlPart, pGraphicFrame)
+    internal OleObject(P.GraphicFrame pGraphicFrame)
+        : base(pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
-        this.Outline = new SlideShapeOutline(openXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(openXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
+        this.Outline = new SlideShapeOutline(pGraphicFrame.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(pGraphicFrame.Descendants<P.ShapeProperties>().First());
     }
 
     public override ShapeType ShapeType => ShapeType.OleObject;

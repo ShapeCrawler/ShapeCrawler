@@ -1,13 +1,12 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
 internal abstract class CopyableShape : Shape
 {
-    internal CopyableShape(OpenXmlPart openXmlPart, OpenXmlElement openXmlElement)
-        : base(openXmlPart, openXmlElement)
+    internal CopyableShape(OpenXmlElement openXmlElement)
+        : base(openXmlElement)
     {
     }
 

@@ -1,5 +1,4 @@
 using System;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -14,14 +13,14 @@ internal sealed class Field : IParagraphPortion
     private readonly FieldPortionText fieldPortionText;
     private readonly A.Text? aText;
 
-    internal Field(OpenXmlPart openXmlPart, A.Field aField)
+    internal Field(A.Field aField)
     {
         this.aText = aField.GetFirstChild<A.Text>();
         this.aField = aField;
         this.font = new Lazy<ITextPortionFont>(() =>
         {
-            var textPortionSize = new PortionFontSize(openXmlPart, this.aText!);
-            return new TextPortionFont(openXmlPart, this.aText!, textPortionSize);
+            var textPortionSize = new PortionFontSize(this.aText!);
+            return new TextPortionFont(this.aText!, textPortionSize);
         });
         this.fieldPortionText = new FieldPortionText(this.aField);
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aField.RunProperties!));

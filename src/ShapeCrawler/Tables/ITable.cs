@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
@@ -64,11 +63,11 @@ internal sealed class Table : CopyableShape, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
 
-    internal Table(OpenXmlPart openXmlPart, OpenXmlCompositeElement pShapeTreeElement)
-        : base(openXmlPart, pShapeTreeElement)
+    internal Table(OpenXmlCompositeElement pShapeTreeElement)
+        : base(pShapeTreeElement)
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-        this.Rows = new TableRows(openXmlPart, this.pGraphicFrame);
+        this.Rows = new TableRows(this.pGraphicFrame);
         this.Columns = new TableColumns(this.pGraphicFrame);
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }

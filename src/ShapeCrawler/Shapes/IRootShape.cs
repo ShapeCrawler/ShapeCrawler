@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-
-namespace ShapeCrawler.Shapes;
+﻿namespace ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 /// <summary>
@@ -20,10 +18,9 @@ internal sealed class RootShape : CopyableShape, IRootShape
     private readonly P.Shape pShape;
 
     internal RootShape(
-        OpenXmlPart openXmlPart,
         P.Shape pShape,
         IShape decoratedShape)
-        : base(openXmlPart, pShape)
+        : base(pShape)
     {
         this.decoratedShape = decoratedShape;
         this.pShape = pShape;

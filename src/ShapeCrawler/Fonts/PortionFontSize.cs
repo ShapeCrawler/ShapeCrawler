@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Shapes;
@@ -7,12 +8,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText): IFontSize
+internal class PortionFontSize(A.Text aText): IFontSize
 {
     decimal IFontSize.Size
     {
         get
         {
+            var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
             var hundredsPoints = aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize
                 ?.Value;
             if (hundredsPoints != null)
@@ -20,7 +22,7 @@ internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText): IFontSize
                 return hundredsPoints.Value / 100m;
             }
 
-            hundredsPoints = new ReferencedIndentLevel(openXmlPart, aText).FontSizeOrNull();
+            hundredsPoints = new ReferencedIndentLevel(aText).FontSizeOrNull();
             if (hundredsPoints is not null)
             {
                 return hundredsPoints.Value / 100m;
@@ -41,7 +43,7 @@ internal class PortionFontSize(OpenXmlPart openXmlPart, A.Text aText): IFontSize
             var parentPShape = aText.Ancestors<P.Shape>().FirstOrDefault();
             if (parentPShape is not null)
             {
-                parentAutoShape = new AutoShape(openXmlPart, aText.Ancestors<P.Shape>().First());
+                parentAutoShape = new AutoShape(aText.Ancestors<P.Shape>().First());
             }
 
             if (parentAutoShape is not null && parentAutoShape.IsPlaceholder)

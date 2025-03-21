@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Positions;
 
-internal sealed class Position(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
+internal sealed class Position(OpenXmlElement pShapeTreeElement)
 {
     internal decimal X
     {
@@ -47,6 +46,6 @@ internal sealed class Position(OpenXmlPart openXmlPart, OpenXmlElement pShapeTre
             return aOffset;
         }
 
-        return new ReferencedPShape(openXmlPart, pShapeTreeElement).ATransform2D().Offset!;
+        return new ReferencedPShape(pShapeTreeElement).ATransform2D().Offset!;
     }
 }

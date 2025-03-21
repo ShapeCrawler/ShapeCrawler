@@ -2,23 +2,29 @@
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody): ITextBox
+internal sealed class TextBox: ITextBox
 {
+    private readonly OpenXmlElement textBody;
+    private readonly ShapeSize shapeSize;
     private TextVerticalAlignment? vAlignment;
 
-    public IParagraphCollection Paragraphs => new ParagraphCollection(openXmlPart, textBody);
+    internal TextBox(OpenXmlElement textBody)
+    {
+        this.textBody = textBody;
+        this.shapeSize = new ShapeSize(textBody.Parent!);
+    }
+
+    public IParagraphCollection Paragraphs => new ParagraphCollection(this.textBody);
 
     public string Text
     {
@@ -73,7 +79,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
     {
         get
         {
-            var aBodyPr = textBody.GetFirstChild<A.BodyProperties>();
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
 
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
@@ -96,7 +102,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
                 return;
             }
 
-            var aBodyPr = textBody.GetFirstChild<A.BodyProperties>() !;
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
             var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
             var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
@@ -133,10 +139,14 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
 
     public decimal LeftMargin
     {
-        get => new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
+        get
+        {
+                return new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
+        }
+
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var emu = new Points(value).AsEmus();
             bodyProperties.LeftInset = new Int32Value((int)emu);
         }
@@ -144,10 +154,10 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
 
     public decimal RightMargin
     {
-        get => new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>() !.RightInset).Value;
+        get => new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.RightInset).Value;
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var emu = new Points(value).AsEmus();
             bodyProperties.RightInset = new Int32Value((int)emu);
         }
@@ -155,10 +165,10 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
 
     public decimal TopMargin
     {
-        get => new TopBottomMargin(textBody.GetFirstChild<A.BodyProperties>() !.TopInset).Value;
+        get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.TopInset).Value;
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var emu = new Points(value).AsEmus();
             bodyProperties.TopInset = new Int32Value((int)emu);
         }
@@ -166,10 +176,10 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
 
     public decimal BottomMargin
     {
-        get => new TopBottomMargin(textBody.GetFirstChild<A.BodyProperties>() !.BottomInset).Value;
+        get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.BottomInset).Value;
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var emu = new Points(value).AsEmus();
             bodyProperties.BottomInset = new Int32Value((int)emu);
         }
@@ -179,7 +189,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
     {
         get
         {
-            var aBodyPr = textBody.GetFirstChild<A.BodyProperties>() !;
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
 
             if (wrap.Value == "none")
@@ -191,7 +201,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
         }
     }
 
-    public string SdkXPath => new XmlPath(textBody).XPath;
+    public string SdkXPath => new XmlPath(this.textBody).XPath;
 
     public TextVerticalAlignment VerticalAlignment
     {
@@ -202,7 +212,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
                 return this.vAlignment.Value;
             }
 
-            var aBodyPr = textBody.GetFirstChild<A.BodyProperties>();
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
 
             if (aBodyPr!.Anchor?.Value == A.TextAnchoringTypeValues.Center)
             {
@@ -230,9 +240,8 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
             return;
         }
 
-        var shapeSize = new ShapeSize(openXmlPart, textBody.Ancestors<P.Shape>().First());
-        var shapeWidthPtCapacity = shapeSize.Width - this.LeftMargin - this.RightMargin;
-        var shapeHeightPtCapacity = shapeSize.Height - this.TopMargin - this.BottomMargin;
+        var shapeWidthPtCapacity = this.shapeSize.Width - this.LeftMargin - this.RightMargin;
+        var shapeHeightPtCapacity = this.shapeSize.Height - this.TopMargin - this.BottomMargin;
 
         decimal textHeightPx = 0;
         var shapeWidthPxCapacity = new Points(shapeWidthPtCapacity).AsPixels();
@@ -280,7 +289,7 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
             _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
         };
 
-        var aBodyPr = textBody.GetFirstChild<A.BodyProperties>();
+        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
 
         if (aBodyPr is not null)
         {
@@ -295,9 +304,8 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
         var popularFont = paragraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
             .OrderByDescending(x => x.Count())
             .First().First().Font!;
-        var shapeSize = new ShapeSize(openXmlPart, textBody.Parent!);
         var text = new Text(newText, popularFont);
-        text.Fit(shapeSize.Width, shapeSize.Height);
+        text.Fit(this.shapeSize.Width, this.shapeSize.Height);
         var internalParagraph = (Paragraph)paragraph;
         internalParagraph.SetFontSize((int)text.FontSize);
     }
@@ -323,20 +331,19 @@ internal sealed class TextBox(OpenXmlPart openXmlPart, OpenXmlElement textBody):
                   1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
             + leftMarginPx + rightMarginPx;
         var newWidthPt = new Pixels((decimal)newWidthPx).AsPoints();
-        new ShapeSize(openXmlPart, textBody.Parent!).Width = newWidthPt;
+        this.shapeSize.Width = newWidthPt;
     }
 
     private void UpdateShapeHeight(decimal textHeightPx, decimal shapeHeightPtCapacity)
     {
         var textHeightPt = new Pixels(textHeightPx).AsPoints();
-        var parentShape = textBody.Parent!;
+        var parentShape = this.textBody.Parent!;
         var requiredHeightPt = textHeightPt + this.TopMargin + this.BottomMargin;
         var newHeight = requiredHeightPt + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
-        var size = new ShapeSize(openXmlPart, parentShape);
-        size.Height = newHeight;
+        this.shapeSize.Height = newHeight;
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
-        var position = new Position(openXmlPart, parentShape);
+        var position = new Position(parentShape);
         var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
         position.Y -= yOffset;
     }

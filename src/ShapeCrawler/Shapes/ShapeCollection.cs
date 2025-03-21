@@ -96,12 +96,12 @@ internal sealed class ShapeCollection : IShapeCollection
         {
             if (pShapeTreeElement is P.GroupShape pGroupShape)
             {
-                var groupShape = new GroupShape(this.openXmlPart, pGroupShape);
+                var groupShape = new GroupShape(pGroupShape);
                 shapeList.Add(groupShape);
             }
             else if (pShapeTreeElement is P.ConnectionShape pConnectionShape)
             {
-                var line = new SlideLine(this.openXmlPart, pConnectionShape);
+                var line = new SlideLine(pConnectionShape);
                 shapeList.Add(line);
             }
             else if (pShapeTreeElement is P.Shape pShape)
@@ -110,23 +110,17 @@ internal sealed class ShapeCollection : IShapeCollection
                 {
                     shapeList.Add(
                         new RootShape(
-                            this.openXmlPart,
                             pShape,
                             new AutoShape(
-                                this.openXmlPart,
                                 pShape,
-                                new TextBox(
-                                    this.openXmlPart, pShape.TextBody))));
+                                new TextBox(pShape.TextBody))));
                 }
                 else
                 {
                     shapeList.Add(
-                        new RootShape(
-                            this.openXmlPart,
+                        item: new RootShape(
                             pShape,
-                            new AutoShape(
-                                this.openXmlPart,
-                                pShape)));
+                            new AutoShape(pShape)));
                 }
             }
             else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
@@ -136,7 +130,7 @@ internal sealed class ShapeCollection : IShapeCollection
                         "http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
-                    var oleObject = new OleObject(this.openXmlPart, pGraphicFrame);
+                    var oleObject = new OleObject(pGraphicFrame);
                     shapeList.Add(oleObject);
                     continue;
                 }
@@ -151,7 +145,7 @@ internal sealed class ShapeCollection : IShapeCollection
                         continue;
                     }
 
-                    var picture = new Picture(this.openXmlPart, pPicture, aBlip!);
+                    var picture = new Picture(pPicture, aBlip!);
                     shapeList.Add(picture);
                     continue;
                 }
@@ -170,7 +164,6 @@ internal sealed class ShapeCollection : IShapeCollection
                     {
                         // Combination chart
                         var combinationChart = new Chart(
-                            this.openXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
                             new Categories(sdkChartPart, cCharts));
@@ -183,7 +176,6 @@ internal sealed class ShapeCollection : IShapeCollection
                     if (chartType is "lineChart" or "barChart" or "pieChart")
                     {
                         var lineChart = new Chart(
-                            this.openXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
                             new Categories(sdkChartPart, cCharts));
@@ -194,7 +186,6 @@ internal sealed class ShapeCollection : IShapeCollection
                     if (chartType is "scatterChart" or "bubbleChart")
                     {
                         var scatterChart = new Chart(
-                            this.openXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
                             new NullCategories());
@@ -203,7 +194,6 @@ internal sealed class ShapeCollection : IShapeCollection
                     }
 
                     var chart = new Chart(
-                        this.openXmlPart,
                         sdkChartPart,
                         pGraphicFrame,
                         new Categories(sdkChartPart, cCharts));
@@ -211,7 +201,7 @@ internal sealed class ShapeCollection : IShapeCollection
                 }
                 else if (IsTablePGraphicFrame(pShapeTreeElement))
                 {
-                    var table = new Table(this.openXmlPart, pShapeTreeElement);
+                    var table = new Table(pShapeTreeElement);
                     shapeList.Add(table);
                 }
             }
@@ -228,7 +218,7 @@ internal sealed class ShapeCollection : IShapeCollection
                                 .GetFirstChild<A.AudioFromFile>();
                             if (aAudioFile is not null)
                             {
-                                var mediaShape = new MediaShape(this.openXmlPart, pPicture);
+                                var mediaShape = new MediaShape(pPicture);
                                 shapeList.Add(mediaShape);
                             }
 
@@ -237,7 +227,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
                     case A.VideoFromFile:
                         {
-                            var mediaShape = new MediaShape(this.openXmlPart, pPicture);
+                            var mediaShape = new MediaShape(pPicture);
                             shapeList.Add(mediaShape);
                             continue;
                         }
@@ -250,7 +240,7 @@ internal sealed class ShapeCollection : IShapeCollection
                     continue;
                 }
 
-                var picture = new Picture(this.openXmlPart, pPicture, aBlip!);
+                var picture = new Picture(pPicture, aBlip!);
                 shapeList.Add(picture);
             }
         }

@@ -19,23 +19,20 @@ internal sealed class Picture : CopyableShape, IPicture
     private readonly A.Blip aBlip;
     private readonly ShapeGeometry shapeGeometry;
 
-    internal Picture(
-        OpenXmlPart openXmlPart,
-        P.Picture pPicture,
-        A.Blip aBlip)
-        : this(openXmlPart, pPicture, aBlip, new SlidePictureImage(aBlip))
+    internal Picture(P.Picture pPicture, A.Blip aBlip)
+        : this(pPicture, aBlip, new SlidePictureImage(aBlip))
     {
     }
 
-    private Picture(OpenXmlPart openXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
-        : base(openXmlPart, pPicture)
+    private Picture(P.Picture pPicture, A.Blip aBlip, IImage image)
+        : base(pPicture)
     {
         this.pPicture = pPicture;
         this.aBlip = aBlip;
         this.Image = image;
         this.blipEmbed = aBlip.Embed!;
-        this.Outline = new SlideShapeOutline(openXmlPart, pPicture.ShapeProperties!);
-        this.Fill = new ShapeFill(openXmlPart, pPicture.ShapeProperties!);
+        this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
+        this.Fill = new ShapeFill(pPicture.ShapeProperties!);
         this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
     }
 
@@ -134,12 +131,13 @@ internal sealed class Picture : CopyableShape, IPicture
     {
         base.CopyTo(pShapeTree);
 
-        var sourceSdkSlidePart = this.OpenXmlPart;
+        var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var sourceSdkSlidePart = openXmlPart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
-        var targetImagePartRId = new SCOpenXmlPart(this.OpenXmlPart).GetNextRelationshipId();
+        var targetImagePartRId = new SCOpenXmlPart(openXmlPart).GetNextRelationshipId();
 
-        var targetImagePart = this.OpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
+        var targetImagePart = openXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);
@@ -198,6 +196,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
     private string? GetSvgContent()
     {
+        var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
         var svgBlipList = bel?.Descendants<SVGBlip>();
         if (svgBlipList == null)
@@ -207,7 +206,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.OpenXmlPart.GetPartById(svgId);
+        var imagePart = (ImagePart)openXmlPart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 

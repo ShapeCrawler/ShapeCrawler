@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
 
-internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTableCell): ITextBox
+internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 {
     private TextVerticalAlignment? vAlignment;
 
@@ -101,7 +100,7 @@ internal sealed class TableCellTextBox(OpenXmlPart openXmlPart, A.TableCell aTab
         }
     }
 
-    public IParagraphCollection Paragraphs => new ParagraphCollection(openXmlPart, aTableCell.TextBody!);
+    public IParagraphCollection Paragraphs => new ParagraphCollection(aTableCell.TextBody!);
 
     public string Text
     {
