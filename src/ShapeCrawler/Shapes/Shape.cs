@@ -49,9 +49,16 @@ internal abstract class Shape : IShape
         set => this.size.Height = value;
     }
 
-    public IPresentation Presentation => new Presentation((PresentationDocument)this.PShapeTreeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!.OpenXmlPackage);
+    public IPresentation Presentation =>
+        new Presentation(
+            (PresentationDocument)this.PShapeTreeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!
+                .OpenXmlPackage);
 
-    public int Id => this.shapeId.Value();
+    public int Id
+    {
+        get => this.shapeId.Value();
+        internal set => this.shapeId.Update(value);
+    }
 
     public string Name
     {
@@ -80,8 +87,9 @@ internal abstract class Shape : IShape
     {
         get
         {
-            var pPlaceholderShape = this.PShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault() ?? throw new SCException(
-                    $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
+            var pPlaceholderShape = this.PShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault() ??
+                                    throw new SCException(
+                                        $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
             var pPlaceholderValue = pPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
@@ -222,7 +230,9 @@ internal abstract class Shape : IShape
                     return 0;
                 }
 
-                return aTransform2D.Rotation.Value / 60000d; // OpenXML rotation angles are stored in units of 1/60,000th of a degree
+                return
+                    aTransform2D.Rotation.Value /
+                    60000d; // OpenXML rotation angles are stored in units of 1/60,000th of a degree
             }
 
             return pSpPr.Transform2D!.Rotation!.Value / 60000d;

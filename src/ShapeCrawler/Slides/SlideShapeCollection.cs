@@ -316,22 +316,17 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
         var pShape = new P.Shape(xml);
-        var cNvPr = pShape.Descendants<P.NonVisualDrawingProperties>().First();
-        cNvPr.Name = geometry.ToString();
-
-        var shape = new AutoShape(pShape);
-        shape.X = x;
-        shape.Y = y;
-        shape.Width = width;
-        shape.Height = height;
-
-        var spPr = pShape.GetFirstChild<P.ShapeProperties>() !;
-        var shapeGeometry = new ShapeGeometry(spPr);
-        shapeGeometry.UpdateGeometry(geometry);
-
-        new ShapeId(pShape).Update(this.GetNextShapeId());
-
+        var nextShapeId = this.GetNextShapeId();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        var addedAutoShape = this.shapes.Last<RootShape>();
+        addedAutoShape.Name = geometry.ToString();
+        addedAutoShape.X = x;
+        addedAutoShape.Y = y;
+        addedAutoShape.Width = width;
+        addedAutoShape.Height = height;
+        addedAutoShape.Id = nextShapeId;
+        addedAutoShape.GeometryType = geometry;
     }
 
     public void AddLine(string xml)
@@ -766,7 +761,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         return pPicture;
     }
 
-    private int GetNextShapeId()
+    internal int GetNextShapeId()
     {
         if (this.shapes.Any())
         {

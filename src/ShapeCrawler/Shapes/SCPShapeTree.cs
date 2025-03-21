@@ -17,11 +17,11 @@ internal readonly ref struct SCPShapeTree
         this.pShapeTree = pShapeTree;
     }
 
-    internal void Add(OpenXmlElement sdkOpenXmlElement)
+    internal void Add(OpenXmlElement openXmlElement)
     {
         var id = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
         var existingShapeNames = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
-        var pShapeCopy = sdkOpenXmlElement.CloneNode(true);
+        var pShapeCopy = openXmlElement.CloneNode(true);
         pShapeCopy.NonVisualDrawingProperties().Id = new UInt32Value(id);
         this.pShapeTree.AppendChild(pShapeCopy);
         var copyName = pShapeCopy.NonVisualDrawingProperties().Name!.Value!;

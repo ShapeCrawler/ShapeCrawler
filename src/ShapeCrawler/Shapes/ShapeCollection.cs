@@ -14,39 +14,32 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection : IShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
 {
-    private readonly OpenXmlPart openXmlPart;
+    public int Count => this.GetShapes().Count();
 
-    internal ShapeCollection(OpenXmlPart openXmlPart)
-    {
-        this.openXmlPart = openXmlPart;
-    }
-
-    public int Count => this.ShapesCore().Count;
-
-    public IShape this[int index] => this.ShapesCore()[index];
+    public IShape this[int index] => this.GetShapes().ElementAt(index);
 
     public T GetById<T>(int id)
-        where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
+        where T : IShape => (T)this.GetShapes().First(shape => shape.Id == id);
 
     public T? TryGetById<T>(int id)
-        where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Id == id);
+        where T : IShape => (T?)this.GetShapes().FirstOrDefault(shape => shape.Id == id);
 
     public T GetByName<T>(string name)
         where T : IShape => (T)this.GetByName(name);
 
     public T? TryGetByName<T>(string name)
-        where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
+        where T : IShape => (T?)this.GetShapes().FirstOrDefault(shape => shape.Name == name);
 
     public IShape GetByName(string name) =>
-        this.ShapesCore().FirstOrDefault(shape => shape.Name == name)
+        this.GetShapes().FirstOrDefault(shape => shape.Name == name)
         ?? throw new SCException("Shape not found");
 
     public T Last<T>()
-        where T : IShape => (T)this.ShapesCore().Last(shape => shape is T);
+        where T : IShape => (T)this.GetShapes().Last(shape => shape is T);
 
-    public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();
+    public IEnumerator<IShape> GetEnumerator() => this.GetShapes().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
@@ -82,45 +75,42 @@ internal sealed class ShapeCollection : IShapeCollection
         return false;
     }
 
-    private List<IShape> ShapesCore()
+    private IEnumerable<IShape> GetShapes()
     {
-        var pShapeTree = this.openXmlPart switch
+        var pShapeTree = openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-            _ => ((SlideMasterPart)this.openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
         };
-        var shapeList = new List<IShape>(pShapeTree.Count());
         foreach (var pShapeTreeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
             if (pShapeTreeElement is P.GroupShape pGroupShape)
             {
-                var groupShape = new GroupShape(pGroupShape);
-                shapeList.Add(groupShape);
+                yield return new GroupShape(pGroupShape);
             }
             else if (pShapeTreeElement is P.ConnectionShape pConnectionShape)
             {
-                var line = new SlideLine(pConnectionShape);
-                shapeList.Add(line);
+             yield return new SlideLine(pConnectionShape);
             }
             else if (pShapeTreeElement is P.Shape pShape)
             {
                 if (pShape.TextBody is not null)
                 {
-                    shapeList.Add(
+                    yield return 
                         new RootShape(
                             pShape,
                             new AutoShape(
                                 pShape,
-                                new TextBox(pShape.TextBody))));
+                                new TextBox(pShape.TextBody)));
                 }
                 else
                 {
-                    shapeList.Add(
-                        item: new RootShape(
+                    yield return 
+                        new RootShape(
                             pShape,
-                            new AutoShape(pShape)));
+                            new AutoShape(pShape));
                 }
             }
             else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
@@ -130,8 +120,7 @@ internal sealed class ShapeCollection : IShapeCollection
                         "http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
-                    var oleObject = new OleObject(pGraphicFrame);
-                    shapeList.Add(oleObject);
+                    yield return new OleObject(pGraphicFrame);
                     continue;
                 }
 
@@ -145,8 +134,7 @@ internal sealed class ShapeCollection : IShapeCollection
                         continue;
                     }
 
-                    var picture = new Picture(pPicture, aBlip!);
-                    shapeList.Add(picture);
+                    yield return new Picture(pPicture, aBlip!);
                     continue;
                 }
 
@@ -154,7 +142,7 @@ internal sealed class ShapeCollection : IShapeCollection
                 {
                     aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
                     var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-                    var sdkChartPart = (ChartPart)this.openXmlPart.GetPartById(cChartRef.Id!);
+                    var sdkChartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
                     var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
                     var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
                     pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
@@ -163,11 +151,10 @@ internal sealed class ShapeCollection : IShapeCollection
                     if (cCharts.Count() > 1)
                     {
                         // Combination chart
-                        var combinationChart = new Chart(
+                        yield return new Chart(
                             sdkChartPart,
                             pGraphicFrame,
                             new Categories(sdkChartPart, cCharts));
-                        shapeList.Add(combinationChart);
                         continue;
                     }
 
@@ -175,34 +162,30 @@ internal sealed class ShapeCollection : IShapeCollection
 
                     if (chartType is "lineChart" or "barChart" or "pieChart")
                     {
-                        var lineChart = new Chart(
+                        yield return new Chart(
                             sdkChartPart,
                             pGraphicFrame,
                             new Categories(sdkChartPart, cCharts));
-                        shapeList.Add(lineChart);
                         continue;
                     }
 
                     if (chartType is "scatterChart" or "bubbleChart")
                     {
-                        var scatterChart = new Chart(
+                        yield return new Chart(
                             sdkChartPart,
                             pGraphicFrame,
                             new NullCategories());
-                        shapeList.Add(scatterChart);
                         continue;
                     }
 
-                    var chart = new Chart(
+                    yield return new Chart(
                         sdkChartPart,
                         pGraphicFrame,
                         new Categories(sdkChartPart, cCharts));
-                    shapeList.Add(chart);
                 }
                 else if (IsTablePGraphicFrame(pShapeTreeElement))
                 {
-                    var table = new Table(pShapeTreeElement);
-                    shapeList.Add(table);
+                    yield return new Table(pShapeTreeElement);
                 }
             }
             else if (pShapeTreeElement is P.Picture pPicture)
@@ -218,8 +201,7 @@ internal sealed class ShapeCollection : IShapeCollection
                                 .GetFirstChild<A.AudioFromFile>();
                             if (aAudioFile is not null)
                             {
-                                var mediaShape = new MediaShape(pPicture);
-                                shapeList.Add(mediaShape);
+                                yield return new MediaShape(pPicture);
                             }
 
                             continue;
@@ -227,8 +209,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
                     case A.VideoFromFile:
                         {
-                            var mediaShape = new MediaShape(pPicture);
-                            shapeList.Add(mediaShape);
+                            yield return new MediaShape(pPicture);
                             continue;
                         }
                 }
@@ -240,11 +221,8 @@ internal sealed class ShapeCollection : IShapeCollection
                     continue;
                 }
 
-                var picture = new Picture(pPicture, aBlip!);
-                shapeList.Add(picture);
+                yield return new Picture(pPicture, aBlip!);
             }
         }
-
-        return shapeList;
     }
 }
