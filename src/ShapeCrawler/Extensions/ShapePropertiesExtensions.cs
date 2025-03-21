@@ -5,7 +5,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class ShapePropertiesExtensions
 {
-    internal static void AddANoFill(this OpenXmlCompositeElement pShapeProperties)
+    internal static void AddNoFill(this OpenXmlCompositeElement pShapeProperties)
     {
         pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.SolidFill>()?.Remove();
@@ -36,13 +36,13 @@ internal static class ShapePropertiesExtensions
         }
     }
 
-    internal static void AddASolidFill(this OpenXmlCompositeElement pShapeProperties, string hex)
+    internal static void AddSolidFill(this OpenXmlCompositeElement pShapeProperties, string hex)
     {
         pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.PatternFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.NoFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.BlipFill>()?.Remove();
-        
+
         var aSolidFill = pShapeProperties.GetFirstChild<A.SolidFill>();
         if (aSolidFill != null)
         {
@@ -64,25 +64,22 @@ internal static class ShapePropertiesExtensions
                 pShapeProperties.Append(aSolidFill);
             }
         }
-        
-        var aRgbColorModelHex = new A.RgbColorModelHex
-        {
-            Val = hex
-        };
-        
+
+        var aRgbColorModelHex = new A.RgbColorModelHex { Val = hex };
+
         aSolidFill.Append(aRgbColorModelHex);
     }
 
-    internal static A.Outline AddAOutline(this OpenXmlCompositeElement pSpPr)
+    internal static A.Outline AddOutline(this OpenXmlCompositeElement pSpPr)
     {
         var aOutline = pSpPr.GetFirstChild<A.Outline>();
         aOutline?.Remove();
-        
-        var aSchemeClr = new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) };
-        var aSolidFill = new A.SolidFill(aSchemeClr);
-        var aOutlineNew = new A.Outline(aSolidFill);
-        pSpPr.Append(aOutlineNew);
 
-        return aOutlineNew;
+        aOutline = new A.Outline(
+            new A.SolidFill(
+                new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) }));
+        pSpPr.Append(aOutline);
+
+        return aOutline;
     }
 }

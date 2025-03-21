@@ -6,5 +6,5 @@ internal readonly ref struct Points(decimal points)
 
     internal float AsPixels() => (float)points * 96 / 72;
 
-    internal int AsHundredsOfPoints() => (int)points * 100;
+    internal int AsHundredPoints() => (int)points * 100;
 }

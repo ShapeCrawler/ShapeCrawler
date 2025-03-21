@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
-using ShapeCrawler.Exceptions;
 using System.Text.Json;
 using ShapeCrawler.Shapes;
 
@@ -97,23 +96,21 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void Y_Getter_returns_y_coordinate_in_pixels()
+    public void Y_Getter_returns_y_coordinate()
     {
         // Arrange
-        IShape shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IShape shapeCase2 = new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
-        IShape shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        var pres1 = new Presentation(TestAsset("006_1 slides.pptx"));
+        var pres2 = new Presentation(TestAsset("018.pptx"));
+        var pres3 = new Presentation(TestAsset("009_table.pptx"));
+        var shapeCase1 = pres1.Slide(1).Shapes.First(sp => sp.Id == 2);
+        var shapeCase2 = pres2.Slide(1).Shapes.First(sp => sp.Id == 7);
+        var shapeCase3 = pres3.Slide(2).Shapes.First(sp => sp.Id == 9);
         float verticalResolution = 96;
 
-        // Act
-        decimal yCoordinate1 = shapeCase1.Y;
-        decimal yCoordinate2 = shapeCase2.Y;
-        decimal yCoordinate3 = shapeCase3.Y;
-
-        // Assert
-        yCoordinate1.Should().Be((int)(1122363 * 96 / 914400));
-        yCoordinate2.Should().Be((int)(4 * 96 / 914400));
-        yCoordinate3.Should().Be((int)(3463288 * 96 / 914400));
+        // Act & Assert
+        shapeCase1.Y.Should().BeApproximately(88.37m, 0.01m);
+        shapeCase2.Y.Should().BeApproximately(0.00031m, 0.00001m);
+        shapeCase3.Y.Should().BeApproximately(272.69m, 0.01m);
     }
 
     [Test]
@@ -131,38 +128,36 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void Y_Setter_moves_the_Up_hand_grouped_shape_to_Up()
-    {
-        // Arrange
-        var pptx = TestAsset("autoshape-grouping.pptx");
-        var pres = new Presentation(pptx);
-        var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
-        var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
-
-        // Act
-        groupedShape.Y = 359;
-
-        // Assert
-        groupedShape.Y.Should().Be(359);
-        parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
-        parentGroupShape.Height.Should().BeApproximately(172.84m, 0.01m);
-    }
-
-    [Test]
-    public void Y_Setter_moves_the_Down_hand_grouped_shape_to_Down()
+    public void Grouped_Shape_Y_Setter_raises_up_group_shape()
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
+        var groupShape = pres.Slide(1).Shape<IGroupShape>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
+
+        // Act
+        groupedShape.Y = 307;
+
+        // Assert
+        groupedShape.Y.Should().Be(307);
+        groupShape.Y.Should().Be(307, "because the moved grouped shape was on the up-hand side");
+        groupShape.Height.Should().BeApproximately(91.87m, 0.01m);
+    }
+
+    [Test]
+    public void Y_Setter_increases_the_height_of_the_group_shape()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
+        var groupShape = pres.Slide(1).Shape<IGroupShape>("Group 2");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
 
         // Act
-        groupedShape.Y = 555;
+        groupedShape.Y = 372;
 
         // Assert
-        groupedShape.Y.Should().Be(555);
-        groupShape.Height.Should().BeApproximately(179.11m, 0.01m,
-            "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+        groupedShape.Y.Should().Be(372);
+        groupShape.Height.Should().BeApproximately(89.13m, 0.01m);
     }
 
     [Test]
@@ -174,12 +169,12 @@ public class ShapeTests : SCTest
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
 
         // Act
-        groupedShape.X = 67;
+        groupedShape.X = 49m;
 
         // Assert
-        groupedShape.X.Should().Be(67);
-        groupShape.X.Should().Be(67, "because the moved grouped shape was on the left-hand side");
-        groupShape.Width.Should().BeApproximately(117.25m, 0.01m);
+        groupedShape.X.Should().Be(49);
+        groupShape.X.Should().Be(49, "because the moved grouped shape was on the left-hand side");
+        groupShape.Width.Should().BeApproximately(89.18m, 0.01m);
     }
 
     [Test]
@@ -189,36 +184,32 @@ public class ShapeTests : SCTest
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
+        var groupShapeX = groupShape.X;
 
         // Act
-        groupedShape.X = 91;
+        groupedShape.X = 69m;
 
         // Assert
-        groupedShape.X.Should().Be(91);
-        groupShape.X.Should().Be(79,
+        groupedShape.X.Should().Be(69m);
+        groupShape.X.Should().BeApproximately(groupShapeX, 0.01m,
             "because the X-coordinate of parent group shouldn't be changed when a grouped shape is moved to the right side");
-        groupShape.Width.Should().BeApproximately(115.97m, 0.01m);
+        groupShape.Width.Should().BeApproximately(87.26m, 0.01m);
     }
 
     [Test]
-    public void Width_returns_shape_width_in_pixels()
+    public void Width_returns_shape_width_in_points()
     {
         // Arrange
-        IShape shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IGroupShape groupShape =
+        var shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        var groupShape =
             (IGroupShape)new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
-        IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
-        IShape shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        var shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
+        var shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
-        // Act
-        decimal width1 = shapeCase1.Width;
-        decimal width2 = shapeCase2.Width;
-        decimal width3 = shapeCase3.Width;
-
-        // Assert
-        (width1 * 914400 / 96).Should().Be(9144000m);
-        (width2 * 914400 / 96).Should().Be(1181377m);
-        (width3 * 914400 / 96).Should().Be(485775m);
+        // Act & Assert
+        shapeCase1.Width.Should().BeApproximately(720m, 0.01m);
+        shapeCase2.Width.Should().BeApproximately(93.02m, 0.01m);
+        shapeCase3.Width.Should().BeApproximately(38.252m, 0.01m);
     }
 
     [Test]
@@ -234,7 +225,7 @@ public class ShapeTests : SCTest
         var height = groupedShape.Height;
 
         // Assert
-        height.Should().BeApproximately(68.67m, 0.01m);
+        height.Should().BeApproximately(51.50m, 0.01m);
     }
 
     [TestCase(2, Geometry.Rectangle)]
@@ -489,23 +480,24 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    [SlideShape("021.pptx", 4, 2, 383)]
-    [SlideShape("008.pptx", 1, 3, 66)]
-    [SlideShape("006_1 slides.pptx", 1, 2, 160)]
-    [SlideShape("009_table.pptx", 2, 9, 73)]
-    [SlideShape("025_chart.pptx", 3, 7, 79)]
-    [SlideShape("018.pptx", 1, "Picture Placeholder 1", 9)]
-    public void X_Getter_returns_x_coordinate_in_pixels(IShape shape, int expectedX)
+    [SlideShape("021.pptx", 4, 2, 287.68)]
+    [SlideShape("008.pptx", 1, 3, 49.5)]
+    [SlideShape("006_1 slides.pptx", 1, 2, 120)]
+    [SlideShape("009_table.pptx", 2, 9, 55.06)]
+    [SlideShape("025_chart.pptx", 3, 7, 59.63)]
+    [SlideShape("018.pptx", 1, "Picture Placeholder 1", 7.27)]
+    public void X_Getter_returns_x_coordinate(IShape shape, double expectedX)
     {
         // Act
         decimal x = shape.X;
+        var expectedXPoints = (decimal)expectedX;
 
         // Assert
-        x.Should().Be(expectedX);
+        x.Should().BeApproximately(expectedXPoints, 0.01m);
     }
 
     [Test]
-    public void X_Getter_returns_x_coordinate_of_Grouped_shape_in_pixels()
+    public void X_Getter_returns_x_coordinate_of_Grouped_shape_in_points()
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
@@ -515,12 +507,12 @@ public class ShapeTests : SCTest
         decimal x = shape.X;
 
         // Assert
-        x.Should().BeApproximately(53.05m, 0.01m);
+        x.Should().BeApproximately(39.94m, 0.01m);
     }
 
     [Test]
-    [TestCase("050_title-placeholder.pptx", 1, 2, 777.6)]
-    [TestCase("051_title-placeholder.pptx", 1, 3074, 864.0)]
+    [TestCase("050_title-placeholder.pptx", 1, 2, 583.2)]
+    [TestCase("051_title-placeholder.pptx", 1, 3074, 648)]
     public void Width_returns_width_of_Title_placeholder(
         string filename,
         int slideNumber,
@@ -539,10 +531,10 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    [SlideShape("006_1 slides.pptx", 1, "Shape 2", 149.66)]
-    [SlideShape("009_table.pptx", 2, "Object 3", 39.17)]
-    [SlideShape("autoshape-grouping.pptx", 1, "Group 2", 108.02)]
-    public void Height_returns_shape_height_in_pixels(IShape shape, double expectedHeight)
+    [SlideShape("006_1 slides.pptx", 1, "Shape 2", 112.24)]
+    [SlideShape("009_table.pptx", 2, "Object 3", 29.37)]
+    [SlideShape("autoshape-grouping.pptx", 1, "Group 2", 81.01)]
+    public void Height_returns_shape_height_in_points(IShape shape, double expectedHeight)
     {
         // Act
         var height = shape.Height;

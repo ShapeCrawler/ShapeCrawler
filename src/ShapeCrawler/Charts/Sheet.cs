@@ -6,19 +6,10 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Spreadsheets;
+namespace ShapeCrawler.Charts;
 
-internal record Sheet
+internal sealed class Sheet(EmbeddedPackagePart embeddedPackagePart, string sheetName)
 {
-    private readonly ChartPart chartPart;
-    private readonly string sheetName;
-
-    internal Sheet(ChartPart chartPart, string sheetName)
-    {
-        this.chartPart = chartPart;
-        this.sheetName = sheetName;
-    }
-
     internal void UpdateCell(string address, string value)
     {
         this.UpdateCell(address, value, X.CellValues.Number);
@@ -26,9 +17,9 @@ internal record Sheet
 
     internal void UpdateCell(string address, string value, X.CellValues type)
     {
-        var stream = this.chartPart.EmbeddedPackagePart!.GetStream();
+        var stream = embeddedPackagePart.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, true);
-        var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == this.sheetName);
+        var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkSpreadsheetDocument.WorkbookPart!.GetPartById(xSheet.Id!);
         var xCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
         var xCell = xCells.FirstOrDefault(xCell => xCell.CellReference == address);

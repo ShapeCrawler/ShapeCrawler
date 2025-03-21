@@ -82,6 +82,6 @@ internal sealed class SlideMaster : ISlideMaster
             .Elements<P.Shape>()
             .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
         
-        return pSldNum is null ? null : new MasterSlideNumber(this.sdkSlideMasterPart, pSldNum);
+        return pSldNum is null ? null : new MasterSlideNumber(pSldNum);
     }
 }

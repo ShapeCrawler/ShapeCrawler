@@ -5,7 +5,6 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -35,7 +34,7 @@ public sealed class Presentation : IPresentation
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(this);
+        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -50,7 +49,7 @@ public sealed class Presentation : IPresentation
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(this);
+        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -68,12 +67,24 @@ public sealed class Presentation : IPresentation
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollectionCollection(this.presDocument);
         this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(this);
+        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
             {
                 Modified = SCSettings.TimeProvider.UtcNow
             };
+    }
+
+    internal Presentation(PresentationDocument presDocument)
+    {
+        this.presDocument = presDocument;
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollectionCollection(this.presDocument);
+        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
+        this.Properties =
+            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
 
     /// <inheritdoc />

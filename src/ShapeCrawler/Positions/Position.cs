@@ -1,47 +1,51 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Positions;
 
-internal sealed class Position
+internal sealed class Position(OpenXmlElement pShapeTreeElement)
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly OpenXmlElement pShapeTreeElement;
-
-    internal Position(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal decimal X
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.pShapeTreeElement = pShapeTreeElement;
+        get
+        {
+            var emus = this.GetAOffset().X!.Value;
+            return new Emus(emus).AsPoints();
+        }
+
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            this.GetAOffset().X = new Int64Value(emus);
+        }
     }
 
-    internal decimal X() => new Emus(this.AOffset().X!.Value).AsHorizontalPixels();
-   
-    internal void UpdateX(decimal pixels)
+    internal decimal Y
     {
-        var emus = new Pixels(pixels).AsHorizontalEmus();
-        this.AOffset().X = new Int64Value(emus);
-    }
-    
-    internal decimal Y() => new Emus(this.AOffset().Y!.Value).AsVerticalPixels();
+        get
+        {
+            var emus = this.GetAOffset().Y!.Value;
+            return new Emus(emus).AsPoints();
+        }
 
-    internal void UpdateY(decimal pixels)
-    {
-        var emus = new Pixels(pixels).AsVerticalEmus();
-        this.AOffset().Y = new Int64Value(emus);
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            this.GetAOffset().Y = new Int64Value(emus);
+        }
     }
 
-    private A.Offset AOffset()
+    private A.Offset GetAOffset()
     {
-        var aOffset = this.pShapeTreeElement.Descendants<A.Offset>().FirstOrDefault();
+        var aOffset = pShapeTreeElement.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset != null)
         {
             return aOffset;
         }
 
-        return new ReferencedPShape(this.sdkTypedOpenXmlPart, this.pShapeTreeElement).ATransform2D().Offset!;
-    }  
+        return new ReferencedPShape(pShapeTreeElement).ATransform2D().Offset!;
+    }
 }

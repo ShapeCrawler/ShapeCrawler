@@ -20,7 +20,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
-        var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
+        var rId = new SCOpenXmlPart(slidePart).GetNextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
         GeneratePieChartContent(chartPart, categoryValues, seriesName);
         this.InsertChartGraphicFrame(chartPart, x, y, width, height);

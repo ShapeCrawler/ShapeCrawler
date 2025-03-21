@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Spreadsheets;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;

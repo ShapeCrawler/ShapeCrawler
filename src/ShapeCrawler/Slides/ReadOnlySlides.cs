@@ -8,27 +8,26 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
+internal sealed class ReadOnlySlides : IReadOnlyList<ISlide>
 {
     private readonly IEnumerable<SlidePart> slideParts;
-
     private readonly MediaCollection mediaCollection = new();
 
     internal ReadOnlySlides(IEnumerable<SlidePart> slideParts)
     {
         this.slideParts = slideParts;
-        this.BuildMediaCollection();
+        this.GetMediaCollection();
     }
 
-    public int Count => this.SlideList().Count;
+    public int Count => this.GetSlides().Count;
 
-    public ISlide this[int index] => this.SlideList()[index];
+    public ISlide this[int index] => this.GetSlides()[index];
 
-    public IEnumerator<ISlide> GetEnumerator() => this.SlideList().GetEnumerator();
+    public IEnumerator<ISlide> GetEnumerator() => this.GetSlides().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private List<Slide> SlideList()
+    private List<Slide> GetSlides()
     {
         if (!this.slideParts.Any())
         {
@@ -43,18 +42,20 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
         for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
         {
             var pSlideId = pSlideIdList[slideIndex];
-            var sdkSlidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
-            var layout = new SlideLayout(sdkSlidePart.SlideLayoutPart!);
-            var newSlide = new Slide(sdkSlidePart, layout, this.mediaCollection);
+            var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
+            var newSlide = new Slide(
+                slidePart,
+                new SlideLayout(slidePart.SlideLayoutPart!),
+                this.mediaCollection);
             slides.Add(newSlide);
         }
 
         return slides;
     }
 
-    private void BuildMediaCollection()
+    private void GetMediaCollection()
     {
-        var imageParts = this.slideParts.SelectMany(x => x.ImageParts);
+        var imageParts = this.slideParts.SelectMany(slidePart => slidePart.ImageParts);
         foreach (var imagePart in imageParts)
         {
             using var stream = imagePart.GetStream();

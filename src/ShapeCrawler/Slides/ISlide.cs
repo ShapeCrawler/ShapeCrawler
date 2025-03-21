@@ -7,7 +7,6 @@ using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
@@ -43,7 +42,7 @@ public interface ISlide
     /// <summary>
     ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
     /// </summary>
-    SlidePart SdkSlidePart { get; }
+    SlidePart SlidePart { get; }
     
     /// <summary>
     ///     Gets the shape collection.
@@ -101,7 +100,7 @@ public interface ISlide
     ///     Returns shape with specified name.
     /// </summary>
     /// <typeparam name="T">Shape type.</typeparam>
-    IShape Shape<T>(string name)
+    T Shape<T>(string name)
         where T : IShape;
 }
 
@@ -111,19 +110,19 @@ internal sealed class Slide : ISlide
     private IShapeFill? fill;
 
     internal Slide(
-        SlidePart sdkSlidePart,
+        SlidePart slidePart,
         ISlideLayout slideLayout,
         MediaCollection mediaCollection)
     {
-        this.SdkSlidePart = sdkSlidePart;
+        this.SlidePart = slidePart;
         this.customXmlPart = this.GetSldCustomXmlPart();
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapeCollection(this.SdkSlidePart, new ShapeCollection(sdkSlidePart), mediaCollection);
+        this.Shapes = new SlideShapeCollection(this.SlidePart, new ShapeCollection(slidePart), mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
 
-    public SlidePart SdkSlidePart { get; }
+    public SlidePart SlidePart { get; }
 
     public ISlideShapeCollection Shapes { get; }
 
@@ -147,8 +146,8 @@ internal sealed class Slide : ISlide
         {
             if (this.fill is null)
             {
-                var pcSld = this.SdkSlidePart.Slide.CommonSlideData
-                    ?? this.SdkSlidePart.Slide.AppendChild<DocumentFormat.OpenXml.Presentation.CommonSlideData>(new());
+                var pcSld = this.SlidePart.Slide.CommonSlideData
+                    ?? this.SlidePart.Slide.AppendChild<DocumentFormat.OpenXml.Presentation.CommonSlideData>(new());
 
                 // Background element needs to be first, else it gets ignored.
                 var pBg = pcSld.GetFirstChild<DocumentFormat.OpenXml.Presentation.Background>()
@@ -157,25 +156,25 @@ internal sealed class Slide : ISlide
                 var pBgPr = pBg.GetFirstChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>()
                     ?? pBg.AppendChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>(new());
 
-                this.fill = new ShapeFill(this.SdkSlidePart, pBgPr);
+                this.fill = new ShapeFill(pBgPr);
             }
 
             return this.fill!;
         }
     }
 
-    public bool Hidden() => this.SdkSlidePart.Slide.Show is not null && !this.SdkSlidePart.Slide.Show.Value;
+    public bool Hidden() => this.SlidePart.Slide.Show is not null && !this.SlidePart.Slide.Show.Value;
 
     public void Hide()
     {
-        if (this.SdkSlidePart.Slide.Show is null)
+        if (this.SlidePart.Slide.Show is null)
         {
             var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
-            this.SdkSlidePart.Slide.SetAttribute(showAttribute);
+            this.SlidePart.Slide.SetAttribute(showAttribute);
         }
         else
         {
-            this.SdkSlidePart.Slide.Show = false;
+            this.SlidePart.Slide.Show = false;
         }
     }
 
@@ -185,7 +184,7 @@ internal sealed class Slide : ISlide
 
     public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
 
-    public IShape Shape<T>(string name)
+    public T Shape<T>(string name)
         where T : IShape
         => this.Shapes.GetByName<T>(name);
 
@@ -239,7 +238,7 @@ internal sealed class Slide : ISlide
         }
     }
 
-    internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
+    internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
     /// <summary>
     ///     Iterates group recursively and add all text boxes in the list.
@@ -266,7 +265,7 @@ internal sealed class Slide : ISlide
 
     private ITextBox? GetNotes()
     {
-        var notes = this.SdkSlidePart.NotesSlidePart;
+        var notes = this.SlidePart.NotesSlidePart;
 
         if (notes is null)
         {
@@ -310,8 +309,8 @@ internal sealed class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = new SCOpenXmlPart(this.SdkSlidePart).NextRelationshipId();
-        var notesSlidePart1 = this.SdkSlidePart.AddNewPart<NotesSlidePart>(rid);
+        var rid = new SCOpenXmlPart(this.SlidePart).GetNextRelationshipId();
+        var notesSlidePart1 = this.SlidePart.AddNewPart<NotesSlidePart>(rid);
         var notesSlide = new NotesSlide(
             new CommonSlideData(
                 new ShapeTree(
@@ -334,9 +333,9 @@ internal sealed class Slide : ISlide
 
     private int ParseNumber()
     {
-        var sdkPresentationDocument = (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
         var presentationPart = sdkPresentationDocument.PresentationPart!;
-        var currentSlidePartId = presentationPart.GetIdOfPart(this.SdkSlidePart);
+        var currentSlidePartId = presentationPart.GetIdOfPart(this.SlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
         for (var i = 0; i < slideIdList.Count; i++)
@@ -359,7 +358,7 @@ internal sealed class Slide : ISlide
 
         var currentIndex = this.Number - 1;
         var destIndex = newSlideNumber - 1;
-        var sdkPresentationDocument = (PresentationDocument)this.SdkSlidePart.OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
         if (destIndex < 0 || currentIndex >= sdkPresentationDocument.PresentationPart!.SlideParts.Count() ||
             destIndex == currentIndex)
         {
@@ -410,7 +409,7 @@ internal sealed class Slide : ISlide
         var customXmlPartStream = this.customXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
-        return raw[Constants.CustomDataElementName.Length..];
+        return raw[3..];
     }
 
     private void SetCustomData(string? value)
@@ -418,7 +417,7 @@ internal sealed class Slide : ISlide
         Stream customXmlPartStream;
         if (this.customXmlPart == null)
         {
-            var newSlideCustomXmlPart = this.SdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+            var newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
             this.customXmlPart = newSlideCustomXmlPart;
         }
@@ -428,17 +427,17 @@ internal sealed class Slide : ISlide
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
-        customXmlStreamReader.Write($"{Constants.CustomDataElementName}{value}");
+        customXmlStreamReader.Write($"ctd{value}");
     }
 
     private CustomXmlPart? GetSldCustomXmlPart()
     {
-        foreach (var customXmlPart in this.SdkSlidePart.CustomXmlParts)
+        foreach (var customXmlPart in this.SlidePart.CustomXmlParts)
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             var customXmlPartText = customXmlPartStream.ReadToEnd();
             if (customXmlPartText.StartsWith(
-                    Constants.CustomDataElementName,
+                    "ctd",
                     StringComparison.CurrentCulture))
             {
                 return customXmlPart;

@@ -6,25 +6,13 @@ using ShapeCrawler.Presentations;
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class MasterPortionAttribute : Attribute, ITestBuilder
+public class MasterPortionAttribute(string pptxName, string shapeName, int paragraphNumber, int portionNumber)
+    : Attribute, ITestBuilder
 {
-    private readonly string pptxName;
-    private readonly string shapeName;
-    private readonly int paragraphNumber;
-    private readonly int portionNumber;
-
-    public MasterPortionAttribute(string pptxName, string shapeName, int paragraphNumber, int portionNumber)
-    {
-        this.pptxName = pptxName;
-        this.shapeName = shapeName;
-        this.paragraphNumber = paragraphNumber;
-        this.portionNumber = portionNumber;
-    }
-
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pres = new Presentation(SCTest.TestAsset(this.pptxName));
-        var portionQuery = new TestMasterPortionQuery(this.shapeName, this.paragraphNumber, this.portionNumber);
+        var pres = new Presentation(SCTest.TestAsset(pptxName));
+        var portionQuery = new TestMasterPortionQuery(shapeName, paragraphNumber, portionNumber);
 
         var parameters = new TestCaseParameters(new object[] { pres, portionQuery });
         

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Linq;
 
-namespace ShapeCrawler.Spreadsheets;
+namespace ShapeCrawler.Charts;
 
 internal readonly ref struct CellsRange(string range)
 {

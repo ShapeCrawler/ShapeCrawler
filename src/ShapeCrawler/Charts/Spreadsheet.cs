@@ -7,18 +7,11 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Spreadsheets;
+namespace ShapeCrawler.Charts;
 
-internal readonly record struct Spreadsheet
+internal sealed class Spreadsheet(ChartPart chartPart)
 {
-    private readonly ChartPart chartPart;
-
-    internal Spreadsheet(ChartPart chartPart)
-    {
-        this.chartPart = chartPart;
-    }
-
-    internal Sheet Sheet(string sheetName) => new(this.chartPart, sheetName);
+    internal Sheet Sheet(string sheetName) => new(chartPart.EmbeddedPackagePart!, sheetName);
 
     internal List<double> FormulaValues(string formula)
     {
@@ -26,7 +19,7 @@ internal readonly record struct Spreadsheet
         var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
         var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> A2:A5
 
-        var stream = this.chartPart.EmbeddedPackagePart!.GetStream();
+        var stream = chartPart.EmbeddedPackagePart!.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, false);
         var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!;
         var sdkSheet = sdkWorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
@@ -56,7 +49,7 @@ internal readonly record struct Spreadsheet
 
     internal byte[] AsByteArray()
     {
-        var stream = this.chartPart.EmbeddedPackagePart!.GetStream();
+        var stream = chartPart.EmbeddedPackagePart!.GetStream();
         var mStream = new MemoryStream();
         stream.CopyTo(mStream);
 

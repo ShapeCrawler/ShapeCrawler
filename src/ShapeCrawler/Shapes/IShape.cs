@@ -10,12 +10,12 @@ namespace ShapeCrawler;
 public interface IShape : IPosition, IShapeGeometry
 {
     /// <summary>
-    ///     Gets or sets the width of the shape in pixels.
+    ///     Gets or sets the width of the shape in points.
     /// </summary>
     decimal Width { get; set; }
 
     /// <summary>
-    ///     Gets or sets the height of the shape in pixels.
+    ///     Gets or sets the height of the shape in points.
     /// </summary>
     decimal Height { get; set; }
 
@@ -113,6 +113,11 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets or sets the text content of the shape.
     /// </summary>
     string Text { get; set; }
+    
+    /// <summary>
+    ///     Gets the parent presentation.
+    /// </summary>
+    IPresentation Presentation { get; }
 
     /// <summary>
     ///     Removes the shape from the slide.

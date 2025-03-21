@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Charts;
 

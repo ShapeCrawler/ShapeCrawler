@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
+﻿using ShapeCrawler.Drawing;
 using ShapeCrawler.Tables; 
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -50,14 +49,14 @@ public interface ITableCell
 
 internal sealed class TableCell : ITableCell
 {
-    internal TableCell(OpenXmlPart sdkTypedOpenXmlPart, A.TableCell aTableCell, int rowIndex, int columnIndex)
+    internal TableCell(A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.TextBox = new TextBoxTableCells(sdkTypedOpenXmlPart, this.ATableCell);
+        this.TextBox = new TableCellTextBox(this.ATableCell);
         var aTcPr = aTableCell.TableCellProperties!;
-        this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
+        this.Fill = new TableCellFill(aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);
         this.BottomBorder = new BottomBorder(aTableCell.TableCellProperties!);
         this.LeftBorder = new LeftBorder(aTableCell.TableCellProperties!);

@@ -5,42 +5,26 @@ using NUnit.Framework.Internal.Builders;
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class SlideParagraphAttribute : Attribute, ITestBuilder
+public class SlideParagraphAttribute(
+    string caseName,
+    string pptxName,
+    int slideNumber,
+    string shapeName,
+    int paragraphNumber,
+    object expectedResult)
+    : Attribute, ITestBuilder
 {
-    private readonly string caseName;
-    private readonly string pptxName;
-    private readonly int slideNumber;
-    private readonly string shapeName;
-    private readonly int paragraphNumber;
-    private readonly object expectedResult;
-
-    public SlideParagraphAttribute(
-        string caseName,
-        string pptxName,
-        int slideNumber,
-        string shapeName,
-        int paragraphNumber,
-        object expectedResult)
-    {
-        this.caseName = caseName;
-        this.pptxName = pptxName;
-        this.slideNumber = slideNumber;
-        this.shapeName = shapeName;
-        this.paragraphNumber = paragraphNumber;
-        this.expectedResult = expectedResult;
-    }
-    
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pres = new Presentation(SCTest.TestAsset(this.pptxName));
-        var paragraph = pres.Slides[this.slideNumber - 1].Shapes.GetByName(this.shapeName).TextBox
-            .Paragraphs[this.paragraphNumber - 1];
+        var pres = new Presentation(SCTest.TestAsset(pptxName));
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox
+            .Paragraphs[paragraphNumber - 1];
 
-        var parameters = new TestCaseParameters(new[] { paragraph, this.expectedResult });
+        var parameters = new TestCaseParameters(new[] { paragraph, expectedResult });
 
-        if (!string.IsNullOrEmpty(this.caseName))
+        if (!string.IsNullOrEmpty(caseName))
         {
-            parameters.TestName = this.caseName;
+            parameters.TestName = caseName;
         }
 
         yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);

@@ -11,7 +11,7 @@ public interface ITextBox
     /// <summary>
     ///     Gets the collection of paragraphs.
     /// </summary>
-    IParagraphs Paragraphs { get; }
+    IParagraphCollection Paragraphs { get; }
 
     /// <summary>
     ///     Gets or sets text.
@@ -29,22 +29,22 @@ public interface ITextBox
     AutofitType AutofitType { get; set; }
 
     /// <summary>
-    ///     Gets or sets the left margin in centimeters.
+    ///     Gets or sets the left margin in points.
     /// </summary>
     decimal LeftMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets the right margin in centimeters.
+    ///     Gets or sets the right margin in points.
     /// </summary>
     decimal RightMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets the top margin in centimeters.
+    ///     Gets or sets the top margin in points.
     /// </summary>
     decimal TopMargin { get; set; }
 
     /// <summary>
-    ///     Gets or sets the bottom margin in centimeters.
+    ///     Gets or sets the bottom margin in points.
     /// </summary>
     decimal BottomMargin { get; set; }
 

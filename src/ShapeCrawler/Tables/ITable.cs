@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
@@ -65,11 +63,11 @@ internal sealed class Table : CopyableShape, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
 
-    internal Table(OpenXmlPart openXmlPart, OpenXmlCompositeElement pShapeTreeElement)
-        : base(openXmlPart, pShapeTreeElement)
+    internal Table(OpenXmlCompositeElement pShapeTreeElement)
+        : base(pShapeTreeElement)
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-        this.Rows = new TableRows(openXmlPart, this.pGraphicFrame);
+        this.Rows = new TableRows(this.pGraphicFrame);
         this.Columns = new TableColumns(this.pGraphicFrame);
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
@@ -77,7 +75,7 @@ internal sealed class Table : CopyableShape, ITable
     public override ShapeType ShapeType => ShapeType.Table;
 
     public ITableColumns Columns { get; }
-    
+
     public ITableRows Rows { get; }
 
     public ITableStyle TableStyle
@@ -86,10 +84,20 @@ internal sealed class Table : CopyableShape, ITable
         set => this.SetTableStyle(value);
     }
 
-    public new decimal Height 
-    { 
+    public new decimal Height
+    {
         get => base.Height;
-        set => this.UpdateTableHeight(value); 
+        set
+        {
+            var percentNewHeight = value / base.Height;
+
+            base.Height = value;
+
+            foreach (TableRow row in this.Rows)
+            {
+                row.SetHeight((int)(row.Height * percentNewHeight));
+            }
+        }
     }
 
     public ITableStyleOptions TableStyleOptions { get; }
@@ -98,7 +106,7 @@ internal sealed class Table : CopyableShape, ITable
 
     public override Geometry GeometryType => Geometry.Rectangle;
 
-    private A.Table ATable => this.pGraphicFrame.ATable();
+    private A.Table ATable => this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
 
     public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
@@ -143,7 +151,7 @@ internal sealed class Table : CopyableShape, ITable
         }
 
         this.RemoveColumnIfNeeded(aTableRows);
-        this.RemoveRowIfNeeded();
+        this.RemoveRowOnDemand();
     }
 
     public override void Remove() => this.pGraphicFrame.Remove();
@@ -173,19 +181,7 @@ internal sealed class Table : CopyableShape, ITable
         return this.tableStyle;
     }
 
-    private void UpdateTableHeight(decimal value)
-    {
-        var percent_new_height = value / base.Height;
-
-        base.Height = value;
-
-        foreach (TableRow row in this.Rows)
-        {
-            row.SetHeight((int)(row.Height * percent_new_height));
-        }
-    }
-
-    private void RemoveRowIfNeeded()
+    private void RemoveRowOnDemand()
     {
         int rowIdx = 0;
 

@@ -2,58 +2,84 @@
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Texts;
 
-internal sealed record TextBox : ITextBox
+internal sealed class TextBox: ITextBox
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly OpenXmlElement sdkTextBody;
-
+    private readonly OpenXmlElement textBody;
+    private readonly ShapeSize shapeSize;
     private TextVerticalAlignment? vAlignment;
 
-    internal TextBox(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
+    internal TextBox(OpenXmlElement textBody)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.sdkTextBody = sdkTextBody;
+        this.textBody = textBody;
+        this.shapeSize = new ShapeSize(textBody.Parent!);
     }
 
-    public IParagraphs Paragraphs => new Paragraphs(this.sdkTypedOpenXmlPart, this.sdkTextBody);
+    public IParagraphCollection Paragraphs => new ParagraphCollection(this.textBody);
 
     public string Text
     {
         get
         {
-            var sb = new StringBuilder();
-            sb.Append(this.Paragraphs[0].Text);
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append(this.Paragraphs[0].Text);
 
             var paragraphsCount = this.Paragraphs.Count;
             var index = 1; // we've already added the text of first paragraph
             while (index < paragraphsCount)
             {
-                sb.AppendLine();
-                sb.Append(this.Paragraphs[index].Text);
+                stringBuilder.AppendLine();
+                stringBuilder.Append(this.Paragraphs[index].Text);
 
                 index++;
             }
 
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
 
-        set => this.SetText(value);
+        set
+        {
+            var paragraphs = this.Paragraphs.ToList();
+            var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
+            if (portionPara == null)
+            {
+                portionPara = paragraphs.First();
+                portionPara.Portions.AddText(value);
+            }
+            else
+            {
+                var removingParagraphs = paragraphs.Where(p => p != portionPara);
+                foreach (var removingParagraph in removingParagraphs)
+                {
+                    removingParagraph.Remove();
+                }
+
+                portionPara.Text = value;
+            }
+
+            if (this.AutofitType == AutofitType.Shrink)
+            {
+                this.ShrinkText(value, portionPara);
+            }
+
+            this.ResizeParentShapeOnDemand();
+        }
     }
-    
+
     public AutofitType AutofitType
     {
         get
         {
-            var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>();
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
 
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
@@ -76,7 +102,7 @@ internal sealed record TextBox : ITextBox
                 return;
             }
 
-            var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
             var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
             var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
             var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
@@ -101,7 +127,7 @@ internal sealed record TextBox : ITextBox
                         shrink?.Remove();
                         resize = new A.ShapeAutoFit();
                         aBodyPr.Append(resize);
-                        this.ResizeParentShape();
+                        this.ResizeParentShapeOnDemand();
                         break;
                     }
 
@@ -113,31 +139,69 @@ internal sealed record TextBox : ITextBox
 
     public decimal LeftMargin
     {
-        get => this.GetLeftMargin();
-        set => this.SetLeftMargin(value);
+        get
+        {
+                return new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
+        }
+
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.LeftInset = new Int32Value((int)emu);
+        }
     }
 
     public decimal RightMargin
     {
-        get => this.GetRightMargin();
-        set => this.SetRightMargin(value);
+        get => new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.RightInset).Value;
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.RightInset = new Int32Value((int)emu);
+        }
     }
 
     public decimal TopMargin
     {
-        get => this.GetTopMargin();
-        set => this.SetTopMargin(value);
+        get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.TopInset).Value;
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.TopInset = new Int32Value((int)emu);
+        }
     }
 
     public decimal BottomMargin
     {
-        get => this.GetBottomMargin();
-        set => this.SetBottomMargin(value);
+        get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.BottomInset).Value;
+        set
+        {
+            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var emu = new Points(value).AsEmus();
+            bodyProperties.BottomInset = new Int32Value((int)emu);
+        }
     }
 
-    public bool TextWrapped => this.IsTextWrapped();
+    public bool TextWrapped
+    {
+        get
+        {
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
 
-    public string SdkXPath => new XmlPath(this.sdkTextBody).XPath;
+            if (wrap.Value == "none")
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public string SdkXPath => new XmlPath(this.textBody).XPath;
 
     public TextVerticalAlignment VerticalAlignment
     {
@@ -148,7 +212,7 @@ internal sealed record TextBox : ITextBox
                 return this.vAlignment.Value;
             }
 
-            var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>();
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
 
             if (aBodyPr!.Anchor?.Value == A.TextAnchoringTypeValues.Center)
             {
@@ -168,72 +232,19 @@ internal sealed record TextBox : ITextBox
 
         set => this.SetVerticalAlignment(value);
     }
-
-    private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
-    {
-        var aTextAlignmentTypeValue = alignmentValue switch
-        {
-            TextVerticalAlignment.Top => A.TextAnchoringTypeValues.Top,
-            TextVerticalAlignment.Middle => A.TextAnchoringTypeValues.Center,
-            TextVerticalAlignment.Bottom => A.TextAnchoringTypeValues.Bottom,
-            _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
-        };
-
-        var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>();
-
-        if (aBodyPr is not null)
-        {
-            aBodyPr.Anchor = aTextAlignmentTypeValue;
-        }
-
-        this.vAlignment = alignmentValue;
-    }
     
-    private void SetText(string value)
-    {
-        var paragraphs = this.Paragraphs.ToList();
-        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
-        if (portionPara == null)
-        {
-            portionPara = paragraphs.First();
-            portionPara.Portions.AddText(value);
-        }
-        else
-        {
-            var removingParagraphs = paragraphs.Where(p => p != portionPara);
-            foreach (var removingParagraph in removingParagraphs)
-            {
-                removingParagraph.Remove();
-            }
-
-            portionPara.Text = value;
-        }
-
-        if (this.AutofitType == AutofitType.Shrink)
-        {
-            this.ShrinkText(value, portionPara);
-        }
-
-        this.ResizeParentShape();
-    }
-    
-    public void ResizeParentShape()
+    internal void ResizeParentShapeOnDemand()
     {
         if (this.AutofitType != AutofitType.Resize)
         {
             return;
         }
 
-        var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
-        var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
-        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
-        var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
+        var shapeWidthPtCapacity = this.shapeSize.Width - this.LeftMargin - this.RightMargin;
+        var shapeHeightPtCapacity = this.shapeSize.Height - this.TopMargin - this.BottomMargin;
 
-        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
-        var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
-        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
-
-        decimal requiredHeight = 0;
+        decimal textHeightPx = 0;
+        var shapeWidthPxCapacity = new Points(shapeWidthPtCapacity).AsPixels();
         foreach (var paragraph in this.Paragraphs)
         {
             var paragraphPortion = paragraph.Portions.OfType<TextParagraphPortion>();
@@ -247,151 +258,93 @@ internal sealed record TextBox : ITextBox
                 .First().First();
             var scFont = popularPortion.Font;
 
-            var text = paragraph.Text.ToUpper();
-
-            var textWidth = new Text(text, scFont).PxWidth;
-            var textHeight = scFont.Size;
-
-            var requiredRowsCount = textWidth / currentBlockWidth;
-            var integerPart = (int)requiredRowsCount;
-            var fractionalPart = requiredRowsCount - integerPart;
+            var paragraphText = paragraph.Text.ToUpper();
+            var paragraphTextWidthPx = new Text(paragraphText, scFont).WidthPx;
+            var paragraphTextHeightPx = new Points(scFont.Size).AsPixels();
+            var requiredRowsCount = paragraphTextWidthPx / (decimal)shapeWidthPxCapacity;
+            var intRequiredRowsCount = (int)requiredRowsCount;
+            var fractionalPart = requiredRowsCount - intRequiredRowsCount;
             if (fractionalPart > 0)
             {
-                integerPart++;
+                intRequiredRowsCount++;
             }
 
-            requiredHeight += integerPart * textHeight;
+            textHeightPx += intRequiredRowsCount * (int)paragraphTextHeightPx;
         }
 
-        this.UpdateShapeHeight(requiredHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
-        this.UpdateShapeWidthIfNeeded(lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
-    }
-
-    private decimal GetLeftMargin()
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var ins = bodyProperties.LeftInset;
-        return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
-    }
-
-    private decimal GetRightMargin()
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var ins = bodyProperties.RightInset;
-        return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
-    }
-
-    private void SetLeftMargin(decimal centimetre)
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.LeftInset = new Int32Value((int)emu);
-    }
-
-    private void SetRightMargin(decimal centimetre)
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.RightInset = new Int32Value((int)emu);
-    }
-
-    private void SetTopMargin(decimal centimetre)
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.TopInset = new Int32Value((int)emu);
-    }
-
-    private void SetBottomMargin(decimal centimetre)
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.BottomInset = new Int32Value((int)emu);
-    }
-
-    private bool IsTextWrapped()
-    {
-        var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
-
-        if (wrap.Value == "none")
+        this.UpdateShapeHeight(textHeightPx, shapeHeightPtCapacity);
+        if (!this.TextWrapped)
         {
-            return false;
+            this.UpdateShapeWidth();
+        }
+    }
+
+    private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
+    {
+        var aTextAlignmentTypeValue = alignmentValue switch
+        {
+            TextVerticalAlignment.Top => A.TextAnchoringTypeValues.Top,
+            TextVerticalAlignment.Middle => A.TextAnchoringTypeValues.Center,
+            TextVerticalAlignment.Bottom => A.TextAnchoringTypeValues.Bottom,
+            _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
+        };
+
+        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
+
+        if (aBodyPr is not null)
+        {
+            aBodyPr.Anchor = aTextAlignmentTypeValue;
         }
 
-        return true;
+        this.vAlignment = alignmentValue;
     }
 
-    private decimal GetTopMargin()
+    private void ShrinkText(string newText, IParagraph paragraph)
     {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var ins = bodyProperties.TopInset;
-        return ins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
-    }
-
-    private decimal GetBottomMargin()
-    {
-        var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var ins = bodyProperties.BottomInset;
-        return ins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
-    }
-
-    private void ShrinkText(string newText, IParagraph baseParagraph)
-    {
-        var popularFont = baseParagraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size).OrderByDescending(x => x.Count())
+        var popularFont = paragraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
+            .OrderByDescending(x => x.Count())
             .First().First().Font!;
-        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Parent!);
-        
         var text = new Text(newText, popularFont);
-        text.FitInto(shapeSize.Width(), shapeSize.Height());
-        
-        var internalPara = (Paragraph)baseParagraph;
-        internalPara.SetFontSize((int)text.FontSize);
+        text.Fit(this.shapeSize.Width, this.shapeSize.Height);
+        var internalParagraph = (Paragraph)paragraph;
+        internalParagraph.SetFontSize((int)text.FontSize);
     }
 
-    private void UpdateShapeWidthIfNeeded(
-        decimal lMarginPixel,
-        decimal rMarginPixel,
-        TextBox textBox,
-        OpenXmlElement parent)
+    private void UpdateShapeWidth()
     {
-        if (!textBox.TextWrapped)
-        {
-            var longerText = textBox.Paragraphs
-                .Select(x => new { x.Text, x.Text.Length })
-                .OrderByDescending(x => x.Length)
-                .First().Text;
+        var longerText = this.Paragraphs
+            .Select(x => new { x.Text, x.Text.Length })
+            .OrderByDescending(x => x.Length)
+            .First().Text;
 
-            var baseParagraph = this.Paragraphs.First();
-            var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
-                .OrderByDescending(x => x.Count())
-                .First().First();
-            var font = popularPortion.Font;
+        var baseParagraph = this.Paragraphs.First();
+        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
+            .OrderByDescending(x => x.Count())
+            .First().First();
+        var font = popularPortion.Font;
 
-            var widthInPixels = new Text(longerText, font).PxWidth;
-            
-            var newWidth = (int)(widthInPixels * 1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
-                           + lMarginPixel + rMarginPixel;
-            new ShapeSize(this.sdkTypedOpenXmlPart, parent).UpdateWidth(newWidth);
-        }
+        var textWidthPx = new Text(longerText, font).WidthPx;
+        var leftMarginPx = new Points(this.LeftMargin).AsPixels();
+        var rightMarginPx = new Points(this.RightMargin).AsPixels();
+        var newWidthPx =
+            (int)(textWidthPx *
+                  1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
+            + leftMarginPx + rightMarginPx;
+        var newWidthPt = new Pixels((decimal)newWidthPx).AsPoints();
+        this.shapeSize.Width = newWidthPt;
     }
-    
-    private void UpdateShapeHeight(
-        decimal textHeight,
-        decimal tMarginPixel,
-        decimal bMarginPixel,
-        decimal currentBlockHeight,
-        OpenXmlElement parent)
-    {
-        var requiredHeight = textHeight + tMarginPixel + bMarginPixel;
-        var newHeight = requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-        var position = new Position(this.sdkTypedOpenXmlPart, parent);
-        var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
-        size.UpdateHeight(newHeight);
 
-        // We should raise the shape up by the amount which is half of the increased offset.
-        // PowerPoint does the same thing.
-        var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        position.UpdateY(position.Y() - yOffset);
+    private void UpdateShapeHeight(decimal textHeightPx, decimal shapeHeightPtCapacity)
+    {
+        var textHeightPt = new Pixels(textHeightPx).AsPoints();
+        var parentShape = this.textBody.Parent!;
+        var requiredHeightPt = textHeightPt + this.TopMargin + this.BottomMargin;
+        var newHeight = requiredHeightPt + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
+        this.shapeSize.Height = newHeight;
+
+        // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
+        var position = new Position(parentShape);
+        var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
+        position.Y -= yOffset;
     }
 }

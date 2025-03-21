@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -60,33 +59,37 @@ public interface IParagraph
 
 internal sealed class Paragraph : IParagraph
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
-    private readonly SCAParagraph scaParagraph;
+    private readonly SCAParagraph scAParagraph;
     private readonly A.Paragraph aParagraph;
-
     private TextHorizontalAlignment? alignment;
-    
-    internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
-        : this(sdkTypedOpenXmlPart, aParagraph, new SCAParagraph(aParagraph))
+
+    internal Paragraph(A.Paragraph aParagraph)
+        : this(aParagraph, new SCAParagraph(aParagraph))
     {
     }
 
-    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, SCAParagraph scaParagraph)
+    private Paragraph(A.Paragraph aParagraph, SCAParagraph scAParagraph)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aParagraph = aParagraph;
-        this.scaParagraph = scaParagraph;
+        this.scAParagraph = scAParagraph;
         this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.aParagraph);
+        this.Portions = new ParagraphPortions(this.aParagraph);
     }
-
-    public bool IsRemoved { get; set; }
 
     public string Text
     {
-        get => this.ParseText();
+        get
+        {
+            if (this.Portions.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
+        }
+
         set
         {
             if (!this.Portions.Any())
@@ -94,16 +97,16 @@ internal sealed class Paragraph : IParagraph
                 this.Portions.AddText(" ");
             }
 
-            // To set a paragraph text we use a single portion which is the first paragraph portion.
-            var baseARun = this.aParagraph.GetFirstChild<A.Run>() !;
-            var remainingRuns = new List<OpenXmlCompositeElement>();
-
-            remainingRuns.AddRange(this.aParagraph.OfType<A.Run>().Skip(1));
-            remainingRuns.AddRange(this.aParagraph.OfType<A.Break>());
-
-            foreach (var removingRun in remainingRuns)
+            var removingRuns = this.aParagraph.OfType<A.Run>().Skip(1); // to preserve text formatting
+            var removingBreaks = this.aParagraph.OfType<A.Break>();
+            foreach (var removing in removingRuns.ToList())
             {
-                removingRun.Remove();
+                removing.Remove();
+            }
+
+            foreach (var removing in removingBreaks.ToList())
+            {
+                removing.Remove();
             }
 
 #if NETSTANDARD2_0
@@ -111,24 +114,26 @@ internal sealed class Paragraph : IParagraph
 #else
             var textLines = value.Split(Environment.NewLine);
 #endif
-            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun) { Text = textLines.First() };
+            var mainRun = this.aParagraph.GetFirstChild<A.Run>() !;
+            mainRun.Text!.Text = textLines.First();
+
             foreach (var textLine in textLines.Skip(1))
             {
                 if (!string.IsNullOrEmpty(textLine))
                 {
-                    ((ParagraphPortions)this.Portions).AddNewLine();
+                    ((ParagraphPortions)this.Portions).AddLineBreak();
                     this.Portions.AddText(textLine);
                 }
                 else
                 {
-                    ((ParagraphPortions)this.Portions).AddNewLine();
+                    ((ParagraphPortions)this.Portions).AddLineBreak();
                 }
             }
 
             // Resize
-            var sdkTextBody = this.aParagraph.Parent!;
-            var textFrame = new TextBox(this.sdkTypedOpenXmlPart, sdkTextBody);
-            textFrame.ResizeParentShape();
+            var textBody = this.aParagraph.Parent!;
+            var textBox = new TextBox(textBody);
+            textBox.ResizeParentShapeOnDemand();
         }
     }
 
@@ -148,7 +153,7 @@ internal sealed class Paragraph : IParagraph
             var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.aParagraph.Ancestors<P.Shape>().First());
+                var parentShape = new AutoShape(this.aParagraph.Ancestors<P.Shape>().First());
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextHorizontalAlignment.Center;
@@ -184,17 +189,17 @@ internal sealed class Paragraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.scaParagraph.IndentLevel();
-        set => this.scaParagraph.UpdateIndentLevel(value);
+        get => this.scAParagraph.GetIndentLevel();
+        set => this.scAParagraph.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();
-    
+
     public void ReplaceText(string oldValue, string newValue)
     {
-        foreach (var portion in this.Portions)
+        foreach (var portion in this.Portions.Where(portion => portion is not ParagraphLineBreak))
         {
-            portion.Text = portion.Text!.Replace(oldValue, newValue);
+            portion.Text = portion.Text.Replace(oldValue, newValue);
         }
 
         if (this.Text.Contains(oldValue))
@@ -204,7 +209,7 @@ internal sealed class Paragraph : IParagraph
     }
 
     public void Remove() => this.aParagraph.Remove();
-    
+
     internal void SetFontSize(int fontSize)
     {
         foreach (var portion in this.Portions)
@@ -212,20 +217,10 @@ internal sealed class Paragraph : IParagraph
             portion.Font!.Size = fontSize;
         }
     }
-    
+
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);
 
     private Bullet GetBullet() => new(this.aParagraph.ParagraphProperties!);
-
-    private string ParseText()
-    {
-        if (this.Portions.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
-    }
 
     private void SetAlignment(TextHorizontalAlignment alignmentValue)
     {

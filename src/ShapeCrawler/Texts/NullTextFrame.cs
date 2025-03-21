@@ -6,7 +6,7 @@ internal readonly struct NullTextFrame : ITextBox
 {
     private const string Error = $"The shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.";
     
-    public IParagraphs Paragraphs => throw new Exception(Error);
+    public IParagraphCollection Paragraphs => throw new Exception(Error);
 
     public string Text
     {

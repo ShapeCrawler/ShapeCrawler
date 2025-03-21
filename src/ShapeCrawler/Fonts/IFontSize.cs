@@ -6,12 +6,7 @@
 internal interface IFontSize
 {
     /// <summary>
-    ///     Font size in points.
+    ///     Gets or sets the font size.
     /// </summary>
-    decimal Size();
-    
-    /// <summary>
-    ///     Updates font size in points.
-    /// </summary>
-    void Update(decimal points);
+    decimal Size { get; set; }
 }

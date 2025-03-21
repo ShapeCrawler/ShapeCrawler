@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
@@ -30,12 +30,12 @@ internal class MediaShape : Shape, IMediaShape
 {
     private readonly P.Picture pPicture;
 
-    internal MediaShape(OpenXmlPart openXmlPart, P.Picture pPicture)
-        : base(openXmlPart, pPicture)
+    internal MediaShape(P.Picture pPicture)
+        : base(pPicture)
     {
         this.pPicture = pPicture;
-        this.Outline = new SlideShapeOutline(openXmlPart, pPicture.ShapeProperties!);
-        this.Fill = new ShapeFill(openXmlPart, pPicture.ShapeProperties!);
+        this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
+        this.Fill = new ShapeFill(pPicture.ShapeProperties!);
     }
 
     public override ShapeType ShapeType => ShapeType.Video;
@@ -54,10 +54,11 @@ internal class MediaShape : Shape, IMediaShape
     {
         get
         {
+            var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
             var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
                 .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
             var relationship =
-                this.OpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+                openXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
             return relationship.DataPart.ContentType;
         }
@@ -65,9 +66,10 @@ internal class MediaShape : Shape, IMediaShape
 
     public byte[] AsByteArray()
     {
+        var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
             .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.OpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = openXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var ms = new MemoryStream();
         stream.CopyTo(ms);

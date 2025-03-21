@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -7,8 +9,7 @@ namespace ShapeCrawler.Drawing;
 
 internal class TableCellFill : IShapeFill
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly A.TableCellProperties sdkATableCellProperties;
+    private readonly A.TableCellProperties aTableCellProperties;
     private FillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
@@ -16,12 +17,11 @@ internal class TableCellFill : IShapeFill
     private A.SolidFill? sdkASolidFill;
     private A.GradientFill? sdkAGradFill;
     private A.PatternFill? sdkAPattFill;
-    private A.BlipFill? sdkABlipFill;
+    private A.BlipFill? aBlipFill;
 
-    internal TableCellFill(OpenXmlPart sdkTypedOpenXmlPart, A.TableCellProperties sdkATableCellProperties)
+    internal TableCellFill(A.TableCellProperties aTableCellProperties)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.sdkATableCellProperties = sdkATableCellProperties;
+        this.aTableCellProperties = aTableCellProperties;
         this.isDirty = true;
     }
 
@@ -39,6 +39,7 @@ internal class TableCellFill : IShapeFill
 
     public void SetPicture(Stream image)
     {
+        var openXmlPart = this.aTableCellProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (this.isDirty)
         {
             this.Initialize();
@@ -50,7 +51,7 @@ internal class TableCellFill : IShapeFill
         }
         else
         {
-            (var rId, _) = this.sdkTypedOpenXmlPart.AddImagePart(image, "image/png");
+            (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
@@ -60,10 +61,10 @@ internal class TableCellFill : IShapeFill
             aBlipFill.Append(new A.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.sdkATableCellProperties.Append(aBlipFill);
+            this.aTableCellProperties.Append(aBlipFill);
 
             this.sdkASolidFill?.Remove();
-            this.sdkABlipFill = null;
+            this.aBlipFill = null;
             this.sdkAGradFill?.Remove();
             this.sdkAGradFill = null;
             this.sdkAPattFill?.Remove();
@@ -80,7 +81,7 @@ internal class TableCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.sdkATableCellProperties.AddASolidFill(hex);
+        this.aTableCellProperties.AddSolidFill(hex);
         
         this.isDirty = true;
     }
@@ -93,7 +94,7 @@ internal class TableCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.sdkATableCellProperties.AddANoFill();
+        this.aTableCellProperties.AddNoFill();
 
         this.isDirty = true;
     }
@@ -121,7 +122,7 @@ internal class TableCellFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.sdkASolidFill = this.sdkATableCellProperties.GetFirstChild<A.SolidFill>();
+        this.sdkASolidFill = this.aTableCellProperties.GetFirstChild<A.SolidFill>();
         if (this.sdkASolidFill != null)
         {
             var aRgbColorModelHex = this.sdkASolidFill.RgbColorModelHex;
@@ -141,7 +142,7 @@ internal class TableCellFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.sdkAGradFill = this.sdkATableCellProperties!.GetFirstChild<A.GradientFill>();
+        this.sdkAGradFill = this.aTableCellProperties!.GetFirstChild<A.GradientFill>();
         if (this.sdkAGradFill != null)
         {
             this.fillType = FillType.Gradient;
@@ -154,15 +155,16 @@ internal class TableCellFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.sdkABlipFill = this.sdkATableCellProperties.GetFirstChild<A.BlipFill>();
+        var openXmlPart = this.aTableCellProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        this.aBlipFill = this.aTableCellProperties.GetFirstChild<A.BlipFill>();
 
-        if (this.sdkABlipFill is not null)
+        if (this.aBlipFill is not null)
         {
-            var blipEmbedValue = this.sdkABlipFill.Blip?.Embed?.Value;
+            var blipEmbedValue = this.aBlipFill.Blip?.Embed?.Value;
             if (blipEmbedValue != null)
             {
-                var imagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(blipEmbedValue);
-                var image = new ShapeFillImage(this.sdkTypedOpenXmlPart, this.sdkABlipFill, imagePart);
+                var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbedValue);
+                var image = new ShapeFillImage(this.aBlipFill.Blip!, imagePart);
                 this.pictureImage = image;
                 this.fillType = FillType.Picture;
             }
@@ -175,7 +177,7 @@ internal class TableCellFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.sdkAPattFill = this.sdkATableCellProperties.GetFirstChild<A.PatternFill>();
+        this.sdkAPattFill = this.aTableCellProperties.GetFirstChild<A.PatternFill>();
         if (this.sdkAPattFill != null)
         {
             this.fillType = FillType.Pattern;

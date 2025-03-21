@@ -8,16 +8,16 @@ namespace ShapeCrawler.Colors;
 
 internal sealed class PresentationColor
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart openXmlPart;
 
-    internal PresentationColor(OpenXmlPart sdkTypedOpenXmlPart)
+    internal PresentationColor(OpenXmlPart openXmlPart)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.openXmlPart = openXmlPart;
     }
     
     internal IndentFont? PresentationFontOrThemeFontOrNull(int indentLevel)
     {
-        var sdkPresDoc = (PresentationDocument)this.sdkTypedOpenXmlPart.OpenXmlPackage;
+        var sdkPresDoc = (PresentationDocument)this.openXmlPart.OpenXmlPackage;
         var pDefaultTextStyle = sdkPresDoc.PresentationPart!.Presentation.DefaultTextStyle;
         if (pDefaultTextStyle != null)
         {
@@ -37,7 +37,7 @@ internal sealed class PresentationColor
     
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
-        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
+        var aColorScheme = GetColorScheme(this.openXmlPart);
         return this.GetColorValue(aColorScheme, aSchemeColorValue);
     }
     
@@ -158,11 +158,11 @@ internal sealed class PresentationColor
     
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)
     {
-        var pColorMap = this.sdkTypedOpenXmlPart switch
+        var pColorMap = this.openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster.ColorMap!,
-            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.ColorMap!
+            _ => ((SlideMasterPart)this.openXmlPart).SlideMaster.ColorMap!
         };
         if (themeColor == A.SchemeColorValues.Text1)
         {
@@ -184,7 +184,7 @@ internal sealed class PresentationColor
 
     private string GetThemeColorByString(string fontSchemeColor)
     {
-        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
+        var aColorScheme = GetColorScheme(this.openXmlPart);
         return GetColorFromScheme(aColorScheme, fontSchemeColor);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Texts;
@@ -12,19 +11,19 @@ internal sealed class AutoShape : CopyableShape
     private readonly P.Shape pShape;
     private readonly ShapeGeometry shapeGeometry;
 
-    internal AutoShape(OpenXmlPart openXmlPart, P.Shape pShape, TextBox textBox)
-        : this(openXmlPart, pShape)
+    internal AutoShape(P.Shape pShape, TextBox textBox)
+        : this(pShape)
     {
         this.IsTextHolder = true;
         this.TextBox = textBox;
     }
 
-    internal AutoShape(OpenXmlPart openXmlPart, P.Shape pShape)
-        : base(openXmlPart, pShape)
+    internal AutoShape(P.Shape pShape)
+        : base(pShape)
     {
         this.pShape = pShape;
-        this.Outline = new SlideShapeOutline(this.OpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(this.OpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.Outline = new SlideShapeOutline(pShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new ShapeFill(pShape.Descendants<P.ShapeProperties>().First());
         this.shapeGeometry = new ShapeGeometry(pShape.Descendants<P.ShapeProperties>().First());
     }
 

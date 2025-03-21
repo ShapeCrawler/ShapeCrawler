@@ -5,15 +5,16 @@ using NUnit.Framework.Internal.Builders;
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class SlidePortionAttribute : Attribute, ITestBuilder
+public class SlidePortionAttribute(
+    string pptxName,
+    int slide,
+    int shapeId,
+    int paragraph,
+    int portion,
+    object expectedResult)
+    : Attribute, ITestBuilder
 {
-    private readonly string pptxName;
-    private readonly int slide;
-    private readonly int shapeId;
-    private readonly int paragraph;
-    private readonly int portion;
     private readonly string testName;
-    private readonly object expectedResult;
 
     public SlidePortionAttribute(
         string testName,
@@ -28,29 +29,13 @@ public class SlidePortionAttribute : Attribute, ITestBuilder
         this.testName = testName;
     }
 
-    public SlidePortionAttribute(
-        string pptxName,
-        int slide,
-        int shapeId,
-        int paragraph,
-        int portion,
-        object expectedResult)
-    {
-        this.pptxName = pptxName;
-        this.slide = slide;
-        this.shapeId = shapeId;
-        this.paragraph = paragraph;
-        this.portion = portion;
-        this.expectedResult = expectedResult;
-    }
-
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pres = new Presentation(SCTest.TestAsset(this.pptxName));
-        var portion = pres.Slides[this.slide - 1].Shapes.GetById<IShape>(this.shapeId).TextBox
-            .Paragraphs[this.paragraph - 1].Portions[this.portion - 1];
+        var pres = new Presentation(SCTest.TestAsset(pptxName));
+        var portion1 = pres.Slides[slide - 1].Shapes.GetById<IShape>(shapeId).TextBox
+            .Paragraphs[paragraph - 1].Portions[portion - 1];
 
-        var parameters = new TestCaseParameters(new[] { portion, this.expectedResult });
+        var parameters = new TestCaseParameters(new[] { portion1, expectedResult });
 
         if (!string.IsNullOrEmpty(this.testName))
         {

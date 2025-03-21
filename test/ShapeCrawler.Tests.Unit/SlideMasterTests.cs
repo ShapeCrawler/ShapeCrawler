@@ -21,7 +21,7 @@ public class SlideMasterTests : SCTest
         // Assert
         Assert.That(slideMaster.SlideNumber.Font.Color.Hex, Is.EqualTo("00FF00"));
     }
-    
+
     [Test]
     public void SlideNumber_Font_Size_Setter()
     {
@@ -39,43 +39,31 @@ public class SlideMasterTests : SCTest
         slideMaster = pres.SlideMasters[0];
         slideMaster.SlideNumber!.Font.Size.Should().Be(30);
     }
+
+    [Test]
+    public void Shape_Width_and_Height_return_master_shape_width_and_height()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var slideMaster = pres.SlideMasters[0];
+        var shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+
+        // Act & Assert
+        shape.Width.Should().Be(828);
+        shape.Height.Should().BeApproximately(104.37m, 0.01m);
+    }
     
     [Test]
-    public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
+    public void Shape_X_and_Y_return_master_shape_x_and_y_coordinates()
     {
         // Arrange
-        var pptx = TestAsset("001.pptx");
-        var pres = new Presentation(pptx);
-        ISlideMaster slideMaster = pres.SlideMasters[0];
-       IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var slideMaster = pres.SlideMasters[0];
+        var shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
-        // Act
-        decimal shapeXCoordinate = shape.X;
-        decimal shapeYCoordinate = shape.Y;
-
-        // Assert
-        shapeXCoordinate.Should().Be((int)(838200 * 96 / 914400));
-        shapeYCoordinate.Should().Be((int)(365125 * 96 / 914400));
-    }
-
-    [Test]
-    public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
-    {
-        // Arrange
-        var pptx = TestAsset("001.pptx");
-        var pres = new Presentation(pptx);
-        ISlideMaster slideMaster = pres.SlideMasters[0];
-        IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
-        var horizontalResolution = 96;
-        var verticalResolution = 96;
-
-        // Act
-        decimal shapeWidth = shape.Width;
-        decimal shapeHeight = shape.Height;
-
-        // Assert
-        shapeWidth.Should().Be(10515600m * horizontalResolution / 914400m);
-        shapeHeight.Should().Be(1325563m * verticalResolution / 914400m);
+        // Act & Assert
+        shape.X.Should().Be(66);
+        shape.Y.Should().BeApproximately(28.75m, 0.01m);
     }
 
     [Test]
@@ -92,7 +80,7 @@ public class SlideMasterTests : SCTest
         // Assert
         layoutName.Should().Be("Title Slide");
     }
-    
+
     [Test]
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
@@ -156,7 +144,7 @@ public class SlideMasterTests : SCTest
         // Assert
         headingFontName.Should().Be("Arial");
     }
-    
+
     [Test]
     public void Theme_FontScheme_HeadEastAsianFont_Getter_returns_font_name_for_the_EastAsian_characters_of_Heading()
     {
@@ -171,7 +159,7 @@ public class SlideMasterTests : SCTest
         // Assert
         fontName.Should().Be("SimSun");
     }
-    
+
     [Test]
     public void Theme_FontScheme_HeadLatinFont_Setter_sets_font_name_for_the_Latin_characters_of_heading()
     {
@@ -186,7 +174,7 @@ public class SlideMasterTests : SCTest
         // Assert
         slideMaster.Theme.FontScheme.HeadLatinFont.Should().Be("Times New Roman");
     }
-    
+
     [Test]
     public void Theme_FontScheme_HeadEastAsianFont_Setter_sets_font_for_the_East_Asian_characters_of_heading()
     {
@@ -202,7 +190,7 @@ public class SlideMasterTests : SCTest
         slideMaster.Theme.FontScheme.HeadEastAsianFont.Should().Be("MingLiU-ExtB");
         pres.Validate();
     }
-    
+
     [Test]
     public void Theme_FontScheme_BodyLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_body()
     {
@@ -217,7 +205,7 @@ public class SlideMasterTests : SCTest
         // Assert
         bodyFontName.Should().Be("Times New Roman");
     }
-    
+
     [Test]
     public void Theme_FontScheme_BodyEastAsianFont_Getter_returns_font_for_the_EastAsian_characters_of_body()
     {
@@ -232,7 +220,7 @@ public class SlideMasterTests : SCTest
         // Assert
         bodyFontName.Should().Be("MingLiU-ExtB");
     }
-    
+
     [Test]
     public void Theme_FontScheme_BodyLatinFont_Setter_font_name_for_the_Latin_characters_of_body()
     {
@@ -247,7 +235,7 @@ public class SlideMasterTests : SCTest
         // Assert
         slideMaster.Theme.FontScheme.BodyLatinFont.Should().Be("Arial");
     }
-    
+
     [Test]
     public void Theme_FontScheme_BodyEastAsianFont_Setter_font_for_the_East_Asian_characters_of_body()
     {
@@ -299,7 +287,7 @@ public class SlideMasterTests : SCTest
         hyperlink.Should().Be("002857");
         followedHyperlink.Should().Be("800080");
     }
-    
+
     [Test]
     public void Theme_ColorScheme_color_setter_sets_scheme_color()
     {

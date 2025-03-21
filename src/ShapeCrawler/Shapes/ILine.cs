@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Positions;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -28,19 +26,13 @@ internal sealed class SlideLine : Shape, ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
 
-    internal SlideLine(OpenXmlPart openXmlPart, P.ConnectionShape pConnectionShape)
-        : this(
-            openXmlPart,
-            pConnectionShape,
-            new SlideShapeOutline(openXmlPart, pConnectionShape.ShapeProperties!))
+    internal SlideLine(P.ConnectionShape pConnectionShape)
+        : this(pConnectionShape, new SlideShapeOutline(pConnectionShape.ShapeProperties!))
     {
     }
 
-    private SlideLine(
-        OpenXmlPart openXmlPart,
-        P.ConnectionShape pConnectionShape,
-        SlideShapeOutline shapeOutline)
-        : base(openXmlPart, pConnectionShape)
+    private SlideLine(P.ConnectionShape pConnectionShape, SlideShapeOutline shapeOutline)
+        : base(pConnectionShape)
     {
         this.pConnectionShape = pConnectionShape;
         this.Outline = shapeOutline;
@@ -66,15 +58,15 @@ internal sealed class SlideLine : Shape, ILine
 
             if (flipH && (this.Height == 0 || flipV))
             {
-                return new Point(this.X, this.Y);
+                return new Point(this.X, (decimal)this.Y);
             }
 
             if (flipH)
             {
-                return new Point(this.X + this.Width, this.Y);
+                return new Point((decimal)(this.X + this.Width), (decimal)this.Y);
             }
 
-            return new Point(this.X, this.Y);
+            return new Point(this.X, (decimal)this.Y);
         }
     }
 
@@ -90,25 +82,25 @@ internal sealed class SlideLine : Shape, ILine
 
             if (this.Width == 0)
             {
-                return new Point(this.X, this.Height);
+                return new Point((decimal)this.X, (decimal)this.Height);
             }
 
             if (flipH && this.Height == 0)
             {
-                return new Point(this.X - this.Width, this.Y);
+                return new Point((decimal)(this.X - this.Width), (decimal)this.Y);
             }
 
             if (flipV)
             {
-                return new Point(this.Width, this.Height);
+                return new Point((decimal)this.Width, (decimal)this.Height);
             }
 
             if (flipH)
             {
-                return new Point(this.X, this.Height);
+                return new Point((decimal)this.X, (decimal)this.Height);
             }
 
-            return new Point(this.Width, this.Y);
+            return new Point((decimal)this.Width, (decimal)this.Y);
         }
     }
 

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -44,12 +43,10 @@ public interface ITableRows : IEnumerable<ITableRow>
 
 internal sealed class TableRows : ITableRows
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Table aTable;
 
-    internal TableRows(OpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
+    internal TableRows(P.GraphicFrame pGraphicFrame)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
     }
 
@@ -85,5 +82,5 @@ internal sealed class TableRows : ITableRows
     
     IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
 
-    private List<TableRow> Rows() => [.. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(this.sdkTypedOpenXmlPart, aTableRow, index))];
+    private List<TableRow> Rows() => [.. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))];
 }

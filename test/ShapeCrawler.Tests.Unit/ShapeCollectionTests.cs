@@ -3,7 +3,6 @@ using System.Xml;
 using FluentAssertions;
 using ImageMagick;
 using NUnit.Framework;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -80,15 +79,13 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Contains_particular_shape_Types()
+    public void Contains_expected_count_of_each_shape_type()
     {
         // Arrange
         var pres = new Presentation(TestAsset("003.pptx"));
-
-        // Act
         var shapes = pres.Slides.First().Shapes;
 
-        // Assert
+        // Act & Assert
         shapes.Count(sp => sp.ShapeType == ShapeType.Chart).Should().Be(1);
         shapes.Count(sp => sp.ShapeType == ShapeType.Picture).Should().Be(1);
         shapes.Count(sp => sp.ShapeType == ShapeType.Table).Should().Be(1);
@@ -96,13 +93,14 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Contains_Picture_shape()
+    public void Contains_picture()
     {
         // Arrange
-        IShape shape = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var pres = new Presentation(TestAsset("009_table.pptx"));
+        var shape = pres.Slide(2).Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert
-        IPicture picture = shape as IPicture;
+        var picture = shape as IPicture;
         picture.Should().NotBeNull();
     }
 
@@ -124,12 +122,11 @@ public class ShapeCollectionTests : SCTest
     [Test]
     public void Contains_Connection_shape()
     {
-        var pptxStream = TestAsset("001.pptx");
-        var presentation = new Presentation(pptxStream);
-        var shapesCollection = presentation.Slides[0].Shapes;
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var shapes = pres.Slides[0].Shapes;
 
         // Act-Assert
-        shapesCollection.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
+        shapes.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
     }
 
     [Test]
@@ -307,19 +304,19 @@ public class ShapeCollectionTests : SCTest
         var mp3 = TestAsset("064 mp3.mp3");
         var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
-        int xPxCoordinate = 300;
-        int yPxCoordinate = 100;
+        int xPtCoordinate = 225;
+        int yPtCoordinate = 75;
 
         // Act
-        shapes.AddAudio(xPxCoordinate, yPxCoordinate, mp3);
+        shapes.AddAudio(xPtCoordinate, yPtCoordinate, mp3);
 
         pres.Save();
         pres = new Presentation(pptx);
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
 
         // Assert
-        addedAudio.X.Should().Be(xPxCoordinate);
-        addedAudio.Y.Should().Be(yPxCoordinate);
+        addedAudio.X.Should().Be(xPtCoordinate);
+        addedAudio.Y.Should().Be(yPtCoordinate);
     }
 
     [Test]
@@ -376,8 +373,8 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
-        picture.Height.Should().Be(100);
-        picture.Width.Should().Be(100);
+        picture.Height.Should().Be(75);
+        picture.Width.Should().Be(75);
         pres.Validate();
     }
     
@@ -565,8 +562,8 @@ public class ShapeCollectionTests : SCTest
         // These values are the viewbox size of the test image, which is what
         // we'll be using since the image has no width or height tags
         var picture = (IPicture)shapes.Last();
-        picture.Height.Should().Be(90);
-        picture.Width.Should().Be(280);
+        picture.Height.Should().BeApproximately(67.5m, 0.1m);
+        picture.Width.Should().Be(210);
         pres.Validate();
     }
     
@@ -713,7 +710,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         var addedPicture = shapes.Last();
-        addedPicture.Height.Should().Be(300);
+        addedPicture.Height.Should().Be(225);
     }
 
     [Test]

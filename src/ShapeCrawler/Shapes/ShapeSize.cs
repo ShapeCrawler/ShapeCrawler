@@ -1,38 +1,32 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeSize
+internal sealed class ShapeSize(OpenXmlElement pShapeTreeElement)
 {
-    private readonly OpenXmlPart openXmlPart;
-    private readonly OpenXmlElement pShapeTreeElement;
-
-    internal ShapeSize(OpenXmlPart openXmlPart, OpenXmlElement pShapeTreeElement)
+    internal decimal Width
     {
-        this.openXmlPart = openXmlPart;
-        this.pShapeTreeElement = pShapeTreeElement;
+        get => new Emus(this.GetAExtents().Cx!).AsPoints();
+        set => this.GetAExtents().Cx = new Points(value).AsEmus();
     }
 
-    internal decimal Height() => UnitConverter.VerticalEmuToPixel(this.AExtents().Cy!);
-
-    internal void UpdateHeight(decimal heightPixels) => this.AExtents().Cy = UnitConverter.VerticalPixelToEmu(heightPixels);
-
-    internal decimal Width() => UnitConverter.HorizontalEmuToPixel(this.AExtents().Cx!);
-
-    internal void UpdateWidth(decimal widthPixels) => this.AExtents().Cx = UnitConverter.HorizontalPixelToEmu(widthPixels);
-
-    private A.Extents AExtents()
+    internal decimal Height
     {
-        var aExtents = this.pShapeTreeElement.Descendants<A.Extents>().FirstOrDefault();
+        get => new Emus(this.GetAExtents().Cy!).AsPoints();
+        set => this.GetAExtents().Cy = new Points(value).AsEmus();
+    }
+
+    private A.Extents GetAExtents()
+    {
+        var aExtents = pShapeTreeElement.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents != null)
         {
             return aExtents;
         }
 
-        return new ReferencedPShape(this.openXmlPart, this.pShapeTreeElement).ATransform2D().Extents!;
+        return new ReferencedPShape(pShapeTreeElement).ATransform2D().Extents!;
     }
 }

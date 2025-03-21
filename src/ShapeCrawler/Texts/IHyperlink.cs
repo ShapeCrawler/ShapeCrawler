@@ -52,8 +52,8 @@ internal class Hyperlink(RunProperties aRunProperties): IHyperlink
             aRunProperties.Append(hyperlink);
         }
 
-        var parentXmlPart = aRunProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var presentation = ((PresentationDocument)parentXmlPart.OpenXmlPackage).PresentationPart!;
+        var parentOpenXmlPart = aRunProperties.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var presentation = ((PresentationDocument)parentOpenXmlPart.OpenXmlPackage).PresentationPart!;
         var slideId = presentation.Presentation.SlideIdList!.ChildElements
             .OfType<P.SlideId>()
             .ElementAtOrDefault(slide - 1) !;
@@ -62,7 +62,7 @@ internal class Hyperlink(RunProperties aRunProperties): IHyperlink
         var targetSlidePart = (SlidePart)presentation.GetPartById(slideId.RelationshipId!);
 
         // Add relationship from current slide to target slide
-        var currentSlidePart = (SlidePart)parentXmlPart;
+        var currentSlidePart = (SlidePart)parentOpenXmlPart;
 
         // Add or reuse relationship to target slide
         var addedPart = currentSlidePart.AddPart(targetSlidePart);

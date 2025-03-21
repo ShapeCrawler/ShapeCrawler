@@ -5,19 +5,19 @@ namespace ShapeCrawler.Fonts;
 
 internal record struct IndentFont
 {
-    internal A.SystemColor? ASystemColor { get; set; }
+    internal A.SystemColor? ASystemColor { get; init; }
 
-    internal int? Size { get; set; }
+    internal int? Size { get; init; }
 
-    internal A.LatinFont? ALatinFont { get; set; }
+    internal A.LatinFont? ALatinFont { get; init; }
 
     internal bool? IsBold { get; set; }
 
-    internal BooleanValue? IsItalic { get; set; }
+    internal BooleanValue? IsItalic { get; init; }
 
-    internal A.RgbColorModelHex? ARgbColorModelHex { get; set; }
+    internal A.RgbColorModelHex? ARgbColorModelHex { get; init; }
 
-    internal A.SchemeColor? ASchemeColor { get; set; }
+    internal A.SchemeColor? ASchemeColor { get; init; }
 
-    internal A.PresetColor? APresetColor { get; set; }
+    internal A.PresetColor? APresetColor { get; init; }
 }

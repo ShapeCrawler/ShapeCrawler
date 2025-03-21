@@ -10,7 +10,7 @@ public interface IBorder
     /// <summary>
     ///     Gets or sets border width in points.
     /// </summary>
-    float Width { get; set; }
+    decimal Width { get; set; }
 
     /// <summary>
     ///     Gets or sets the border color.

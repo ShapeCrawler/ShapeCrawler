@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ShapeCrawler.Exceptions;
+namespace ShapeCrawler;
 
-internal class SCException : Exception
+internal sealed class SCException : Exception
 {
     internal SCException()
     {

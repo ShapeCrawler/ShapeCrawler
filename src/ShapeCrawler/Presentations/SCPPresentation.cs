@@ -4,23 +4,16 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Presentations;
 
 // ReSharper disable once InconsistentNaming
-internal readonly ref struct SCPPresentation
+internal readonly ref struct SCPPresentation(P.Presentation pPresentation)
 {
-    private readonly P.Presentation pPresentation;
-
-    internal SCPPresentation(P.Presentation pPresentation)
-    {
-        this.pPresentation = pPresentation;
-    }
-
     internal void RemoveSlideIdFromCustomShow(string slideIdRelationshipId)
     {
-        if (this.pPresentation.CustomShowList == null)
+        if (pPresentation.CustomShowList == null)
         {
             return;
         }
 
-        foreach (var pCustomShow in this.pPresentation.CustomShowList.Elements<P.CustomShow>())
+        foreach (var pCustomShow in pPresentation.CustomShowList.Elements<P.CustomShow>())
         {
             pCustomShow.SlideList?
                 .Elements<P.SlideListEntry>()

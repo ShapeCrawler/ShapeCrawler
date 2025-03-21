@@ -1,8 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ShapeCrawler.Exceptions;
-using ShapeCrawler.Spreadsheets;
 
 namespace ShapeCrawler.Charts;
 

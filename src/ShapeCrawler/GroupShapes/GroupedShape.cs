@@ -25,29 +25,28 @@ internal sealed class GroupedShape : IShape
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             
-            var xGroupShapeEmu = UnitConverter.HorizontalEmuToPixel(aOffset.X!);
-            var groupShapeChildX = UnitConverter.HorizontalEmuToPixel(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value);
-            var groupedShapeX = this.decoratedShape.X;
+            var xGroupShapePt = new Emus(aOffset.X!).AsPoints();
+            var groupShapeChildXPt = new Emus(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value).AsPoints();
+            var groupedShapeXPt = this.decoratedShape.X;
             
-            return xGroupShapeEmu - (groupShapeChildX - groupedShapeX);
+            return xGroupShapePt - (groupShapeChildXPt - groupedShapeXPt);
         }
         
         set
         {
             this.decoratedShape.X = value;
-            var xGroupedShapePx = value;
             var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
             var aChildOffset = aTransformGroup.ChildOffset!;
             var aChildExtents = aTransformGroup.ChildExtents!;
-            var xGroupedShapeEmu = UnitConverter.HorizontalPixelToEmu(xGroupedShapePx);
-            var xGroupShapeEmu = aOffset.X!;
+            var groupedShapeXEmus = new Points(value).AsEmus();
+            var groupShapeXEmus = aOffset.X!;
 
-            if (xGroupedShapeEmu < xGroupShapeEmu)
+            if (groupedShapeXEmus < groupShapeXEmus)
             {
-                var diff = xGroupShapeEmu - xGroupedShapeEmu;
+                var diff = groupShapeXEmus - groupedShapeXEmus;
                 aOffset.X = new Int64Value(aOffset.X! - diff);
                 aExtents.Cx = new Int64Value(aExtents.Cx! + diff);
                 aChildOffset.X = new Int64Value(aChildOffset.X! - diff);
@@ -57,7 +56,7 @@ internal sealed class GroupedShape : IShape
             }
 
             var groupRightEmu = aOffset.X!.Value + aExtents.Cx!.Value;
-            var groupedRightEmu = UnitConverter.HorizontalPixelToEmu(this.decoratedShape.X + this.decoratedShape.Width);
+            var groupedRightEmu = new Points(this.decoratedShape.X + this.decoratedShape.Width).AsEmus();
             if (groupedRightEmu > groupRightEmu)
             {
                 var diffEmu = groupedRightEmu - groupRightEmu;
@@ -79,7 +78,7 @@ internal sealed class GroupedShape : IShape
             var aExtents = aTransformGroup.Extents!;
             var aChildOffset = aTransformGroup.ChildOffset!;
             var aChildExtents = aTransformGroup.ChildExtents!;
-            var groupedYEmu = UnitConverter.VerticalPixelToEmu(value);
+            var groupedYEmu = new Points(value).AsEmus();
             var groupYEmu = aOffset.Y!;
             if (groupedYEmu < groupYEmu)
             {
@@ -93,7 +92,7 @@ internal sealed class GroupedShape : IShape
             }
 
             var groupBottomEmu = aOffset.Y!.Value + aExtents.Cy!.Value;
-            var groupedBottomEmu = groupedYEmu + UnitConverter.VerticalPixelToEmu(this.Height);
+            var groupedBottomEmu = groupedYEmu + new Points(this.Height).AsEmus();
             if (groupedBottomEmu > groupBottomEmu)
             {
                 var diffEmu = groupedBottomEmu - groupBottomEmu;
@@ -188,6 +187,8 @@ internal sealed class GroupedShape : IShape
         get => this.TextBox.Text;
         set => this.TextBox.Text = value;
     }
+
+    public IPresentation Presentation => this.decoratedShape.Presentation;
 
     public void Remove() => this.decoratedShape.Remove();
     

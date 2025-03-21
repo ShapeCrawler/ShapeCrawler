@@ -9,5 +9,5 @@ internal readonly ref struct Emus(long emus)
     
     internal int AsVerticalPixels() => (int)(emus * VerticalResolutionDpi / 914400);
 
-    internal float AsPoints() => emus / 12700f;
+    internal decimal AsPoints() => emus / 12700m;
 }

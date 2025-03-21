@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -12,7 +11,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collection of paragraphs.
 /// </summary>
-public interface IParagraphs : IReadOnlyList<IParagraph>
+public interface IParagraphCollection : IReadOnlyList<IParagraph>
 {
     /// <summary>
     ///     Adds a new paragraph in collection.
@@ -20,19 +19,8 @@ public interface IParagraphs : IReadOnlyList<IParagraph>
     void Add();
 }
 
-internal readonly struct Paragraphs : IParagraphs
+internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagraphCollection
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
-    private readonly OpenXmlElement sdkTextBody;
-
-    internal Paragraphs(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
-    {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.sdkTextBody = sdkTextBody;
-    }
-
-    #region Public Properties
-
     public int Count => this.ParagraphsCore().Count;
     
     public IParagraph this[int index] => this.ParagraphsCore()[index];
@@ -41,11 +29,9 @@ internal readonly struct Paragraphs : IParagraphs
     
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    #endregion Public Properties
-
     public void Add()
     {
-        var lastAParagraph = this.sdkTextBody.Elements<A.Paragraph>().Last();
+        var lastAParagraph = textBody.Elements<A.Paragraph>().Last();
         var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
         newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         lastAParagraph.InsertAfterSelf(newAParagraph);
@@ -53,7 +39,7 @@ internal readonly struct Paragraphs : IParagraphs
 
     private List<Paragraph> ParagraphsCore()
     {
-        var aParagraphs = this.sdkTextBody.Elements<A.Paragraph>().ToList();
+        var aParagraphs = textBody.Elements<A.Paragraph>().ToList();
         if (!aParagraphs.Any())
         {
             return [];
@@ -62,7 +48,7 @@ internal readonly struct Paragraphs : IParagraphs
         var paraList = new List<Paragraph>();
         foreach (var aPara in aParagraphs)
         {
-            var para = new Paragraph(this.sdkTypedOpenXmlPart, aPara);
+            var para = new Paragraph(aPara);
             paraList.Add(para);
         }
 

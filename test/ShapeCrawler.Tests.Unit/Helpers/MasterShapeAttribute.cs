@@ -5,33 +5,20 @@ using NUnit.Framework.Internal.Builders;
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class MasterShapeAttribute : Attribute, ITestBuilder
+public class MasterShapeAttribute(string pptxName, string shapeName, object expectedResult) : Attribute, ITestBuilder
 {
-    private readonly string pptxName;
-    private readonly string shapeName;
-    private readonly object? expectedResult;
-
-    public MasterShapeAttribute(string pptxName, string shapeName)
+    public MasterShapeAttribute(string pptxName, string shapeName) : this(pptxName, shapeName, null)
     {
-        this.pptxName = pptxName;
-        this.shapeName = shapeName;
-    }
-    
-    public MasterShapeAttribute(string pptxName, string shapeName, object expectedResult)
-    {
-        this.pptxName = pptxName;
-        this.shapeName = shapeName;
-        this.expectedResult = expectedResult;
     }
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pptxStream = SCTest.TestAsset(this.pptxName);
+        var pptxStream = SCTest.TestAsset(pptxName);
         var pres = new Presentation(pptxStream);
-        var shape = pres.SlideMasters[0].Shapes.GetByName(this.shapeName);
+        var shape = pres.SlideMasters[0].Shapes.GetByName(shapeName);
 
-        var parameters = this.expectedResult != null
-            ? new TestCaseParameters(new[] { shape, this.expectedResult })
+        var parameters = expectedResult != null
+            ? new TestCaseParameters(new[] { shape, expectedResult })
             : new TestCaseParameters(new[] { shape });
         
         yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);

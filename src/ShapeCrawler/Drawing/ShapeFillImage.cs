@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -7,34 +8,33 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class ShapeFillImage : IImage
 {
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Blip aBlip;
-    private ImagePart sdkImagePart;
+    private ImagePart imagePart;
 
-    internal ShapeFillImage(OpenXmlPart sdkTypedOpenXmlPart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
+    internal ShapeFillImage(A.Blip aBlip, ImagePart imagePart)
     {
-        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
-        this.aBlip = aBlipFill.Blip!;
-        this.sdkImagePart = sdkImagePart;
+        this.aBlip = aBlip;
+        this.imagePart = imagePart;
     }
+    
+    public string Mime => this.imagePart.ContentType;
 
-    public string Mime => this.sdkImagePart.ContentType;
-
-    public string Name => Path.GetFileName(this.sdkImagePart.Uri.ToString());
+    public string Name => Path.GetFileName(this.imagePart.Uri.ToString());
 
     public void Update(Stream stream)
     {
-        var isSharedImagePart = this.sdkTypedOpenXmlPart.GetPartsOfType<ImagePart>().Count(imagePart => imagePart == this.sdkImagePart) > 1;
+        var openXmlPart = this.aBlip.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var isSharedImagePart = openXmlPart.GetPartsOfType<ImagePart>().Count(imagePart => imagePart == this.imagePart) > 1;
         if (isSharedImagePart)
         {            
-            var rId = default(RelationshipId).New();
-            this.sdkImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
+            var rId = RelationshipId.New();
+            this.imagePart = openXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
 
         stream.Position = 0;
-        this.sdkImagePart.FeedData(stream);
+        this.imagePart.FeedData(stream);
     }
 
-    public byte[] AsByteArray() => new SCImagePart(this.sdkImagePart).AsBytes(); 
+    public byte[] AsByteArray() => new SCImagePart(this.imagePart).AsBytes(); 
 }

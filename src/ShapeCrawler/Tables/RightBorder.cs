@@ -5,74 +5,57 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
 
-internal class RightBorder : IBorder
+internal class RightBorder(A.TableCellProperties aTableCellProperties): IBorder
 {
-    private readonly A.TableCellProperties aTableCellProperties;
-
-    internal RightBorder(A.TableCellProperties aTableCellProperties)
+    public decimal Width
     {
-        this.aTableCellProperties = aTableCellProperties;
-    }
-
-    public float Width
-    {
-        get => this.GetWidth();
-        set => this.UpdateWidth(value);
-    }
-
-    public string? Color { get => this.GetColor(); set => this.SetColor(value!); }
-
-    private string? GetColor()
-    {
-        return this.aTableCellProperties?.RightBorderLineProperties?.GetFirstChild<SolidFill>()?.RgbColorModelHex?.Val;
-    }
-
-    private void SetColor(string color)
-    {
-        this.aTableCellProperties.RightBorderLineProperties ??= new A.RightBorderLineProperties
+        get
         {
-            Width = (Int32Value)new Points(1).AsEmus()
-        };
+            if (aTableCellProperties.RightBorderLineProperties is null)
+            {
+                return 1; // default value
+            }
 
-        var solidFill = this.aTableCellProperties.RightBorderLineProperties.GetFirstChild<A.SolidFill>();
+            var emus = aTableCellProperties.RightBorderLineProperties!.Width!.Value;
 
-        if (solidFill is null)
-        {
-            solidFill = new A.SolidFill();
-            this.aTableCellProperties.RightBorderLineProperties.AppendChild(solidFill);
+            return new Emus(emus).AsPoints();
         }
 
-        solidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+        set
+        {
+            if (aTableCellProperties.RightBorderLineProperties is null)
+            {
+                var aSolidFill = new A.SolidFill { RgbColorModelHex = new A.RgbColorModelHex { Val = "000000" } };
 
-        solidFill.RgbColorModelHex.Val = new HexBinaryValue(color);
+                aTableCellProperties.RightBorderLineProperties = new A.RightBorderLineProperties();
+                aTableCellProperties.RightBorderLineProperties.AppendChild(aSolidFill);
+            }
+
+            var emus = new Points(value).AsEmus();
+            aTableCellProperties.RightBorderLineProperties!.Width = new Int32Value((int)emus);
+        }
     }
 
-    private void UpdateWidth(float points)
+    public string? Color
     {
-        if (this.aTableCellProperties.RightBorderLineProperties is null)
+        get => aTableCellProperties.RightBorderLineProperties?.GetFirstChild<SolidFill>()
+            ?.RgbColorModelHex?.Val;
+        set
         {
-            var aSolidFill = new A.SolidFill
+            aTableCellProperties.RightBorderLineProperties ??= new A.RightBorderLineProperties
             {
-                RgbColorModelHex = new A.RgbColorModelHex { Val = "000000" }
+                Width = (Int32Value)new Points(1).AsEmus()
             };
 
-            this.aTableCellProperties.RightBorderLineProperties = new A.RightBorderLineProperties();
-            this.aTableCellProperties.RightBorderLineProperties.AppendChild(aSolidFill);
-        }
-        
-        var emus = new Points((decimal)points).AsEmus();
-        this.aTableCellProperties.RightBorderLineProperties!.Width = new Int32Value((int)emus);
-    }
+            var solidFill = aTableCellProperties.RightBorderLineProperties.GetFirstChild<A.SolidFill>();
+            if (solidFill is null)
+            {
+                solidFill = new A.SolidFill();
+                aTableCellProperties.RightBorderLineProperties.AppendChild(solidFill);
+            }
 
-    private float GetWidth()
-    {
-        if (this.aTableCellProperties.RightBorderLineProperties is null)
-        {
-            return 1; // default value
+            solidFill.RgbColorModelHex ??= new A.RgbColorModelHex();
+            solidFill.RgbColorModelHex.Val = new HexBinaryValue(value);
         }
-
-        var emus = this.aTableCellProperties.RightBorderLineProperties!.Width!.Value;
-        
-        return new Emus(emus).AsPoints();
     }
 }

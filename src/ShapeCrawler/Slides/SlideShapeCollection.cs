@@ -10,7 +10,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
@@ -19,8 +18,8 @@ using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using Position = ShapeCrawler.Positions.Position;
 
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
@@ -88,8 +87,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
                 throw new SCException("Unsupported audio type.");
         }
 
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
         var sdkPresentationDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart(contentType, extension);
         audio.Position = 0;
@@ -120,7 +119,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         transform2D.Extents!.Cy = 609600L;
 
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
-        var nonVisualDrawingProps = pPicture.NonVisualDrawingProperties();
+        var nonVisualDrawingProps = GetPNonVisualDrawingProperties(pPicture);
+        
         var hyperlinkOnClick = new A.HyperlinkOnClick
         { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
@@ -188,13 +188,13 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             // Fix up the sizes
             var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
             var yEmu = UnitConverter.VerticalPixelToEmu(100m);
-            var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
-            var cyEmu = UnitConverter.VerticalPixelToEmu(height);
+            var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
+            var heightEmu = UnitConverter.VerticalPixelToEmu(height);
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = xEmu;
             transform2D.Offset!.Y = yEmu;
-            transform2D.Extents!.Cx = cxEmu;
-            transform2D.Extents!.Cy = cyEmu;
+            transform2D.Extents!.Cx = widthEmu;
+            transform2D.Extents!.Cy = heightEmu;
         }
         catch (MagickDelegateErrorException ex) when (ex.Message.Contains("ghostscript"))
         {
@@ -213,11 +213,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public void AddVideo(int x, int y, Stream stream)
     {
-        var sdkPresDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
 
-        var mediaDataPart = sdkPresDocument.CreateMediaDataPart("video/mp4", ".mp4");
+        var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
@@ -230,7 +230,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         var pPicture = new P.Picture();
 
-        P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
+        P.NonVisualPictureProperties nonVisualPictureProperties = new();
 
         var shapeId = (uint)this.shapes.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
@@ -253,8 +253,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
-        P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new();
-        var videoFromFile1 = new A.VideoFromFile() { Link = videoRr.Id };
+        P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties = new();
+        var videoFromFile1 = new A.VideoFromFile { Link = videoRr.Id };
 
         P.ApplicationNonVisualDrawingPropertiesExtensionList
             applicationNonVisualDrawingPropertiesExtensionList1 = new();
@@ -269,45 +269,42 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         applicationNonVisualDrawingPropertiesExtensionList1.Append(applicationNonVisualDrawingPropertiesExtension1);
 
-        applicationNonVisualDrawingProperties2.Append(videoFromFile1);
-        applicationNonVisualDrawingProperties2.Append(applicationNonVisualDrawingPropertiesExtensionList1);
+        applicationNonVisualDrawingProperties.Append(videoFromFile1);
+        applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList1);
 
-        nonVisualPictureProperties1.Append(nonVisualDrawingProperties2);
-        nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
-        nonVisualPictureProperties1.Append(applicationNonVisualDrawingProperties2);
+        nonVisualPictureProperties.Append(nonVisualDrawingProperties2);
+        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties1);
+        nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
 
-        P.BlipFill blipFill1 = new();
-        A.Blip blip1 = new() { Embed = imgPartRId };
-
-        A.Stretch stretch1 = new();
+        P.BlipFill blipFill = new();
+        A.Blip blip = new() { Embed = imgPartRId };
+        A.Stretch stretch = new();
         A.FillRectangle fillRectangle1 = new();
+        stretch.Append(fillRectangle1);
+        blipFill.Append(blip);
+        blipFill.Append(stretch);
 
-        stretch1.Append(fillRectangle1);
+        P.ShapeProperties shapeProperties = new();
 
-        blipFill1.Append(blip1);
-        blipFill1.Append(stretch1);
+        A.Transform2D transform2D = new();
+        A.Offset offset = new() { X = xEmu, Y = yEmu };
+        A.Extents extents = new() { Cx = 609600L, Cy = 609600L };
 
-        P.ShapeProperties shapeProperties1 = new();
+        transform2D.Append(offset);
+        transform2D.Append(extents);
 
-        A.Transform2D transform2D1 = new();
-        A.Offset offset2 = new() { X = xEmu, Y = yEmu };
-        A.Extents extents2 = new() { Cx = 609600L, Cy = 609600L };
-
-        transform2D1.Append(offset2);
-        transform2D1.Append(extents2);
-
-        A.PresetGeometry presetGeometry1 = new()
+        A.PresetGeometry presetGeometry = new()
         { Preset = A.ShapeTypeValues.Rectangle };
-        A.AdjustValueList adjustValueList1 = new();
+        A.AdjustValueList adjustValueList = new();
 
-        presetGeometry1.Append(adjustValueList1);
+        presetGeometry.Append(adjustValueList);
 
-        shapeProperties1.Append(transform2D1);
-        shapeProperties1.Append(presetGeometry1);
+        shapeProperties.Append(transform2D);
+        shapeProperties.Append(presetGeometry);
 
-        pPicture.Append(nonVisualPictureProperties1);
-        pPicture.Append(blipFill1);
-        pPicture.Append(shapeProperties1);
+        pPicture.Append(nonVisualPictureProperties);
+        pPicture.Append(blipFill);
+        pPicture.Append(shapeProperties);
 
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
@@ -318,28 +315,23 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
-        var sdkPShape = new P.Shape(xml);
-
-        var cNvPr = sdkPShape.Descendants<P.NonVisualDrawingProperties>().FirstOrDefault()
-            ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
+        var pShape = new P.Shape(xml);
+        var cNvPr = pShape.Descendants<P.NonVisualDrawingProperties>().First();
         cNvPr.Name = geometry.ToString();
 
-        var position = new Position(this.slidePart, sdkPShape);
-        position.UpdateX(x);
-        position.UpdateY(y);
+        var shape = new AutoShape(pShape);
+        shape.X = x;
+        shape.Y = y;
+        shape.Width = width;
+        shape.Height = height;
 
-        var size = new ShapeSize(this.slidePart, sdkPShape);
-        size.UpdateWidth(width);
-        size.UpdateHeight(height);
-
-        var spPr = sdkPShape.GetFirstChild<P.ShapeProperties>()
-            ?? throw new SCException("Malformed shape: No shape properties");
+        var spPr = pShape.GetFirstChild<P.ShapeProperties>() !;
         var shapeGeometry = new ShapeGeometry(spPr);
         shapeGeometry.UpdateGeometry(geometry);
 
-        new ShapeId(sdkPShape).Update(this.NextShapeId());
+        new ShapeId(pShape).Update(this.GetNextShapeId());
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(sdkPShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
     }
 
     public void AddLine(string xml)
@@ -407,10 +399,10 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var idAndName = this.GenerateIdAndName();
         pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)idAndName.Item1;
 
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(cx);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(cy);
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
+        var cxEmu = new Points(cx).AsEmus();
+        var cyEmu = new Points(cy).AsEmus();
         var aXfrm = pConnectionShape.ShapeProperties!.Transform2D!;
         aXfrm.Offset!.X = xEmu;
         aXfrm.Offset!.Y = yEmu;
@@ -433,7 +425,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var graphicFrame = new P.GraphicFrame();
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
-        { Id = (uint)this.NextShapeId(), Name = shapeName };
+        { Id = (uint)this.GetNextShapeId(), Name = shapeName };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
         nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
@@ -510,6 +502,19 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var mime = MagickFormatInfo.Create(format)?.MimeType;
 
         return mime ?? throw new SCException("Unsupported image format.");
+    }
+    
+    private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
+    {
+        return compositeElement switch
+        {
+            P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!.NonVisualDrawingProperties!,
+            P.Shape pShape => pShape.NonVisualShapeProperties!.NonVisualDrawingProperties!,
+            P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
+            P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
+            P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
+            _ => throw new SCException()
+        };
     }
 
     private (int, string) GenerateIdAndName()
@@ -596,7 +601,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
-        var shapeId = (uint)this.NextShapeId();
+        var shapeId = (uint)this.GetNextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
             Id = shapeId,
@@ -658,7 +663,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
-        var shapeId = (uint)this.NextShapeId();
+        var shapeId = (uint)this.GetNextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
             Id = shapeId,
@@ -761,7 +766,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         return pPicture;
     }
 
-    private int NextShapeId()
+    private int GetNextShapeId()
     {
         if (this.shapes.Any())
         {
