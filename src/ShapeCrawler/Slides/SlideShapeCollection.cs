@@ -18,8 +18,8 @@ using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using Position = ShapeCrawler.Positions.Position;
 
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
@@ -316,21 +316,16 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     {
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
         var pShape = new P.Shape(xml);
-
-        var cNvPr = pShape.Descendants<P.NonVisualDrawingProperties>().FirstOrDefault()
-            ?? throw new SCException("Malformed shape: No NonVisualDrawingProperties");
+        var cNvPr = pShape.Descendants<P.NonVisualDrawingProperties>().First();
         cNvPr.Name = geometry.ToString();
 
-        var position = new Position(pShape);
-        position.X = x;
-        position.Y = y;
+        var shape = new AutoShape(pShape);
+        shape.X = x;
+        shape.Y = y;
+        shape.Width = width;
+        shape.Height = height;
 
-        var size = new ShapeSize(pShape);
-        size.Width = width;
-        size.Height = height;
-
-        var spPr = pShape.GetFirstChild<P.ShapeProperties>()
-                   ?? throw new SCException("Malformed shape: No shape properties");
+        var spPr = pShape.GetFirstChild<P.ShapeProperties>() !;
         var shapeGeometry = new ShapeGeometry(spPr);
         shapeGeometry.UpdateGeometry(geometry);
 

@@ -6,6 +6,7 @@
 dotnet_diagnostic.IDE0003.severity = none
 dotnet_diagnostic.IDE0044.severity = error
 dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0017.severity = none
 
 # Roslyn - Code quality
 dotnet_diagnostic.CS0108.severity = error
