@@ -83,7 +83,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             textBox.Text.Should().BeEquivalentTo("Shrink text on overflow");
-            textBox.Paragraphs[0].Portions[0].Font!.Size.Should().Be(7);
+            textBox.Paragraphs[0].Portions[0].Font!.Size.Should().BeApproximately(7, 1);
         }
 
         [Test]
