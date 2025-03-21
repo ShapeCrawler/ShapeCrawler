@@ -761,7 +761,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         return pPicture;
     }
 
-    internal int GetNextShapeId()
+    private int GetNextShapeId()
     {
         if (this.shapes.Any())
         {

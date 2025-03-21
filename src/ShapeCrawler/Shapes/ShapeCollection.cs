@@ -14,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 {
     public int Count => this.GetShapes().Count();
 
