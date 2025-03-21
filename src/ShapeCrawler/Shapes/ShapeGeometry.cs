@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeGeometry : IShapeGeometry
+internal sealed class ShapeGeometry(P.ShapeProperties pShapeProperties): IShapeGeometry
 {
     /// <summary>
     ///     Corner size on new rounded rectangles, before adjustments are applied.
@@ -60,13 +60,6 @@ internal sealed class ShapeGeometry : IShapeGeometry
         { Geometry.SnipRoundRectangle, 2 },
     };
 
-    private readonly P.ShapeProperties pShapeProperties;
-
-    internal ShapeGeometry(P.ShapeProperties pShapeProperties)
-    {
-        this.pShapeProperties = pShapeProperties;
-    }
-
     public Geometry GeometryType
     {
         get
@@ -74,7 +67,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
             var preset = this.APresetGeometry?.Preset;
             if (preset is null)
             {
-                if (this.pShapeProperties.OfType<CustomGeometry>().Any())
+                if (pShapeProperties.OfType<CustomGeometry>().Any())
                 {
                     return Geometry.Custom;
                 }
@@ -100,12 +93,12 @@ internal sealed class ShapeGeometry : IShapeGeometry
             }
 
             var aPresetGeometry = this.APresetGeometry;
-            if (aPresetGeometry?.Preset is null && this.pShapeProperties.OfType<CustomGeometry>().Any())
+            if (aPresetGeometry?.Preset is null && pShapeProperties.OfType<CustomGeometry>().Any())
             {
                 throw new SCException("Can't set new geometry on a shape with custom geometry");
             }
 
-            aPresetGeometry ??= this.pShapeProperties.InsertAt<PresetGeometry>(new(), 0)
+            aPresetGeometry ??= pShapeProperties.InsertAt<PresetGeometry>(new(), 0)
                 ?? throw new SCException("Unable to add new preset geometry");
 
             if (!GeometryToShapeTypeValuesMap.TryGetValue(value, out var newPreset))
@@ -192,7 +185,7 @@ internal sealed class ShapeGeometry : IShapeGeometry
         }
     }
 
-    private PresetGeometry? APresetGeometry => this.pShapeProperties.GetFirstChild<PresetGeometry>();
+    private PresetGeometry? APresetGeometry => pShapeProperties.GetFirstChild<PresetGeometry>();
 
     internal void UpdateGeometry(Geometry type)
     {
