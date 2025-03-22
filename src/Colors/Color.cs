@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -68,7 +68,7 @@ public struct Color
     /// <summary>
     ///     Gets a value indicating whether the color is transparent.
     /// </summary>
-    internal readonly bool IsTransparent => this.Alpha == 0.00;
+    internal readonly bool IsTransparent => Math.Abs(this.Alpha) < 0.01;
 
     /// <summary>
     ///     Creates color from Hex value.
