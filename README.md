@@ -97,7 +97,7 @@ If you have a question:
 - You can always email the author at theadamo86@gmail.com
 
 ## How to contribute?
-Give a star‚≠ê if you find this useful, please give it a star to show your support.
+Give a star‚≠ if you find this useful, please give it a star to show your support.
 
 ### Bug Report
 If you encounter an issue, report the bug on the [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
@@ -110,6 +110,17 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 ## Changelog  
 
 ### Version 0.64.2 - 2025-03-12
-üêûFixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)
+üûFixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)
 
 Visit [CHANGELO.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
+
+## Development
+
+```bash
+# Install dependencies
+npm install || pip install -r requirements.txt || composer install || bundle install
+# Run tests
+npm test || pytest || mvn test || bundle exec rake test
+# Security Audit
+npm audit || safety check
+```
