@@ -59,8 +59,8 @@ public sealed class Presentation : IPresentation
     /// </summary>
     public Presentation()
     {
-        var assets = new Assets(Assembly.GetExecutingAssembly());
-        var stream = assets.StreamOf("new-presentation.pptx");
+        var assets = new AssetCollection(Assembly.GetExecutingAssembly());
+        var stream = assets.StreamOf("new presentation.pptx");
 
         this.presDocument = PresentationDocument.Open(stream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);

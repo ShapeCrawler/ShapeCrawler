@@ -93,7 +93,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart(contentType, extension);
         audio.Position = 0;
         mediaDataPart.FeedData(audio);
-        var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("audio-image.png");
+        var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("audio image.png");
 
         var audioRef = this.slidePart.AddAudioReferenceRelationship(mediaDataPart);
         var mediaRef = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
@@ -223,7 +223,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         mediaDataPart.FeedData(stream);
         var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
         var imagePart = this.slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-        var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("video-image.bmp");
+        var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.bmp");
         imagePart.FeedData(imageStream);
         var videoRr = this.slidePart.AddVideoReferenceRelationship(mediaDataPart);
         var mediaRr = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
@@ -233,54 +233,54 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         P.NonVisualPictureProperties nonVisualPictureProperties = new();
 
         var shapeId = (uint)this.shapes.Max(sp => sp.Id) + 1;
-        P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
-        var hyperlinkOnClick1 = new A.HyperlinkOnClick()
-        { Id = string.Empty, Action = "ppaction://media" };
+        P.NonVisualDrawingProperties nonVisualDrawingProperties = new() { Id = shapeId, Name = $"Video{shapeId}" };
+        var hyperlinkOnClick = new A.HyperlinkOnClick
+            { Id = string.Empty, Action = "ppaction://media" };
 
         A.NonVisualDrawingPropertiesExtensionList
-            nonVisualDrawingPropertiesExtensionList1 = new();
+            nonVisualDrawingPropertiesExtensionList = new();
 
-        A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 =
+        A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension =
             new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
-        nonVisualDrawingPropertiesExtensionList1.Append(nonVisualDrawingPropertiesExtension1);
+        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension);
 
-        nonVisualDrawingProperties2.Append(hyperlinkOnClick1);
-        nonVisualDrawingProperties2.Append(nonVisualDrawingPropertiesExtensionList1);
+        nonVisualDrawingProperties.Append(hyperlinkOnClick);
+        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
 
-        P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new();
+        P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties = new();
         var pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
 
-        nonVisualPictureDrawingProperties1.Append(pictureLocks1);
+        nonVisualPictureDrawingProperties.Append(pictureLocks1);
 
         P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties = new();
-        var videoFromFile1 = new A.VideoFromFile { Link = videoRr.Id };
+        var videoFromFile = new A.VideoFromFile { Link = videoRr.Id };
 
         P.ApplicationNonVisualDrawingPropertiesExtensionList
-            applicationNonVisualDrawingPropertiesExtensionList1 = new();
+            applicationNonVisualDrawingPropertiesExtensionList = new();
 
-        P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 =
+        P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension =
             new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
         var media1 = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media() { Embed = mediaRr.Id };
         media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-        applicationNonVisualDrawingPropertiesExtension1.Append(media1);
+        applicationNonVisualDrawingPropertiesExtension.Append(media1);
 
-        applicationNonVisualDrawingPropertiesExtensionList1.Append(applicationNonVisualDrawingPropertiesExtension1);
+        applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
 
-        applicationNonVisualDrawingProperties.Append(videoFromFile1);
-        applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList1);
+        applicationNonVisualDrawingProperties.Append(videoFromFile);
+        applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
 
-        nonVisualPictureProperties.Append(nonVisualDrawingProperties2);
-        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties1);
+        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
+        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
         nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
 
         P.BlipFill blipFill = new();
         A.Blip blip = new() { Embed = imgPartRId };
         A.Stretch stretch = new();
-        A.FillRectangle fillRectangle1 = new();
-        stretch.Append(fillRectangle1);
+        A.FillRectangle fillRectangle = new();
+        stretch.Append(fillRectangle);
         blipFill.Append(blip);
         blipFill.Append(stretch);
 
@@ -314,7 +314,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
-        var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.GetNextShapeId();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
@@ -338,7 +338,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
-        var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-line.xml");
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new line.xml");
         var pConnectionShape = new P.ConnectionShape(xml);
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
 

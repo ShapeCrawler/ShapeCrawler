@@ -3,11 +3,11 @@ using System.Reflection;
 
 namespace ShapeCrawler;
 
-internal readonly ref struct Assets(Assembly assembly)
+internal readonly ref struct AssetCollection(Assembly assembly)
 {
     internal MemoryStream StreamOf(string file)
     {
-        var stream = assembly.GetManifestResourceStream($"ShapeCrawler.Resources.{file}") !;
+        var stream = assembly.GetManifestResourceStream($"ShapeCrawler.Assets.{file}") !;
         var asset = new MemoryStream();
         stream.CopyTo(asset);
         asset.Position = 0;
