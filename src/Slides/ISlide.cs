@@ -28,22 +28,22 @@ public interface ISlide
     ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.
     /// </summary>
     string? CustomData { get; set; }
-    
+
     /// <summary>
     ///     Gets referenced Slide Layout.
     /// </summary>
     ISlideLayout SlideLayout { get; }
-    
+
     /// <summary>
     ///     Gets or sets slide number.
     /// </summary>
     int Number { get; set; }
-    
+
     /// <summary>
     ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
     /// </summary>
     SlidePart SlidePart { get; }
-    
+
     /// <summary>
     ///     Gets the shape collection.
     /// </summary>
@@ -58,7 +58,7 @@ public interface ISlide
     ///     Gets the fill of the slide.
     /// </summary>
     IShapeFill Fill { get; }
-    
+
     /// <summary>
     ///     List of all text frames on that slide.
     /// </summary>
@@ -68,27 +68,27 @@ public interface ISlide
     ///     Hides slide.
     /// </summary>
     void Hide();
-    
+
     /// <summary>
     ///     Gets a value indicating whether the slide is hidden.
     /// </summary>
     bool Hidden();
-    
+
     /// <summary>
     ///     Gets table by name.
     /// </summary>
     ITable Table(string name);
-    
+
     /// <summary>
     ///     Gets picture by name.
     /// </summary>
     IPicture Picture(string picture);
-    
+
     /// <summary>
     ///     Adds specified lines to the slide notes.
     /// </summary>
     void AddNotes(IEnumerable<string> lines);
-    
+
     /// <summary>
     ///     Returns shape with specified name.
     /// </summary>
@@ -106,7 +106,7 @@ public interface ISlide
 
 internal sealed class Slide : ISlide
 {
-    private CustomXmlPart? customXmlPart;
+    private CustomXmlPart? custumDataCustomXmlPart;
     private IShapeFill? fill;
 
     internal Slide(
@@ -115,7 +115,7 @@ internal sealed class Slide : ISlide
         MediaCollection mediaCollection)
     {
         this.SlidePart = slidePart;
-        this.customXmlPart = this.GetSldCustomXmlPart();
+        this.custumDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapeCollection(this.SlidePart, new ShapeCollection(slidePart), mediaCollection);
     }
@@ -129,7 +129,53 @@ internal sealed class Slide : ISlide
     public int Number
     {
         get => this.ParseNumber();
-        set => this.UpdateNumber(value);
+        set
+        {
+            if (this.Number == value)
+            {
+                return;
+            }
+
+            var currentIndex = this.Number - 1;
+            var newIndex = value - 1;
+            var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+            if (newIndex < 0 || newIndex >= presDocument.PresentationPart!.SlideParts.Count())
+            {
+                throw new SCException("Slide number is out of range.");
+            }
+
+            var presentationPart = presDocument.PresentationPart!;
+            var presentation = presentationPart.Presentation;
+            var slideIdList = presentation.SlideIdList!;
+
+            // Get the slide ID of the source slide.
+            var sourceSlide = (SlideId)slideIdList.ChildElements[currentIndex];
+
+            SlideId? targetSlide;
+
+            // Identify the position of the target slide after which to move the source slide
+            if (newIndex == 0)
+            {
+                targetSlide = null;
+            }
+            else if (currentIndex < newIndex)
+            {
+                targetSlide = (SlideId)slideIdList.ChildElements[newIndex];
+            }
+            else
+            {
+                targetSlide = (SlideId)slideIdList.ChildElements[newIndex - 1];
+            }
+
+            // Remove the source slide from its current position.
+            sourceSlide.Remove();
+
+            // Insert the source slide at its new position after the target slide.
+            slideIdList.InsertAfter(sourceSlide, targetSlide);
+
+            // Save the modified presentation.
+            presentation.Save();
+        }
     }
 
     public string? CustomData
@@ -140,21 +186,22 @@ internal sealed class Slide : ISlide
 
     public ITextBox? Notes => this.GetNotes();
 
-    public IShapeFill Fill 
-    { 
+    public IShapeFill Fill
+    {
         get
         {
             if (this.fill is null)
             {
                 var pcSld = this.SlidePart.Slide.CommonSlideData
-                    ?? this.SlidePart.Slide.AppendChild<DocumentFormat.OpenXml.Presentation.CommonSlideData>(new());
+                            ?? this.SlidePart.Slide.AppendChild<DocumentFormat.OpenXml.Presentation.CommonSlideData>(
+                                new());
 
                 // Background element needs to be first, else it gets ignored.
                 var pBg = pcSld.GetFirstChild<DocumentFormat.OpenXml.Presentation.Background>()
-                    ?? pcSld.InsertAt<DocumentFormat.OpenXml.Presentation.Background>(new(), 0);
+                          ?? pcSld.InsertAt<DocumentFormat.OpenXml.Presentation.Background>(new(), 0);
 
                 var pBgPr = pBg.GetFirstChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>()
-                    ?? pBg.AppendChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>(new());
+                            ?? pBg.AppendChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>(new());
 
                 this.fill = new ShapeFill(pBgPr);
             }
@@ -284,11 +331,7 @@ internal sealed class Slide : ISlide
     private void AddNotesSlide(IEnumerable<string> lines)
     {
         // Build up the children of the text body element
-        var textBodyChildren = new List<OpenXmlElement>()
-        {
-            new BodyProperties(),
-            new ListStyle()
-        };
+        var textBodyChildren = new List<OpenXmlElement>() { new BodyProperties(), new ListStyle() };
 
         // Add in the text lines
         textBodyChildren.AddRange(
@@ -315,15 +358,23 @@ internal sealed class Slide : ISlide
             new CommonSlideData(
                 new ShapeTree(
                     new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeProperties(
-                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
+                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties()
+                        {
+                            Id = (UInt32Value)1U, Name = string.Empty
+                        },
                         new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeDrawingProperties(),
                         new ApplicationNonVisualDrawingProperties()),
                     new GroupShapeProperties(new TransformGroup()),
                     new DocumentFormat.OpenXml.Presentation.Shape(
                         new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties(
-                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                            new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
+                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties()
+                            {
+                                Id = (UInt32Value)2U, Name = "Notes Placeholder 2"
+                            },
+                            new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(
+                                new ShapeLocks() { NoGrouping = true }),
+                            new ApplicationNonVisualDrawingProperties(
+                                new PlaceholderShape() { Type = PlaceholderValues.Body })),
                         new DocumentFormat.OpenXml.Presentation.ShapeProperties(),
                         new DocumentFormat.OpenXml.Presentation.TextBody(
                             textBodyChildren)))),
@@ -349,64 +400,14 @@ internal sealed class Slide : ISlide
         throw new SCException("An error occurred while parsing slide number.");
     }
 
-    private void UpdateNumber(int newSlideNumber)
-    {
-        if (this.Number == newSlideNumber)
-        {
-            return;
-        }
-
-        var currentIndex = this.Number - 1;
-        var destIndex = newSlideNumber - 1;
-        var sdkPresentationDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
-        if (destIndex < 0 || currentIndex >= sdkPresentationDocument.PresentationPart!.SlideParts.Count() ||
-            destIndex == currentIndex)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex));
-        }
-
-        var presentationPart = sdkPresentationDocument.PresentationPart!;
-
-        var presentation = presentationPart.Presentation;
-        var slideIdList = presentation.SlideIdList!;
-
-        // Get the slide ID of the source slide.
-        var sourceSlide = (SlideId)slideIdList.ChildElements[currentIndex];
-
-        SlideId? targetSlide;
-
-        // Identify the position of the target slide after which to move the source slide
-        if (destIndex == 0)
-        {
-            targetSlide = null;
-        }
-        else if (currentIndex < destIndex)
-        {
-            targetSlide = (SlideId)slideIdList.ChildElements[destIndex];
-        }
-        else
-        {
-            targetSlide = (SlideId)slideIdList.ChildElements[destIndex - 1];
-        }
-
-        // Remove the source slide from its current position.
-        sourceSlide.Remove();
-
-        // Insert the source slide at its new position after the target slide.
-        slideIdList.InsertAfter(sourceSlide, targetSlide);
-
-        // Save the modified presentation.
-        presentation.Save();
-    }
-
     private string? GetCustomData()
     {
-        if (this.customXmlPart == null)
+        if (this.custumDataCustomXmlPart == null)
         {
             return null;
         }
 
-        var customXmlPartStream = this.customXmlPart.GetStream();
+        var customXmlPartStream = this.custumDataCustomXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
         return raw[3..];
@@ -415,22 +416,22 @@ internal sealed class Slide : ISlide
     private void SetCustomData(string? value)
     {
         Stream customXmlPartStream;
-        if (this.customXmlPart == null)
+        if (this.custumDataCustomXmlPart == null)
         {
             var newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.customXmlPart = newSlideCustomXmlPart;
+            this.custumDataCustomXmlPart = newSlideCustomXmlPart;
         }
         else
         {
-            customXmlPartStream = this.customXmlPart.GetStream();
+            customXmlPartStream = this.custumDataCustomXmlPart.GetStream();
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
         customXmlStreamReader.Write($"ctd{value}");
     }
 
-    private CustomXmlPart? GetSldCustomXmlPart()
+    private CustomXmlPart? GetCustomXmlPart()
     {
         foreach (var customXmlPart in this.SlidePart.CustomXmlParts)
         {

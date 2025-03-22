@@ -511,27 +511,22 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             _ => throw new SCException()
         };
     }
-
-    private (int, string) GenerateIdAndName()
+    
+    private int GetNextShapeId()
     {
-        var maxId = 0;
-        var shapes = this.shapes;
-        if (shapes.Any())
+        if (this.shapes.Any())
         {
-            maxId = shapes.Max(s => s.Id);
+            return this.shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
-        var maxOrder = Regex.Matches(string.Join(string.Empty, shapes.Select(s => s.Name)), "\\d+", RegexOptions.None, TimeSpan.FromSeconds(100))
+        return 1;
+    }
+    
+    private (int, string) GenerateIdAndName()
+    {
+        var id = this.GetNextShapeId();
 
-#if NETSTANDARD2_0
-            .Cast<Match>()
-#endif
-
-            .Select(m => int.Parse(m.Value))
-            .DefaultIfEmpty(0)
-            .Max();
-
-        return (maxId + 1, $"AutoShape {maxOrder + 1}");
+        return (id, $"Shape {id}");
     }
 
     private string GenerateNextTableName()
@@ -759,15 +754,5 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
 
         return pPicture;
-    }
-
-    private int GetNextShapeId()
-    {
-        if (this.shapes.Any())
-        {
-            return this.shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
-        }
-
-        return 1;
     }
 }

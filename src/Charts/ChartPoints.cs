@@ -50,13 +50,13 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         }
 
         // Generate points
-        var chartPoints = new List<ChartPoint>(addresses.Count);
+        this.chartPoints = new List<ChartPoint>(addresses.Count);
 
         if (addresses.Count == 1 && cNumericValues?.Count > 1)
         {
             foreach (var cNumericValue in cNumericValues)
             {
-                chartPoints.Add(new ChartPoint(this.chartPart, cNumericValue, sheetName, addresses[0]));
+                this.chartPoints.Add(new ChartPoint(this.chartPart, cNumericValue, sheetName, addresses[0]));
             }
         }
         else
@@ -65,11 +65,9 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
             var quPoints = System.Math.Min(addresses.Count, cNumericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
-                chartPoints.Add(new ChartPoint(this.chartPart, cNumericValues?[i]!, sheetName, addresses[i]));
+                this.chartPoints.Add(new ChartPoint(this.chartPart, cNumericValues?[i]!, sheetName, addresses[i]));
             }
         }
-
-        this.chartPoints = chartPoints;
     }
 
     public int Count => this.chartPoints.Count;

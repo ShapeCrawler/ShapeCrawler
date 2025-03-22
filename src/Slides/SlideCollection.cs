@@ -230,7 +230,7 @@ internal sealed class SlideCollection : ISlideCollection
             }
         }
 
-        return ++currentId;
+        return currentId + 1;
     }
 
     private static uint CreateId(P.SlideMasterIdList slideMasterIdList)
@@ -245,6 +245,6 @@ internal sealed class SlideCollection : ISlideCollection
             }
         }
 
-        return ++currentId;
+        return currentId + 1;
     }
 }
