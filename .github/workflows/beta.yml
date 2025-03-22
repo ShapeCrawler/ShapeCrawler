@@ -22,7 +22,7 @@ jobs:
           echo "PACKAGE_VERSION=$versionWithDate" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create package
-        run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
+        run: dotnet pack src\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
 
       - name: Publish package
-        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }}
+        run: dotnet nuget push "src\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }}
