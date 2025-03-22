@@ -259,6 +259,8 @@
     <EmbeddedResource Include="Assets\072 content placeholder.pptx" />
     <None Remove="Assets\073 replacing text.pptx" />
     <EmbeddedResource Include="Assets\073 replacing text.pptx" />
+    <None Remove="Assets\074 google slides.pptx" />
+    <EmbeddedResource Include="Assets\074 google slides.pptx" />
   </ItemGroup>
 
 </Project>
