@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,11 +77,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 
     private IEnumerable<IShape> GetShapes()
     {
-        var pShapeTree = GetShapeTreeFromPart();
+        var pShapeTree = this.GetShapeTreeFromPart();
         
         foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
-            foreach (var shape in CreateShapesFromElement(element))
+            foreach (var shape in this.CreateShapesFromElement(element))
             {
                 yield return shape;
             }
@@ -100,12 +100,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
     {
         return element switch
         {
-            P.GroupShape pGroupShape => CreateGroupShape(pGroupShape),
-            P.ConnectionShape pConnectionShape => CreateConnectionShape(pConnectionShape),
-            P.Shape pShape => CreateAutoShapes(pShape),
-            P.GraphicFrame pGraphicFrame => CreateGraphicFrameShapes(pGraphicFrame),
-            P.Picture pPicture => CreatePictureShapes(pPicture),
-            _ => Enumerable.Empty<IShape>()
+            P.GroupShape pGroupShape => this.CreateGroupShape(pGroupShape),
+            P.ConnectionShape pConnectionShape => this.CreateConnectionShape(pConnectionShape),
+            P.Shape pShape => this.CreateAutoShapes(pShape),
+            P.GraphicFrame pGraphicFrame => this.CreateGraphicFrameShapes(pGraphicFrame),
+            P.Picture pPicture => this.CreatePictureShapes(pPicture),
+            _ => []
         };
     }
 
@@ -139,11 +139,14 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 
     private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
     {
-        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
-        if (aGraphicData == null) yield break;
+        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
+        if (aGraphicData == null)
+        {
+            yield break;
+        }
 
         // Check for OLE Object
-        if (IsOleObject(aGraphicData))
+        if (this.IsOleObject(aGraphicData))
         {
             yield return new OleObject(pGraphicFrame);
             yield break;
@@ -158,16 +161,18 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
             {
                 yield return new Picture(pPicture, aBlip);
             }
+
             yield break;
         }
 
         // Check for Chart
         if (IsChartPGraphicFrame(pGraphicFrame))
         {
-            foreach (var chart in CreateChartShapes(pGraphicFrame))
+            foreach (var chart in this.CreateChartShapes(pGraphicFrame))
             {
                 yield return chart;
             }
+
             yield break;
         }
 
@@ -185,10 +190,10 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 
     private IEnumerable<IShape> CreateChartShapes(P.GraphicFrame pGraphicFrame)
     {
-        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!;
-        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>()!;
+        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
         var sdkChartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
-        var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
+        var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         // Combination chart with multiple chart types

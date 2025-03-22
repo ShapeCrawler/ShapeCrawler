@@ -240,14 +240,14 @@ internal readonly ref struct ReferencedIndentLevel
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
 
         // Try to get color from layout shape
-        var colorFromLayout = GetColorFromLayoutShape(pShape, indentLevel);
+        var colorFromLayout = this.GetColorFromLayoutShape(pShape, indentLevel);
         if (colorFromLayout != null)
         {
             return colorFromLayout;
         }
 
         // Try to get color based on placeholder type
-        return GetColorFromPlaceholderType(pPlaceholderShape, openXmlPart, indentLevel);
+        return this.GetColorFromPlaceholderType(pPlaceholderShape, openXmlPart, indentLevel);
     }
 
     private string? GetColorFromLayoutShape(P.Shape pShape, int indentLevel)
@@ -257,7 +257,7 @@ internal readonly ref struct ReferencedIndentLevel
         // If no layout shape reference, try master shape
         if (referencedLayoutPShape == null)
         {
-            return GetColorFromMasterShape(pShape, indentLevel);
+            return this.GetColorFromMasterShape(pShape, indentLevel);
         }
 
         // Check color from layout shape
@@ -269,7 +269,7 @@ internal readonly ref struct ReferencedIndentLevel
         }
 
         // Try master shape of layout if no color found
-        return GetColorFromMasterShapeOfLayout(referencedLayoutPShape, indentLevel);
+        return this.GetColorFromMasterShapeOfLayout(referencedLayoutPShape, indentLevel);
     }
 
     private string? GetColorFromMasterShape(P.Shape pShape, int indentLevel)
@@ -309,12 +309,12 @@ internal readonly ref struct ReferencedIndentLevel
     {
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            return GetColorFromTitlePlaceholder(openXmlPart, indentLevel);
+            return this.GetColorFromTitlePlaceholder(openXmlPart, indentLevel);
         }
         
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            return GetColorFromBodyPlaceholder(openXmlPart, indentLevel);
+            return this.GetColorFromBodyPlaceholder(openXmlPart, indentLevel);
         }
 
         return null;

@@ -26,14 +26,14 @@ internal readonly record struct IndentFonts
             .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
 
         // Try to find matching font from level-specific paragraph properties
-        var indentFont = FindFontFromLevelProperties(lvlParagraphPropertyList, indentLevelFor);
+        var indentFont = this.FindFontFromLevelProperties(lvlParagraphPropertyList, indentLevelFor);
         if (indentFont.HasValue)
         {
             return indentFont;
         }
 
         // Fallback for level 1
-        return indentLevelFor == 1 ? FindFontFromTextBody() : null;
+        return indentLevelFor == 1 ? this.FindFontFromTextBody() : null;
     }
 
     private IndentFont? FindFontFromLevelProperties(IEnumerable<OpenXmlElement> lvlParagraphPropertyList, int targetLevel)

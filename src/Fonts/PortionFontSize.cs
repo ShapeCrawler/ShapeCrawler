@@ -15,14 +15,14 @@ internal class PortionFontSize(A.Text aText): IFontSize
         get
         {
             // Try getting font size from run properties
-            var runPropertiesFontSize = GetFontSizeFromRunProperties();
+            var runPropertiesFontSize = this.GetFontSizeFromRunProperties();
             if (runPropertiesFontSize.HasValue)
             {
                 return runPropertiesFontSize.Value;
             }
 
             // Try getting font size from referenced indent level
-            var referencedIndentFontSize = GetFontSizeFromReferencedIndentLevel();
+            var referencedIndentFontSize = this.GetFontSizeFromReferencedIndentLevel();
             if (referencedIndentFontSize.HasValue)
             {
                 return referencedIndentFontSize.Value;
@@ -30,13 +30,13 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
             // Try getting font size from slide master and shapes
             var indentLevel = new SCAParagraph(aText.Ancestors<A.Paragraph>().First()).GetIndentLevel();
-            var slideMasterPart = GetSlideMasterPart();
+            var slideMasterPart = this.GetSlideMasterPart();
             
             // Try placeholder shapes
-            var parentAutoShape = GetParentAutoShape();
+            var parentAutoShape = this.GetParentAutoShape();
             if (parentAutoShape != null)
             {
-                var placeholderFontSize = GetFontSizeFromPlaceholder(parentAutoShape, slideMasterPart, indentLevel);
+                var placeholderFontSize = this.GetFontSizeFromPlaceholder(parentAutoShape, slideMasterPart, indentLevel);
                 if (placeholderFontSize.HasValue)
                 {
                     return placeholderFontSize.Value;
@@ -44,7 +44,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             }
 
             // Try presentation default styles
-            var presentationFontSize = GetFontSizeFromPresentationDefaults(indentLevel);
+            var presentationFontSize = this.GetFontSizeFromPresentationDefaults(indentLevel);
             if (presentationFontSize.HasValue)
             {
                 return presentationFontSize.Value;
@@ -53,7 +53,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             // Try slide master body style (second attempt)
             if (parentAutoShape?.IsPlaceholder == true)
             {
-                var bodyStyleFontSize = GetFontSizeFromBodyStyle(slideMasterPart, indentLevel);
+                var bodyStyleFontSize = this.GetFontSizeFromBodyStyle(slideMasterPart, indentLevel);
                 if (bodyStyleFontSize.HasValue)
                 {
                     return bodyStyleFontSize.Value;
@@ -61,7 +61,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             }
 
             // Try theme object defaults
-            var themeDefaultFontSize = GetFontSizeFromThemeDefaults(indentLevel);
+            var themeDefaultFontSize = this.GetFontSizeFromThemeDefaults(indentLevel);
             if (themeDefaultFontSize.HasValue)
             {
                 return themeDefaultFontSize.Value;
@@ -122,7 +122,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
         {
             var titleFontSizeHundredPoints = slideMasterPart.SlideMaster.TextStyles!
                 .TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+                .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
 
             return titleFontSizeHundredPoints / 100m;
         }
