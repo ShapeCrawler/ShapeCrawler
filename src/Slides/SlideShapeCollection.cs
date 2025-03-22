@@ -53,17 +53,17 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public IShape this[int index] => this.shapes[index];
 
-    public void Add(IShape addingShape)
+    public void Add(IShape shape)
     {
         var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
 
-        if (addingShape is CopyableShape copyable)
+        if (shape is CopyableShape copyable)
         {
             copyable.CopyTo(pShapeTree);
         }
         else
         {
-            throw new SCException($"Adding {addingShape.GetType().Name} is not supported.");
+            throw new SCException($"Adding {shape.GetType().Name} is not supported.");
         }
     }
 

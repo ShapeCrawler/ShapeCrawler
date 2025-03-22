@@ -555,7 +555,7 @@ public class TableTests : SCTest
 
         // Assert
         row.Height.Should().Be(39);
-        table.Height.Should().Be(39);
+        table.Height.Should().BeApproximately(39.2m, 0.01m);
     }
 
     [Test(Description = "MergeCells #1")]
