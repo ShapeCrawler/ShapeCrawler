@@ -5,7 +5,7 @@ namespace ShapeCrawler.Shapes;
 
 internal abstract class CopyableShape : Shape
 {
-    internal CopyableShape(OpenXmlElement openXmlElement)
+    private protected CopyableShape(OpenXmlElement openXmlElement)
         : base(openXmlElement)
     {
     }

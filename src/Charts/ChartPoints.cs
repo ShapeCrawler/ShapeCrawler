@@ -50,7 +50,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         }
 
         // Generate points
-        var chartPoints = new List<ChartPoint>(addresses.Count);
+        chartPoints = new List<ChartPoint>(addresses.Count);
 
         if (addresses.Count == 1 && cNumericValues?.Count > 1)
         {
@@ -68,8 +68,6 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
                 chartPoints.Add(new ChartPoint(this.chartPart, cNumericValues?[i]!, sheetName, addresses[i]));
             }
         }
-
-        this.chartPoints = chartPoints;
     }
 
     public int Count => this.chartPoints.Count;

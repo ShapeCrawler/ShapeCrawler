@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Colors;
 
-internal sealed class FontColor(A.Text aText): IFontColor
+internal sealed class FontColor(A.Text aText) : IFontColor
 {
     public ColorType Type
     {
@@ -37,12 +37,9 @@ internal sealed class FontColor(A.Text aText): IFontColor
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
             var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
-            if (textBodyStyleFont.HasValue)
+            if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
             {
-                if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
-                {
-                    return textBodyColor.colorType;
-                }
+                return textBodyColor.colorType;
             }
 
             // From Shape
@@ -91,12 +88,9 @@ internal sealed class FontColor(A.Text aText): IFontColor
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
             var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()
                 !).FontOrNull(indentLevel);
-            if (textBodyStyleFont.HasValue)
+            if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
             {
-                if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
-                {
-                    return textBodyColor.colorHex!;
-                }
+                return textBodyColor.colorHex!;
             }
 
             // From Shape

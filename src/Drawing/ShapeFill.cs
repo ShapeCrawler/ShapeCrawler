@@ -20,7 +20,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
     {
         get
         {
-            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -41,7 +41,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         get
         {
             const int defaultAlphaPercentages = 100;
-            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -65,7 +65,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         get
         {
             const double luminanceModulation = 100;
-            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -88,7 +88,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         get
         {
             const double defaultValue = 0;
-            var aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
                 var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -123,7 +123,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
-            var aBlipFill = new A.BlipFill();
+            aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
             aStretch.Append(new A.FillRectangle());
             aBlipFill.Append(new A.Blip { Embed = rId });

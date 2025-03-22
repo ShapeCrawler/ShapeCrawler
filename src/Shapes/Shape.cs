@@ -18,7 +18,7 @@ internal abstract class Shape : IShape
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
 
-    internal Shape(OpenXmlElement pShapeTreeElement)
+    private protected Shape(OpenXmlElement pShapeTreeElement)
     {
         this.PShapeTreeElement = pShapeTreeElement;
         this.position = new Position(pShapeTreeElement);

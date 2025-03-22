@@ -55,7 +55,7 @@ internal class TableCellFill : IShapeFill
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
-            var aBlipFill = new A.BlipFill();
+            aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
             aStretch.Append(new A.FillRectangle());
             aBlipFill.Append(new A.Blip { Embed = rId });

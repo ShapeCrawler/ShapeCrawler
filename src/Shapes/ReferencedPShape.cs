@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
@@ -36,66 +36,100 @@ internal readonly ref struct ReferencedPShape
 
     private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape source)
     {
+        // Try to find a match based on specific conditions
         foreach (var pShape in pShapes)
         {
-            var target = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            var target = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
                 .GetFirstChild<P.PlaceholderShape>();
+            
+            // Skip shapes without placeholder information
             if (target == null)
             {
                 continue;
             }
 
-            if (source.Index is not null && target.Index is not null &&
-                source.Index == target.Index)
-            {
-                return pShape;
-            }
-
-            if (source.Type == null || target.Type == null)
-            {
-                continue;
-            }
-
-            if (source.Type == P.PlaceholderValues.Body &&
-                source.Index is not null && target.Index is not null)
-            {
-                if (source.Index == target.Index)
-                {
-                    return pShape;
-                }
-            }
-
-            if (source.Type == P.PlaceholderValues.Title && target.Type == P.PlaceholderValues.Title)
-            {
-                return pShape;
-            }
-
-            if (source.Type == P.PlaceholderValues.CenteredTitle && target.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                return pShape;
-            }
-
-            if (source.Type != null && target.Type != null && source.Type.Equals(target.Type))
-            {
-                return pShape;
-            }
-
-            if (source.Type != null && source.Type == P.PlaceholderValues.Title
-                                   && target.Type != null && target.Type == P.PlaceholderValues.CenteredTitle)
+            // Check if the shape matches any of our matching conditions
+            if (IsIndexMatch(source, target) || 
+                IsBodyWithMatchingIndex(source, target) ||
+                IsTitleMatch(source, target) ||
+                IsCenteredTitleMatch(source, target) ||
+                IsGeneralTypeMatch(source, target) ||
+                IsTitleCenteredTitleMatch(source, target))
             {
                 return pShape;
             }
         }
 
-        var byType = pShapes.FirstOrDefault(x =>
-            x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+        // Fallback: try to find a shape with matching type
+        return FindShapeByType(pShapes, source);
+    }
+
+    /// <summary>
+    /// Determines if source and target placeholders match by index
+    /// </summary>
+    private static bool IsIndexMatch(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return source.Index is not null && 
+               target.Index is not null && 
+               source.Index == target.Index;
+    }
+
+    /// <summary>
+    /// Checks if the source is a Body placeholder with matching index to target
+    /// </summary>
+    private static bool IsBodyWithMatchingIndex(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return source.Type?.Value == P.PlaceholderValues.Body &&
+               source.Index is not null && 
+               target.Index is not null &&
+               source.Index == target.Index;
+    }
+
+    /// <summary>
+    /// Determines if both source and target are Title placeholders
+    /// </summary>
+    private static bool IsTitleMatch(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return source.Type?.Value == P.PlaceholderValues.Title && 
+               target.Type! == P.PlaceholderValues.Title;
+    }
+
+    /// <summary>
+    /// Determines if both source and target are CenteredTitle placeholders
+    /// </summary>
+    private static bool IsCenteredTitleMatch(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return source.Type?.Value == P.PlaceholderValues.CenteredTitle && 
+               target.Type! == P.PlaceholderValues.CenteredTitle;
+    }
+
+    /// <summary>
+    /// Checks if source and target have the same placeholder type
+    /// </summary>
+    private static bool IsGeneralTypeMatch(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return source.Type != null && 
+               target.Type != null && 
+               source.Type.Equals(target.Type);
+    }
+
+    /// <summary>
+    /// Handles the special case where source is Title and target is CenteredTitle
+    /// </summary>
+    private static bool IsTitleCenteredTitleMatch(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return source.Type?.Value == P.PlaceholderValues.Title &&
+               target.Type! == P.PlaceholderValues.CenteredTitle;
+    }
+
+    /// <summary>
+    /// Finds a shape by matching placeholder type as a fallback mechanism
+    /// </summary>
+    private static P.Shape? FindShapeByType(IEnumerable<P.Shape> pShapes, P.PlaceholderShape source)
+    {
+        return pShapes.FirstOrDefault(x =>
+            x.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
                 .GetFirstChild<P.PlaceholderShape>()?.Type == source.Type);
-        if (byType != null)
-        {
-            return byType;
-        }
-
-        return null;
     }
 
     private static P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
