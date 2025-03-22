@@ -524,4 +524,15 @@ public class PresentationTests : SCTest
         // Assert
         pres.Properties.Modified.Should().Be(expectedModified);
     }
+    
+    [Test]
+    [Explicit("Should be fixed")]
+    public void Constructor_does_not_throw_exception_When_the_specified_file_is_a_google_slide_export()
+    {
+        // Act
+        var openingGoogleSlides = () => new Presentation(TestAsset("074 google slides.pptx"));
+        
+        // Assert
+        openingGoogleSlides.Should().NotThrow();
+    }
 }
