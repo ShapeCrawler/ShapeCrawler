@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Colors;
 
-internal sealed class FontColor(A.Text aText) : IFontColor
+internal sealed class FontColor(A.Text aText): IFontColor
 {
     public ColorType Type
     {

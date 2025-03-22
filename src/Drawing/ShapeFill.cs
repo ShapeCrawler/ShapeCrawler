@@ -20,16 +20,16 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
     {
         get
         {
-            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (aSolidFill != null)
+            this.aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
             {
-                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     return aRgbColorModelHex.Val!.ToString();
                 }
 
-                return this.ColorHexOrNullOf(aSolidFill.SchemeColor!.Val!);
+                return this.ColorHexOrNullOf(this.aSolidFill.SchemeColor!.Val!);
             }
 
             return null;
@@ -41,17 +41,17 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         get
         {
             const int defaultAlphaPercentages = 100;
-            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (aSolidFill != null)
+            this.aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
             {
-                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     var alpha = aRgbColorModelHex.Elements<A.Alpha>().FirstOrDefault();
                     return alpha?.Val?.Value / 1000d ?? defaultAlphaPercentages;
                 }
 
-                var schemeColor = aSolidFill.SchemeColor!;
+                var schemeColor = this.aSolidFill.SchemeColor!;
                 var schemeAlpha = schemeColor.Elements<A.Alpha>().FirstOrDefault();
                 return schemeAlpha?.Val?.Value / 1000d ?? defaultAlphaPercentages;
             }
@@ -65,16 +65,16 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         get
         {
             const double luminanceModulation = 100;
-            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (aSolidFill != null)
+            this.aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
             {
-                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     return luminanceModulation;
                 }
 
-                var schemeColor = aSolidFill.SchemeColor!;
+                var schemeColor = this.aSolidFill.SchemeColor!;
                 var schemeAlpha = schemeColor.Elements<A.LuminanceModulation>().FirstOrDefault();
                 return schemeAlpha?.Val?.Value / 1000d ?? luminanceModulation;
             }
@@ -88,16 +88,16 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         get
         {
             const double defaultValue = 0;
-            aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (aSolidFill != null)
+            this.aSolidFill = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
             {
-                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     return defaultValue;
                 }
 
-                var schemeColor = aSolidFill.SchemeColor!;
+                var schemeColor = this.aSolidFill.SchemeColor!;
                 var schemeAlpha = schemeColor.Elements<A.LuminanceOffset>().FirstOrDefault();
                 return schemeAlpha?.Val?.Value / 1000d ?? defaultValue;
             }
@@ -123,13 +123,13 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
-            aBlipFill = new A.BlipFill();
+            this.aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
             aStretch.Append(new A.FillRectangle());
-            aBlipFill.Append(new A.Blip { Embed = rId });
-            aBlipFill.Append(aStretch);
+            this.aBlipFill.Append(new A.Blip { Embed = rId });
+            this.aBlipFill.Append(aStretch);
 
-            openXmlCompositeElement.Append(aBlipFill);
+            openXmlCompositeElement.Append(this.aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;

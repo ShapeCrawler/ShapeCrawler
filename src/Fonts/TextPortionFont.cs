@@ -173,7 +173,7 @@ internal sealed class TextPortionFont : ITextPortionFont
     private A.EastAsianFont AEastAsianFont()
     {
         var aEastAsianFont = this.aText.Parent!.GetFirstChild<A.RunProperties>()
-            ?.GetFirstChild<A.EastAsianFont>()!;
+            ?.GetFirstChild<A.EastAsianFont>() !;
 
         return aEastAsianFont;
     }
