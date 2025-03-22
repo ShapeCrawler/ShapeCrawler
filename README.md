@@ -1,6 +1,6 @@
 <h3 align="center">
 
-![ShapeCrawler](./docs/logo-extend.png)
+![ShapeCrawler](./assets/logo.png)
 
 </h3>
 

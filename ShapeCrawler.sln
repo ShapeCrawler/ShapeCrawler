@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "src\ShapeCrawler\ShapeCrawler.csproj", "{4A633D84-856C-49A3-A76E-59291CF76A6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "src\ShapeCrawler.csproj", "{4A633D84-856C-49A3-A76E-59291CF76A6F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{093CE2C5-BA5E-45AE-9D06-7E210EE9644A}"
 EndProject
