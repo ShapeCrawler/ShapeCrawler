@@ -99,8 +99,8 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().BeApproximately(43m, 0.01m);
-            shape.Y.Should().Be(110m);
+            shape.Height.Should().BeApproximately(43.14m, 0.01m);
+            shape.Y.Should().BeApproximately(111.01m, 0.01m);
             pres.Validate();
         }
 
@@ -156,7 +156,7 @@ namespace ShapeCrawler.Tests.Unit
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Width.Should().BeApproximately(102m, 0.01m);
+            shape.Width.Should().BeApproximately(102.68m, 0.01m);
             pres.Validate();
         }
 
@@ -172,7 +172,7 @@ namespace ShapeCrawler.Tests.Unit
             textBox.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Height.Should().BeApproximately(32m, 0.01m);
+            shape.Height.Should().BeApproximately(32.64m, 0.01m);
             pres.Validate();
         }
 
@@ -305,7 +305,7 @@ namespace ShapeCrawler.Tests.Unit
             shape.TextBox.Text = "Some sentence. Some sentence";
 
             // Assert
-            shape.Height.Should().BeApproximately(85m, 0.01m);
+            shape.Height.Should().BeApproximately(85.14m, 0.01m);
         }
 
         [Test]

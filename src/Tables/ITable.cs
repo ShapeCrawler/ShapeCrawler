@@ -93,8 +93,9 @@ internal sealed class Table : CopyableShape, ITable
 
             base.Height = value;
 
-            foreach (TableRow row in this.Rows)
+            foreach (var tableRow in this.Rows)
             {
+                var row = (TableRow)tableRow;
                 row.SetHeight((int)(row.Height * percentNewHeight));
             }
         }

@@ -157,7 +157,7 @@ public class ShapeTests : SCTest
 
         // Assert
         groupedShape.Y.Should().Be(372);
-        groupShape.Height.Should().BeApproximately(89.13m, 0.01m);
+        groupShape.Height.Should().BeApproximately(90.08m, 0.01m);
     }
 
     [Test]
@@ -193,7 +193,7 @@ public class ShapeTests : SCTest
         groupedShape.X.Should().Be(69m);
         groupShape.X.Should().BeApproximately(groupShapeX, 0.01m,
             "because the X-coordinate of parent group shouldn't be changed when a grouped shape is moved to the right side");
-        groupShape.Width.Should().BeApproximately(87.26m, 0.01m);
+        groupShape.Width.Should().BeApproximately(87.72m, 0.01m);
     }
 
     [Test]

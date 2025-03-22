@@ -180,7 +180,7 @@ internal sealed class Slide : ISlide
 
     public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
 
-    public IPicture Picture(string name) => this.Shapes.GetByName<IPicture>(name);
+    public IPicture Picture(string picture) => this.Shapes.GetByName<IPicture>(picture);
 
     public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
 
