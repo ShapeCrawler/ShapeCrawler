@@ -22,9 +22,10 @@ internal sealed class AutoShape : CopyableShape
         : base(pShape)
     {
         this.pShape = pShape;
-        this.Outline = new SlideShapeOutline(pShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(pShape.Descendants<P.ShapeProperties>().First());
-        this.shapeGeometry = new ShapeGeometry(pShape.Descendants<P.ShapeProperties>().First());
+        var shapeProperties = pShape.Descendants<P.ShapeProperties>().First();
+        this.Outline = new SlideShapeOutline(shapeProperties);
+        this.Fill = new ShapeFill(shapeProperties);
+        this.shapeGeometry = new ShapeGeometry(shapeProperties);
     }
 
     public override bool HasOutline => true;

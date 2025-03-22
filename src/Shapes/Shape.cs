@@ -13,6 +13,7 @@ namespace ShapeCrawler.Shapes;
 internal abstract class Shape : IShape
 {
     protected readonly OpenXmlElement PShapeTreeElement;
+    
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
