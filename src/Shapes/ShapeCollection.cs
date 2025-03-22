@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,152 +77,176 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 
     private IEnumerable<IShape> GetShapes()
     {
-        var pShapeTree = openXmlPart switch
+        var pShapeTree = GetShapeTreeFromPart();
+        
+        foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
-            SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-            NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+            foreach (var shape in CreateShapesFromElement(element))
+            {
+                yield return shape;
+            }
+        }
+    }
+
+    private OpenXmlElement GetShapeTreeFromPart() => openXmlPart switch
+    {
+        SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
+        SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+        NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
+        _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+    };
+
+    private IEnumerable<IShape> CreateShapesFromElement(OpenXmlCompositeElement element)
+    {
+        return element switch
+        {
+            P.GroupShape pGroupShape => CreateGroupShape(pGroupShape),
+            P.ConnectionShape pConnectionShape => CreateConnectionShape(pConnectionShape),
+            P.Shape pShape => CreateAutoShapes(pShape),
+            P.GraphicFrame pGraphicFrame => CreateGraphicFrameShapes(pGraphicFrame),
+            P.Picture pPicture => CreatePictureShapes(pPicture),
+            _ => Enumerable.Empty<IShape>()
         };
-        foreach (var pShapeTreeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
+    }
+
+    private IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
+    {
+        yield return new GroupShape(pGroupShape);
+    }
+
+    private IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
+    {
+        yield return new SlideLine(pConnectionShape);
+    }
+
+    private IEnumerable<IShape> CreateAutoShapes(P.Shape pShape)
+    {
+        if (pShape.TextBody is not null)
         {
-            if (pShapeTreeElement is P.GroupShape pGroupShape)
+            yield return new RootShape(
+                pShape,
+                new AutoShape(
+                    pShape,
+                    new TextBox(pShape.TextBody)));
+        }
+        else
+        {
+            yield return new RootShape(
+                pShape,
+                new AutoShape(pShape));
+        }
+    }
+
+    private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
+    {
+        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
+        if (aGraphicData == null) yield break;
+
+        // Check for OLE Object
+        if (IsOleObject(aGraphicData))
+        {
+            yield return new OleObject(pGraphicFrame);
+            yield break;
+        }
+
+        // Check for Picture
+        var pPicture = pGraphicFrame.Descendants<P.Picture>().FirstOrDefault();
+        if (pPicture != null)
+        {
+            var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
+            if (aBlip?.Embed != null)
             {
-                yield return new GroupShape(pGroupShape);
+                yield return new Picture(pPicture, aBlip);
             }
-            else if (pShapeTreeElement is P.ConnectionShape pConnectionShape)
+            yield break;
+        }
+
+        // Check for Chart
+        if (IsChartPGraphicFrame(pGraphicFrame))
+        {
+            foreach (var chart in CreateChartShapes(pGraphicFrame))
             {
-             yield return new SlideLine(pConnectionShape);
+                yield return chart;
             }
-            else if (pShapeTreeElement is P.Shape pShape)
-            {
-                if (pShape.TextBody is not null)
-                {
-                    yield return 
-                        new RootShape(
-                            pShape,
-                            new AutoShape(
-                                pShape,
-                                new TextBox(pShape.TextBody)));
-                }
-                else
-                {
-                    yield return 
-                        new RootShape(
-                            pShape,
-                            new AutoShape(pShape));
-                }
-            }
-            else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
-            {
-                var aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
-                if (aGraphicData!.Uri!.Value!.Equals(
-                        "http://schemas.openxmlformats.org/presentationml/2006/ole",
-                        StringComparison.Ordinal))
-                {
-                    yield return new OleObject(pGraphicFrame);
-                    continue;
-                }
+            yield break;
+        }
 
-                var pPicture = pShapeTreeElement.Descendants<P.Picture>().FirstOrDefault();
-                if (pPicture != null)
-                {
-                    var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
-                    var blipEmbed = aBlip?.Embed;
-                    if (blipEmbed is null)
-                    {
-                        continue;
-                    }
+        // Check for Table
+        if (IsTablePGraphicFrame(pGraphicFrame))
+        {
+            yield return new Table(pGraphicFrame);
+        }
+    }
 
-                    yield return new Picture(pPicture, aBlip!);
-                    continue;
-                }
+    private bool IsOleObject(A.GraphicData aGraphicData) => 
+        aGraphicData.Uri?.Value?.Equals(
+            "http://schemas.openxmlformats.org/presentationml/2006/ole",
+            StringComparison.Ordinal) ?? false;
 
-                if (IsChartPGraphicFrame(pShapeTreeElement))
-                {
-                    aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-                    var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-                    var sdkChartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
-                    var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
-                    var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-                    pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
-                        .GetFirstChild<C.ChartReference>();
-                    pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-                    if (cCharts.Count() > 1)
-                    {
-                        // Combination chart
-                        yield return new Chart(
-                            sdkChartPart,
-                            pGraphicFrame,
-                            new Categories(sdkChartPart, cCharts));
-                        continue;
-                    }
+    private IEnumerable<IShape> CreateChartShapes(P.GraphicFrame pGraphicFrame)
+    {
+        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!;
+        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>()!;
+        var sdkChartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
+        var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
+        var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-                    var chartType = cCharts.Single().LocalName;
+        // Combination chart with multiple chart types
+        if (cCharts.Count() > 1)
+        {
+            yield return new Chart(
+                sdkChartPart,
+                pGraphicFrame,
+                new Categories(sdkChartPart, cCharts));
+            yield break;
+        }
 
-                    if (chartType is "lineChart" or "barChart" or "pieChart")
-                    {
-                        yield return new Chart(
-                            sdkChartPart,
-                            pGraphicFrame,
-                            new Categories(sdkChartPart, cCharts));
-                        continue;
-                    }
+        var chartType = cCharts.Single().LocalName;
+        
+        // Charts with categories
+        if (chartType is "lineChart" or "barChart" or "pieChart")
+        {
+            yield return new Chart(
+                sdkChartPart,
+                pGraphicFrame,
+                new Categories(sdkChartPart, cCharts));
+            yield break;
+        }
 
-                    if (chartType is "scatterChart" or "bubbleChart")
-                    {
-                        yield return new Chart(
-                            sdkChartPart,
-                            pGraphicFrame,
-                            new NullCategories());
-                        continue;
-                    }
+        // Charts without categories
+        if (chartType is "scatterChart" or "bubbleChart")
+        {
+            yield return new Chart(
+                sdkChartPart,
+                pGraphicFrame,
+                new NullCategories());
+            yield break;
+        }
 
-                    yield return new Chart(
-                        sdkChartPart,
-                        pGraphicFrame,
-                        new Categories(sdkChartPart, cCharts));
-                }
-                else if (IsTablePGraphicFrame(pShapeTreeElement))
-                {
-                    yield return new Table(pShapeTreeElement);
-                }
-            }
-            else if (pShapeTreeElement is P.Picture pPicture)
-            {
-                var element = pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.ChildElements
-                    .FirstOrDefault();
+        // Default chart handling
+        yield return new Chart(
+            sdkChartPart,
+            pGraphicFrame,
+            new Categories(sdkChartPart, cCharts));
+    }
 
-                switch (element)
-                {
-                    case A.AudioFromFile:
-                        {
-                            var aAudioFile = pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
-                                .GetFirstChild<A.AudioFromFile>();
-                            if (aAudioFile is not null)
-                            {
-                                yield return new MediaShape(pPicture);
-                            }
+    private IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
+    {
+        var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
+            .ChildElements.FirstOrDefault();
 
-                            continue;
-                        }
+        // Check for media shapes
+        if (element is A.AudioFromFile or A.VideoFromFile)
+        {
+            yield return new MediaShape(pPicture);
+            yield break;
+        }
 
-                    case A.VideoFromFile:
-                        {
-                            yield return new MediaShape(pPicture);
-                            continue;
-                        }
-                }
-
-                var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
-                var blipEmbed = aBlip?.Embed;
-                if (blipEmbed is null)
-                {
-                    continue;
-                }
-
-                yield return new Picture(pPicture, aBlip!);
-            }
+        // Regular picture
+        var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
+        if (aBlip?.Embed != null)
+        {
+            yield return new Picture(pPicture, aBlip);
         }
     }
 }

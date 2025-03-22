@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
@@ -225,36 +225,42 @@ internal readonly ref struct ReferencedIndentLevel
 
     private string? SlideColorHexOrNull()
     {
-        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        // Get basic shape and placeholder information
         var pShape = this.aText.Ancestors<P.Shape>().First();
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
+        
         if (pPlaceholderShape == null)
         {
             return null;
         }
 
-        var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNull(pShape);
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-        if (referencedLayoutPShape == null)
+
+        // Try to get color from layout shape
+        var colorFromLayout = GetColorFromLayoutShape(pShape, indentLevel);
+        if (colorFromLayout != null)
         {
-            var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
-            if (referencedMasterPShape == null)
-            {
-                return null;
-            }
-
-            var masterFontsOfSlide = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
-            var masterIndentFontOfSlide = masterFontsOfSlide.FontOrNull(indentLevel);
-            if (this.HexFromName(masterIndentFontOfSlide, out var masterColorOfSlide))
-            {
-                return masterColorOfSlide;
-            }
-
-            return null;
+            return colorFromLayout;
         }
 
+        // Try to get color based on placeholder type
+        return GetColorFromPlaceholderType(pPlaceholderShape, openXmlPart, indentLevel);
+    }
+
+    private string? GetColorFromLayoutShape(P.Shape pShape, int indentLevel)
+    {
+        var referencedLayoutPShape = this.ReferencedLayoutPShapeOrNull(pShape);
+        
+        // If no layout shape reference, try master shape
+        if (referencedLayoutPShape == null)
+        {
+            return GetColorFromMasterShape(pShape, indentLevel);
+        }
+
+        // Check color from layout shape
         var layoutFonts = new IndentFonts(referencedLayoutPShape.TextBody!.ListStyle!);
         var layoutIndentFontOfSlide = layoutFonts.FontOrNull(indentLevel);
         if (layoutIndentFontOfSlide != null && this.HexFromName(layoutIndentFontOfSlide, out var layoutColorOfSlide))
@@ -262,51 +268,91 @@ internal readonly ref struct ReferencedIndentLevel
             return layoutColorOfSlide;
         }
 
-        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(referencedLayoutPShape);
-        if (refMasterPShapeOfLayout != null)
+        // Try master shape of layout if no color found
+        return GetColorFromMasterShapeOfLayout(referencedLayoutPShape, indentLevel);
+    }
+
+    private string? GetColorFromMasterShape(P.Shape pShape, int indentLevel)
+    {
+        var referencedMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
+        if (referencedMasterPShape == null)
         {
-            var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
-            var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
-            if (masterIndentFontOfLayout != null &&
-                this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
-            {
-                return masterColorOfLayout;
-            }
+            return null;
         }
 
+        var masterFontsOfSlide = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
+        var masterIndentFontOfSlide = masterFontsOfSlide.FontOrNull(indentLevel);
+        
+        return this.HexFromName(masterIndentFontOfSlide, out var masterColorOfSlide) 
+            ? masterColorOfSlide 
+            : null;
+    }
+
+    private string? GetColorFromMasterShapeOfLayout(P.Shape layoutShape, int indentLevel)
+    {
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(layoutShape);
+        if (refMasterPShapeOfLayout == null)
+        {
+            return null;
+        }
+
+        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
+        var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
+        
+        return (masterIndentFontOfLayout != null && 
+                this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
+            ? masterColorOfLayout
+            : null;
+    }
+
+    private string? GetColorFromPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart, int indentLevel)
+    {
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            var pTitleStyle = openXmlPart switch
-            {
-                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
-                    .TitleStyle!,
-                _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
-                    .TitleStyle!
-            };
-            var masterTitleFonts = new IndentFonts(pTitleStyle);
-            var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
-            if (this.HexFromName(masterTitleFont, out var masterTitleColor))
-            {
-                return masterTitleColor;
-            }
+            return GetColorFromTitlePlaceholder(openXmlPart, indentLevel);
         }
-        else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
+        
+        if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            var pBodyStyle = openXmlPart switch
-            {
-                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
-                    .BodyStyle!,
-                _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
-            };
-            var masterBodyFonts = new IndentFonts(pBodyStyle);
-            var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
-            if (this.HexFromName(masterBodyFont, out var masterTitleColor))
-            {
-                return masterTitleColor;
-            }
+            return GetColorFromBodyPlaceholder(openXmlPart, indentLevel);
         }
 
         return null;
+    }
+
+    private string? GetColorFromTitlePlaceholder(OpenXmlPart openXmlPart, int indentLevel)
+    {
+        var pTitleStyle = openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+                .TitleStyle!,
+            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
+                .TitleStyle!
+        };
+        
+        var masterTitleFonts = new IndentFonts(pTitleStyle);
+        var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
+        
+        return this.HexFromName(masterTitleFont, out var masterTitleColor) 
+            ? masterTitleColor 
+            : null;
+    }
+
+    private string? GetColorFromBodyPlaceholder(OpenXmlPart openXmlPart, int indentLevel)
+    {
+        var pBodyStyle = openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+                .BodyStyle!,
+            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
+        };
+        
+        var masterBodyFonts = new IndentFonts(pBodyStyle);
+        var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
+        
+        return this.HexFromName(masterBodyFont, out var masterBodyColor) 
+            ? masterBodyColor 
+            : null;
     }
 
     private ColorType? SlideColorTypeOrNull()

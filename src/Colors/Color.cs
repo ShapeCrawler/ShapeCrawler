@@ -63,12 +63,12 @@ public struct Color
     /// <summary>
     ///     Gets a value indicating whether the color is solid.
     /// </summary>
-    internal bool IsSolid => this.Alpha == 255;
+    internal readonly bool IsSolid => Math.Abs(this.Alpha - 255) < 0.01;
 
     /// <summary>
     ///     Gets a value indicating whether the color is transparent.
     /// </summary>
-    internal bool IsTransparent => this.Alpha == 0;
+    internal readonly bool IsTransparent => this.Alpha == 0.00;
 
     /// <summary>
     ///     Creates color from Hex value.

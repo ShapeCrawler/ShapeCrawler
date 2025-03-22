@@ -2,7 +2,10 @@
 
 namespace ShapeCrawler;
 
-internal sealed class SCException : Exception
+/// <summary>
+///     Represents an exception that is thrown when a ShapeCrawler error occurs.
+/// </summary>
+public sealed class SCException : Exception
 {
     internal SCException()
     {

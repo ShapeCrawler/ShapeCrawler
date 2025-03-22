@@ -236,8 +236,9 @@ internal sealed class SlideCollection : ISlideCollection
     private static uint CreateId(P.SlideMasterIdList slideMasterIdList)
     {
         uint currentId = 0;
-        foreach (P.SlideMasterId masterId in slideMasterIdList)
+        foreach (var openXmlElement in slideMasterIdList)
         {
+            var masterId = (P.SlideMasterId)openXmlElement;
             if (masterId.Id! > currentId)
             {
                 currentId = masterId.Id!;
