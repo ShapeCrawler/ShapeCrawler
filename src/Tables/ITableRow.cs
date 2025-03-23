@@ -21,7 +21,7 @@ public interface ITableRow
     /// <summary>
     ///     Gets or sets height in points.
     /// </summary>
-    int Height { get; set; }
+    decimal Height { get; set; }
 
     /// <summary>
     ///     Creates a duplicate of the current row and adds this at the table end.
@@ -69,10 +69,33 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
         }
     }
 
-    public int Height
+    public decimal Height
     {
-        get => this.GetHeight();
-        set => this.UpdateHeight(value);
+        get => new Emus(this.ATableRow.Height!.Value).AsPoints();
+        set
+        {
+            var currentPoints = new Emus(this.ATableRow.Height!.Value).AsPoints();
+            if (currentPoints == value)
+            {
+                return;
+            }
+
+            var newEmu = new Points(value).AsEmus();
+            this.ATableRow.Height!.Value = newEmu;
+
+            var pGraphicalFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
+            var parentTable = new Table(pGraphicalFrame);
+            if (value > currentPoints)
+            {
+                var diffPoints = value - currentPoints;
+                parentTable.SetTableHeight(parentTable.Height + diffPoints);
+            }
+            else
+            {
+                var diffPoints = currentPoints - value;
+                parentTable.SetTableHeight(parentTable.Height - diffPoints);
+            }
+        }
     }
 
     internal A.TableRow ATableRow => aTableRow;
@@ -83,43 +106,16 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
         this.ATableRow.Parent!.Append(rowCopy);
     }
 
-    internal void SetHeight(int newPixels)
+    internal void SetHeight(int newPoints)
     {
-        var currentPixels = this.GetHeight();
+        var currentPixels = new Emus(this.ATableRow.Height!.Value).AsPoints();
 
-        if (currentPixels == newPixels)
-        {
-            return;
-        }
-
-        var newEmu = UnitConverter.PointToEmu(newPixels);
-        this.ATableRow.Height!.Value = newEmu;
-    }
-
-    private int GetHeight() => (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);
-
-    private void UpdateHeight(int newPoints)
-    {
-        var currentPoints = this.GetHeight();
-        if (currentPoints == newPoints)
+        if (currentPixels == newPoints)
         {
             return;
         }
 
         var newEmu = new Points(newPoints).AsEmus();
         this.ATableRow.Height!.Value = newEmu;
-
-        var pGraphicalFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-        var parentTable = new Table(pGraphicalFrame);
-        if (newPoints > currentPoints)
-        {
-            var diffPoints = newPoints - currentPoints;
-            parentTable.SetTableHeight(parentTable.Height + diffPoints);
-        }
-        else
-        {
-            var diffPoints = currentPoints - newPoints;
-            parentTable.SetTableHeight(parentTable.Height - diffPoints);
-        }
     }
 }

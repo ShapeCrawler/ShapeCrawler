@@ -861,7 +861,7 @@ public class ShapeCollectionTests : SCTest
         table.Rows.Should().HaveCount(2);
         table.Id.Should().Be(1);
         table.Name.Should().Be("Table 1");
-        table.Columns[0].Width.Should().Be(284);
+        table.Columns[0].Width.Should().BeApproximately(213.33m, 0.01m);
         pres.Validate();
     }
     
