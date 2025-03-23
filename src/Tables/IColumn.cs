@@ -23,7 +23,7 @@ public interface IColumn
     void Duplicate();
 }
 
-internal sealed class Column(A.GridColumn aGridColumn, int index) : IColumn
+internal sealed class Column(A.GridColumn aGridColumn, int index): IColumn
 {
     public decimal Width
     {

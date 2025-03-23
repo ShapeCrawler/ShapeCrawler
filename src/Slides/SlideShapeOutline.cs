@@ -65,7 +65,7 @@ internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlComposite
 
         var widthEmu = width.Value;
 
-        return UnitConverter.EmuToPoint(widthEmu);
+        return new Emus(widthEmu).AsPoints();
     }
 
     private string? ParseHexColor()
