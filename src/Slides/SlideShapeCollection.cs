@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
+using ShapeCrawler.Assets;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;

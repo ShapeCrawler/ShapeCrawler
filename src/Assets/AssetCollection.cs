@@ -1,7 +1,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Assets;
 
 internal readonly ref struct AssetCollection(Assembly assembly)
 {
