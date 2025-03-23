@@ -5,6 +5,7 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
+using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -59,8 +60,8 @@ public sealed class Presentation : IPresentation
     /// </summary>
     public Presentation()
     {
-        var assets = new Assets(Assembly.GetExecutingAssembly());
-        var stream = assets.StreamOf("new-presentation.pptx");
+        var assets = new AssetCollection(Assembly.GetExecutingAssembly());
+        var stream = assets.StreamOf("new presentation.pptx");
 
         this.presDocument = PresentationDocument.Open(stream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
