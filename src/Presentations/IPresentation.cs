@@ -16,12 +16,12 @@ public interface IPresentation : IDisposable
     ISlideCollection Slides { get; }
 
     /// <summary>
-    ///     Gets or sets presentation slides width in pixels.
+    ///     Gets or sets presentation slides width in points.
     /// </summary>
     decimal SlideWidth { get; set; }
 
     /// <summary>
-    ///     Gets or sets the presentation slides height.
+    ///     Gets or sets the presentation slides height in points.
     /// </summary>
     decimal SlideHeight { get; set; }
 

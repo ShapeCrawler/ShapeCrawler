@@ -7,7 +7,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a point in 2D space.
 /// </summary>
-public sealed record Point(
+public sealed record Point( // TODO: should be struct?
     [property: Description("Gets X-coordinate in points")]
     decimal X,
     [property: Description("Gets Y-coordinate in points")]
