@@ -35,7 +35,7 @@ internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlComposite
             aOutline = openXmlCompositeElement.AddOutline();
         }
 
-        aOutline.Width = new Int32Value((int)UnitConverter.PointToEmu(points));
+        aOutline.Width = new Int32Value((int)new Points(points).AsEmus());
     }
 
     private void UpdateFill(OpenXmlElement child)

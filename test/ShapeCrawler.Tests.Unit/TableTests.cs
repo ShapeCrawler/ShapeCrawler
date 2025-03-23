@@ -393,18 +393,14 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Row_Height_Getter_returns_row_height_in_points()
+    public void Row_Height_Getter()
     {
         // Arrange
-        var pptx = TestAsset("001.pptx");
-        var pres = new Presentation(pptx);
-        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var table = (ITable)pres.Slide(2).Shapes.First(sp => sp.Id == 3);
 
-        // Act
-        var rowHeight = table.Rows[0].Height;
-
-        // Act-Assert
-        rowHeight.Should().Be(29);
+        // Act & Assert
+        table.Rows[0].Height.Should().Be(29.2m);
     }
 
     [Test]
@@ -540,11 +536,11 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Row_Height_Setter_sets_height_of_the_table_row_in_points()
+    public void Row_Height_Setter()
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slides[0].Table("Table 1");
+        var table = pres.Slide(1).Table("Table 1");
         var row = table.Rows[0];
 
         // Act
@@ -552,7 +548,7 @@ public class TableTests : SCTest
 
         // Assert
         row.Height.Should().Be(39);
-        table.Height.Should().BeApproximately(39.2m, 0.01m);
+        table.Height.Should().Be(39);
     }
 
     [Test]
@@ -884,7 +880,7 @@ public class TableTests : SCTest
         table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
-        static void AssertTable(ITable table, decimal expectedMergedColumnWidth, int expectedMergedRowHeight)
+        static void AssertTable(ITable table, decimal expectedMergedColumnWidth, decimal expectedMergedRowHeight)
         {
             table.Columns.Should().HaveCount(1);
             table.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
@@ -1229,12 +1225,11 @@ public class TableTests : SCTest
         var addedTable = pres.Slide(1).Shapes.Last<ITable>();
         
         // Act
-        var currentRowsHeight = addedTable.Rows[0].Height;
         addedTable.Height *= 1.5m;
         
         // Assert
-        addedTable.Rows[0].Height.Should().Be((int)(currentRowsHeight * 1.5));
-        addedTable.Rows[1].Height.Should().Be((int)(currentRowsHeight * 1.5));
+        addedTable.Rows[0].Height.Should().BeApproximately(43, 0.01m);
+        addedTable.Rows[1].Height.Should().Be(43);
         pres.Validate();
     }
 }
