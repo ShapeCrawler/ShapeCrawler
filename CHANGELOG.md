@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.64.3 - Unreleased
+## Version 0.64.3 - 2025-03-25
 🐞Fixed updating table height [#552](https://github.com/ShapeCrawler/ShapeCrawler/issues/552)  
 🐞Fixed New Line issue [#960](https://github.com/ShapeCrawler/ShapeCrawler/issues/960)
 
