@@ -106,7 +106,8 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.64.2 - 2025-03-12
-🐞Fixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)
+№## Version 0.64.3 - 2025-03-25
+🐞Fixed updating table height [#552](https://github.com/ShapeCrawler/ShapeCrawler/issues/552)  
+🐞Fixed New Line issue [#960](https://github.com/ShapeCrawler/ShapeCrawler/issues/960)
 
 Visit [CHANGELO.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.

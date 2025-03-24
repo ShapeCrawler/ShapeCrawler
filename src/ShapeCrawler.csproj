@@ -10,7 +10,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🐞Fixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)</PackageReleaseNotes>
+    <PackageReleaseNotes>🐞Fixed updating table height [#552](https://github.com/ShapeCrawler/ShapeCrawler/issues/552)  
+🐞Fixed New Line issue [#960](https://github.com/ShapeCrawler/ShapeCrawler/issues/960)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
