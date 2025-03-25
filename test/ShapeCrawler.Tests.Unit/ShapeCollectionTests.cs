@@ -636,7 +636,7 @@ public class ShapeCollectionTests : SCTest
     
     [Test]
     [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/892")]
-    public void AddPicture_adds_ico_picture_with_conversion_to_png()
+    public void AddPicture_adds_picture_from_ico_image()
     {
         // Arrange
         var pres = new Presentation();
@@ -649,12 +649,9 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var picture = (IPicture)shapes.Last();
         picture.Image!.Mime.Should().Be("image/png");
-        
-        // Ensure the image is valid
-        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
-        var originalImage = new MagickImage(TestAsset("reference image.png"));
-        
-        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        var actualImage = new MagickImage(picture.Image!.AsByteArray());
+        var expectedImage = new MagickImage(TestAsset("reference image.png"));
+        actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
         pres.Validate();
     }

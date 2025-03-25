@@ -186,14 +186,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
                 ? this.CreateSvgPPicture(rasterStream, image, "Picture")
                 : this.CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
 
-            // Fix up the sizes
-            var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
-            var yEmu = UnitConverter.VerticalPixelToEmu(100m);
-            var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
-            var heightEmu = UnitConverter.VerticalPixelToEmu(height);
+            var widthEmu = new Pixels(width).AsHorizontalEmus();
+            var heightEmu = new Pixels(height).AsVerticalEmus();
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
-            transform2D.Offset!.X = xEmu;
-            transform2D.Offset!.Y = yEmu;
+            transform2D.Offset!.X = 952500;
+            transform2D.Offset!.Y = 952500;
             transform2D.Extents!.Cx = widthEmu;
             transform2D.Extents!.Cy = heightEmu;
         }
@@ -583,10 +580,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var imageStream = new ImageStream(image);
         var hash = imageStream.Base64Hash;
 
-        // Does this part already exist in the presentation?
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
-            // No, let's create it!;
             (imgPartRId, var imagePart) = this.slidePart.AddImagePart(image, mimeType);
             this.mediaCollection.SetImagePart(hash, imagePart);
         }
