@@ -6,19 +6,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class AutoShape : CopyableShape
+internal sealed class AutoShape2 : CopyableShape
 {
     private readonly P.Shape pShape;
     private readonly ShapeGeometry shapeGeometry;
 
-    internal AutoShape(P.Shape pShape, TextBox textBox)
+    internal AutoShape2(P.Shape pShape, TextBox textBox)
         : this(pShape)
     {
         this.IsTextHolder = true;
         this.TextBox = textBox;
     }
 
-    internal AutoShape(P.Shape pShape)
+    internal AutoShape2(P.Shape pShape)
         : base(pShape)
     {
         this.pShape = pShape;
@@ -36,7 +36,7 @@ internal sealed class AutoShape : CopyableShape
 
     public override IShapeFill Fill { get; }
 
-    public override ShapeType ShapeType => ShapeType.AutoShape;
+    public override ShapeContent ShapeType => ShapeContent.Line;
 
     public override bool Removeable => true;
 

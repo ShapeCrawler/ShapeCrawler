@@ -22,8 +22,8 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var sdkPres = SaveAndOpenPresentationAsSdk(loadedPres);
-        var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
+        var presDocument = SaveAndOpenPresentationAsSdk(loadedPres);
+        var imageParts = presDocument.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
             .ToHashSet();
         imageParts.Count.Should().Be(2,
             "SVG image adds two parts: One for the vector and one for the auto-generated raster");

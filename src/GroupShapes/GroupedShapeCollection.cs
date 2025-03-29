@@ -53,7 +53,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                 {
                     shape = new GroupedShape(
                         pShape,
-                        new AutoShape(
+                        new Shape(
                             pShape,
                             new TextBox(pShape.TextBody)));
                 }
@@ -61,7 +61,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                 {
                     shape = new GroupedShape(
                         pShape,
-                        new AutoShape(pShape));
+                        new Shape(pShape));
                 }
             }
             else if (pGroupShapeElement is P.Picture pPicture)

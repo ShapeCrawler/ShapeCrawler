@@ -317,14 +317,14 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var nextShapeId = this.GetNextShapeId();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedAutoShape = this.shapes.Last<RootShape>();
-        addedAutoShape.Name = geometry.ToString();
-        addedAutoShape.X = x;
-        addedAutoShape.Y = y;
-        addedAutoShape.Width = width;
-        addedAutoShape.Height = height;
-        addedAutoShape.Id = nextShapeId;
-        addedAutoShape.GeometryType = geometry;
+        var addedShape = this.shapes.Last<Shape>();
+        addedShape.Name = geometry.ToString();
+        addedShape.X = x;
+        addedShape.Y = y;
+        addedShape.Width = width;
+        addedShape.Height = height;
+        addedShape.Id = nextShapeId;
+        addedShape.GeometryType = geometry;
     }
 
     public void AddLine(string xml)

@@ -72,7 +72,7 @@ internal sealed class Table : CopyableShape, ITable
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
 
-    public override ShapeType ShapeType => ShapeType.Table;
+    public override ShapeContent ShapeType => ShapeContent.Table;
 
     public ITableColumns Columns { get; }
 

@@ -296,10 +296,10 @@ internal sealed class Slide : ISlide
         {
             switch (shape.ShapeType)
             {
-                case ShapeType.Group:
+                case ShapeContent.Group:
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
-                case ShapeType.AutoShape:
+                case ShapeContent.Shape:
                     if (shape.IsTextHolder)
                     {
                         textBoxes.Add(shape.TextBox);

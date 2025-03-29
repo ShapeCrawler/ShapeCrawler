@@ -58,7 +58,7 @@ internal sealed class Picture : CopyableShape, IPicture
         set => this.shapeGeometry.Adjustments = value;
     }
 
-    public override ShapeType ShapeType => ShapeType.Picture;
+    public override ShapeContent ShapeType => ShapeContent.Picture;
     
     public override bool HasOutline => true;
     

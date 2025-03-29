@@ -3,27 +3,50 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Slides;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
 
-internal abstract class Shape : IShape
+internal class Shape : IShape
 {
     protected readonly OpenXmlElement PShapeTreeElement;
     
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
+    private readonly ShapeGeometry shapeGeometry;
 
-    private protected Shape(OpenXmlElement pShapeTreeElement)
+    internal Shape(OpenXmlElement pShapeTreeElement)
     {
         this.PShapeTreeElement = pShapeTreeElement;
         this.position = new Position(pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
+        var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+        this.Outline = new SlideShapeOutline(shapeProperties);
+        this.Fill = new ShapeFill(shapeProperties);
+        this.shapeGeometry = new ShapeGeometry(shapeProperties);
+    }
+    
+    internal Shape(P.Shape pShape, TextBox textBox)
+        : this(pShape)
+    {
+        this.PShapeTreeElement = pShape;
+        this.position = new Position(pShape);
+        this.size = new ShapeSize(pShape);
+        this.shapeId = new ShapeId(pShape);
+        var shapeProperties = pShape.Descendants<P.ShapeProperties>().First();
+        this.Outline = new SlideShapeOutline(shapeProperties);
+        this.Fill = new ShapeFill(shapeProperties);
+        this.shapeGeometry = new ShapeGeometry(shapeProperties);
+        
+        this.IsTextHolder = true;
+        this.TextBox = textBox;
     }
 
     public virtual decimal X
@@ -155,20 +178,20 @@ internal abstract class Shape : IShape
 
     public virtual Geometry GeometryType
     {
-        get => Geometry.Rectangle;
-        set => throw new SCException("Changing geometry of this shape is not supported");
+        get => this.shapeGeometry.GeometryType;
+        set => this.shapeGeometry.GeometryType = value;
     }
 
     public virtual decimal CornerSize
     {
-        get => 0;
-        set => throw new SCException("Changing corner size of this shape is not supported");
+        get => this.shapeGeometry.CornerSize;
+        set => this.shapeGeometry.CornerSize = value;
     }
 
     public virtual decimal[] Adjustments
     {
-        get => [];
-        set => throw new SCException("Setting adjustments of this shape is not supported");
+        get => this.shapeGeometry.Adjustments;
+        set => this.shapeGeometry.Adjustments = value;
     }
 
     public string? CustomData
@@ -200,18 +223,15 @@ internal abstract class Shape : IShape
         }
     }
 
-    public abstract ShapeType ShapeType { get; }
+    public virtual ShapeContent ShapeType => ShapeContent.Shape;
 
     public virtual bool HasOutline => false;
 
-    public virtual IShapeOutline Outline => throw new SCException(
-        $"Shape does not have outline. Use {nameof(IShape.HasOutline)} property to check if the shape has outline.");
+    public virtual IShapeOutline Outline { get; }
 
     public virtual bool HasFill => false;
 
-    public virtual IShapeFill Fill =>
-        throw new SCException(
-            $"Shape does not have fill. Use {nameof(IShape.HasFill)} property to check if the shape has fill.");
+    public virtual IShapeFill Fill { get; }
 
     public virtual bool IsTextHolder { get; protected init; }
 

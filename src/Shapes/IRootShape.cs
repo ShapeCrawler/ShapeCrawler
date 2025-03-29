@@ -4,7 +4,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 /// <summary>
 ///     Root (non-grouped) Auto Shape.
 /// </summary>
-internal interface IRootShape : IShape
+internal interface IRootShape2 : IShape
 {
     /// <summary>
     ///     Duplicate the shape.
@@ -12,12 +12,12 @@ internal interface IRootShape : IShape
     void Duplicate();
 }
 
-internal sealed class RootShape : CopyableShape, IRootShape
+internal sealed class RootShape2 : CopyableShape, IRootShape2
 {
     private readonly IShape decoratedShape;
     private readonly P.Shape pShape;
 
-    internal RootShape(
+    internal RootShape2(
         P.Shape pShape,
         IShape decoratedShape)
         : base(pShape)
@@ -28,7 +28,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
 
     #region Decorated Shape
 
-    public override ShapeType ShapeType => this.decoratedShape.ShapeType;
+    public override ShapeContent ShapeType => this.decoratedShape.ShapeType;
 
     public override bool HasOutline => this.decoratedShape.HasOutline;
 

@@ -101,8 +101,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         return element switch
         {
             P.GroupShape pGroupShape => this.CreateGroupShape(pGroupShape),
-            P.ConnectionShape pConnectionShape => this.CreateConnectionShape(pConnectionShape),
-            P.Shape pShape => this.CreateAutoShapes(pShape),
+            P.ConnectionShape pConnectionShape => CreateConnectionShape(pConnectionShape),
+            P.Shape pShape => CreateShape(pShape),
             P.GraphicFrame pGraphicFrame => this.CreateGraphicFrameShapes(pGraphicFrame),
             P.Picture pPicture => this.CreatePictureShapes(pPicture),
             _ => []
@@ -114,26 +114,20 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         yield return new GroupShape(pGroupShape);
     }
 
-    private IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
+    private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
     {
         yield return new SlideLine(pConnectionShape);
     }
 
-    private IEnumerable<IShape> CreateAutoShapes(P.Shape pShape)
+    private static IEnumerable<IShape> CreateShape(P.Shape pShape)
     {
         if (pShape.TextBody is not null)
         {
-            yield return new RootShape(
-                pShape,
-                new AutoShape(
-                    pShape,
-                    new TextBox(pShape.TextBody)));
+            yield return new Shape(pShape, new TextBox(pShape.TextBody));
         }
         else
         {
-            yield return new RootShape(
-                pShape,
-                new AutoShape(pShape));
+            yield return new Shape(pShape);
         }
     }
 

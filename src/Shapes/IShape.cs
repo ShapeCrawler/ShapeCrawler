@@ -57,7 +57,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets the type of shape.
     /// </summary>
-    ShapeType ShapeType { get; }
+    ShapeContent ShapeType { get; }
     
     /// <summary>
     ///     Gets a value indicating whether the shape has outline formatting.

@@ -9,9 +9,9 @@ namespace ShapeCrawler.GroupShapes;
 internal sealed class GroupedShape : IShape
 {
     private readonly P.Shape pShape;
-    private readonly AutoShape decoratedShape;
+    private readonly Shape decoratedShape;
 
-    internal GroupedShape(P.Shape pShape, AutoShape decoratedShape)
+    internal GroupedShape(P.Shape pShape, Shape decoratedShape)
     {
         this.pShape = pShape;
         this.decoratedShape = decoratedShape;
@@ -160,7 +160,7 @@ internal sealed class GroupedShape : IShape
         set => this.decoratedShape.CustomData = value;
     }
 
-    public ShapeType ShapeType => this.decoratedShape.ShapeType;
+    public ShapeContent ShapeType => this.decoratedShape.ShapeType;
     
     public bool HasOutline => this.decoratedShape.HasOutline;
     
