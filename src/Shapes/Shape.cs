@@ -19,7 +19,6 @@ internal class Shape : IShape
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
-    private readonly ShapeGeometry shapeGeometry;
 
     internal Shape(OpenXmlElement pShapeTreeElement)
     {
@@ -27,10 +26,6 @@ internal class Shape : IShape
         this.position = new Position(pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
-        var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
-        this.Outline = new SlideShapeOutline(shapeProperties);
-        this.Fill = new ShapeFill(shapeProperties);
-        this.shapeGeometry = new ShapeGeometry(shapeProperties);
     }
     
     internal Shape(P.Shape pShape, TextBox textBox)
@@ -40,10 +35,6 @@ internal class Shape : IShape
         this.position = new Position(pShape);
         this.size = new ShapeSize(pShape);
         this.shapeId = new ShapeId(pShape);
-        var shapeProperties = pShape.Descendants<P.ShapeProperties>().First();
-        this.Outline = new SlideShapeOutline(shapeProperties);
-        this.Fill = new ShapeFill(shapeProperties);
-        this.shapeGeometry = new ShapeGeometry(shapeProperties);
         
         this.IsTextHolder = true;
         this.TextBox = textBox;
@@ -103,6 +94,11 @@ internal class Shape : IShape
             var parsedHiddenValue = this.PShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue is true;
         }
+    }
+
+    internal virtual void CopyTo(P.ShapeTree pShapeTree)
+    {
+        throw new SCException($"Adding {ShapeType} is not supported.");
     }
 
     public bool IsPlaceholder => this.PShapeTreeElement.Descendants<P.PlaceholderShape>().Any();
@@ -178,20 +174,44 @@ internal class Shape : IShape
 
     public virtual Geometry GeometryType
     {
-        get => this.shapeGeometry.GeometryType;
-        set => this.shapeGeometry.GeometryType = value;
+        get
+        {
+            var shapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            return new ShapeGeometry(shapeProperties).GeometryType;
+        }
+        set
+        {
+            var shapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            new ShapeGeometry(shapeProperties).GeometryType = value;
+        }
     }
 
     public virtual decimal CornerSize
     {
-        get => this.shapeGeometry.CornerSize;
-        set => this.shapeGeometry.CornerSize = value;
+        get
+        {
+            var shapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            return new ShapeGeometry(shapeProperties).CornerSize;
+        }
+        set
+        {
+            var shapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            new ShapeGeometry(shapeProperties).CornerSize = value;
+        }
     }
 
     public virtual decimal[] Adjustments
     {
-        get => this.shapeGeometry.Adjustments;
-        set => this.shapeGeometry.Adjustments = value;
+        get
+        {
+            var shapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            return new ShapeGeometry(shapeProperties).Adjustments;
+        }
+        set
+        {
+            var shapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            new ShapeGeometry(shapeProperties).Adjustments = value;
+        }
     }
 
     public string? CustomData
@@ -227,11 +247,25 @@ internal class Shape : IShape
 
     public virtual bool HasOutline => false;
 
-    public virtual IShapeOutline Outline { get; }
+    public virtual IShapeOutline Outline
+    {
+        get
+        {
+            var pShapeProperties = this.PShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            return new SlideShapeOutline(pShapeProperties);
+        }
+    }
 
     public virtual bool HasFill => false;
 
-    public virtual IShapeFill Fill { get; }
+    public virtual IShapeFill Fill
+    {
+        get
+        {
+            var pShapeProperties = this.PShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            return new ShapeFill(pShapeProperties);
+        }
+    }
 
     public virtual bool IsTextHolder { get; protected init; }
 
@@ -278,6 +312,12 @@ internal class Shape : IShape
     public virtual IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
+
+    public void Duplicate()
+    {
+        var pShapeTree = (P.ShapeTree)this.PShapeTreeElement.Parent!;
+        new SCPShapeTree(pShapeTree).Add(PShapeTreeElement);
+    }
 
     public virtual void Remove() => this.PShapeTreeElement.Remove();
 }

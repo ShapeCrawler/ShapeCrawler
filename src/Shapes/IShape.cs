@@ -134,4 +134,9 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an audio or video.    
     /// </summary>
     IMediaShape AsMedia();
+
+    /// <summary>
+    ///     Duplicates the shape.
+    /// </summary>
+    void Duplicate();
 }

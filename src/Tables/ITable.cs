@@ -58,7 +58,7 @@ public interface ITable : IShape
     ITableCell Cell(int rowNumber, int columnNumber);
 }
 
-internal sealed class Table : CopyableShape, ITable
+internal sealed class Table : Shape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;

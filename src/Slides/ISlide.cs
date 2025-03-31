@@ -106,7 +106,7 @@ public interface ISlide
 
 internal sealed class Slide : ISlide
 {
-    private CustomXmlPart? custumDataCustomXmlPart;
+    private CustomXmlPart? customDataCustomXmlPart;
     private IShapeFill? fill;
 
     internal Slide(
@@ -115,7 +115,7 @@ internal sealed class Slide : ISlide
         MediaCollection mediaCollection)
     {
         this.SlidePart = slidePart;
-        this.custumDataCustomXmlPart = this.GetCustomXmlPart();
+        this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapeCollection(this.SlidePart, new ShapeCollection(slidePart), mediaCollection);
     }
@@ -402,12 +402,12 @@ internal sealed class Slide : ISlide
 
     private string? GetCustomData()
     {
-        if (this.custumDataCustomXmlPart == null)
+        if (this.customDataCustomXmlPart == null)
         {
             return null;
         }
 
-        var customXmlPartStream = this.custumDataCustomXmlPart.GetStream();
+        var customXmlPartStream = this.customDataCustomXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
         return raw[3..];
@@ -416,15 +416,15 @@ internal sealed class Slide : ISlide
     private void SetCustomData(string? value)
     {
         Stream customXmlPartStream;
-        if (this.custumDataCustomXmlPart == null)
+        if (this.customDataCustomXmlPart == null)
         {
             var newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.custumDataCustomXmlPart = newSlideCustomXmlPart;
+            this.customDataCustomXmlPart = newSlideCustomXmlPart;
         }
         else
         {
-            customXmlPartStream = this.custumDataCustomXmlPart.GetStream();
+            customXmlPartStream = this.customDataCustomXmlPart.GetStream();
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);

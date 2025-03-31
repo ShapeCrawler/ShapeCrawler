@@ -926,4 +926,22 @@ public class ShapeTests : SCTest
         // Second adjustment should be zero.
         shape.Adjustments.Should().BeEquivalentTo([ 10m, 0m ]);
     }
+    
+    [Test]
+    public void Duplicate_duplicates_AutoShape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(10, 20, 30, 40);
+        var addedShape = shapes.Single();
+
+        // Act
+        addedShape.Duplicate();
+
+        // Assert
+        var copyAddedShape = shapes.Last(); 
+        shapes.Should().HaveCount(2);
+        copyAddedShape.Id.Should().Be(2, "because it is the second shape in the collection");
+    }
 }

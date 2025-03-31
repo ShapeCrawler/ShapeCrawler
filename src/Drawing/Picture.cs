@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class Picture : CopyableShape, IPicture
+internal sealed class Picture : Shape, IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
@@ -129,7 +129,7 @@ internal sealed class Picture : CopyableShape, IPicture
 
     internal override void CopyTo(P.ShapeTree pShapeTree)
     {
-        base.CopyTo(pShapeTree);
+        new SCPShapeTree(pShapeTree).Add(this.PShapeTreeElement);
 
         var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var sourceSdkSlidePart = openXmlPart;
