@@ -304,7 +304,7 @@ internal sealed class Slide : ISlide
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new SCException("Unsupported shape content type.");
             }
         }
     }

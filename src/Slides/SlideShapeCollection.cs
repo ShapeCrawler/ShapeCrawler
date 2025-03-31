@@ -65,6 +65,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             case Shape addingShape:
                 addingShape.CopyTo(pShapeTree);
                 break;
+            default:
+                throw new SCException("Unsupported shape type for adding.");
         }
     }
 
