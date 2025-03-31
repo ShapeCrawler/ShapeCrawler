@@ -303,6 +303,8 @@ internal sealed class Slide : ISlide
                     }
 
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

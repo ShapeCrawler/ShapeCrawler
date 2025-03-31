@@ -57,13 +57,14 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     public void Add(IShape shape)
     {
         var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
-        if (shape is Picture picture)
+        switch (shape)
         {
-            picture.CopyTo(pShapeTree);
-        }
-        else
-        {
-            ((Shape)shape).CopyTo(pShapeTree);    
+            case Picture picture:
+                picture.CopyTo(pShapeTree);
+                break;
+            case Shape addingShape:
+                addingShape.CopyTo(pShapeTree);
+                break;
         }
     }
 
