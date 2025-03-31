@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Sections;
 using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -26,10 +25,8 @@ public interface ISection
 
 internal sealed class Section : ISection, IRemoveable
 {
-    internal Section(PresentationDocument presDocument, P14.Section p14Section)
-        : this(
-            p14Section,
-            new SectionSlideCollection(presDocument, p14Section.Descendants<P14.SectionSlideIdListEntry>()))
+    internal Section(P14.Section p14Section)
+        : this(p14Section, new SectionSlideCollection(p14Section))
     {
     }
 

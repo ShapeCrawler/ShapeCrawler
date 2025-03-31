@@ -33,10 +33,10 @@ internal class PortionFontSize(A.Text aText): IFontSize
             var slideMasterPart = this.GetSlideMasterPart();
             
             // Try placeholder shapes
-            var parentAutoShape = this.GetParentAutoShape();
-            if (parentAutoShape != null)
+            var parentShape = this.GetParentShapeOrNull();
+            if (parentShape != null)
             {
-                var placeholderFontSize = this.GetFontSizeFromPlaceholder(parentAutoShape, slideMasterPart, indentLevel);
+                var placeholderFontSize = this.GetFontSizeFromPlaceholder(parentShape, slideMasterPart, indentLevel);
                 if (placeholderFontSize.HasValue)
                 {
                     return placeholderFontSize.Value;
@@ -51,7 +51,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             }
 
             // Try slide master body style (second attempt)
-            if (parentAutoShape?.IsPlaceholder == true)
+            if (parentShape?.IsPlaceholder == true)
             {
                 var bodyStyleFontSize = this.GetFontSizeFromBodyStyle(slideMasterPart, indentLevel);
                 if (bodyStyleFontSize.HasValue)
@@ -99,7 +99,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             : ((SlidePart)openXmlPart).SlideLayoutPart!.SlideMasterPart!;
     }
 
-    private AutoShape? GetParentAutoShape()
+    private Shape? GetParentShapeOrNull()
     {
         var parentPShape = aText.Ancestors<P.Shape>().FirstOrDefault();
         if (parentPShape is null)
@@ -107,18 +107,18 @@ internal class PortionFontSize(A.Text aText): IFontSize
             return null;
         }
         
-        return new AutoShape(aText.Ancestors<P.Shape>().First());
+        return new Shape(aText.Ancestors<P.Shape>().First());
     }
 
-    private decimal? GetFontSizeFromPlaceholder(AutoShape autoShape, SlideMasterPart slideMasterPart, int indentLevel)
+    private decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
     {
-        if (!autoShape.IsPlaceholder)
+        if (!shape.IsPlaceholder)
         {
             return null;
         }
 
         // Check if it's a title placeholder
-        if (autoShape.PlaceholderType == PlaceholderType.Title)
+        if (shape.PlaceholderType == PlaceholderType.Title)
         {
             var titleFontSizeHundredPoints = slideMasterPart.SlideMaster.TextStyles!
                 .TitleStyle!.Level1ParagraphProperties!

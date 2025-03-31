@@ -153,7 +153,7 @@ internal sealed class Paragraph : IParagraph
             var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new AutoShape(this.aParagraph.Ancestors<P.Shape>().First());
+                var parentShape = new Shape(this.aParagraph.Ancestors<P.Shape>().First());
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextHorizontalAlignment.Center;

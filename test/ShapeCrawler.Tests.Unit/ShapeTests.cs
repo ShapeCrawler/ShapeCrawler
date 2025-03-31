@@ -558,7 +558,7 @@ public class ShapeTests : SCTest
     public void SDKXPath_returns_shape_xpath(IShape shape, string expectedXPath)
     {
         // Act
-        var shapeXPath = shape.SdkXPath;
+        var shapeXPath = shape.SDKXPath;
 
         // Assert
         shapeXPath.Should().Be(expectedXPath);
@@ -572,10 +572,10 @@ public class ShapeTests : SCTest
         var shape = pres.SlideMaster(1).Shape("Shape 1");
 
         // Act
-        shape.Text = "Test";
+        shape.TextBox!.Text = "Test";
 
         // Assert
-        shape.Text.Should().Be("Test");
+        shape.TextBox.Text.Should().Be("Test");
     }
 
     [Test]
@@ -925,5 +925,23 @@ public class ShapeTests : SCTest
         // First adjustment should be what we set
         // Second adjustment should be zero.
         shape.Adjustments.Should().BeEquivalentTo([ 10m, 0m ]);
+    }
+    
+    [Test]
+    public void Duplicate_duplicates_AutoShape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        shapes.AddShape(10, 20, 30, 40);
+        var addedShape = shapes.Single();
+
+        // Act
+        addedShape.Duplicate();
+
+        // Assert
+        var copyAddedShape = shapes.Last(); 
+        shapes.Should().HaveCount(2);
+        copyAddedShape.Id.Should().Be(2, "because it is the second shape in the collection");
     }
 }

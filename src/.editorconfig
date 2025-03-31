@@ -53,6 +53,7 @@ dotnet_diagnostic.SA1018.severity = error
 dotnet_diagnostic.SA1024.severity = none
 dotnet_diagnostic.SA1101.severity = error
 dotnet_diagnostic.SA1108.severity = error
+dotnet_diagnostic.SA1118.severity = error
 dotnet_diagnostic.SA1119.severity = error
 dotnet_diagnostic.SA1121.severity = error
 dotnet_diagnostic.SA1127.severity = error

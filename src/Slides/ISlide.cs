@@ -106,7 +106,7 @@ public interface ISlide
 
 internal sealed class Slide : ISlide
 {
-    private CustomXmlPart? custumDataCustomXmlPart;
+    private CustomXmlPart? customDataCustomXmlPart;
     private IShapeFill? fill;
 
     internal Slide(
@@ -115,7 +115,7 @@ internal sealed class Slide : ISlide
         MediaCollection mediaCollection)
     {
         this.SlidePart = slidePart;
-        this.custumDataCustomXmlPart = this.GetCustomXmlPart();
+        this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapeCollection(this.SlidePart, new ShapeCollection(slidePart), mediaCollection);
     }
@@ -239,11 +239,11 @@ internal sealed class Slide : ISlide
     {
         var returnList = new List<ITextBox>();
 
-        var frames = this.Shapes
-            .Where(x => x.IsTextHolder)
-            .Select(t => t.TextBox)
+        var textBoxes = this.Shapes
+            .Where(shape => shape.TextBox is not null)
+            .Select(shape => shape.TextBox!)
             .ToList();
-        returnList.AddRange(frames);
+        returnList.AddRange(textBoxes);
 
         // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
         var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
@@ -287,25 +287,24 @@ internal sealed class Slide : ISlide
 
     internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
-    /// <summary>
-    ///     Iterates group recursively and add all text boxes in the list.
-    /// </summary>
     private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextBox> textBoxes)
     {
         foreach (var shape in group.Shapes)
         {
-            switch (shape.ShapeType)
+            switch (shape.ShapeContent)
             {
-                case ShapeType.Group:
+                case ShapeContent.Group:
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
-                case ShapeType.AutoShape:
-                    if (shape.IsTextHolder)
+                case ShapeContent.Shape:
+                    if (shape.TextBox is not null)
                     {
                         textBoxes.Add(shape.TextBox);
                     }
 
                     break;
+                default:
+                    throw new SCException("Unsupported shape content type.");
             }
         }
     }
@@ -321,10 +320,8 @@ internal sealed class Slide : ISlide
 
         var shapes = new ShapeCollection(notes);
         var notesPlaceholder = shapes
-            .FirstOrDefault(x =>
-                x.IsPlaceholder &&
-                x.IsTextHolder &&
-                x.PlaceholderType == PlaceholderType.Text);
+            .FirstOrDefault(shape =>
+                shape is { IsPlaceholder: true, TextBox: not null, PlaceholderType: PlaceholderType.Text });
         return notesPlaceholder?.TextBox;
     }
 
@@ -402,12 +399,12 @@ internal sealed class Slide : ISlide
 
     private string? GetCustomData()
     {
-        if (this.custumDataCustomXmlPart == null)
+        if (this.customDataCustomXmlPart == null)
         {
             return null;
         }
 
-        var customXmlPartStream = this.custumDataCustomXmlPart.GetStream();
+        var customXmlPartStream = this.customDataCustomXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
         return raw[3..];
@@ -416,15 +413,15 @@ internal sealed class Slide : ISlide
     private void SetCustomData(string? value)
     {
         Stream customXmlPartStream;
-        if (this.custumDataCustomXmlPart == null)
+        if (this.customDataCustomXmlPart == null)
         {
             var newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.custumDataCustomXmlPart = newSlideCustomXmlPart;
+            this.customDataCustomXmlPart = newSlideCustomXmlPart;
         }
         else
         {
-            customXmlPartStream = this.custumDataCustomXmlPart.GetStream();
+            customXmlPartStream = this.customDataCustomXmlPart.GetStream();
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);

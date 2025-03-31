@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 
+// ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
 #pragma warning restore IDE0130
@@ -30,7 +31,7 @@ public interface IShape : IPosition, IShapeGeometry
     string Name { get; set; }
 
     /// <summary>
-    ///     Gets or sets the alternative text for the shape.
+    ///     Gets or sets the shape alternative text.
     /// </summary>
     string AltText { get; set; }
 
@@ -55,39 +56,24 @@ public interface IShape : IPosition, IShapeGeometry
     string? CustomData { get; set; }
 
     /// <summary>
-    ///     Gets the type of shape.
+    ///     Gets the shape content type.
     /// </summary>
-    ShapeType ShapeType { get; }
+    ShapeContent ShapeContent { get; }
     
     /// <summary>
-    ///     Gets a value indicating whether the shape has outline formatting.
+    ///     Gets outline of the shape. Returns <see langword="null"/> if the shape cannot be outlined, for example, a picture.
     /// </summary>
-    bool HasOutline { get; }
-    
-    /// <summary>
-    ///     Gets outline of the shape.
-    /// </summary>
-    IShapeOutline Outline { get; }
- 
-    /// <summary>
-    ///     Gets a value indicating whether the shape has fill.
-    /// </summary>
-    bool HasFill { get; }
+    IShapeOutline? Outline { get; }
     
     /// <summary>
     ///     Gets the fill of the shape. Returns <see langword="null"/> if the shape cannot be filled, for example, a line.
     /// </summary>
-    IShapeFill Fill { get; }
+    IShapeFill? Fill { get; }
     
     /// <summary>
-    ///     Gets a value indicating whether the shape is a text holder.
+    ///     Gets Text Box. Returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
-    bool IsTextHolder { get; }
-    
-    /// <summary>
-    ///     Gets Text Frame.
-    /// </summary>
-    ITextBox TextBox { get; }
+    ITextBox? TextBox { get; }
     
     /// <summary>
     ///     Gets the rotation of the shape in degrees.
@@ -95,24 +81,14 @@ public interface IShape : IPosition, IShapeGeometry
     double Rotation { get; }
     
     /// <summary>
-    ///     Gets a value indicating whether the shape can be removed.
-    /// </summary>
-    bool Removeable { get; }
-    
-    /// <summary>
     ///     Gets XPath of the underlying Open XML element.
     /// </summary>
-    public string SdkXPath { get; }
+    public string SDKXPath { get; }
     
     /// <summary>
     ///     Gets a copy of the underlying Open XML element.
     /// </summary>
-    OpenXmlElement SdkOpenXmlElement { get; }
-
-    /// <summary>
-    ///     Gets or sets the text content of the shape.
-    /// </summary>
-    string Text { get; set; }
+    OpenXmlElement SDKOpenXmlElement { get; }
     
     /// <summary>
     ///     Gets the parent presentation.
@@ -125,13 +101,18 @@ public interface IShape : IPosition, IShapeGeometry
     void Remove();
     
     /// <summary>
-    ///     Gets the table if the shape is a table. Use <see cref="IShape.ShapeType"/> property to check if the shape is a table.
+    ///     Gets the table if the shape is a table. Use <see cref="ShapeContent"/> property to check if the shape is a table.
     /// </summary>
     ITable AsTable();
     
     /// <summary>
     ///     Gets the media shape which is an audio or video.
-    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an audio or video.    
+    ///     Use <see cref="ShapeContent"/> property to check if the shape is an audio or video.    
     /// </summary>
     IMediaShape AsMedia();
+
+    /// <summary>
+    ///     Duplicates the shape.
+    /// </summary>
+    void Duplicate();
 }

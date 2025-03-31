@@ -33,9 +33,9 @@ public sealed class Presentation : IPresentation
         this.presDocument = PresentationDocument.Open(stream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollectionCollection(this.presDocument);
-        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
+        this.Sections = new SectionCollection(this.presDocument);
+        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -48,9 +48,9 @@ public sealed class Presentation : IPresentation
         this.presDocument = PresentationDocument.Open(file, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollectionCollection(this.presDocument);
-        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
+        this.Sections = new SectionCollection(this.presDocument);
+        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -66,9 +66,9 @@ public sealed class Presentation : IPresentation
         this.presDocument = PresentationDocument.Open(stream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollectionCollection(this.presDocument);
-        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
+        this.Sections = new SectionCollection(this.presDocument);
+        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
             {
@@ -81,9 +81,9 @@ public sealed class Presentation : IPresentation
         this.presDocument = presDocument;
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollectionCollection(this.presDocument);
-        this.Slides = new SlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new SlideCollection(this.presDocument.PresentationPart));
+        this.Sections = new SectionCollection(this.presDocument);
+        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
