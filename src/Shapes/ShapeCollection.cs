@@ -75,6 +75,23 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         return false;
     }
 
+    private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
+    {
+        yield return new SlideLine(pConnectionShape);
+    }
+
+    private static IEnumerable<IShape> CreateShape(P.Shape pShape)
+    {
+        if (pShape.TextBody is not null)
+        {
+            yield return new Shape(pShape, new TextBox(pShape.TextBody));
+        }
+        else
+        {
+            yield return new Shape(pShape);
+        }
+    }
+    
     private IEnumerable<IShape> GetShapes()
     {
         var pShapeTree = this.GetShapeTreeFromPart();
@@ -112,23 +129,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
     private IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
     {
         yield return new GroupShape(pGroupShape);
-    }
-
-    private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
-    {
-        yield return new SlideLine(pConnectionShape);
-    }
-
-    private static IEnumerable<IShape> CreateShape(P.Shape pShape)
-    {
-        if (pShape.TextBody is not null)
-        {
-            yield return new Shape(pShape, new TextBox(pShape.TextBody));
-        }
-        else
-        {
-            yield return new Shape(pShape);
-        }
     }
 
     private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)

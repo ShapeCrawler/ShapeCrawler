@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
-// ReSharper disable InconsistentNaming
 
+// ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
 #pragma warning restore IDE0130

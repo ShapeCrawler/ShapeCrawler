@@ -137,7 +137,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         image.Position = 0;
         try
         {
-            using var imageMagick = new MagickImage(image,
+            using var imageMagick = new MagickImage(
+                image,
                 new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = imageMagick.Format;
             if (!SupportedImageFormats.Contains(imageMagick.Format))
@@ -149,9 +150,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             {
                 imageMagick.Format = MagickFormat.Png;
                 imageMagick.Density =
-                    new Density(384,
-                        DensityUnit
-                            .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                    new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
             }
 
             var width = imageMagick.Width;
@@ -207,9 +206,19 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
     }
 
-    public void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues,
+    public void AddPieChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<string, double> categoryValues,
         string seriesName)
     {
+        if (seriesName == null)
+        {
+            throw new ArgumentNullException(nameof(seriesName));
+        }
+
         new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
 

@@ -26,7 +26,7 @@ internal class Shape : IShape
         this.size = new ShapeSize(pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
-    
+
     internal Shape(P.Shape pShape, TextBox textBox)
         : this(pShape)
     {
@@ -171,6 +171,7 @@ internal class Shape : IShape
             var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeGeometry(shapeProperties).GeometryType;
         }
+
         set
         {
             var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
@@ -185,6 +186,7 @@ internal class Shape : IShape
             var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeGeometry(shapeProperties).CornerSize;
         }
+
         set
         {
             var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
@@ -199,6 +201,7 @@ internal class Shape : IShape
             var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeGeometry(shapeProperties).Adjustments;
         }
+
         set
         {
             var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
@@ -259,7 +262,7 @@ internal class Shape : IShape
         }
     }
 
-    public ITextBox? TextBox { get; } = null;
+    public ITextBox? TextBox { get; }
 
     public virtual double Rotation
     {
@@ -300,13 +303,10 @@ internal class Shape : IShape
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)this.pShapeTreeElement.Parent!;
-        new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
+        new SCPShapeTree(pShapeTree).Add(this.pShapeTreeElement);
     }
 
     public virtual void Remove() => this.pShapeTreeElement.Remove();
 
-    public void CopyTo(P.ShapeTree pShapeTree)
-    {
-        new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
-    }
+    public void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(this.pShapeTreeElement);
 }

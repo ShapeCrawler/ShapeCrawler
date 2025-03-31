@@ -187,6 +187,7 @@ internal sealed class GroupedShape : IShape
     public ITable AsTable() => this.shape.AsTable();
     
     public IMediaShape AsMedia() => this.shape.AsMedia();
+
     public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
 
     #endregion Decorated Shape

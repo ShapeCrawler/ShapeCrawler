@@ -30,7 +30,7 @@ public interface ISectionCollection : IReadOnlyCollection<ISection>
     ISection GetByName(string sectionName);
 }
 
-internal sealed class SectionCollection(PresentationDocument presDocument) : ISectionCollection
+internal sealed class SectionCollection(PresentationDocument presDocument): ISectionCollection
 {
     public int Count => this.SectionList().Count;
     

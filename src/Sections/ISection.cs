@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Sections;
 using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;

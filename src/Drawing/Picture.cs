@@ -36,7 +36,19 @@ internal sealed class Picture : IPicture
         this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
         this.shape = shape;
     }
+    
+    public decimal X
+    {
+        get => this.shape.X;
+        set => this.shape.X = value;
+    }
 
+    public decimal Y
+    {
+        get => this.shape.Y;
+        set => this.shape.Y = value;
+    }
+    
     public IImage Image { get; }
 
     public string? SvgContent => this.GetSvgContent();
@@ -86,9 +98,13 @@ internal sealed class Picture : IPicture
     }
 
     public bool Hidden { get; }
+
     public bool IsPlaceholder { get; }
+
     public PlaceholderType PlaceholderType { get; }
+
     public string? CustomData { get; set; }
+
     public ShapeContent ShapeContent => ShapeContent.Picture;
 
     public bool HasOutline => true;
@@ -98,12 +114,15 @@ internal sealed class Picture : IPicture
     public bool HasFill => true;
 
     public IShapeFill Fill { get; }
-    public bool IsTextHolder => false;
+
     public ITextBox? TextBox => null;
+
     public double Rotation { get; }
 
     public bool Removeable => true;
+
     public string SDKXPath => this.shape.SDKXPath;
+
     public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
 
     public CroppingFrame Crop
@@ -174,7 +193,7 @@ internal sealed class Picture : IPicture
 
     public void SendToBack()
     {
-        var parentPShapeTree = pPicture.Parent!;
+        var parentPShapeTree = this.pPicture.Parent!;
         parentPShapeTree.RemoveChild(this.pPicture);
         var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
         pGrpSpPr.InsertAfterSelf(this.pPicture);
@@ -182,7 +201,7 @@ internal sealed class Picture : IPicture
 
     internal void CopyTo(P.ShapeTree pShapeTree)
     {
-        new SCPShapeTree(pShapeTree).Add(pPicture);
+        new SCPShapeTree(pShapeTree).Add(this.pPicture);
 
         var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var sourceSdkSlidePart = openXmlPart;
@@ -195,7 +214,7 @@ internal sealed class Picture : IPicture
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);
 
-        var copy = pPicture.CloneNode(true);
+        var copy = this.pPicture.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
 
@@ -264,17 +283,5 @@ internal sealed class Picture : IPicture
         using var sReader = new StreamReader(svgStream);
 
         return sReader.ReadToEnd();
-    }
-
-    public decimal X
-    {
-        get => this.shape.X;
-        set => this.shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => this.shape.Y;
-        set => this.shape.Y = value;
     }
 }
