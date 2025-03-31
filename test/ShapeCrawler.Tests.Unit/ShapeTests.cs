@@ -558,7 +558,7 @@ public class ShapeTests : SCTest
     public void SDKXPath_returns_shape_xpath(IShape shape, string expectedXPath)
     {
         // Act
-        var shapeXPath = shape.SdkXPath;
+        var shapeXPath = shape.SDKXPath;
 
         // Assert
         shapeXPath.Should().Be(expectedXPath);
@@ -572,10 +572,10 @@ public class ShapeTests : SCTest
         var shape = pres.SlideMaster(1).Shape("Shape 1");
 
         // Act
-        shape.Text = "Test";
+        shape.TextBox!.Text = "Test";
 
         // Assert
-        shape.Text.Should().Be("Test");
+        shape.TextBox.Text.Should().Be("Test");
     }
 
     [Test]

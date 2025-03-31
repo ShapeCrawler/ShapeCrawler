@@ -421,10 +421,10 @@ public class ParagraphTests : SCTest
     public void Replacing_Shape_Text_Preserves_Newlines(IShape shape)
     {
         // Act
-        shape.Text = shape.Text.Replace("World","Earth");
+        shape.TextBox!.Text = shape.TextBox.Text.Replace("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
+        shape.TextBox.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
     }
 
     [Test]
@@ -432,10 +432,10 @@ public class ParagraphTests : SCTest
     public void Replacing_Paragraph_Text_Preserves_Newlines(IShape shape)
     {
         // Act
-        shape.TextBox.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World","Earth");
+        shape.TextBox!.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
+        shape.TextBox.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
     }
 
     [Test]
@@ -443,13 +443,12 @@ public class ParagraphTests : SCTest
     public void ReplaceText_preserves_New_Lines(IShape shape)
     {
         // Arrange
-        var paragraph = shape.TextBox.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
         
         // Act
         paragraph.ReplaceText("World","Earth");
 
         // Assert
-        shape.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
+        shape.TextBox.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");
     }
-
 }

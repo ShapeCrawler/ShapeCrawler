@@ -27,7 +27,7 @@ public interface ISection
 internal sealed class Section : ISection, IRemoveable
 {
     internal Section(P14.Section p14Section)
-        : this(p14Section, new SectionSlideCollection(p14Section.Descendants<P14.SectionSlideIdListEntry>()))
+        : this(p14Section, new SectionSlideCollection(p14Section))
     {
     }
 

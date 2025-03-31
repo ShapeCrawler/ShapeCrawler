@@ -8,12 +8,12 @@ namespace ShapeCrawler;
 public interface IPosition
 {
     /// <summary>
-    ///     Gets or sets x-coordinate of the upper-left corner of the shape in points.
+    ///     Gets or sets x-coordinate of the shape upper-left corner in points.
     /// </summary>
     decimal X { get; set; }
 
     /// <summary>
-    ///     Gets or sets y-coordinate of the upper-left corner of the shape in points.
+    ///     Gets or sets y-coordinate of the shape upper-left corner in points.
     /// </summary>
     decimal Y { get; set; }
 }

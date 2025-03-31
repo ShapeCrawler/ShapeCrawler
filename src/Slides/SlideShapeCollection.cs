@@ -61,8 +61,10 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         {
             picture.CopyTo(pShapeTree);
         }
-        
-        throw new SCException($"Adding {shape.ShapeType} is not supported.");
+        else
+        {
+            ((Shape)shape).CopyTo(pShapeTree);    
+        }
     }
 
     public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.Mp3);

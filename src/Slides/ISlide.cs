@@ -239,11 +239,11 @@ internal sealed class Slide : ISlide
     {
         var returnList = new List<ITextBox>();
 
-        var frames = this.Shapes
-            .Where(x => x.IsTextHolder)
-            .Select(t => t.TextBox)
+        var textBoxes = this.Shapes
+            .Where(shape => shape.TextBox is not null)
+            .Select(shape => shape.TextBox!)
             .ToList();
-        returnList.AddRange(frames);
+        returnList.AddRange(textBoxes);
 
         // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
         var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
@@ -287,20 +287,17 @@ internal sealed class Slide : ISlide
 
     internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
-    /// <summary>
-    ///     Iterates group recursively and add all text boxes in the list.
-    /// </summary>
     private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextBox> textBoxes)
     {
         foreach (var shape in group.Shapes)
         {
-            switch (shape.ShapeType)
+            switch (shape.ShapeContent)
             {
                 case ShapeContent.Group:
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
                 case ShapeContent.Shape:
-                    if (shape.IsTextHolder)
+                    if (shape.TextBox is not null)
                     {
                         textBoxes.Add(shape.TextBox);
                     }
@@ -321,10 +318,8 @@ internal sealed class Slide : ISlide
 
         var shapes = new ShapeCollection(notes);
         var notesPlaceholder = shapes
-            .FirstOrDefault(x =>
-                x.IsPlaceholder &&
-                x.IsTextHolder &&
-                x.PlaceholderType == PlaceholderType.Text);
+            .FirstOrDefault(shape =>
+                shape is { IsPlaceholder: true, TextBox: not null, PlaceholderType: PlaceholderType.Text });
         return notesPlaceholder?.TextBox;
     }
 

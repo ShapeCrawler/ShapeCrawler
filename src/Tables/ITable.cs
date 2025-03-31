@@ -72,7 +72,7 @@ internal sealed class Table : Shape, ITable
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
 
-    public override ShapeContent ShapeType => ShapeContent.Table;
+    public override ShapeContent ShapeContent => ShapeContent.Table;
 
     public ITableColumns Columns { get; }
 

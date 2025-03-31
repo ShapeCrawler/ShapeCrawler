@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Sections;
 
-internal sealed class SectionSlideCollection(IEnumerable<SectionSlideIdListEntry> p14SectionSlideIdListEntryList) : IReadOnlyList<ISlide>
+internal sealed class SectionSlideCollection(P14.Section p14Section) : IReadOnlyList<ISlide>
 {
     public int Count => this.GetSlides().Count;
 
@@ -20,7 +20,8 @@ internal sealed class SectionSlideCollection(IEnumerable<SectionSlideIdListEntry
 
     private SlideCollection GetSlides()
     {
-        var presDocument = new SCOpenXmlLeafElement(p14SectionSlideIdListEntryList.First()).PresentationDocument;
+        var p14SectionSlideIdListEntryList = p14Section.Descendants<P14.SectionSlideIdListEntry>();
+        var presDocument = new SCOpenXmlElement(p14Section).PresentationDocument;
         var slideParts = new List<SlidePart>();
         var idToRId = presDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>()
             .ToDictionary(slideId => slideId.Id!, slideId => slideId.RelationshipId);

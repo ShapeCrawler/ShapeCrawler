@@ -38,7 +38,7 @@ internal sealed class SlideLine : Shape, ILine
         this.Outline = shapeOutline;
     }
 
-    public override ShapeContent ShapeType => ShapeContent.Line;
+    public override ShapeContent ShapeContent => ShapeContent.Line;
     
     public override bool HasOutline => true;
     

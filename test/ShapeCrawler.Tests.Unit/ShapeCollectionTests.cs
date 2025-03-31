@@ -86,10 +86,10 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides.First().Shapes;
 
         // Act & Assert
-        shapes.Count(sp => sp.ShapeType == ShapeContent.Chart).Should().Be(1);
-        shapes.Count(sp => sp.ShapeType == ShapeContent.Picture).Should().Be(1);
-        shapes.Count(sp => sp.ShapeType == ShapeContent.Table).Should().Be(1);
-        shapes.Count(sp => sp.ShapeType == ShapeContent.Group).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Chart).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Picture).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Table).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Group).Should().Be(1);
     }
 
     [Test]
@@ -174,7 +174,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var addedLine = (ILine)shapes.Last();
         shapes.Should().ContainSingle();
-        addedLine.ShapeType.Should().Be(ShapeContent.Line);
+        addedLine.ShapeContent.Should().Be(ShapeContent.Line);
         addedLine.StartPoint.X.Should().Be(10);
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(20);
@@ -271,7 +271,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().ContainSingle();
         var line = (ILine)shapes.Last();
-        line.ShapeType.Should().Be(ShapeContent.Line);
+        line.ShapeContent.Should().Be(ShapeContent.Line);
         line.X.Should().Be(50);
         line.Y.Should().Be(60);
         pres.Validate();
@@ -372,7 +372,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeContent.Picture);
+        picture.ShapeContent.Should().Be(ShapeContent.Picture);
         picture.Height.Should().Be(75);
         picture.Width.Should().Be(75);
         pres.Validate();

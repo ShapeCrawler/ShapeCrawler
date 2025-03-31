@@ -62,7 +62,7 @@ internal sealed class Chart : Shape, IChart
         }
     }
 
-    public override ShapeContent ShapeType => ShapeContent.Chart;
+    public override ShapeContent ShapeContent => ShapeContent.Chart;
     
     public override IShapeOutline Outline { get; }
     
