@@ -48,6 +48,7 @@ internal sealed class SlideCollection : IReadOnlyList<ISlide>
                 this.mediaCollection);
             slides.Add(newSlide);
         }
+
         return slides;
     }
 
