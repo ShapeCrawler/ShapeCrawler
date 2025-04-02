@@ -37,7 +37,7 @@ internal sealed class SlideCollection : IReadOnlyList<ISlide>
         var presDocument = (PresentationDocument)this.slideParts.First().OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
         var pSlideIdList = presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();
-        var slidesCount = pSlideIdList.Count();
+        var slidesCount = pSlideIdList.Count;
         var slides = new List<Slide>(slidesCount);
         foreach (var pSlideId in pSlideIdList)
         {
