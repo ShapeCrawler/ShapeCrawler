@@ -1,0 +1,11 @@
+﻿{
+  "solution": {
+    "path": "ShapeCrawler.sln",
+    "projects": [
+      "src\\ShapeCrawler.csproj",
+      "test\\ShapeCrawler.Tests.Integration\\ShapeCrawler.Tests.Integration.csproj",
+      "test\\ShapeCrawler.Tests.Load\\ShapeCrawler.Tests.Load.csproj",
+      "test\\ShapeCrawler.Tests.Unit\\ShapeCrawler.Tests.Unit.csproj"
+    ]
+  }
+}

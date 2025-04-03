@@ -26,4 +26,4 @@ jobs:
         with:
           dotnet-version: 9.0.x      
       - name: Test
-        run: dotnet test ShapeCrawler.sln -c Release -f ${{ matrix.framework_version }}
+        run: dotnet test ShapeCrawler.Filter.slnf -c Release -f ${{ matrix.framework_version }}
