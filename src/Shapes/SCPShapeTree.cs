@@ -8,22 +8,15 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Shapes;
 
 // ReSharper disable once InconsistentNaming
-internal readonly ref struct SCPShapeTree
+internal readonly ref struct SCPShapeTree(P.ShapeTree pShapeTree)
 {
-    private readonly P.ShapeTree pShapeTree;
-
-    internal SCPShapeTree(P.ShapeTree pShapeTree)
-    {
-        this.pShapeTree = pShapeTree;
-    }
-
     internal void Add(OpenXmlElement openXmlElement)
     {
-        var id = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
-        var existingShapeNames = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
+        var id = pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
+        var existingShapeNames = pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
         var pShapeCopy = openXmlElement.CloneNode(true);
         pShapeCopy.NonVisualDrawingProperties().Id = new UInt32Value(id);
-        this.pShapeTree.AppendChild(pShapeCopy);
+        pShapeTree.AppendChild(pShapeCopy);
         var copyName = pShapeCopy.NonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
         {
@@ -51,7 +44,7 @@ internal readonly ref struct SCPShapeTree
 
     internal P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholder)
     {
-        var pShapes = this.pShapeTree.Elements<P.Shape>();
+        var pShapes = pShapeTree.Elements<P.Shape>();
         foreach (var layoutPShape in pShapes)
         {
             var layoutPPlaceholder = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!

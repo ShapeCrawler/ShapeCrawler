@@ -9,12 +9,12 @@ namespace ShapeCrawler.GroupShapes;
 internal sealed class GroupedShape : IShape
 {
     private readonly P.Shape pShape;
-    private readonly AutoShape decoratedShape;
+    private readonly Shape shape;
 
-    internal GroupedShape(P.Shape pShape, AutoShape decoratedShape)
+    internal GroupedShape(P.Shape pShape, Shape shape)
     {
         this.pShape = pShape;
-        this.decoratedShape = decoratedShape;
+        this.shape = shape;
     }
 
     public decimal X
@@ -27,14 +27,14 @@ internal sealed class GroupedShape : IShape
             
             var xGroupShapePt = new Emus(aOffset.X!).AsPoints();
             var groupShapeChildXPt = new Emus(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value).AsPoints();
-            var groupedShapeXPt = this.decoratedShape.X;
+            var groupedShapeXPt = this.shape.X;
             
             return xGroupShapePt - (groupShapeChildXPt - groupedShapeXPt);
         }
         
         set
         {
-            this.decoratedShape.X = value;
+            this.shape.X = value;
             var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
@@ -56,7 +56,7 @@ internal sealed class GroupedShape : IShape
             }
 
             var groupRightEmu = aOffset.X!.Value + aExtents.Cx!.Value;
-            var groupedRightEmu = new Points(this.decoratedShape.X + this.decoratedShape.Width).AsEmus();
+            var groupedRightEmu = new Points(this.shape.X + this.shape.Width).AsEmus();
             if (groupedRightEmu > groupRightEmu)
             {
                 var diffEmu = groupedRightEmu - groupRightEmu;
@@ -68,10 +68,10 @@ internal sealed class GroupedShape : IShape
 
     public decimal Y
     {
-        get => this.decoratedShape.Y;
+        get => this.shape.Y;
         set
         {
-            this.decoratedShape.Y = value;
+            this.shape.Y = value;
             var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
@@ -106,95 +106,89 @@ internal sealed class GroupedShape : IShape
 
     public decimal Width
     {
-        get => this.decoratedShape.Width;
-        set => this.decoratedShape.Width = value;
+        get => this.shape.Width;
+        set => this.shape.Width = value;
     }
 
     public decimal Height
     {
-        get => this.decoratedShape.Height;
-        set => this.decoratedShape.Height = value;
+        get => this.shape.Height;
+        set => this.shape.Height = value;
     }
 
-    public int Id => this.decoratedShape.Id;
+    public int Id => this.shape.Id;
 
     public string Name
     {
-        get => this.decoratedShape.Name;
-        set => this.decoratedShape.Name = value;
+        get => this.shape.Name;
+        set => this.shape.Name = value;
     }
 
     public string AltText
     {
-        get => this.decoratedShape.AltText;
-        set => this.decoratedShape.AltText = value;
+        get => this.shape.AltText;
+        set => this.shape.AltText = value;
     }
 
-    public bool Hidden => this.decoratedShape.Hidden;
+    public bool Hidden => this.shape.Hidden;
     
-    public bool IsPlaceholder => this.decoratedShape.IsPlaceholder;
+    public bool IsPlaceholder => this.shape.IsPlaceholder;
     
-    public PlaceholderType PlaceholderType => this.decoratedShape.PlaceholderType;
+    public PlaceholderType PlaceholderType => this.shape.PlaceholderType;
    
     public Geometry GeometryType
     {
-        get => this.decoratedShape.GeometryType;
-        set => this.decoratedShape.GeometryType = value;
+        get => this.shape.GeometryType;
+        set => this.shape.GeometryType = value;
     }
 
     public decimal CornerSize
     {
-        get => this.decoratedShape.CornerSize;
-        set => this.decoratedShape.CornerSize = value;
+        get => this.shape.CornerSize;
+        set => this.shape.CornerSize = value;
     }
 
     public decimal[] Adjustments
     {
-        get => this.decoratedShape.Adjustments;
-        set => this.decoratedShape.Adjustments = value;
+        get => this.shape.Adjustments;
+        set => this.shape.Adjustments = value;
     }
 
     public string? CustomData
     {
-        get => this.decoratedShape.CustomData;
-        set => this.decoratedShape.CustomData = value;
+        get => this.shape.CustomData;
+        set => this.shape.CustomData = value;
     }
 
-    public ShapeType ShapeType => this.decoratedShape.ShapeType;
+    public ShapeContent ShapeContent => this.shape.ShapeContent;
     
-    public bool HasOutline => this.decoratedShape.HasOutline;
+    public bool HasOutline => this.shape.HasOutline;
     
-    public IShapeOutline Outline => this.decoratedShape.Outline;
+    public IShapeOutline Outline => this.shape.Outline;
     
-    public bool HasFill => this.decoratedShape.HasFill;
+    public bool HasFill => this.shape.HasFill;
     
-    public IShapeFill Fill => this.decoratedShape.Fill;
+    public IShapeFill Fill => this.shape.Fill;
     
-    public bool IsTextHolder => this.decoratedShape.IsTextHolder;
+    public ITextBox? TextBox => this.shape.TextBox;
     
-    public ITextBox TextBox => this.decoratedShape.TextBox;
+    public double Rotation => this.shape.Rotation;
     
-    public double Rotation => this.decoratedShape.Rotation;
+    public bool Removeable => this.shape.Removeable;
     
-    public bool Removeable => this.decoratedShape.Removeable;
+    public string SDKXPath => this.shape.SDKXPath;
     
-    public string SdkXPath => this.decoratedShape.SdkXPath;
-    
-    public OpenXmlElement SdkOpenXmlElement => this.decoratedShape.SdkOpenXmlElement.CloneNode(true);
+    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement.CloneNode(true);
 
-    public string Text
-    {
-        get => this.TextBox.Text;
-        set => this.TextBox.Text = value;
-    }
+    public IPresentation Presentation => this.shape.Presentation;
 
-    public IPresentation Presentation => this.decoratedShape.Presentation;
+    public void Remove() => this.shape.Remove();
+    
+    public ITable AsTable() => this.shape.AsTable();
+    
+    public IMediaShape AsMedia() => this.shape.AsMedia();
 
-    public void Remove() => this.decoratedShape.Remove();
-    
-    public ITable AsTable() => this.decoratedShape.AsTable();
-    
-    public IMediaShape AsMedia() => this.decoratedShape.AsMedia();
+    public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
 
     #endregion Decorated Shape
 }

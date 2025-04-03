@@ -30,15 +30,8 @@ public interface ISectionCollection : IReadOnlyCollection<ISection>
     ISection GetByName(string sectionName);
 }
 
-internal sealed class SectionCollectionCollection : ISectionCollection
+internal sealed class SectionCollection(PresentationDocument presDocument): ISectionCollection
 {
-    private readonly PresentationDocument presDocument;
-
-    internal SectionCollectionCollection(PresentationDocument presDocument)
-    {
-        this.presDocument = presDocument;
-    }
-
     public int Count => this.SectionList().Count;
     
     public ISection this[int index] => this.SectionList()[index];
@@ -59,7 +52,7 @@ internal sealed class SectionCollectionCollection : ISectionCollection
 
         if (total == 1)
         {
-            this.presDocument.PresentationPart!.Presentation.PresentationExtensionList
+            presDocument.PresentationPart!.Presentation.PresentationExtensionList
                 ?.Descendants<P14.SectionList>().First()
                 .Remove();
         }
@@ -69,10 +62,10 @@ internal sealed class SectionCollectionCollection : ISectionCollection
     
     private List<Section> SectionList()
     {
-        var p14SectionList = this.presDocument.PresentationPart!.Presentation.PresentationExtensionList
+        var p14SectionList = presDocument.PresentationPart!.Presentation.PresentationExtensionList
             ?.Descendants<P14.SectionList>().FirstOrDefault();
         return p14SectionList == null
             ? []
-            : [.. p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.presDocument, p14Section))];
+            : [.. p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(p14Section))];
     }
 }

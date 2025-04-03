@@ -52,7 +52,7 @@ public class SlideMasterTests : SCTest
         shape.Width.Should().Be(828);
         shape.Height.Should().BeApproximately(104.37m, 0.01m);
     }
-    
+
     [Test]
     public void Shape_X_and_Y_return_master_shape_x_and_y_coordinates()
     {

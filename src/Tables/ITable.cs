@@ -58,7 +58,7 @@ public interface ITable : IShape
     ITableCell Cell(int rowNumber, int columnNumber);
 }
 
-internal sealed class Table : CopyableShape, ITable
+internal sealed class Table : Shape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
@@ -72,7 +72,7 @@ internal sealed class Table : CopyableShape, ITable
         this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
     }
 
-    public override ShapeType ShapeType => ShapeType.Table;
+    public override ShapeContent ShapeContent => ShapeContent.Table;
 
     public ITableColumns Columns { get; }
 

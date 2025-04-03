@@ -25,7 +25,7 @@ internal sealed class GroupShape : Shape, IGroupShape
     
     public override Geometry GeometryType => Geometry.Rectangle;
     
-    public override ShapeType ShapeType => ShapeType.Group;
+    public override ShapeContent ShapeContent => ShapeContent.Group;
     
     public override bool HasOutline => true;
     

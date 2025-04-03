@@ -158,31 +158,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
         return 0;
     }
-
-    private string ParseEastAsianName()
-    {
-        var aEastAsianFont = this.AEastAsianFont();
-        if (aEastAsianFont.Typeface == "+mj-ea")
-        {
-            return this.themeFontScheme.MajorEastAsianFont();
-        }
-
-        return aEastAsianFont.Typeface!;
-    }
-
-    private A.EastAsianFont AEastAsianFont()
-    {
-        var aEastAsianFont = this.aText.Parent!.GetFirstChild<A.RunProperties>()
-            ?.GetFirstChild<A.EastAsianFont>();
-
-        if (aEastAsianFont != null)
-        {
-            return aEastAsianFont;
-        }
-
-        throw new Exception("TODO: implement");
-    }
-
+    
     private A.LatinFont ALatinFont()
     {
         var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;

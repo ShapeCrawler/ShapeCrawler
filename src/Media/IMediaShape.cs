@@ -38,7 +38,7 @@ internal class MediaShape : Shape, IMediaShape
         this.Fill = new ShapeFill(pPicture.ShapeProperties!);
     }
 
-    public override ShapeType ShapeType => ShapeType.Video;
+    public override ShapeContent ShapeContent => ShapeContent.Video;
     
     public override bool HasOutline => true;
     

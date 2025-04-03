@@ -10,7 +10,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🐞Fixed saving presentation in file stream [#953](https://github.com/ShapeCrawler/ShapeCrawler/issues/953)</PackageReleaseNotes>
+    <PackageReleaseNotes>🐞Fixed updating table height [#552](https://github.com/ShapeCrawler/ShapeCrawler/issues/552)  
+🐞Fixed New Line issue [#960](https://github.com/ShapeCrawler/ShapeCrawler/issues/960)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
@@ -28,7 +29,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </PropertyGroup>
 
    <ItemGroup>
-    <None Include="Resources/package icon.jpg" Pack="true" PackagePath="" />
+    <None Include="Assets/package icon.jpg" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -46,16 +47,16 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\video-image.bmp" />
-    <EmbeddedResource Include="Resources\video-image.bmp" />
-    <None Remove="Resources\audio-image.png" />
-    <EmbeddedResource Include="Resources\audio-image.png" />
-    <None Remove="Resources\new-presentation.pptx" />
-    <EmbeddedResource Include="Resources\new-presentation.pptx" />
-    <None Remove="Resources\new-rectangle.xml" />
-    <EmbeddedResource Include="Resources\new-rectangle.xml" />
-    <None Remove="Resources\new-line.xml" />
-    <EmbeddedResource Include="Resources\new-line.xml" />
+    <None Remove="Assets\video image.bmp" />
+    <EmbeddedResource Include="Assets\video image.bmp" />
+    <None Remove="Assets\audio image.png" />
+    <EmbeddedResource Include="Assets\audio image.png" />
+    <None Remove="Assets\new presentation.pptx" />
+    <EmbeddedResource Include="Assets\new presentation.pptx" />
+    <None Remove="Assets\new rectangle.xml" />
+    <EmbeddedResource Include="Assets\new rectangle.xml" />
+    <None Remove="Assets\new line.xml" />
+    <EmbeddedResource Include="Assets\new line.xml" />
   </ItemGroup>
 
   <ItemGroup>

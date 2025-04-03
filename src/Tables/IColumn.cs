@@ -15,7 +15,7 @@ public interface IColumn
     /// <summary>
     ///     Gets or sets width in pixels.
     /// </summary>
-    int Width { get; set; }
+    decimal Width { get; set; }
     
     /// <summary>
     ///     Creates a duplicate of the current column at the end of the table.
@@ -23,23 +23,15 @@ public interface IColumn
     void Duplicate();
 }
 
-internal sealed class Column : IColumn
+internal sealed class Column(A.GridColumn aGridColumn, int index): IColumn
 {
-    private readonly int index;
-
-    internal Column(A.GridColumn aGridColumn, int index)
+    public decimal Width
     {
-        this.AGridColumn = aGridColumn;
-        this.index = index;
+        get => new Emus(this.AGridColumn.Width!.Value).AsPoints();
+        set => this.AGridColumn.Width!.Value = new Points(value).AsEmus();
     }
 
-    public int Width
-    {
-        get => this.GetWidth();
-        set => this.SetWidth(value);
-    }
-
-    internal A.GridColumn AGridColumn { get; }
+    internal A.GridColumn AGridColumn => aGridColumn;
 
     public void Duplicate()
     {
@@ -54,7 +46,7 @@ internal sealed class Column : IColumn
         foreach(A.TableRow tr in table!.Elements<A.TableRow>())
         {
             var cells = tr.Elements<A.TableCell>().ToList();
-            var cloneCell = cells[this.index].Clone();
+            var cloneCell = cells[index].Clone();
             tr.InsertAfter((A.TableCell)cloneCell, cells[^1]);
         }
     }
@@ -73,15 +65,5 @@ internal sealed class Column : IColumn
         }
 
         return newGridColumn;
-    }
-
-    private int GetWidth()
-    {
-        return new Emus(this.AGridColumn.Width!.Value).AsHorizontalPixels();
-    }
-    
-    private void SetWidth(int pixels)
-    {
-        this.AGridColumn.Width!.Value = UnitConverter.HorizontalPixelToEmu(pixels);
     }
 }

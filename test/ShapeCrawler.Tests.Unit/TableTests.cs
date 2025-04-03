@@ -209,9 +209,8 @@ public class TableTests : SCTest
     public void Columns_Add_sets_width_of_all_columns_proportionally()
     {
         // Arrange
-        var pptx = TestAsset("table-case003.pptx");
-        var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var pres = new Presentation(TestAsset("table-case003.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
         var columnsCountBefore = table.Columns.Count;
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -221,9 +220,9 @@ public class TableTests : SCTest
         table.Columns.Add();
 
         // Assert
-        var widthRatio = (double)totalWidthBefore / newTotalWidth;
-        table.Columns.Select(c => c.Width).ToList().Take(columnsCountBefore).Should()
-            .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
+        var widthRatio = totalWidthBefore / newTotalWidth;
+        table.Columns.Select(column => (int)column.Width).ToList().Take(columnsCountBefore).Should()
+              .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
     }
     
     [Test]
@@ -258,8 +257,8 @@ public class TableTests : SCTest
         table.Columns.InsertAfter(3);
 
         // Assert
-        var widthRatio = (double)totalWidthBefore / newTotalWidth;
-        table.Columns.Select(c => c.Width).ToList().Take(columnsCountBefore).Should()
+        var widthRatio = totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => (int)c.Width).ToList().Take(columnsCountBefore).Should()
             .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
     }
     
@@ -357,8 +356,8 @@ public class TableTests : SCTest
         column.Duplicate();
 
         // Assert
-        var widthRatio = (double)totalWidthBefore / newTotalWidth;
-        table.Columns.Select(c => c.Width).ToList().Take(columWidthBefore.Count).Should()
+        var widthRatio = totalWidthBefore / newTotalWidth;
+        table.Columns.Select(c => (int)c.Width).ToList().Take(columWidthBefore.Count).Should()
             .BeEquivalentTo(columWidthBefore.Select(w => (int)(w * widthRatio)));
     }
     
@@ -394,18 +393,14 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Row_Height_Getter_returns_row_height_in_points()
+    public void Row_Height_Getter()
     {
         // Arrange
-        var pptx = TestAsset("001.pptx");
-        var pres = new Presentation(pptx);
-        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var table = (ITable)pres.Slide(2).Shapes.First(sp => sp.Id == 3);
 
-        // Act
-        var rowHeight = table.Rows[0].Height;
-
-        // Act-Assert
-        rowHeight.Should().Be(29);
+        // Act & Assert
+        table.Rows[0].Height.Should().Be(29.2m);
     }
 
     [Test]
@@ -422,16 +417,14 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Column_Width_Getter_returns_width_of_column_in_pixels()
+    public void Column_Width_Getter()
     {
         // Arrange
-        var table = (ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
 
-        // Act
-        var columnWidth = table.Columns[0].Width;
-
-        // Assert
-        columnWidth.Should().Be(367);
+        // Act & Assert
+        table.Columns[0].Width.Should().BeApproximately(275.99m, 0.01m);
     }
 
     [Test]
@@ -543,11 +536,11 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Row_Height_Setter_sets_height_of_the_table_row_in_points()
+    public void Row_Height_Setter()
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slides[0].Table("Table 1");
+        var table = pres.Slide(1).Table("Table 1");
         var row = table.Rows[0];
 
         // Act
@@ -555,10 +548,10 @@ public class TableTests : SCTest
 
         // Assert
         row.Height.Should().Be(39);
-        table.Height.Should().BeApproximately(39.2m, 0.01m);
+        table.Height.Should().Be(39);
     }
 
-    [Test(Description = "MergeCells #1")]
+    [Test]
     public void MergeCells_Merges0x0And0x1CellsOf2x2Table()
     {
         // Arrange
@@ -582,7 +575,7 @@ public class TableTests : SCTest
         table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
     }
 
-    [Test(Description = "MergeCells #2")]
+    [Test]
     public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
     {
         // Arrange
@@ -609,7 +602,7 @@ public class TableTests : SCTest
         }
     }
 
-    [Test(Description = "MergeCells #3")]
+    [Test]
     public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
     {
         // Arrange
@@ -633,7 +626,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeTrue();
     }
 
-    [Test(Description = "MergeCells #4")]
+    [Test]
     public void MergeCells_Merges0x0And0x1MergedCellsWith0x2CellIn3x2Table()
     {
         // Arrange
@@ -657,7 +650,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeTrue();
     }
 
-    [Test(Description = "MergeCells #5")]
+    [Test]
     public void MergeCells_merges_0x0_and_1x0_cells_of_2x2_table()
     {
         // Arrange
@@ -718,7 +711,7 @@ public class TableTests : SCTest
         table[1, 0].TextBox.Text.Should().Be("A");
     }
 
-    [Test(Description = "MergeCells #6")]
+    [Test]
     public void MergeCells_Merges0x1And1x1CellsOf3x2Table()
     {
         // Arrange
@@ -742,7 +735,7 @@ public class TableTests : SCTest
         table[0, 0].IsMergedCell.Should().BeFalse();
     }
 
-    [Test(Description = "MergeCells #7")]
+    [Test]
     public void MergeCells_Merges0x0To1x1RangeOf3x3Table()
     {
         // Arrange
@@ -839,7 +832,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeFalse();
     }
 
-    [Test(Description = "MergeCells #8")]
+    [Test]
     public void MergeCells_converts_2X1_table_into_1X1_when_all_cells_are_merged()
     {
         // Arrange
@@ -866,7 +859,7 @@ public class TableTests : SCTest
         table.Rows[0].Cells.Should().HaveCount(1);
     }
 
-    [Test(Description = "MergeCells #9")]
+    [Test]
     public void MergeCells_converts_2X2_table_into_1X1_when_all_cells_are_merged()
     {
         // Arrange
@@ -887,7 +880,7 @@ public class TableTests : SCTest
         table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
-        static void AssertTable(ITable table, int expectedMergedColumnWidth, int expectedMergedRowHeight)
+        static void AssertTable(ITable table, decimal expectedMergedColumnWidth, decimal expectedMergedRowHeight)
         {
             table.Columns.Should().HaveCount(1);
             table.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
@@ -897,7 +890,7 @@ public class TableTests : SCTest
         }
     }
 
-    [Test(Description = "MergeCells #10")]
+    [Test]
     public void MergeCells_merges_0x0_And_0x1_cells_in_3x1_table()
     {
         // Arrange
@@ -917,16 +910,16 @@ public class TableTests : SCTest
         table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         AssertTable(table, mergedColumnWidth);
 
-        void AssertTable(ITable tableSc, int expectedMergedColumnWidth)
+        void AssertTable(ITable tableSc, decimal expectedMergedColumnWidth)
         {
             tableSc.Columns.Should().HaveCount(2);
-            tableSc.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
+            tableSc.Columns[0].Width.Should().BeApproximately(expectedMergedColumnWidth, 0.01m);
             tableSc.Rows.Should().HaveCount(1);
             tableSc.Rows[0].Cells.Should().HaveCount(2);
         }
     }
 
-    [Test(Description = "MergeCells #11")]
+    [Test]
     public void MergeCells_merges_0x1_and_0x2_cells()
     {
         // Arrange
@@ -947,9 +940,9 @@ public class TableTests : SCTest
         table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 6);
         AssertTable(table, expectedNewColumnWidth);
 
-        static void AssertTable(ITable table, int expectedNewColumnWidth)
+        static void AssertTable(ITable table, decimal expectedNewColumnWidth)
         {
-            table.Columns[1].Width.Should().Be(expectedNewColumnWidth);
+            table.Columns[1].Width.Should().BeApproximately(expectedNewColumnWidth, 0.01m);
             table.Rows.Should().HaveCount(1);
             table.Rows[0].Cells.Should().HaveCount(2);
         }
@@ -1232,12 +1225,11 @@ public class TableTests : SCTest
         var addedTable = pres.Slide(1).Shapes.Last<ITable>();
         
         // Act
-        var currentRowsHeight = addedTable.Rows[0].Height;
         addedTable.Height *= 1.5m;
         
         // Assert
-        addedTable.Rows[0].Height.Should().Be((int)(currentRowsHeight * 1.5));
-        addedTable.Rows[1].Height.Should().Be((int)(currentRowsHeight * 1.5));
+        addedTable.Rows[0].Height.Should().BeApproximately(43, 0.01m);
+        addedTable.Rows[1].Height.Should().Be(43);
         pres.Validate();
     }
 }

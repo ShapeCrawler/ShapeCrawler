@@ -25,6 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Create package
-        run: dotnet pack ./src/ShapeCrawler/ShapeCrawler.csproj --configuration Release /p:Version=${{ vars.VERSION }}
+        run: dotnet pack ./src/ShapeCrawler.csproj --configuration Release /p:Version=${{ vars.VERSION }}
       - name: Publish package
-        run: dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"
+        run: dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "src\bin\Release\*.nupkg"

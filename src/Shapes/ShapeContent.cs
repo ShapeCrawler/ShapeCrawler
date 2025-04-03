@@ -6,14 +6,14 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Shape type.
+///     Shape content type.
 /// </summary>
-public enum ShapeType
+public enum ShapeContent
 {
     /// <summary>
     ///     Shape.
     /// </summary>
-    AutoShape,
+    Shape,
     
     /// <summary>
     ///     Audio.

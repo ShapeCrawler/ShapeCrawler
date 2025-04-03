@@ -20,21 +20,17 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void SlideWidth_Getter_returns_presentation_Slides_Width_in_pixels()
+    public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
         // Arrange
-        var pptx = TestAsset("009_table.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(TestAsset("009_table.pptx"));
 
-        // Act
-        var slidesWidth = pres.SlideWidth;
-
-        // Assert
-        slidesWidth.Should().Be(960);
+        // Act & Assert
+        pres.SlideWidth.Should().Be(720);
     }
 
     [Test]
-    public void SlideWidth_Setter_sets_presentation_Slides_Width_in_pixels()
+    public void SlideWidth_Setter_sets_presentation_Slides_Width()
     {
         // Arrange
         var pptx = TestAsset("009_table.pptx");
@@ -48,21 +44,17 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void SlideHeight_Getter_returns_presentation_Slides_Height_in_pixels()
+    public void SlideHeight_Getter_returns_presentation_Slides_Height()
     {
         // Arrange
-        var pptx = TestAsset("009_table.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(TestAsset("009_table.pptx"));
 
-        // Act
-        var slideHeight = pres.SlideHeight;
-
-        // Assert
-        slideHeight.Should().Be(540);
+        // Act & Assert
+        pres.SlideHeight.Should().Be(405);
     }
 
     [Test]
-    public void SlideHeight_Setter_sets_presentation_Slides_Height_in_pixels()
+    public void SlideHeight_Setter_sets_presentation_Slides_Height()
     {
         // Arrange
         var pptx = TestAsset("009_table.pptx");
@@ -523,5 +515,16 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Properties.Modified.Should().Be(expectedModified);
+    }
+    
+    [Test]
+    [Explicit("Should be fixed")]
+    public void Constructor_does_not_throw_exception_When_the_specified_file_is_a_google_slide_export()
+    {
+        // Act
+        var openingGoogleSlides = () => new Presentation(TestAsset("074 google slides.pptx"));
+        
+        // Assert
+        openingGoogleSlides.Should().NotThrow();
     }
 }

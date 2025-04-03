@@ -86,10 +86,10 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides.First().Shapes;
 
         // Act & Assert
-        shapes.Count(sp => sp.ShapeType == ShapeType.Chart).Should().Be(1);
-        shapes.Count(sp => sp.ShapeType == ShapeType.Picture).Should().Be(1);
-        shapes.Count(sp => sp.ShapeType == ShapeType.Table).Should().Be(1);
-        shapes.Count(sp => sp.ShapeType == ShapeType.Group).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Chart).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Picture).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Table).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Group).Should().Be(1);
     }
 
     [Test]
@@ -174,7 +174,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var addedLine = (ILine)shapes.Last();
         shapes.Should().ContainSingle();
-        addedLine.ShapeType.Should().Be(ShapeType.Line);
+        addedLine.ShapeContent.Should().Be(ShapeContent.Line);
         addedLine.StartPoint.X.Should().Be(10);
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(20);
@@ -271,7 +271,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().ContainSingle();
         var line = (ILine)shapes.Last();
-        line.ShapeType.Should().Be(ShapeType.Line);
+        line.ShapeContent.Should().Be(ShapeContent.Line);
         line.X.Should().Be(50);
         line.Y.Should().Be(60);
         pres.Validate();
@@ -372,7 +372,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.ShapeContent.Should().Be(ShapeContent.Picture);
         picture.Height.Should().Be(75);
         picture.Width.Should().Be(75);
         pres.Validate();
@@ -636,7 +636,7 @@ public class ShapeCollectionTests : SCTest
     
     [Test]
     [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/892")]
-    public void AddPicture_adds_ico_picture_with_conversion_to_png()
+    public void AddPicture_adds_picture_from_ico_image()
     {
         // Arrange
         var pres = new Presentation();
@@ -649,12 +649,9 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var picture = (IPicture)shapes.Last();
         picture.Image!.Mime.Should().Be("image/png");
-        
-        // Ensure the image is valid
-        var convertedImage = new MagickImage(picture.Image!.AsByteArray());
-        var originalImage = new MagickImage(TestAsset("reference image.png"));
-        
-        convertedImage.GetPixels().Should().BeEquivalentTo(originalImage.GetPixels());
+        var actualImage = new MagickImage(picture.Image!.AsByteArray());
+        var expectedImage = new MagickImage(TestAsset("reference image.png"));
+        actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
         pres.Validate();
     }
@@ -861,7 +858,7 @@ public class ShapeCollectionTests : SCTest
         table.Rows.Should().HaveCount(2);
         table.Id.Should().Be(1);
         table.Name.Should().Be("Table 1");
-        table.Columns[0].Width.Should().Be(284);
+        table.Columns[0].Width.Should().BeApproximately(213.33m, 0.01m);
         pres.Validate();
     }
     

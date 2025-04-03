@@ -5,7 +5,7 @@ namespace ShapeCrawler.Tables;
 
 internal readonly ref struct TopBottomMargin(Int32Value? emus)
 {
-    const decimal DefaultTopAndBottomMargin = 3.69m; // ~0.13 cm
+    private const decimal DefaultTopAndBottomMargin = 3.69m; // ~0.13 cm
 
     public decimal Value => emus is null ? DefaultTopAndBottomMargin : new Emus(emus).AsPoints();
 }

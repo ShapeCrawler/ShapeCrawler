@@ -12,20 +12,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class Picture : CopyableShape, IPicture
+internal sealed class Picture : IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
+    private readonly Shape shape;
     private readonly ShapeGeometry shapeGeometry;
 
     internal Picture(P.Picture pPicture, A.Blip aBlip)
-        : this(pPicture, aBlip, new SlidePictureImage(aBlip))
+        : this(pPicture, aBlip, new SlidePictureImage(aBlip), new Shape(pPicture))
     {
     }
 
-    private Picture(P.Picture pPicture, A.Blip aBlip, IImage image)
-        : base(pPicture)
+    private Picture(P.Picture pPicture, A.Blip aBlip, IImage image, Shape shape)
     {
         this.pPicture = pPicture;
         this.aBlip = aBlip;
@@ -34,41 +34,96 @@ internal sealed class Picture : CopyableShape, IPicture
         this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
         this.Fill = new ShapeFill(pPicture.ShapeProperties!);
         this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
+        this.shape = shape;
+    }
+    
+    public decimal X
+    {
+        get => this.shape.X;
+        set => this.shape.X = value;
     }
 
-    public IImage Image { get; }
-   
-    public string? SvgContent => this.GetSvgContent();
+    public decimal Y
+    {
+        get => this.shape.Y;
+        set => this.shape.Y = value;
+    }
     
-    public override Geometry GeometryType
+    public IImage Image { get; }
+
+    public string? SvgContent => this.GetSvgContent();
+
+    public Geometry GeometryType
     {
         get => this.shapeGeometry.GeometryType;
         set => this.shapeGeometry.GeometryType = value;
     }
 
-    public override decimal CornerSize
+    public decimal CornerSize
     {
         get => this.shapeGeometry.CornerSize;
         set => this.shapeGeometry.CornerSize = value;
     }
 
-    public override decimal[] Adjustments
+    public decimal[] Adjustments
     {
         get => this.shapeGeometry.Adjustments;
         set => this.shapeGeometry.Adjustments = value;
     }
 
-    public override ShapeType ShapeType => ShapeType.Picture;
-    
-    public override bool HasOutline => true;
-    
-    public override IShapeOutline Outline { get; }
+    public decimal Width
+    {
+        get => this.shape.Width;
+        set => this.shape.Width = value;
+    }
 
-    public override bool HasFill => true;
-    
-    public override IShapeFill Fill { get; }
-    
-    public override bool Removeable => true;
+    public decimal Height
+    {
+        get => this.shape.Height;
+        set => this.shape.Height = value;
+    }
+
+    public int Id => this.shape.Id;
+
+    public string Name
+    {
+        get => this.shape.Name;
+        set => this.shape.Name = value;
+    }
+
+    public string AltText
+    {
+        get => this.shape.AltText;
+        set => this.shape.AltText = value;
+    }
+
+    public bool Hidden { get; }
+
+    public bool IsPlaceholder { get; }
+
+    public PlaceholderType PlaceholderType { get; }
+
+    public string? CustomData { get; set; }
+
+    public ShapeContent ShapeContent => ShapeContent.Picture;
+
+    public bool HasOutline => true;
+
+    public IShapeOutline Outline { get; }
+
+    public bool HasFill => true;
+
+    public IShapeFill Fill { get; }
+
+    public ITextBox? TextBox => null;
+
+    public double Rotation { get; }
+
+    public bool Removeable => true;
+
+    public string SDKXPath => this.shape.SDKXPath;
+
+    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
 
     public CroppingFrame Crop
     {
@@ -76,60 +131,77 @@ internal sealed class Picture : CopyableShape, IPicture
         {
             var pic = this.pPicture;
             var aBlipFill = pic.BlipFill
-                ?? throw new SCException("Malformed image has no blip fill");
+                            ?? throw new SCException("Malformed image has no blip fill");
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>();
 
             return CroppingFrameFromSourceRectangle(aSrcRect);
         }
-        
+
         set
         {
             var pic = this.pPicture;
             var aBlipFill = pic.BlipFill
-                ?? throw new SCException("Malformed image has no blip fill");
+                            ?? throw new SCException("Malformed image has no blip fill");
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>()
-                ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
-                ?? throw new SCException("Failed to add source rectangle");
+                           ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
+                           ?? throw new SCException("Failed to add source rectangle");
 
             ApplyCropToSourceRectangle(value, aSrcRect);
         }
     }
-    
+
     public decimal Transparency
     {
         get
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>();
             var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
-            
+
             return 100m - (amount / 1000m); // value is stored in Open XML as thousandths of a percent
         }
 
         set
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>()
-                ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(), 0)
-                ?? throw new SCException("Failed to add AlphaModFix");
-            
+                               ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(), 0)
+                               ?? throw new SCException("Failed to add AlphaModFix");
+
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
-   
-    public override void Remove() => this.pPicture.Remove();
-    
+
+    public IPresentation Presentation => this.shape.Presentation;
+
+    public void Remove()
+    {
+        throw new NotImplementedException();
+    }
+
+    public ITable AsTable() => throw new SCException("Picture cannot be converted to table");
+
+    public IMediaShape AsMedia()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Duplicate()
+    {
+        throw new NotImplementedException();
+    }
+
     public void SendToBack()
     {
-        var parentPShapeTree = this.PShapeTreeElement.Parent!;
+        var parentPShapeTree = this.pPicture.Parent!;
         parentPShapeTree.RemoveChild(this.pPicture);
         var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
         pGrpSpPr.InsertAfterSelf(this.pPicture);
     }
 
-    internal override void CopyTo(P.ShapeTree pShapeTree)
+    internal void CopyTo(P.ShapeTree pShapeTree)
     {
-        base.CopyTo(pShapeTree);
+        new SCPShapeTree(pShapeTree).Add(this.pPicture);
 
         var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var sourceSdkSlidePart = openXmlPart;
@@ -142,7 +214,7 @@ internal sealed class Picture : CopyableShape, IPicture
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);
 
-        var copy = this.PShapeTreeElement.CloneNode(true);
+        var copy = this.pPicture.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
 
@@ -156,7 +228,7 @@ internal sealed class Picture : CopyableShape, IPicture
         aSrcRect.Left = ToThousandths(frame.Left);
         aSrcRect.Right = ToThousandths(frame.Right);
         aSrcRect.Top = ToThousandths(frame.Top);
-        aSrcRect.Bottom = ToThousandths(frame.Bottom);        
+        aSrcRect.Bottom = ToThousandths(frame.Bottom);
     }
 
     /// <summary>
@@ -183,7 +255,7 @@ internal sealed class Picture : CopyableShape, IPicture
     /// </summary>
     /// <param name="int32">Per cent mille value.</param>
     /// <returns>Percent value.</returns>
-    private static decimal FromThousandths(Int32Value? int32) => 
+    private static decimal FromThousandths(Int32Value? int32) =>
         int32 is not null ? int32 / 1000m : 0;
 
     /// <summary>
@@ -191,7 +263,7 @@ internal sealed class Picture : CopyableShape, IPicture
     /// </summary>
     /// <param name="input">Percent value.</param>
     /// <returns>Per cent mille value.</returns>
-    private static Int32Value? ToThousandths(decimal input) => 
+    private static Int32Value? ToThousandths(decimal input) =>
         input == 0 ? null : Convert.ToInt32(input * 1000m);
 
     private string? GetSvgContent()
