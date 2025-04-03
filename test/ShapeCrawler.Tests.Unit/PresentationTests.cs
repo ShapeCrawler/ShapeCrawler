@@ -73,12 +73,15 @@ public class PresentationTests : SCTest
         // Act
         var pres17 = new Presentation(TestAsset("017.pptx"));
         var pres16 = new Presentation(TestAsset("016.pptx"));
+        var pres75 = new Presentation(TestAsset("075.pptx"));
         var numberSlidesCase1 = pres17.Slides.Count;
         var numberSlidesCase2 = pres16.Slides.Count;
+        var numberSlidesCase3 = pres75.Slides.Count;
 
         // Assert
         numberSlidesCase1.Should().Be(1);
         numberSlidesCase2.Should().Be(1);
+        numberSlidesCase3.Should().Be(1);
     }
     
     [Test]
