@@ -42,7 +42,7 @@ internal sealed class SectionCollection(PresentationDocument presDocument): ISec
 
     public void Remove(ISection removingSection)
     {
-        if (removingSection is not IRemoveable removeable)
+        if (removingSection is not IRemovable removeable)
         {
             throw new SCException("Section cannot be removed.");
         }
