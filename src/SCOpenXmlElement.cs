@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Sections;
+namespace ShapeCrawler;
 
 internal readonly ref struct SCOpenXmlElement(OpenXmlElement openXmlElement)
 {

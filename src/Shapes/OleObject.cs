@@ -17,7 +17,7 @@ internal sealed class OleObject : Shape
         this.Fill = new ShapeFill(pGraphicFrame.Descendants<P.ShapeProperties>().First());
     }
 
-    public override ShapeContent ShapeContent => ShapeContent.OleObject;
+    public override ShapeContent ShapeContent => ShapeContent.OLEObject;
 
     public override bool HasOutline => true;
 

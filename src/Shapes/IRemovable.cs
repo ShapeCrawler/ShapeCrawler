@@ -1,9 +1,9 @@
 namespace ShapeCrawler.Shapes;
 
 /// <summary>
-///     Represents a removeable shape.
+///     Represents a removable shape.
 /// </summary>
-internal interface IRemoveable
+internal interface IRemovable
 {
     /// <summary>
     ///     Removes the shape.
