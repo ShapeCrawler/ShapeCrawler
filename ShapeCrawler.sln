@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Load", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Integration", "test\ShapeCrawler.Tests.Integration\ShapeCrawler.Tests.Integration.csproj", "{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "ShapeCrawler.Examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
