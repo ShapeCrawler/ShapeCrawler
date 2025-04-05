@@ -41,7 +41,7 @@ public interface IShape : IPosition, IShapeGeometry
     bool Hidden { get; }
     
     /// <summary>
-    ///     Gets the placeholder type of the shape. Returns <see langword="null"/> if the shape is not a placeholder.
+    ///     Gets the placeholder type. Returns <see langword="null"/> if the shape is not a placeholder.
     /// </summary>
     PlaceholderType? PlaceholderType { get; }
 
