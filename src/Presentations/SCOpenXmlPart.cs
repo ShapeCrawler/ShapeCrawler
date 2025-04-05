@@ -4,8 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
+// ReSharper disable InconsistentNaming
 
-namespace ShapeCrawler.Presentations;
+namespace ShapeCrawler;
 
 internal readonly ref struct SCOpenXmlPart(OpenXmlPart openXmlPart)
 {

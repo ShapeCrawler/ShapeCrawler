@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
@@ -245,5 +246,29 @@ public sealed class Presentation : IPresentation
                 yield return "Invalid solid fill structure: SolidFill element must be index 0";
             }
         }
+    }
+
+    public string AsMarkdown()
+    {
+        var markdown = new StringBuilder();
+        foreach (var slide in this.Slides)
+        {
+            var title = slide.Shapes.Where(shape => shape.TextBox is not null)
+                .FirstOrDefault(shape => shape.TextBox?.Text.StartsWith("Title") ?? false);
+            if (title != null)
+            {
+                markdown.AppendLine($"# {title.TextBox?.Text}");
+            }
+            
+            foreach (var shape in slide.Shapes)
+            {
+                if (shape.TextBox is not null)
+                {
+                    markdown.AppendLine(shape.TextBox.Text);
+                }
+            }
+        }
+        
+        return markdown.ToString();
     }
 }

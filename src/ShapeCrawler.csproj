@@ -101,4 +101,11 @@ This library provides a simplified object model on top of the Open XML SDK for m
     </EmbeddedResource>
   </ItemGroup>
 
+   <ItemGroup>
+    <Compile Remove="obj\**" />
+    <Content Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
 </Project>

@@ -530,4 +530,20 @@ public class PresentationTests : SCTest
         // Assert
         openingGoogleSlides.Should().NotThrow();
     }
+    
+    [Test]
+    public void AsMarkdown_returns_markdown_string()
+    {
+        // Arrange
+        var pres = new Presentation(@"c:\Users\AdamShakhabov\OneDrive - Templafy\Hackathon-2025\input pres.pptx");
+        // var expectedMarkdown = StringOf("001.markdown");
+
+        // Act
+        var markdown = pres.AsMarkdown();   
+
+        // Assert
+        File.WriteAllText(@"c:\temp\output.md", markdown);
+        
+        // markdown.Should().Be(expectedMarkdown);
+    }
 }
