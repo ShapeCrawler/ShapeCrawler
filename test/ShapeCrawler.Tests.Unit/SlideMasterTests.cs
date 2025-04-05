@@ -96,8 +96,8 @@ public class SlideMasterTests : SCTest
 
         // Assert
         shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
-        masterautoshapecase2.IsPlaceholder.Should().BeFalse();
-        masterautoshapecase3.IsPlaceholder.Should().BeFalse();
+        masterautoshapecase2.PlaceholderType.Should().BeNull();
+        masterautoshapecase3.PlaceholderType.Should().BeNull();
     }
 
     [Test]

@@ -321,7 +321,7 @@ internal sealed class Slide : ISlide
         var shapes = new ShapeCollection(notes);
         var notesPlaceholder = shapes
             .FirstOrDefault(shape =>
-                shape is { IsPlaceholder: true, TextBox: not null, PlaceholderType: PlaceholderType.Text });
+                shape is { PlaceholderType: not null, TextBox: not null, PlaceholderType: PlaceholderType.Text });
         return notesPlaceholder?.TextBox;
     }
 

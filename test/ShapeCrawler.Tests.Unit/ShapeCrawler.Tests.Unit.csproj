@@ -262,6 +262,10 @@
     <EmbeddedResource Include="Assets\073 replacing text.pptx" />
     <None Remove="Assets\074 google slides.pptx" />
     <EmbeddedResource Include="Assets\074 google slides.pptx" />
+    <None Remove="Assets\076 bitcoin.pptx" />
+    <EmbeddedResource Include="Assets\076 bitcoin.pptx" />
+    <None Remove="Assets\076 bitcoin.md" />
+    <EmbeddedResource Include="Assets\076 bitcoin.md" />
   </ItemGroup>
 
 </Project>
