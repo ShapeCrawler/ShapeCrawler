@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -156,6 +157,36 @@ public sealed class Presentation : IPresentation
         this.Save(stream);
     }
     
+    /// <inheritdoc />
+    public string AsMarkdown()
+    {
+        var markdown = new StringBuilder();
+        foreach (var slide in this.Slides)
+        {
+            markdown.AppendLine($"# Slide {slide.Number}");
+            var textShapes = slide.Shapes.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
+                && shape.PlaceholderType != PlaceholderType.SlideNumber);
+            var titleShape = textShapes.FirstOrDefault(shape => shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            var nonTitleShapes = textShapes.Where(shape => !shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            if (titleShape != null)
+            {
+                markdown.AppendLine($"## {titleShape.TextBox!.Text}");
+            }
+
+            foreach (var shape in nonTitleShapes)
+            {
+                if (shape.TextBox is not null)
+                {
+                    markdown.AppendLine(shape.TextBox.Text);
+                }
+            }
+
+            markdown.AppendLine();
+        }
+
+        return markdown.ToString();
+    }
+    
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>
@@ -246,29 +277,5 @@ public sealed class Presentation : IPresentation
                 yield return "Invalid solid fill structure: SolidFill element must be index 0";
             }
         }
-    }
-
-    public string AsMarkdown()
-    {
-        var markdown = new StringBuilder();
-        foreach (var slide in this.Slides)
-        {
-            var title = slide.Shapes.Where(shape => shape.TextBox is not null)
-                .FirstOrDefault(shape => shape.TextBox?.Text.StartsWith("Title") ?? false);
-            if (title != null)
-            {
-                markdown.AppendLine($"# {title.TextBox?.Text}");
-            }
-            
-            foreach (var shape in slide.Shapes)
-            {
-                if (shape.TextBox is not null)
-                {
-                    markdown.AppendLine(shape.TextBox.Text);
-                }
-            }
-        }
-        
-        return markdown.ToString();
     }
 }

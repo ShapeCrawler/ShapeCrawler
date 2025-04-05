@@ -93,71 +93,77 @@ internal class Shape : IShape
         }
     }
 
-    public bool IsPlaceholder => this.pShapeTreeElement.Descendants<P.PlaceholderShape>().Any();
-
-    public PlaceholderType PlaceholderType
+    public PlaceholderType? PlaceholderType
     {
         get
         {
-            var pPlaceholderShape = this.pShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault() ??
-                                    throw new SCException(
-                                        $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
+            var pPlaceholderShape = this.pShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
+            if (pPlaceholderShape == null)
+            {
+                return null;
+            }
+
             var pPlaceholderValue = pPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
-                return PlaceholderType.Content;
+                return ShapeCrawler.PlaceholderType.Content;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.Title)
             {
-                return PlaceholderType.Title;
+                return ShapeCrawler.PlaceholderType.Title;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.CenteredTitle)
             {
-                return PlaceholderType.CenteredTitle;
+                return ShapeCrawler.PlaceholderType.CenteredTitle;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.Body)
             {
-                return PlaceholderType.Text;
+                return ShapeCrawler.PlaceholderType.Text;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.Diagram)
             {
-                return PlaceholderType.SmartArt;
+                return ShapeCrawler.PlaceholderType.SmartArt;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.ClipArt)
             {
-                return PlaceholderType.OnlineImage;
+                return ShapeCrawler.PlaceholderType.OnlineImage;
             }
 
             var value = pPlaceholderValue.ToString() !;
 
             if (value == "dt")
             {
-                return PlaceholderType.DateAndTime;
+                return ShapeCrawler.PlaceholderType.DateAndTime;
             }
 
             if (value == "ftr")
             {
-                return PlaceholderType.Footer;
+                return ShapeCrawler.PlaceholderType.Footer;
             }
 
             if (value == "sldNum")
             {
-                return PlaceholderType.SlideNumber;
+                return ShapeCrawler.PlaceholderType.SlideNumber;
             }
 
             if (value == "pic")
             {
-                return PlaceholderType.Picture;
+                return ShapeCrawler.PlaceholderType.Picture;
             }
 
             if (value == "tbl")
             {
-                return PlaceholderType.Table;
+                return ShapeCrawler.PlaceholderType.Table;
+            }
+
+            if (value == "sldImg")
+            {
+                return ShapeCrawler.PlaceholderType.SlideImage;
             }
 
             return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), value, true);

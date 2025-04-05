@@ -91,9 +91,7 @@ internal sealed class Picture : IPicture
 
     public bool Hidden => this.shape.Hidden;
 
-    public bool IsPlaceholder => this.shape.IsPlaceholder;
-
-    public PlaceholderType PlaceholderType => this.shape.PlaceholderType;
+    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
 
     public string? CustomData { get; set; }
 

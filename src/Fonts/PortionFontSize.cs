@@ -50,8 +50,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
                 return presentationFontSize.Value;
             }
 
-            // Try slide master body style (second attempt)
-            if (parentShape?.IsPlaceholder == true)
+            if (parentShape?.PlaceholderType != null)
             {
                 var bodyStyleFontSize = this.GetFontSizeFromBodyStyle(slideMasterPart, indentLevel);
                 if (bodyStyleFontSize.HasValue)
@@ -112,9 +111,9 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
     private decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
     {
-        if (!shape.IsPlaceholder)
+        if (shape.PlaceholderType == null)
         {
-            return null;
+            return null;   
         }
 
         // Check if it's a title placeholder

@@ -535,15 +535,10 @@ public class PresentationTests : SCTest
     public void AsMarkdown_returns_markdown_string()
     {
         // Arrange
-        var pres = new Presentation(@"c:\Users\AdamShakhabov\OneDrive - Templafy\Hackathon-2025\input pres.pptx");
-        // var expectedMarkdown = StringOf("001.markdown");
+        var pres = new Presentation(TestAsset("076 bitcoin.pptx"));
+        var expectedMarkdown = StringOf("076 bitcoin.md");
 
-        // Act
-        var markdown = pres.AsMarkdown();   
-
-        // Assert
-        File.WriteAllText(@"c:\temp\output.md", markdown);
-        
-        // markdown.Should().Be(expectedMarkdown);
+        // Act & Assert
+        pres.AsMarkdown().Should().Be(expectedMarkdown);
     }
 }
