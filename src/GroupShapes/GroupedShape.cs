@@ -132,9 +132,7 @@ internal sealed class GroupedShape : IShape
 
     public bool Hidden => this.shape.Hidden;
     
-    public bool IsPlaceholder => this.shape.IsPlaceholder;
-    
-    public PlaceholderType PlaceholderType => this.shape.PlaceholderType;
+    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
    
     public Geometry GeometryType
     {

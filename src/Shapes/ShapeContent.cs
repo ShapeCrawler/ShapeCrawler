@@ -1,4 +1,5 @@
 // ReSharper disable once CheckNamespace
+// ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 
 // ReSharper disable once CheckNamespace
@@ -6,7 +7,7 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Shape content type.
+///     Shape content.
 /// </summary>
 public enum ShapeContent
 {
@@ -38,7 +39,7 @@ public enum ShapeContent
     /// <summary>
     ///     OLE Object.
     /// </summary>
-    OleObject,
+    OLEObject,
 
     /// <summary>
     ///     Picture.

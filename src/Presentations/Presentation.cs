@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
@@ -34,8 +36,8 @@ public sealed class Presentation : IPresentation
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
+        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -49,8 +51,8 @@ public sealed class Presentation : IPresentation
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
+        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -67,8 +69,8 @@ public sealed class Presentation : IPresentation
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
+        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
             {
@@ -82,8 +84,8 @@ public sealed class Presentation : IPresentation
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdateableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdateableSlideCollection(this.presDocument.PresentationPart));
+        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
             new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
@@ -153,6 +155,36 @@ public sealed class Presentation : IPresentation
         this.Save();
         using var stream = new FileStream(file, FileMode.Create);
         this.Save(stream);
+    }
+    
+    /// <inheritdoc />
+    public string AsMarkdown()
+    {
+        var markdown = new StringBuilder();
+        foreach (var slide in this.Slides)
+        {
+            markdown.AppendLine($"# Slide {slide.Number}");
+            var textShapes = slide.Shapes.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
+                && shape.PlaceholderType != PlaceholderType.SlideNumber);
+            var titleShape = textShapes.FirstOrDefault(shape => shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            var nonTitleShapes = textShapes.Where(shape => !shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            if (titleShape != null)
+            {
+                markdown.AppendLine($"## {titleShape.TextBox!.Text}");
+            }
+
+            foreach (var shape in nonTitleShapes)
+            {
+                if (shape.TextBox is not null)
+                {
+                    markdown.AppendLine(shape.TextBox.Text);
+                }
+            }
+
+            markdown.AppendLine();
+        }
+
+        return markdown.ToString();
     }
     
     /// <summary>

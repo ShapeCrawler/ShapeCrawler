@@ -14,29 +14,21 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class Picture : IPicture
 {
-    private readonly StringValue blipEmbed;
+    private readonly Shape shape;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
-    private readonly Shape shape;
     private readonly ShapeGeometry shapeGeometry;
 
     internal Picture(P.Picture pPicture, A.Blip aBlip)
-        : this(pPicture, aBlip, new SlidePictureImage(aBlip), new Shape(pPicture))
     {
-    }
-
-    private Picture(P.Picture pPicture, A.Blip aBlip, IImage image, Shape shape)
-    {
+        this.shape = new Shape(pPicture);
         this.pPicture = pPicture;
         this.aBlip = aBlip;
-        this.Image = image;
-        this.blipEmbed = aBlip.Embed!;
         this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
         this.Fill = new ShapeFill(pPicture.ShapeProperties!);
         this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
-        this.shape = shape;
     }
-    
+
     public decimal X
     {
         get => this.shape.X;
@@ -48,8 +40,8 @@ internal sealed class Picture : IPicture
         get => this.shape.Y;
         set => this.shape.Y = value;
     }
-    
-    public IImage Image { get; }
+
+    public IImage Image => new SlidePictureImage(this.aBlip);
 
     public string? SvgContent => this.GetSvgContent();
 
@@ -97,11 +89,9 @@ internal sealed class Picture : IPicture
         set => this.shape.AltText = value;
     }
 
-    public bool Hidden { get; }
+    public bool Hidden => this.shape.Hidden;
 
-    public bool IsPlaceholder { get; }
-
-    public PlaceholderType PlaceholderType { get; }
+    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
 
     public string? CustomData { get; set; }
 
@@ -117,7 +107,7 @@ internal sealed class Picture : IPicture
 
     public ITextBox? TextBox => null;
 
-    public double Rotation { get; }
+    public double Rotation => this.shape.Rotation;
 
     public bool Removeable => true;
 
@@ -205,7 +195,7 @@ internal sealed class Picture : IPicture
 
         var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var sourceSdkSlidePart = openXmlPart;
-        var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
+        var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.aBlip.Embed!.Value!);
 
         var targetImagePartRId = new SCOpenXmlPart(openXmlPart).GetNextRelationshipId();
 

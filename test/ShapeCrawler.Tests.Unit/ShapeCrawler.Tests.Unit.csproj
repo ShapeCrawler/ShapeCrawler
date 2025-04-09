@@ -87,6 +87,7 @@
     <None Remove="Assets\charts\001 bar chart.pptx" />
     <EmbeddedResource Include="Assets\charts\001 bar chart.pptx" />
     <None Remove="Assets\pictures\pictures-case001.pptx" />
+    <EmbeddedResource Include="Assets\075.pptx" />
     <EmbeddedResource Include="Assets\pictures\pictures-case001.pptx" />
     <None Remove="Assets\pictures\pictures-case002.pptx" />
     <EmbeddedResource Include="Assets\pictures\pictures-case002.pptx" />
@@ -261,6 +262,10 @@
     <EmbeddedResource Include="Assets\073 replacing text.pptx" />
     <None Remove="Assets\074 google slides.pptx" />
     <EmbeddedResource Include="Assets\074 google slides.pptx" />
+    <None Remove="Assets\076 bitcoin.pptx" />
+    <EmbeddedResource Include="Assets\076 bitcoin.pptx" />
+    <None Remove="Assets\076 bitcoin.md" />
+    <EmbeddedResource Include="Assets\076 bitcoin.md" />
   </ItemGroup>
 
 </Project>

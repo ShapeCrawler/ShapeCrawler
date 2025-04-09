@@ -23,7 +23,7 @@ public interface ISection
     string Name { get; }
 }
 
-internal sealed class Section : ISection, IRemoveable
+internal sealed class Section : ISection, IRemovable
 {
     internal Section(P14.Section p14Section)
         : this(p14Section, new SectionSlideCollection(p14Section))

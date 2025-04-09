@@ -12,20 +12,15 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class UpdateableSlideCollection : ISlideCollection
+internal sealed class UpdatableSlideCollection : ISlideCollection
 {
     private readonly SlideCollection slideCollection;
     private readonly PresentationPart presPart;
 
-    internal UpdateableSlideCollection(PresentationPart presPart)
-        : this(presPart, new SlideCollection(presPart.SlideParts))
+    internal UpdatableSlideCollection(PresentationPart presPart)
     {
-    }
-
-    private UpdateableSlideCollection(PresentationPart presPart, SlideCollection slideCollection)
-    {
+        this.slideCollection = new SlideCollection(presPart.SlideParts);
         this.presPart = presPart;
-        this.slideCollection = slideCollection;
     }
 
     public int Count => this.slideCollection.Count;
@@ -60,8 +55,8 @@ internal sealed class UpdateableSlideCollection : ISlideCollection
 
     public void AddEmptySlide(SlideLayoutType layoutType)
     {
-        var sdkPresDoc = (PresentationDocument)this.presPart.OpenXmlPackage;
-        var slideMasters = new SlideMasterCollection(sdkPresDoc.PresentationPart!.SlideMasterParts);
+        var presDocument =  (PresentationDocument)this.presPart.OpenXmlPackage;
+        var slideMasters = new SlideMasterCollection(presDocument.PresentationPart!.SlideMasterParts);
         var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 
         this.AddEmptySlide(layout);
