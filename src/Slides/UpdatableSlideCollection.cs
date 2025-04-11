@@ -55,7 +55,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
 
     public void AddEmptySlide(SlideLayoutType layoutType)
     {
-        var presDocument =  (PresentationDocument)this.presPart.OpenXmlPackage;
+        var presDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
         var slideMasters = new SlideMasterCollection(presDocument.PresentationPart!.SlideMasterParts);
         var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 

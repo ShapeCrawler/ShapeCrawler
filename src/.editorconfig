@@ -32,6 +32,7 @@ dotnet_diagnostic.CS8625.severity = error
 dotnet_diagnostic.SA1000.severity = none
 dotnet_diagnostic.SA1005.severity = error
 dotnet_diagnostic.SA1009.severity = error
+dotnet_diagnostic.SA1025.severity = error
 dotnet_diagnostic.SA1028.severity = none
 dotnet_diagnostic.SA1116.severity = error
 dotnet_diagnostic.SA1117.severity = error
