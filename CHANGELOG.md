@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.65.1 - Unreleased
+🐞Fixed added picture width [#993](https://github.com/ShapeCrawler/ShapeCrawler/issues/993)  
+
 ## Version 0.65.0 - 2025-04-11
 🍀Added `AsMarkdown()` to get presentation string in Markdown format [(example)](https://github.com/ShapeCrawler/ShapeCrawler/blob/af7042bcdf83e77ecf9b1457415af589cf7bda7a/ShapeCrawler.Examples/Presentation.cs#L7-L12)  
 

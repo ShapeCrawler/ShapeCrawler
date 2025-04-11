@@ -140,10 +140,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             using var imageMagick = new MagickImage(image, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = imageMagick.Format;
             
-            // Handle format and sizing
             if (!SupportedImageFormats.Contains(imageMagick.Format))
+            {
                 imageMagick.Format = imageMagick.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
-            
+            }
+
             if (imageMagick.Format == MagickFormat.Svg)
             {
                 imageMagick.Format = MagickFormat.Png;
@@ -160,16 +161,15 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
                 imageMagick.Resize(width, height);
             }
 
-            // Create picture and set properties
-            using var rasterStream = new MemoryStream();
+            var rasterStream = new MemoryStream();
             imageMagick.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
             imageMagick.Settings.SetDefine("png:exclude-chunk", "tIME");
             imageMagick.Write(rasterStream);
             image.Position = rasterStream.Position = 0;
             
             var pPicture = originalFormat == MagickFormat.Svg
-                ? CreateSvgPPicture(rasterStream, image, "Picture")
-                : CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
+                ? this.CreateSvgPPicture(rasterStream, image, "Picture")
+                : this.CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
 
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = transform2D.Offset!.Y = 952500;
