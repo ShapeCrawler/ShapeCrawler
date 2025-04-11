@@ -66,7 +66,7 @@ public interface IPresentation : IDisposable
     public void Save(string file);
     
     /// <summary>
-    ///     Returns the presentation as string in Markdown format.
+    ///     Returns the presentation as a string in Markdown format.
     /// </summary>
     public string AsMarkdown();
 }
