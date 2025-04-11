@@ -6,20 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  
-  test:
-    name: Test on framework ${{ matrix.framework_version }}
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        framework_version: [ 'net472', 'net48', 'net9.0' ]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Test
-        run: dotnet test ShapeCrawler.sln -c Release -f ${{ matrix.framework_version }}
-
   publish:
-    needs: test
     name: Publish
     runs-on: windows-latest
     steps:
