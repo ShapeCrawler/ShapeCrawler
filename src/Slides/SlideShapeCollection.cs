@@ -37,8 +37,6 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         MagickFormat.Svg
     ];
 
-    private static readonly MagickFormat[] VectorImageFormats = [MagickFormat.Svg];
-
     private readonly SlidePart slidePart;
     private readonly IShapeCollection shapes;
     private readonly MediaCollection mediaCollection;
@@ -101,7 +99,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var audioRef = this.slidePart.AddAudioReferenceRelationship(mediaDataPart);
         var mediaRef = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
-        var audioFromFile = new A.AudioFromFile() { Link = audioRef.Id };
+        var audioFromFile = new A.AudioFromFile { Link = audioRef.Id };
 
         var appNonVisualDrawingPropsExtensionList = new P.ApplicationNonVisualDrawingPropertiesExtensionList();
 
@@ -137,83 +135,62 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public void AddPicture(Stream image)
     {
-        image.Position = 0;
         try
         {
-            using var imageMagick = new MagickImage(
-                image,
-                new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+            using var imageMagick = new MagickImage(image, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = imageMagick.Format;
+            
+            // Handle format and sizing
             if (!SupportedImageFormats.Contains(imageMagick.Format))
-            {
                 imageMagick.Format = imageMagick.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
-            }
-
-            if (VectorImageFormats.Contains(imageMagick.Format))
+            
+            if (imageMagick.Format == MagickFormat.Svg)
             {
                 imageMagick.Format = MagickFormat.Png;
-                imageMagick.Density =
-                    new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
             }
 
-            var width = imageMagick.Width;
-            var height = imageMagick.Height;
-
-            if (height > 500)
+            uint width = imageMagick.Width, height = imageMagick.Height;
+            if (originalFormat == MagickFormat.Svg && (height > 500 || width > 500))
             {
-                height = 500;
-                width = (uint)(height * imageMagick.Width / (decimal)imageMagick.Height);
-            }
-
-            if (width > 500)
-            {
-                width = 500;
-                height = (uint)(width * imageMagick.Height / (decimal)imageMagick.Width);
-            }
-
-            if (width == 500 || height == 500)
-            {
+                height = height > 500 ? 500 : height;
+                width = width > 500 ? 500 : width;
+                width = height == 500 ? (uint)(height * imageMagick.Width / (decimal)imageMagick.Height) : width;
+                height = width == 500 ? (uint)(width * imageMagick.Height / (decimal)imageMagick.Width) : height;
                 imageMagick.Resize(width, height);
             }
 
-            imageMagick.Settings.SetDefines(
-                new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
-
+            // Create picture and set properties
+            using var rasterStream = new MemoryStream();
+            imageMagick.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
             imageMagick.Settings.SetDefine("png:exclude-chunk", "tIME");
-
-            var rasterStream = new MemoryStream();
             imageMagick.Write(rasterStream);
-            image.Position = 0;
-            rasterStream.Position = 0;
-            var pPicture = VectorImageFormats.Contains(originalFormat)
-                ? this.CreateSvgPPicture(rasterStream, image, "Picture")
-                : this.CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
+            image.Position = rasterStream.Position = 0;
+            
+            var pPicture = originalFormat == MagickFormat.Svg
+                ? CreateSvgPPicture(rasterStream, image, "Picture")
+                : CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
 
-            var widthEmu = new Pixels(width).AsHorizontalEmus();
-            var heightEmu = new Pixels(height).AsVerticalEmus();
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
-            transform2D.Offset!.X = 952500;
-            transform2D.Offset!.Y = 952500;
-            transform2D.Extents!.Cx = widthEmu;
-            transform2D.Extents!.Cy = heightEmu;
+            transform2D.Offset!.X = transform2D.Offset!.Y = 952500;
+            transform2D.Extents!.Cx = new Pixels(width).AsHorizontalEmus();
+            transform2D.Extents!.Cy = new Pixels(height).AsVerticalEmus();
         }
-        catch (MagickDelegateErrorException ex) when (ex.Message.Contains("ghostscript"))
+        catch (Exception ex) when (ex is MagickDelegateErrorException mex && mex.Message.Contains("ghostscript"))
         {
-            throw new SCException(
-                "The stream is an image format that requires GhostScript which is not installed on your system.", ex);
+            throw new SCException("The stream is an image format that requires GhostScript which is not installed on your system.", ex);
         }
         catch (MagickException)
         {
-            throw new SCException(
-                "The stream is not an image or a non-supported image format. You can raise a discussion at https://github.com/ShapeCrawler/ShapeCrawler/discussions to find out about the possibilities supporting it.");
+            throw new SCException("The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
 
     public void AddPieChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
+        int x,
+        int y,
+        int width,
+        int height,
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
