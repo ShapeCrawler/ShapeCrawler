@@ -19,29 +19,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class MediaShapeCollection
+internal sealed class MediaShapeCollection(
+    IShapeCollection shapes,
+    SlidePart slidePart,
+    MediaCollection mediaCollection)
 {
-    private static readonly MagickFormat[] SupportedImageFormats =
-    [
-        MagickFormat.Jpeg,
-        MagickFormat.Png,
-        MagickFormat.Gif,
-        MagickFormat.Tif,
-        MagickFormat.Tiff,
-        MagickFormat.Svg
-    ];
-
-    private readonly SlidePart slidePart;
-    private readonly IShapeCollection shapes;
-    private readonly MediaCollection mediaCollection;
-
-    internal MediaShapeCollection(IShapeCollection shapes, SlidePart slidePart, MediaCollection mediaCollection)
-    {
-        this.shapes = shapes;
-        this.slidePart = slidePart;
-        this.mediaCollection = mediaCollection;
-    }
-
     internal void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.Mp3);
 
     internal void AddAudio(int x, int y, Stream audio, AudioType type)
@@ -64,14 +46,14 @@ internal sealed class MediaShapeCollection
 
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
-        var sdkPresentationDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
+        var sdkPresentationDocument = (PresentationDocument)slidePart.OpenXmlPackage;
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart(contentType, extension);
         audio.Position = 0;
         mediaDataPart.FeedData(audio);
         var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("audio image.png");
 
-        var audioRef = this.slidePart.AddAudioReferenceRelationship(mediaDataPart);
-        var mediaRef = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
+        var audioRef = slidePart.AddAudioReferenceRelationship(mediaDataPart);
+        var mediaRef = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
         var audioFromFile = new A.AudioFromFile { Link = audioRef.Id };
 
@@ -109,6 +91,15 @@ internal sealed class MediaShapeCollection
 
     internal void AddPicture(Stream imageStream)
     {
+        MagickFormat[] supportedImageFormats =
+        [
+            MagickFormat.Jpeg,
+            MagickFormat.Png,
+            MagickFormat.Gif,
+            MagickFormat.Tif,
+            MagickFormat.Tiff,
+            MagickFormat.Svg
+        ];
         try
         {
             using var image = new MagickImage(
@@ -116,7 +107,7 @@ internal sealed class MediaShapeCollection
                 new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = image.Format;
 
-            if (!SupportedImageFormats.Contains(image.Format))
+            if (!supportedImageFormats.Contains(image.Format))
             {
                 image.Format = image.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
             }
@@ -187,9 +178,9 @@ internal sealed class MediaShapeCollection
 
     private int GetNextShapeId()
     {
-        if (this.shapes.Any())
+        if (shapes.Any())
         {
-            return this.shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
+            return shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
         return 1;
@@ -197,21 +188,21 @@ internal sealed class MediaShapeCollection
 
     private bool TryGetImageRId(string hash, out string imgPartRId)
     {
-        if (this.mediaCollection.TryGetImagePart(hash, out var imagePart))
+        if (mediaCollection.TryGetImagePart(hash, out var imagePart))
         {
             // Image already exists in the presentation so far.
             // Do we have a reference to it on this slide?
-            var found = this.slidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
+            var found = slidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
             if (found.Any())
             {
                 // Yes, we already have a relationship with this part on this slide
                 // So use that relationship ID
-                imgPartRId = this.slidePart.GetIdOfPart(imagePart);
+                imgPartRId = slidePart.GetIdOfPart(imagePart);
             }
             else
             {
                 // No, so let's create a relationship to it
-                imgPartRId = this.slidePart.CreateRelationshipToPart(imagePart);
+                imgPartRId = slidePart.CreateRelationshipToPart(imagePart);
             }
 
             return true;
@@ -229,8 +220,8 @@ internal sealed class MediaShapeCollection
 
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
-            (imgPartRId, var imagePart) = this.slidePart.AddImagePart(image, mimeType);
-            this.mediaCollection.SetImagePart(hash, imagePart);
+            (imgPartRId, var imagePart) = slidePart.AddImagePart(image, mimeType);
+            mediaCollection.SetImagePart(hash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -266,7 +257,7 @@ internal sealed class MediaShapeCollection
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         return pPicture;
     }
@@ -277,8 +268,8 @@ internal sealed class MediaShapeCollection
         var svgHash = new ImageStream(svgStream).Base64Hash;
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
-            (svgPartRId, var svgPart) = this.slidePart.AddImagePart(svgStream, "image/svg+xml");
-            this.mediaCollection.SetImagePart(svgHash, svgPart);
+            (svgPartRId, var svgPart) = slidePart.AddImagePart(svgStream, "image/svg+xml");
+            mediaCollection.SetImagePart(svgHash, svgPart);
         }
 
         // There is a possible optimization here. If we've previously in this session rasterized
@@ -289,8 +280,8 @@ internal sealed class MediaShapeCollection
         var imgHash = new ImageStream(rasterStream).Base64Hash;
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
-            (imgPartRId, var imagePart) = this.slidePart.AddImagePart(rasterStream, "image/png");
-            this.mediaCollection.SetImagePart(imgHash, imagePart);
+            (imgPartRId, var imagePart) = slidePart.AddImagePart(rasterStream, "image/png");
+            mediaCollection.SetImagePart(imgHash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -374,7 +365,7 @@ internal sealed class MediaShapeCollection
         pPicture.AppendChild(blipFill);
         pPicture.AppendChild(shapeProperties);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
 
         return pPicture;
     }

@@ -23,7 +23,6 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
 {
-    private const long DefaultTableWidthEMUs = 8128000L;
     private readonly SlidePart slidePart;
     private readonly IShapeCollection shapes;
     private readonly MediaShapeCollection mediaShapes;
@@ -270,6 +269,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
         nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
 
+        const long DefaultTableWidthEMUs = 8128000L;
         var offset = new A.Offset { X = xEmu, Y = yEmu };
         var extents = new A.Extents { Cx = DefaultTableWidthEMUs, Cy = tableHeightEmu };
         var pTransform = new P.Transform(offset, extents);
