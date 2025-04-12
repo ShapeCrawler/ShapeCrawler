@@ -5,6 +5,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class ParagraphCollectionTests
 {
+#if DEBUG
     [Test]
     [Explicit("A new feature that should be implemented")]
     public void Add_adds_paragraph()
@@ -26,4 +27,5 @@ public class ParagraphCollectionTests
         // Assert
         addedShape.TextBox.Text.Should().Be("Paragraph 1\nNew Paragraph 2\nParagraph 2");
     }
+#endif
 }

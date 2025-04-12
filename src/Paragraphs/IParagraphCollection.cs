@@ -26,7 +26,7 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
 #endif
 }
 
-internal readonly struct ParagraphCollection(OpenXmlElement textBody) : IParagraphCollection
+internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagraphCollection
 {
     public int Count => this.ParagraphsCore().Count;
 
