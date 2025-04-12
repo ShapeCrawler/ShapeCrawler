@@ -1,3 +1,6 @@
+// ReSharper disable InconsistentNaming
+// ReSharper disable UseObjectOrCollectionInitializer
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,9 +18,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable InconsistentNaming
 
-// ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
