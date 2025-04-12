@@ -1,0 +1,38 @@
+<p:cxnSp xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+  xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:nvCxnSpPr>
+    <p:cNvPr id="1" name="Line">
+      <a:extLst>
+        <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+          <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main"
+            id="{9DF8435C-6FDF-AEDE-B5FC-18D871347979}" />
+        </a:ext>
+      </a:extLst>
+    </p:cNvPr>
+    <p:cNvCxnSpPr />
+    <p:nvPr />
+  </p:nvCxnSpPr>
+  <p:spPr>
+    <a:xfrm>
+      <a:off x="1536700" y="1568450" />
+      <a:ext cx="1206500" cy="0" />
+    </a:xfrm>
+    <a:prstGeom prst="line">
+      <a:avLst />
+    </a:prstGeom>
+  </p:spPr>
+  <p:style>
+    <a:lnRef idx="1">
+      <a:schemeClr val="accent1" />
+    </a:lnRef>
+    <a:fillRef idx="0">
+      <a:schemeClr val="accent1" />
+    </a:fillRef>
+    <a:effectRef idx="0">
+      <a:schemeClr val="accent1" />
+    </a:effectRef>
+    <a:fontRef idx="minor">
+      <a:schemeClr val="tx1" />
+    </a:fontRef>
+  </p:style>
+</p:cxnSp>
