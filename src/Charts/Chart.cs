@@ -16,13 +16,13 @@ namespace ShapeCrawler.Charts;
 internal sealed class Chart : Shape, IChart
 {
     private readonly Lazy<OpenXmlElement?> firstSeries;
+    private readonly SeriesCollection seriesCollection;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
     private readonly IEnumerable<OpenXmlElement> cXCharts;
 
     private string? chartTitle;
-    private readonly SeriesCollection seriesCollection;
 
     internal Chart(ChartPart sdkChartPart, P.GraphicFrame pGraphicFrame, IReadOnlyList<ICategory> categories)
         : base(pGraphicFrame)
@@ -40,7 +40,7 @@ internal sealed class Chart : Shape, IChart
             sdkChartPart,
             this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
-    
+
     public P.GraphicFrame SdkGraphicFrame { get; }
     
     public ChartPart SdkChartPart { get; }

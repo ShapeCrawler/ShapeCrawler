@@ -22,15 +22,23 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         var (sheetName, addresses) = ParseFormulaAddresses(numberReference.Formula!);
         var numericValues = GetNumericValues(numberReference);
         
-        this.chartPoints = CreateChartPoints(addresses, numericValues, sheetName);
+        this.chartPoints = this.CreateChartPoints(addresses, numericValues, sheetName);
     }
+    
+    public int Count => this.chartPoints.Count;
 
+    public IChartPoint this[int index] => this.chartPoints[index];
+
+    public IEnumerator<IChartPoint> GetEnumerator() => this.chartPoints.GetEnumerator();
+    
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+    
     private static NumberReference GetNumberReference(OpenXmlElement cSerXmlElement)
     {
         var cVal = cSerXmlElement.GetFirstChild<Values>();
         return cVal != null 
             ? cVal.NumberReference! 
-            : cSerXmlElement.GetFirstChild<YValues>()!.NumberReference!;
+            : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
     }
 
     private static (string SheetName, List<string> Addresses) ParseFormulaAddresses(Formula formula)
@@ -109,12 +117,4 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 
         return points;
     }
-
-    public int Count => this.chartPoints.Count;
-
-    public IChartPoint this[int index] => this.chartPoints[index];
-
-    public IEnumerator<IChartPoint> GetEnumerator() => this.chartPoints.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 }
