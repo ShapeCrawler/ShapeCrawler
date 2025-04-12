@@ -137,9 +137,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     {
         try
         {
-            using var image = new MagickImage(imageStream, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+            using var image = new MagickImage(
+                imageStream,
+                new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
             var originalFormat = image.Format;
-            
+
             if (!SupportedImageFormats.Contains(image.Format))
             {
                 image.Format = image.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
@@ -148,7 +150,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             if (image.Format == MagickFormat.Svg)
             {
                 image.Format = MagickFormat.Png;
-                image.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                image.Density =
+                    new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
             }
 
             uint width = image.Width, height = image.Height;
@@ -166,7 +169,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             image.Settings.SetDefine("png:exclude-chunk", "tIME");
             image.Write(rasterStream);
             imageStream.Position = rasterStream.Position = 0;
-            
+
             var pPicture = originalFormat == MagickFormat.Svg
                 ? this.CreateSvgPPicture(rasterStream, imageStream, "Picture")
                 : this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
@@ -178,11 +181,13 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
         catch (Exception ex) when (ex is MagickDelegateErrorException mex && mex.Message.Contains("ghostscript"))
         {
-            throw new SCException("The stream is an image format that requires GhostScript which is not installed on your system.", ex);
+            throw new SCException(
+                "The stream is an image format that requires GhostScript which is not installed on your system.", ex);
         }
         catch (MagickException)
         {
-            throw new SCException("The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
+            throw new SCException(
+                "The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
 
@@ -229,27 +234,23 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         nonVisualDrawingProperties.Append(hyperlinkOnClick);
         nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
 
-        P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties = new();
-        var pictureLocks = new A.PictureLocks { NoChangeAspect = true };
+        var nonVisualPictureDrawingProperties =
+            new P.NonVisualPictureDrawingProperties(new A.PictureLocks { NoChangeAspect = true });
 
-        nonVisualPictureDrawingProperties.Append(pictureLocks);
-
-        P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties = new();
         var videoFromFile = new A.VideoFromFile { Link = videoRr.Id };
 
         P.ApplicationNonVisualDrawingPropertiesExtensionList
             applicationNonVisualDrawingPropertiesExtensionList = new();
 
-        P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension =
-            new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
-
         var media = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media { Embed = mediaRr.Id };
         media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-        applicationNonVisualDrawingPropertiesExtension.Append(media);
+        var applicationNonVisualDrawingPropertiesExtension =
+            new P.ApplicationNonVisualDrawingPropertiesExtension(media) { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
         applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-        applicationNonVisualDrawingProperties.Append(videoFromFile);
-        applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
-        
+        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties(
+            videoFromFile,
+            applicationNonVisualDrawingPropertiesExtensionList);
+
         P.BlipFill blipFill = new();
         A.Blip blip = new() { Embed = imagePartRId };
         A.Stretch stretch = new();
@@ -257,7 +258,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         stretch.Append(fillRectangle);
         blipFill.Append(blip);
         blipFill.Append(stretch);
-        
+
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
         A.Offset offset = new() { X = xEmu, Y = yEmu };
@@ -268,8 +269,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         var shapeProperties = new P.ShapeProperties(transform2D, presetGeometry);
         var nonVisualPictureProperties = new P.NonVisualPictureProperties(
-            nonVisualDrawingProperties, 
-            nonVisualPictureDrawingProperties, 
+            nonVisualDrawingProperties,
+            nonVisualPictureDrawingProperties,
             applicationNonVisualDrawingProperties);
         var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
 
