@@ -125,9 +125,7 @@ internal sealed class MediaShapeCollection
             {
                 image.Format = MagickFormat.Png;
                 image.Density =
-                    new Density(384,
-                        DensityUnit
-                            .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                    new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
             }
 
             uint width = image.Width, height = image.Height;

@@ -7,8 +7,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ImageMagick;
-using ImageMagick.Formats;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
@@ -16,16 +14,15 @@ using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
-using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
-using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection : ISlideShapeCollection
 {
-    private const long DefaultTableWidthEmu = 8128000L;
+    private const long DefaultTableWidthEMUs = 8128000L;
     private readonly SlidePart slidePart;
     private readonly IShapeCollection shapes;
     private readonly MediaShapeCollection mediaShapes;
@@ -273,7 +270,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
 
         var offset = new A.Offset { X = xEmu, Y = yEmu };
-        var extents = new A.Extents { Cx = DefaultTableWidthEmu, Cy = tableHeightEmu };
+        var extents = new A.Extents { Cx = DefaultTableWidthEMUs, Cy = tableHeightEmu };
         var pTransform = new P.Transform(offset, extents);
 
         var graphic = new A.Graphic();
@@ -285,7 +282,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new A.TableGrid();
-        var gridWidthEmu = DefaultTableWidthEmu / columnsCount;
+        var gridWidthEmu = DefaultTableWidthEMUs / columnsCount;
         for (var i = 0; i < columnsCount; i++)
         {
             var gridColumn = new A.GridColumn { Width = gridWidthEmu };
