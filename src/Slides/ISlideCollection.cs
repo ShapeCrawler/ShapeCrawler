@@ -11,11 +11,6 @@ namespace ShapeCrawler;
 public interface ISlideCollection : IReadOnlyList<ISlide>
 {
     /// <summary>
-    ///     Removes specified slide.
-    /// </summary>
-    void Remove(ISlide slide);
-
-    /// <summary>
     ///     Adds a new slide based on the existing layout.
     /// </summary>
     void AddEmptySlide(ISlideLayout layout);

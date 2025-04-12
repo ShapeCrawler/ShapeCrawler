@@ -93,7 +93,7 @@ public class PresentationTests : SCTest
         var slides = pres.Slides;
 
         // Act
-        slides.Remove(removingSlide);
+        removingSlide.Remove();
         
         // Assert
         slides.Count.Should().Be(1);
@@ -167,7 +167,7 @@ public class PresentationTests : SCTest
         var removingSlide = pres.Slides[0];
         
         // Act
-        pres.Slides.Remove(removingSlide);
+        removingSlide.Remove();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         
         // Assert
@@ -218,7 +218,7 @@ public class PresentationTests : SCTest
         var mStream = new MemoryStream();
 
         // Act
-        pres.Slides.Remove(removingSlide);
+        removingSlide.Remove();
 
         // Assert
         sectionSlides.Count.Should().Be(0);
@@ -283,7 +283,7 @@ public class PresentationTests : SCTest
         var removingSection = pres.Sections[0];
 
         // Act
-        pres.Slides.Remove(pres.Slides[0]);
+        pres.Slides[0].Remove();
         pres.Sections.Remove(removingSection);
 
         // Assert
@@ -427,7 +427,7 @@ public class PresentationTests : SCTest
         var mStream = new MemoryStream();
 
         // Act
-        pres.Slides.Remove(removingSlide);
+        removingSlide.Remove();
 
         // Assert
         pres.Slides.Should().HaveCount(expectedSlidesCount);
