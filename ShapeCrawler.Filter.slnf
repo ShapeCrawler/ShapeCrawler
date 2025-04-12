@@ -3,9 +3,9 @@
     "path": "ShapeCrawler.sln",
     "projects": [
       "src\\ShapeCrawler.csproj",
-      "test\\ShapeCrawler.Tests.Integration\\ShapeCrawler.Tests.Integration.csproj",
-      "test\\ShapeCrawler.Tests.Load\\ShapeCrawler.Tests.Load.csproj",
-      "test\\ShapeCrawler.Tests.Unit\\ShapeCrawler.Tests.Unit.csproj"
+      "tests\\ShapeCrawler.Tests.Integration\\ShapeCrawler.Tests.Integration.csproj",
+      "tests\\ShapeCrawler.Tests.Load\\ShapeCrawler.Tests.Load.csproj",
+      "tests\\ShapeCrawler.Tests.Unit\\ShapeCrawler.Tests.Unit.csproj"
     ]
   }
 }
