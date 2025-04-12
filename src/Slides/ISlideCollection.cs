@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -31,4 +34,12 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// <param name="position">Position at which specified slide will be inserted.</param>
     /// <param name="slide">The slide to insert.</param>
     void Insert(int position, ISlide slide);
+#if DEBUG
+    /// <summary>
+    ///     Adds a new slide from JSON.
+    /// </summary>
+    /// <param name="jsonSlide">Slide in JSON format.</param>
+    [Experimental("SC0001")]
+    void AddJSON(string jsonSlide);
+#endif
 }

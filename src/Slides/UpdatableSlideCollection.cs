@@ -109,6 +109,11 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
         this.slideCollection[addedSlideIndex].Number = position;
     }
 
+    public void AddJSON(string jsonSlide)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Add(ISlide slide)
     {
         var addingSlide = (Slide)slide;
