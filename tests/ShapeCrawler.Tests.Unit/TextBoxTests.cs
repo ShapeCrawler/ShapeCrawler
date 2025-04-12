@@ -537,7 +537,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var pres = new Presentation(TestAsset(presentationName));
-            var textFrame = pres.Slides[slideNumber - 1].TextFrames().First();
+            var textFrame = pres.Slides[slideNumber - 1].GetAllTextBoxes().First();
 
             // Act
             var sdkXPath = textFrame.SdkXPath;
