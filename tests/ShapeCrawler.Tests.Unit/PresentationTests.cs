@@ -70,20 +70,17 @@ public class PresentationTests : SCTest
     [Test]
     public void Slides_Count_returns_One_When_presentation_contains_one_slide()
     {
-        // Act
+        // Arrange
         var pres17 = new Presentation(TestAsset("017.pptx"));
         var pres16 = new Presentation(TestAsset("016.pptx"));
         var pres75 = new Presentation(TestAsset("075.pptx"));
-        var numberSlidesCase1 = pres17.Slides.Count;
-        var numberSlidesCase2 = pres16.Slides.Count;
-        var numberSlidesCase3 = pres75.Slides.Count;
 
-        // Assert
-        numberSlidesCase1.Should().Be(1);
-        numberSlidesCase2.Should().Be(1);
-        numberSlidesCase3.Should().Be(1);
+        // Act & Assert
+        pres17.Slides.Count.Should().Be(1);
+        pres16.Slides.Count.Should().Be(1);
+        pres75.Slides.Count.Should().Be(1);
     }
-    
+
     [Test]
     public void Slides_Count()
     {
@@ -94,11 +91,11 @@ public class PresentationTests : SCTest
 
         // Act
         removingSlide.Remove();
-        
+
         // Assert
         slides.Count.Should().Be(1);
     }
-    
+
     [Test]
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
@@ -165,11 +162,11 @@ public class PresentationTests : SCTest
         // Arrange
         var pres = new Presentation();
         var removingSlide = pres.Slides[0];
-        
+
         // Act
         removingSlide.Remove();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
-        
+
         // Assert
         pres.Slides.Count.Should().Be(1);
         pres.Validate();
@@ -190,7 +187,7 @@ public class PresentationTests : SCTest
         // Assert
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
-    
+
     [Test]
     [Explicit("Should be fixed")]
     public void Slides_Insert_should_not_break_hyperlink()
@@ -201,33 +198,37 @@ public class PresentationTests : SCTest
 
         // Act
         pres.Slides.Insert(2, inserting);
-        
+
         // Assert
         pres.Validate();
         // TODO: Add assertion
     }
-    
+
+#if DEBUG
     [Test]
-    public void Slides_Remove_removes_slide_from_section()
+    [Explicit]
+    public void Slides_Add()
     {
         // Arrange
-        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
-        var pres = new Presentation(pptxStream);
-        var sectionSlides = pres.Sections[0].Slides;
-        var removingSlide = sectionSlides[0];
-        var mStream = new MemoryStream();
-
+        var pres = new Presentation(TestAsset("autoshape-case017_slide-number.pptx"));
+        const string jsonSlide = """
+                                 {
+                                   "slideLayoutNumber": 1,
+                                   "slideLayoutShapes": [
+                                     {
+                                       "name": "Title",
+                                       "text": "Hello World!"
+                                     }
+                                   ]
+                                 }
+                                 """;
         // Act
-        removingSlide.Remove();
+        pres.Slides.AddJSON(jsonSlide);
 
         // Assert
-        sectionSlides.Count.Should().Be(0);
-
-        pres.Save(mStream);
-        pres = new Presentation(mStream);
-        sectionSlides = pres.Sections[0].Slides;
-        sectionSlides.Count.Should().Be(0);
+        pres.Validate();
     }
+#endif
 
     [Test]
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
@@ -336,7 +337,7 @@ public class PresentationTests : SCTest
         textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
-    
+
     [Test]
     public void SaveAs_sets_the_date_of_the_last_modification()
     {
@@ -355,8 +356,8 @@ public class PresentationTests : SCTest
         stream.Position = 0;
         var updatedPres = new Presentation(stream);
         updatedPres.Properties.Modified.Should().Be(expectedModified);
-    } 
-    
+    }
+
     [Test]
     public void Footer_AddSlideNumber_adds_slide_number()
     {
@@ -393,7 +394,7 @@ public class PresentationTests : SCTest
         // Act-Assert
         pres.Footer.SlideNumberAdded().Should().BeFalse();
     }
-    
+
     [Test]
     public void Slides_Add_adds_slide()
     {
@@ -403,7 +404,7 @@ public class PresentationTests : SCTest
         var destPre = new Presentation(pptx);
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
-        MemoryStream savedPre = new ();
+        MemoryStream savedPre = new();
 
         // Act
         destPre.Slides.Add(sourceSlide);
@@ -415,7 +416,7 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-    
+
     [Test]
     [TestCase("007_2 slides.pptx", 1)]
     [TestCase("006_1 slides.pptx", 0)]
@@ -436,7 +437,7 @@ public class PresentationTests : SCTest
         pres = new Presentation(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
     }
-    
+
     [Test]
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
@@ -465,7 +466,7 @@ public class PresentationTests : SCTest
         // Act
         pres.Properties.Title = "Properties_setter_sets_values";
         pres.Properties.Created = expectedCreated;
-        
+
         // Assert
         pres.Properties.Title.Should().Be("Properties_setter_sets_values");
         pres.Properties.Created.Should().Be(expectedCreated);
@@ -484,7 +485,7 @@ public class PresentationTests : SCTest
         pres.Properties.Created = expectedCreated;
         pres.Properties.RevisionNumber = 100;
         pres.Save(stream);
-        
+
         // Assert
         stream.Position = 0;
         var updatePres = new Presentation(stream);
@@ -505,7 +506,7 @@ public class PresentationTests : SCTest
         pres.Properties.RevisionNumber.Should().Be(7);
         pres.Properties.Comments.Should().BeNull();
     }
-    
+
     [Test]
     public void Non_parameter_constructor_sets_the_date_of_the_last_modification()
     {
@@ -519,18 +520,18 @@ public class PresentationTests : SCTest
         // Assert
         pres.Properties.Modified.Should().Be(expectedModified);
     }
-    
+
     [Test]
     [Explicit("Should be fixed")]
     public void Constructor_does_not_throw_exception_When_the_specified_file_is_a_google_slide_export()
     {
         // Act
         var openingGoogleSlides = () => new Presentation(TestAsset("074 google slides.pptx"));
-        
+
         // Assert
         openingGoogleSlides.Should().NotThrow();
     }
-    
+
     [Test]
     public void AsMarkdown_returns_markdown_string()
     {

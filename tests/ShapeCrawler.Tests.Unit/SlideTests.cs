@@ -378,4 +378,26 @@ public class SlideTests : SCTest
         notes.Text.Should().Be(expected);
         pres.Validate();
     }
+    
+    [Test]
+    public void Remove_removes_slide_from_section()
+    {
+        // Arrange
+        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
+        var pres = new Presentation(pptxStream);
+        var sectionSlides = pres.Sections[0].Slides;
+        var removingSlide = sectionSlides[0];
+        var mStream = new MemoryStream();
+
+        // Act
+        removingSlide.Remove();
+
+        // Assert
+        sectionSlides.Count.Should().Be(0);
+
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
+        sectionSlides = pres.Sections[0].Slides;
+        sectionSlides.Count.Should().Be(0);
+    }
 }
