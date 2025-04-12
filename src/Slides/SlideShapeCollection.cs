@@ -133,43 +133,43 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
 
-    public void AddPicture(Stream image)
+    public void AddPicture(Stream imageStream)
     {
         try
         {
-            using var imageMagick = new MagickImage(image, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
-            var originalFormat = imageMagick.Format;
+            using var image = new MagickImage(imageStream, new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+            var originalFormat = image.Format;
             
-            if (!SupportedImageFormats.Contains(imageMagick.Format))
+            if (!SupportedImageFormats.Contains(image.Format))
             {
-                imageMagick.Format = imageMagick.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
+                image.Format = image.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
             }
 
-            if (imageMagick.Format == MagickFormat.Svg)
+            if (image.Format == MagickFormat.Svg)
             {
-                imageMagick.Format = MagickFormat.Png;
-                imageMagick.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                image.Format = MagickFormat.Png;
+                image.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
             }
 
-            uint width = imageMagick.Width, height = imageMagick.Height;
+            uint width = image.Width, height = image.Height;
             if (originalFormat == MagickFormat.Svg && (height > 500 || width > 500))
             {
                 height = height > 500 ? 500 : height;
                 width = width > 500 ? 500 : width;
-                width = height == 500 ? (uint)(height * imageMagick.Width / (decimal)imageMagick.Height) : width;
-                height = width == 500 ? (uint)(width * imageMagick.Height / (decimal)imageMagick.Width) : height;
-                imageMagick.Resize(width, height);
+                width = height == 500 ? (uint)(height * image.Width / (decimal)image.Height) : width;
+                height = width == 500 ? (uint)(width * image.Height / (decimal)image.Width) : height;
+                image.Resize(width, height);
             }
 
             var rasterStream = new MemoryStream();
-            imageMagick.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
-            imageMagick.Settings.SetDefine("png:exclude-chunk", "tIME");
-            imageMagick.Write(rasterStream);
-            image.Position = rasterStream.Position = 0;
+            image.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
+            image.Settings.SetDefine("png:exclude-chunk", "tIME");
+            image.Write(rasterStream);
+            imageStream.Position = rasterStream.Position = 0;
             
             var pPicture = originalFormat == MagickFormat.Svg
-                ? this.CreateSvgPPicture(rasterStream, image, "Picture")
-                : this.CreatePPicture(rasterStream, "Picture", GetMimeType(imageMagick.Format));
+                ? this.CreateSvgPPicture(rasterStream, imageStream, "Picture")
+                : this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
 
             var transform2D = pPicture.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = transform2D.Offset!.Y = 952500;
@@ -205,25 +205,16 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     public void AddVideo(int x, int y, Stream stream)
     {
         var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
-        var xEmu = new Points(x).AsEmus();
-        var yEmu = new Points(y).AsEmus();
-
         var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
-
-        stream.Position = 0;
         mediaDataPart.FeedData(stream);
-        var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
-        var imagePart = this.slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+        var imagePartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
+        var imagePart = this.slidePart.AddNewPart<ImagePart>("image/png", imagePartRId);
         var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.bmp");
         imagePart.FeedData(imageStream);
         var videoRr = this.slidePart.AddVideoReferenceRelationship(mediaDataPart);
         var mediaRr = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
-        var pPicture = new P.Picture();
-
-        P.NonVisualPictureProperties nonVisualPictureProperties = new();
-
-        var shapeId = (uint)this.shapes.Max(sp => sp.Id) + 1;
+        var shapeId = (uint)this.GetNextShapeId();
         P.NonVisualDrawingProperties nonVisualDrawingProperties = new() { Id = shapeId, Name = $"Video{shapeId}" };
         var hyperlinkOnClick = new A.HyperlinkOnClick { Id = string.Empty, Action = "ppaction://media" };
 
@@ -239,9 +230,9 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
 
         P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties = new();
-        var pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
+        var pictureLocks = new A.PictureLocks { NoChangeAspect = true };
 
-        nonVisualPictureDrawingProperties.Append(pictureLocks1);
+        nonVisualPictureDrawingProperties.Append(pictureLocks);
 
         P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties = new();
         var videoFromFile = new A.VideoFromFile { Link = videoRr.Id };
@@ -252,53 +243,40 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension =
             new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
-        var media1 = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media() { Embed = mediaRr.Id };
-        media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-        applicationNonVisualDrawingPropertiesExtension.Append(media1);
-
+        var media = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media { Embed = mediaRr.Id };
+        media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+        applicationNonVisualDrawingPropertiesExtension.Append(media);
         applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-
         applicationNonVisualDrawingProperties.Append(videoFromFile);
         applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
-
-        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-        nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
-
+        
         P.BlipFill blipFill = new();
-        A.Blip blip = new() { Embed = imgPartRId };
+        A.Blip blip = new() { Embed = imagePartRId };
         A.Stretch stretch = new();
         A.FillRectangle fillRectangle = new();
         stretch.Append(fillRectangle);
         blipFill.Append(blip);
         blipFill.Append(stretch);
-
-        P.ShapeProperties shapeProperties = new();
-
-        A.Transform2D transform2D = new();
+        
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
         A.Offset offset = new() { X = xEmu, Y = yEmu };
         A.Extents extents = new() { Cx = 609600L, Cy = 609600L };
 
-        transform2D.Append(offset);
-        transform2D.Append(extents);
+        var transform2D = new A.Transform2D(offset, extents);
+        A.PresetGeometry presetGeometry = new(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle };
 
-        A.PresetGeometry presetGeometry = new() { Preset = A.ShapeTypeValues.Rectangle };
-        A.AdjustValueList adjustValueList = new();
-
-        presetGeometry.Append(adjustValueList);
-
-        shapeProperties.Append(transform2D);
-        shapeProperties.Append(presetGeometry);
-
-        pPicture.Append(nonVisualPictureProperties);
-        pPicture.Append(blipFill);
-        pPicture.Append(shapeProperties);
+        var shapeProperties = new P.ShapeProperties(transform2D, presetGeometry);
+        var nonVisualPictureProperties = new P.NonVisualPictureProperties(
+            nonVisualDrawingProperties, 
+            nonVisualPictureDrawingProperties, 
+            applicationNonVisualDrawingProperties);
+        var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
 
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
-        DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
-        creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+        DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId = new() { Val = (UInt32Value)3972997422U };
+        creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
     }
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)

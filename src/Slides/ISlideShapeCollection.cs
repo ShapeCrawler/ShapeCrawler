@@ -71,7 +71,7 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds picture.
     /// </summary>
-    void AddPicture(Stream image);
+    void AddPicture(Stream imageStream);
 
     /// <summary>
     ///     Adds Pie Chart.
