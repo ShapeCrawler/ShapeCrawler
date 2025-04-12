@@ -91,58 +91,28 @@ internal sealed class MediaShapeCollection(
 
     internal void AddPicture(Stream imageStream)
     {
-        MagickFormat[] supportedImageFormats =
-        [
-            MagickFormat.Jpeg,
-            MagickFormat.Png,
-            MagickFormat.Gif,
-            MagickFormat.Tif,
-            MagickFormat.Tiff,
-            MagickFormat.Svg
-        ];
         try
         {
-            using var image = new MagickImage(
-                imageStream,
-                new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+            using var image = CreateMagickImage(imageStream);
             var originalFormat = image.Format;
-
-            if (!supportedImageFormats.Contains(image.Format))
-            {
-                image.Format = image.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
-            }
-
-            if (image.Format == MagickFormat.Svg)
-            {
-                image.Format = MagickFormat.Png;
-                image.Density =
-                    new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
-            }
-
+            
+            EnsureSupportedImageFormat(image);
+            HandleSvgFormat(image, originalFormat);
+            
             uint width = image.Width, height = image.Height;
-            if (originalFormat == MagickFormat.Svg && (height > 500 || width > 500))
+            if (originalFormat == MagickFormat.Svg)
             {
-                height = height > 500 ? 500 : height;
-                width = width > 500 ? 500 : width;
-                width = height == 500 ? (uint)(height * image.Width / (decimal)image.Height) : width;
-                height = width == 500 ? (uint)(width * image.Height / (decimal)image.Width) : height;
-                image.Resize(width, height);
+                ResizeSvgImageIfNeeded(image, ref width, ref height);
             }
 
-            var rasterStream = new MemoryStream();
-            image.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
-            image.Settings.SetDefine("png:exclude-chunk", "tIME");
-            image.Write(rasterStream);
+            var rasterStream = PrepareRasterStream(image);
             imageStream.Position = rasterStream.Position = 0;
 
             var pPicture = originalFormat == MagickFormat.Svg
                 ? this.CreateSvgPPicture(rasterStream, imageStream, "Picture")
                 : this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
 
-            var transform2D = pPicture.ShapeProperties!.Transform2D!;
-            transform2D.Offset!.X = transform2D.Offset!.Y = 952500;
-            transform2D.Extents!.Cx = new Pixels(width).AsHorizontalEmus();
-            transform2D.Extents!.Cy = new Pixels(height).AsVerticalEmus();
+            SetPictureTransform(pPicture, width, height);
         }
         catch (Exception ex) when (ex is MagickDelegateErrorException mex && mex.Message.Contains("ghostscript"))
         {
@@ -154,6 +124,69 @@ internal sealed class MediaShapeCollection(
             throw new SCException(
                 "The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
+    }
+
+    private static MagickImage CreateMagickImage(Stream imageStream)
+    {
+        return new MagickImage(
+            imageStream,
+            new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+    }
+
+    private static void EnsureSupportedImageFormat(MagickImage image)
+    {
+        MagickFormat[] supportedImageFormats =
+        [
+            MagickFormat.Jpeg,
+            MagickFormat.Png,
+            MagickFormat.Gif,
+            MagickFormat.Tif,
+            MagickFormat.Tiff,
+            MagickFormat.Svg
+        ];
+
+        if (!supportedImageFormats.Contains(image.Format))
+        {
+            image.Format = image.HasAlpha ? MagickFormat.Png : MagickFormat.Jpeg;
+        }
+    }
+
+    private static void HandleSvgFormat(MagickImage image, MagickFormat originalFormat)
+    {
+        if (originalFormat == MagickFormat.Svg)
+        {
+            image.Format = MagickFormat.Png;
+            image.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+        }
+    }
+
+    private static void ResizeSvgImageIfNeeded(MagickImage image, ref uint width, ref uint height)
+    {
+        if (height > 500 || width > 500)
+        {
+            height = height > 500 ? 500 : height;
+            width = width > 500 ? 500 : width;
+            width = height == 500 ? (uint)(height * image.Width / (decimal)image.Height) : width;
+            height = width == 500 ? (uint)(width * image.Height / (decimal)image.Width) : height;
+            image.Resize(width, height);
+        }
+    }
+
+    private static MemoryStream PrepareRasterStream(MagickImage image)
+    {
+        var rasterStream = new MemoryStream();
+        image.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
+        image.Settings.SetDefine("png:exclude-chunk", "tIME");
+        image.Write(rasterStream);
+        return rasterStream;
+    }
+
+    private static void SetPictureTransform(P.Picture pPicture, uint width, uint height)
+    {
+        var transform2D = pPicture.ShapeProperties!.Transform2D!;
+        transform2D.Offset!.X = transform2D.Offset!.Y = 952500;
+        transform2D.Extents!.Cx = new Pixels(width).AsHorizontalEmus();
+        transform2D.Extents!.Cy = new Pixels(height).AsVerticalEmus();
     }
 
     private static string GetMimeType(MagickFormat format)
