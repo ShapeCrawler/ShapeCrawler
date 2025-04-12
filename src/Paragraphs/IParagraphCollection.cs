@@ -18,22 +18,22 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     /// </summary>
     void Add();
 
-    #if DEBUG
+#if DEBUG
     /// <summary>
-    ///     Adds a new paragraph at the specified index.
+    ///     Adds a new paragraph at the specified index of the collection.
     /// </summary>
-    void Add(int index);
-    #endif
+    void Add(string content, int index);
+#endif
 }
 
-internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagraphCollection
+internal readonly struct ParagraphCollection(OpenXmlElement textBody) : IParagraphCollection
 {
     public int Count => this.ParagraphsCore().Count;
-    
+
     public IParagraph this[int index] => this.ParagraphsCore()[index];
-    
+
     public IEnumerator<IParagraph> GetEnumerator() => this.ParagraphsCore().GetEnumerator();
-    
+
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public void Add()
@@ -44,7 +44,7 @@ internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagrap
         lastAParagraph.InsertAfterSelf(newAParagraph);
     }
 
-    public void Add(int index)
+    public void Add(string content, int index)
     {
         throw new System.NotImplementedException();
     }
