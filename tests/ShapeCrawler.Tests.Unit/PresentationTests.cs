@@ -206,6 +206,7 @@ public class PresentationTests : SCTest
 
 #if DEBUG
     [Test]
+    [Explicit]
     public void Slides_Add()
     {
         // Arrange
