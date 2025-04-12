@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collection of chart series.
 /// </summary>
-public interface ISeriesList : IReadOnlyList<ISeries>
+public interface ISeriesCollection : IReadOnlyList<ISeries>
 {
     /// <summary>
     ///     Removes the series at the specified index.
@@ -20,14 +20,14 @@ public interface ISeriesList : IReadOnlyList<ISeries>
     void RemoveAt(int index);
 }
 
-internal sealed class SeriesList : ISeriesList
+internal sealed class SeriesCollection : ISeriesCollection
 {
-    private readonly ChartPart sdkChartPart;
+    private readonly ChartPart chartPart;
     private readonly IEnumerable<OpenXmlElement> cXCharts;
 
-    internal SeriesList(ChartPart sdkChartPart, IEnumerable<OpenXmlElement> cXCharts)
+    internal SeriesCollection(ChartPart chartPart, IEnumerable<OpenXmlElement> cXCharts)
     {
-        this.sdkChartPart = sdkChartPart;
+        this.chartPart = chartPart;
         this.cXCharts = cXCharts;
     }
     
@@ -48,7 +48,7 @@ internal sealed class SeriesList : ISeriesList
         {
             Enum.TryParse(cXChart.LocalName, true, out ChartType seriesChartType);
             var cSerList = cXChart.ChildElements.Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
-            seriesList.AddRange(cSerList.Select(cSer => new Series(this.sdkChartPart, cSer, seriesChartType)));
+            seriesList.AddRange(cSerList.Select(cSer => new Series(this.chartPart, cSer, seriesChartType)));
         }
 
         return seriesList;

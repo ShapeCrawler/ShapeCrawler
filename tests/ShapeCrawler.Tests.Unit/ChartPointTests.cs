@@ -20,10 +20,10 @@ public class ChartPointTests : SCTest
         var pres25 = new Presentation(pptx25);
         var shapes1 = pres21.Slides[0].Shapes;
         var chart1 = (IChart)shapes1.First(x => x.Id == 3);
-        ISeries chart6Series = ((IChart)pres25.Slides[1].Shapes.First(sp => sp.Id == 4)).SeriesList[0];
+        ISeries chart6Series = ((IChart)pres25.Slides[1].Shapes.First(sp => sp.Id == 4)).SeriesCollection[0];
 
         // Act
-        double pointValue1 = chart1.SeriesList[1].Points[0].Value;
+        double pointValue1 = chart1.SeriesCollection[1].Points[0].Value;
         double pointValue2 = chart6Series.Points[0].Value;
 
         // Assert
@@ -41,7 +41,7 @@ public class ChartPointTests : SCTest
         var chart1 = (IChart)shapes1.First(x => x.Id == 3);
 
         // Act
-        double scatterChartPointValue = chart1.SeriesList[2].Points[0].Value;
+        double scatterChartPointValue = chart1.SeriesCollection[2].Points[0].Value;
 
         // Assert
         Assert.That(scatterChartPointValue, Is.EqualTo(44));
@@ -52,7 +52,7 @@ public class ChartPointTests : SCTest
     {
         // Arrange
         var chart2 = GetShape<IChart>("021.pptx", 2, 4);
-        var point = chart2.SeriesList[1].Points[0];
+        var point = chart2.SeriesCollection[1].Points[0];
 
         // Act
         double lineChartPointValue = point.Value;
@@ -67,9 +67,9 @@ public class ChartPointTests : SCTest
         // Arrange
         var pres21 = new Presentation(TestAsset("021.pptx"));
         var pres009 = new Presentation(TestAsset("009_table.pptx"));
-        var seriesCase1 = pres21.Slides[1].Shapes.GetById<IChart>(3).SeriesList[0];
-        var seriesCase2 = pres21.Slides[2].Shapes.GetById<IChart>(4).SeriesList[0];
-        var seriesCase3 = pres009.Slides[2].Shapes.GetById<IChart>(7).SeriesList[0];
+        var seriesCase1 = pres21.Slides[1].Shapes.GetById<IChart>(3).SeriesCollection[0];
+        var seriesCase2 = pres21.Slides[2].Shapes.GetById<IChart>(4).SeriesCollection[0];
+        var seriesCase3 = pres009.Slides[2].Shapes.GetById<IChart>(7).SeriesCollection[0];
 
         // Act
         double seriesPointValueCase1 = seriesCase1.Points[0].Value;
@@ -90,7 +90,7 @@ public class ChartPointTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("024_chart.pptx"));
         var chart = pres.Slides[2].Shapes.GetById<IChart>(5);
-        var point = chart.SeriesList[0].Points[0];
+        var point = chart.SeriesCollection[0].Points[0];
 
         // Act
         point.Value = 6;
@@ -108,19 +108,19 @@ public class ChartPointTests : SCTest
         var pres = new Presentation(pptxStream);
 
         var chart1 = pres.Slides[0].Shapes.First() as IChart;
-        var points1 = chart1.SeriesList.SelectMany(p => p.Points);
-        Assert.That(chart1.SeriesList.First().Points.Count(), Is.EqualTo(4));
+        var points1 = chart1.SeriesCollection.SelectMany(p => p.Points);
+        Assert.That(chart1.SeriesCollection.First().Points.Count(), Is.EqualTo(4));
         Assert.That(points1.Count(), Is.EqualTo(20));
 
         var chart2 = pres.Slides[1].Shapes.First() as IChart;
-        var points2 = chart2.SeriesList.SelectMany(p => p.Points);
-        Assert.That(chart2.SeriesList.First().Points.Count(), Is.EqualTo(4));
+        var points2 = chart2.SeriesCollection.SelectMany(p => p.Points);
+        Assert.That(chart2.SeriesCollection.First().Points.Count(), Is.EqualTo(4));
         Assert.That(points2.Count(), Is.EqualTo(20));
 
         var chart3 = pres.Slides[2].Shapes.First() as IChart;
-        var points3 = chart3.SeriesList.SelectMany(p => p.Points);
-        Assert.That(chart3.SeriesList.Count, Is.EqualTo(14));
-        Assert.That(chart3.SeriesList.First().Points.Count(), Is.EqualTo(11));
+        var points3 = chart3.SeriesCollection.SelectMany(p => p.Points);
+        Assert.That(chart3.SeriesCollection.Count, Is.EqualTo(14));
+        Assert.That(chart3.SeriesCollection.First().Points.Count(), Is.EqualTo(11));
         Assert.That(points3.Count(), Is.EqualTo(132));
     }
     
@@ -137,7 +137,7 @@ public class ChartPointTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset(file));
         var chart = pres.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
-        var point = chart.SeriesList[0].Points[0];
+        var point = chart.SeriesCollection[0].Points[0];
         const int newChartPointValue = 6;
 
         // Act
@@ -148,7 +148,7 @@ public class ChartPointTests : SCTest
 
         pres = SaveAndOpenPresentation(pres);
         chart = pres.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
-        point = chart.SeriesList[0].Points[0];
+        point = chart.SeriesCollection[0].Points[0];
         point.Value.Should().Be(newChartPointValue);
     }
 }
