@@ -115,7 +115,7 @@ public class ChartTests : SCTest
         var pptxStream = TestAsset("005 chart.pptx");
         var presentation = new Presentation(pptxStream);
         var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
-        var series = chart.SeriesList[0]; 
+        var series = chart.SeriesCollection[0]; 
             
         // Act
         var chartPoints = series.Points;
@@ -132,13 +132,13 @@ public class ChartTests : SCTest
         var pptxStream = TestAsset(pptxFile);
         var pres = new Presentation(pptxStream);
         var chart = pres.Slides[0].Shapes.GetByName<IChart>(chartName);
-        var expectedSeriesCount = chart.SeriesList.Count - 1; 
+        var expectedSeriesCount = chart.SeriesCollection.Count - 1; 
             
         // Act
-        chart.SeriesList.RemoveAt(0);
+        chart.SeriesCollection.RemoveAt(0);
 
         // Assert
-        chart.SeriesList.Count.Should().Be(expectedSeriesCount);
+        chart.SeriesCollection.Count.Should().Be(expectedSeriesCount);
     }
     
     [Test]
@@ -239,8 +239,8 @@ public class ChartTests : SCTest
     {
         // Arrange
         IChart chart = (IChart)new Presentation(TestAsset("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
-        ISeries series2 = chart.SeriesList[1];
-        ISeries series3 = chart.SeriesList[2];
+        ISeries series2 = chart.SeriesCollection[1];
+        ISeries series3 = chart.SeriesCollection[2];
 
         // Act
         ChartType seriesChartType2 = series2.Type;
@@ -258,8 +258,8 @@ public class ChartTests : SCTest
         IChart chart = (IChart)new Presentation(TestAsset("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 5);
 
         // Act
-        string seriesNameCase1 = chart.SeriesList[0].Name;
-        string seriesNameCase2 = chart.SeriesList[2].Name;
+        string seriesNameCase1 = chart.SeriesCollection[0].Name;
+        string seriesNameCase2 = chart.SeriesCollection[2].Name;
 
         // Assert
         seriesNameCase1.Should().BeEquivalentTo("Ряд 1");
@@ -371,7 +371,7 @@ public class ChartTests : SCTest
     {
         // Act
         var chart = (IChart)shape;
-        int seriesCount = chart.SeriesList.Count;
+        int seriesCount = chart.SeriesCollection.Count;
 
         // Assert
         seriesCount.Should().Be(expectedSeriesCount);

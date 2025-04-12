@@ -960,7 +960,7 @@ public class ShapeCollectionTests : SCTest
         var expectedSlidesCount = pres.Slides.Count + 1;
 
         // Act
-        chart.SeriesList[0].Points[0].Value = 1;
+        chart.SeriesCollection[0].Points[0].Value = 1;
         pres.Slides.Add(pres.Slides[0]);
         
         // Assert

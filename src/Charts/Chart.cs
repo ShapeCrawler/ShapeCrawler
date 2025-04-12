@@ -22,6 +22,7 @@ internal sealed class Chart : Shape, IChart
     private readonly IEnumerable<OpenXmlElement> cXCharts;
 
     private string? chartTitle;
+    private readonly SeriesCollection seriesCollection;
 
     internal Chart(ChartPart sdkChartPart, P.GraphicFrame pGraphicFrame, IReadOnlyList<ICategory> categories)
         : base(pGraphicFrame)
@@ -35,7 +36,7 @@ internal sealed class Chart : Shape, IChart
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(pShapeProperties);
         this.Fill = new ShapeFill(pShapeProperties);
-        this.SeriesList = new SeriesList(
+        this.seriesCollection = new SeriesCollection(
             sdkChartPart,
             this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
@@ -90,7 +91,7 @@ internal sealed class Chart : Shape, IChart
 
     public IReadOnlyList<ICategory> Categories { get; }
     
-    public ISeriesList SeriesList { get; }
+    public ISeriesCollection SeriesCollection => this.seriesCollection;
     
     public bool HasXValues => this.ParseXValues() != null;
 
@@ -145,7 +146,7 @@ internal sealed class Chart : Shape, IChart
         // However, it can have store multiple series data in the spreadsheet.
         if (this.Type == ChartType.PieChart)
         {
-            return ((SeriesList)this.SeriesList).First().Name;
+            return this.seriesCollection.First().Name;
         }
 
         return null;
