@@ -38,7 +38,7 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     ///     Adds a new slide from JSON.
     /// </summary>
     /// <param name="jsonSlide">Slide in JSON format.</param>
-    [Experimental("SC0001")]
+    [System.Diagnostics.CodeAnalysis.Experimental("SC0001")]
     void AddJSON(string jsonSlide);
 #endif
 }
