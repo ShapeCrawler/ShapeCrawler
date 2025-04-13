@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
@@ -20,47 +20,23 @@ internal sealed class FontColor(A.Text aText): IFontColor
         {
             var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
             var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
+            
             if (aSolidFill != null)
             {
-                var pSlideMaster = openXmlPart switch
-                {
-                    SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
-                    SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
-                    _ => ((SlideMasterPart)openXmlPart).SlideMaster
-                };
-                var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
-                return typeAndColor.Item1;
+                return this.GetColorTypeFromSolidFill(openXmlPart, aSolidFill);
             }
 
-            var aParagraph = aText.Ancestors<A.Paragraph>().First();
-            var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-            var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
-            var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
-            var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
-            if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
+            var textBodyColor = this.GetTextBodyStyleColor();
+            if (textBodyColor.HasValue)
             {
-                return textBodyColor.colorType;
+                return textBodyColor.Value;
             }
 
             // From Shape
             var shapeColor = new ShapeColor(openXmlPart, aText);
             var type = shapeColor.TypeOrNull();
-            if (type.HasValue)
-            {
-                return (ColorType)type;
-            }
-
-            // From Referenced Shape
-            if (openXmlPart is not SlideMasterPart)
-            {
-                var refShapeColorType = new ReferencedIndentLevel(aText).ColorTypeOrNull();
-                if (refShapeColorType.HasValue)
-                {
-                    return (ColorType)refShapeColorType;
-                }
-            }
-
-            return ColorType.NotDefined;
+            
+            return type.HasValue ? (ColorType)type : ColorType.RGB;
         }
     }
 
@@ -69,74 +45,36 @@ internal sealed class FontColor(A.Text aText): IFontColor
         get
         {
             var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-            var pSlideMaster = openXmlPart switch
+            var pSlideMaster = this.GetSlideMaster(openXmlPart);
+            
+            // From SolidFill
+            var solidFillHex = this.GetSolidFillHex(pSlideMaster);
+            if (solidFillHex != null)
             {
-                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
-                SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
-                _ => ((SlideMasterPart)openXmlPart).SlideMaster
-            };
-            var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
-            if (aSolidFill != null)
-            {
-                var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
-                return typeAndColor.Item2!;
+                return solidFillHex;
             }
 
             // From TextBody
             var aParagraph = aText.Ancestors<A.Paragraph>().First();
             var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-            var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
-            var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()
-                !).FontOrNull(indentLevel);
-            if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
+            var textBodyHex = this.GetTextBodyHex(indentLevel);
+            if (textBodyHex != null)
             {
-                return textBodyColor.colorHex!;
+                return textBodyHex;
             }
 
-            // From Shape
-            var pShape = aText.Ancestors<P.Shape>().First();
-            var sdkSlidePShapeWrap = new ShapeColor(new PresentationColor(openXmlPart), pShape);
-            string? shapeFontColorHex = sdkSlidePShapeWrap.HexOrNull();
-            if (shapeFontColorHex != null)
+            // From Shape or Referenced Shape
+            var shapeHex = this.GetShapeHex(openXmlPart);
+            if (shapeHex != null)
             {
-                return shapeFontColorHex;
+                return shapeHex;
             }
 
-            // From Referenced Shape
-            if (openXmlPart is not SlideMasterPart)
-            {
-                var refShapeFontColorHex = new ReferencedIndentLevel(aText).ColorHexOrNull();
-                if (refShapeFontColorHex != null)
-                {
-                    return refShapeFontColorHex;
-                }
-            }
-
-            // From Common Placeholder
-            var pSlideMasterWrap =
-                new SCPSlideMaster(pSlideMaster);
-            var masterIndentFont = pSlideMasterWrap.BodyStyleFontOrNull(indentLevel);
-            if (this.TryFromIndentFont(masterIndentFont, out var masterColor))
-            {
-                return masterColor.colorHex!;
-            }
-
-            // Presentation level
-            var presColor = new PresentationColor(openXmlPart);
-            var presParaLevelFont = presColor.PresentationFontOrThemeFontOrNull(indentLevel);
-            string colorHex;
-            if (presParaLevelFont.HasValue)
-            {
-                colorHex = presColor.ThemeColorHex(presParaLevelFont.Value.ASchemeColor!.Val!);
-                return colorHex;
-            }
-
-            // Get default
-            colorHex = presColor.ThemeColorHex(A.SchemeColorValues.Text1);
-            return colorHex;
+            // From Common Placeholder or Presentation level
+            return this.GetDefaultHex(pSlideMaster, indentLevel, openXmlPart);
         }
     }
-
+    
     public void Update(string hex)
     {
         var aTextContainer = aText.Parent!;
@@ -149,6 +87,115 @@ internal sealed class FontColor(A.Text aText): IFontColor
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);
         aRunProperties.InsertAt(aSolidFill, 0);
+    }
+
+    private P.SlideMaster GetSlideMaster(OpenXmlPart openXmlPart)
+    {
+        return openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster
+        };
+    }
+
+    private string? GetSolidFillHex(P.SlideMaster pSlideMaster)
+    {
+        var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
+        if (aSolidFill != null)
+        {
+            var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
+            return typeAndColor.Item2!;
+        }
+
+        return null;
+    }
+
+    private string? GetTextBodyHex(int indentLevel)
+    {
+        var pTextBody = aText.Ancestors<P.TextBody>().First();
+        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>() !).FontOrNull(indentLevel);
+        
+        if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
+        {
+            return textBodyColor.colorHex!;
+        }
+
+        return null;
+    }
+
+    private string? GetShapeHex(OpenXmlPart openXmlPart)
+    {
+        // From Shape
+        var pShape = aText.Ancestors<P.Shape>().First();
+        var sdkSlidePShapeWrap = new ShapeColor(new PresentationColor(openXmlPart), pShape);
+        string? shapeFontColorHex = sdkSlidePShapeWrap.HexOrNull();
+        if (shapeFontColorHex != null)
+        {
+            return shapeFontColorHex;
+        }
+
+        // From Referenced Shape
+        if (openXmlPart is not SlideMasterPart)
+        {
+            var refShapeFontColorHex = new ReferencedIndentLevel(aText).ColorHexOrNull();
+            if (refShapeFontColorHex != null)
+            {
+                return refShapeFontColorHex;
+            }
+        }
+        
+        return null;
+    }
+
+    private string GetDefaultHex(P.SlideMaster pSlideMaster, int indentLevel, OpenXmlPart openXmlPart)
+    {
+        // From Common Placeholder
+        var pSlideMasterWrap = new SCPSlideMaster(pSlideMaster);
+        var masterIndentFont = pSlideMasterWrap.BodyStyleFontOrNull(indentLevel);
+        if (this.TryFromIndentFont(masterIndentFont, out var masterColor))
+        {
+            return masterColor.colorHex!;
+        }
+
+        // Presentation level
+        var presColor = new PresentationColor(openXmlPart);
+        var presParaLevelFont = presColor.PresentationFontOrThemeFontOrNull(indentLevel);
+        if (presParaLevelFont.HasValue)
+        {
+            return presColor.ThemeColorHex(presParaLevelFont.Value.ASchemeColor!.Val!);
+        }
+
+        // Get default
+        return presColor.ThemeColorHex(A.SchemeColorValues.Text1);
+    }
+
+    private ColorType GetColorTypeFromSolidFill(OpenXmlPart openXmlPart, A.SolidFill aSolidFill)
+    {
+        var pSlideMaster = openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster
+        };
+        var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
+        return typeAndColor.Item1;
+    }
+
+    private ColorType? GetTextBodyStyleColor()
+    {
+        var aParagraph = aText.Ancestors<A.Paragraph>().First();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
+        var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
+        var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
+        var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
+        
+        if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
+        {
+            return textBodyColor.colorType;
+        }
+
+        return null;
     }
 
     private bool TryFromIndentFont(IndentFont? indentFont, out (ColorType colorType, string? colorHex) response)

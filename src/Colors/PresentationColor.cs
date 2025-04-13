@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Fonts;
@@ -93,62 +93,62 @@ internal sealed class PresentationColor
     
     private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
     {
-        if(aSchemeColorValue == A.SchemeColorValues.Dark1)
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark1))
         {
             return GetRgbOrSystemColor(aColorScheme.Dark1Color!);
         }
 
-        if (aSchemeColorValue == A.SchemeColorValues.Light1)
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light1))
         {
             return GetRgbOrSystemColor(aColorScheme.Light1Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Dark2)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark2))
         {
             return GetRgbOrSystemColor(aColorScheme.Dark2Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Light2)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light2))
         {
             return GetRgbOrSystemColor(aColorScheme.Light2Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Accent1)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent1))
         {
             return GetRgbOrSystemColor(aColorScheme.Accent1Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Accent2)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent2))
         {
             return GetRgbOrSystemColor(aColorScheme.Accent2Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Accent3)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent3))
         {
             return GetRgbOrSystemColor(aColorScheme.Accent3Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Accent4)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent4))
         {
             return GetRgbOrSystemColor(aColorScheme.Accent4Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Accent5)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent5))
         {
             return GetRgbOrSystemColor(aColorScheme.Accent5Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Accent6)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent6))
         {
             return GetRgbOrSystemColor(aColorScheme.Accent6Color!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.Hyperlink)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Hyperlink))
         {
             return GetRgbOrSystemColor(aColorScheme.Hyperlink!);
         }
-        
-        if (aSchemeColorValue == A.SchemeColorValues.FollowedHyperlink)
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.FollowedHyperlink))
         {
             return GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
         }
