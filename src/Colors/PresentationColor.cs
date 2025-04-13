@@ -93,20 +93,67 @@ internal sealed class PresentationColor
     
     private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
     {
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark1)) return GetRgbOrSystemColor(aColorScheme.Dark1Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light1)) return GetRgbOrSystemColor(aColorScheme.Light1Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark2)) return GetRgbOrSystemColor(aColorScheme.Dark2Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light2)) return GetRgbOrSystemColor(aColorScheme.Light2Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent1)) return GetRgbOrSystemColor(aColorScheme.Accent1Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent2)) return GetRgbOrSystemColor(aColorScheme.Accent2Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent3)) return GetRgbOrSystemColor(aColorScheme.Accent3Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent4)) return GetRgbOrSystemColor(aColorScheme.Accent4Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent5)) return GetRgbOrSystemColor(aColorScheme.Accent5Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent6)) return GetRgbOrSystemColor(aColorScheme.Accent6Color!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Hyperlink)) return GetRgbOrSystemColor(aColorScheme.Hyperlink!);
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.FollowedHyperlink)) return GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
-        
-        return GetThemeMappedColor(aSchemeColorValue);
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark1))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Dark1Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light1))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Light1Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark2))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Dark2Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light2))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Light2Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent1))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Accent1Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent2))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Accent2Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent3))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Accent3Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent4))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Accent4Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent5))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Accent5Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent6))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Accent6Color!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.Hyperlink))
+        {
+            return GetRgbOrSystemColor(aColorScheme.Hyperlink!);
+        }
+
+        if (aSchemeColorValue.Equals(A.SchemeColorValues.FollowedHyperlink))
+        {
+            return GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
+        }
+
+        return this.GetThemeMappedColor(aSchemeColorValue);
     }
     
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)

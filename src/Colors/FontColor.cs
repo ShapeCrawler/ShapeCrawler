@@ -23,10 +23,10 @@ internal sealed class FontColor(A.Text aText): IFontColor
             
             if (aSolidFill != null)
             {
-                return GetColorTypeFromSolidFill(openXmlPart, aSolidFill);
+                return this.GetColorTypeFromSolidFill(openXmlPart, aSolidFill);
             }
 
-            var textBodyColor = GetTextBodyStyleColor();
+            var textBodyColor = this.GetTextBodyStyleColor();
             if (textBodyColor.HasValue)
             {
                 return textBodyColor.Value;
@@ -45,28 +45,48 @@ internal sealed class FontColor(A.Text aText): IFontColor
         get
         {
             var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-            var pSlideMaster = GetSlideMaster(openXmlPart);
+            var pSlideMaster = this.GetSlideMaster(openXmlPart);
             
             // From SolidFill
-            var solidFillHex = GetSolidFillHex(pSlideMaster);
+            var solidFillHex = this.GetSolidFillHex(pSlideMaster);
             if (solidFillHex != null)
+            {
                 return solidFillHex;
+            }
 
             // From TextBody
             var aParagraph = aText.Ancestors<A.Paragraph>().First();
             var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-            var textBodyHex = GetTextBodyHex(indentLevel);
+            var textBodyHex = this.GetTextBodyHex(indentLevel);
             if (textBodyHex != null)
+            {
                 return textBodyHex;
+            }
 
             // From Shape or Referenced Shape
-            var shapeHex = GetShapeHex(openXmlPart);
+            var shapeHex = this.GetShapeHex(openXmlPart);
             if (shapeHex != null)
+            {
                 return shapeHex;
+            }
 
             // From Common Placeholder or Presentation level
-            return GetDefaultHex(pSlideMaster, indentLevel, openXmlPart);
+            return this.GetDefaultHex(pSlideMaster, indentLevel, openXmlPart);
         }
+    }
+    
+    public void Update(string hex)
+    {
+        var aTextContainer = aText.Parent!;
+        var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
+
+        var aSolidFill = aRunProperties.SdkASolidFill();
+        aSolidFill?.Remove();
+        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
+        var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
+        aSolidFill = new A.SolidFill();
+        aSolidFill.Append(rgbColorModelHex);
+        aRunProperties.InsertAt(aSolidFill, 0);
     }
 
     private P.SlideMaster GetSlideMaster(OpenXmlPart openXmlPart)
@@ -87,18 +107,20 @@ internal sealed class FontColor(A.Text aText): IFontColor
             var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
             return typeAndColor.Item2!;
         }
+
         return null;
     }
 
     private string? GetTextBodyHex(int indentLevel)
     {
         var pTextBody = aText.Ancestors<P.TextBody>().First();
-        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(indentLevel);
+        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>() !).FontOrNull(indentLevel);
         
         if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
         {
             return textBodyColor.colorHex!;
         }
+
         return null;
     }
 
@@ -165,28 +187,15 @@ internal sealed class FontColor(A.Text aText): IFontColor
         var aParagraph = aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
         var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
-        var aListStyle = pTextBody.GetFirstChild<A.ListStyle>()!;
+        var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
         var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
         
         if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
         {
             return textBodyColor.colorType;
         }
+
         return null;
-    }
-
-    public void Update(string hex)
-    {
-        var aTextContainer = aText.Parent!;
-        var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
-
-        var aSolidFill = aRunProperties.SdkASolidFill();
-        aSolidFill?.Remove();
-        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
-        var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
-        aSolidFill = new A.SolidFill();
-        aSolidFill.Append(rgbColorModelHex);
-        aRunProperties.InsertAt(aSolidFill, 0);
     }
 
     private bool TryFromIndentFont(IndentFont? indentFont, out (ColorType colorType, string? colorHex) response)
