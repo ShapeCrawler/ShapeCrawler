@@ -19,6 +19,7 @@ public class ShapeCollectionTests : SCTest
         // Act
         Task.Delay(1000).Wait();
         shapes = loadedPres.Slides[0].Shapes;
+        image.Position = 0;
         shapes.AddPicture(image);
 
         // Assert
@@ -41,6 +42,7 @@ public class ShapeCollectionTests : SCTest
         // Act
         shapes.AddPicture(svgImage);
         Task.Delay(1000).Wait();
+        svgImage.Position = 0;
         shapes.AddPicture(svgImage);
 
         // Assert

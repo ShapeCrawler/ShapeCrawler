@@ -211,7 +211,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textboxes = slide.TextFrames();
+        var textboxes = slide.GetAllTextBoxes();
 
         // Assert
         textboxes.Count.Should().Be(11);
@@ -225,7 +225,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textFrames = slide.TextFrames();
+        var textFrames = slide.GetAllTextBoxes();
 
         // Assert
         textFrames.Count.Should().Be(4);
@@ -377,5 +377,27 @@ public class SlideTests : SCTest
         // Assert
         notes.Text.Should().Be(expected);
         pres.Validate();
+    }
+    
+    [Test]
+    public void Remove_removes_slide_from_section()
+    {
+        // Arrange
+        var pptxStream = TestAsset("autoshape-case017_slide-number.pptx");
+        var pres = new Presentation(pptxStream);
+        var sectionSlides = pres.Sections[0].Slides;
+        var removingSlide = sectionSlides[0];
+        var mStream = new MemoryStream();
+
+        // Act
+        removingSlide.Remove();
+
+        // Assert
+        sectionSlides.Count.Should().Be(0);
+
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
+        sectionSlides = pres.Sections[0].Slides;
+        sectionSlides.Count.Should().Be(0);
     }
 }

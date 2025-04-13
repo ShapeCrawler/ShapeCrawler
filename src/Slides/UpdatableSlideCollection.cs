@@ -8,7 +8,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Slides;
 
@@ -31,31 +30,9 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public void Remove(ISlide slide)
-    {
-        // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var pPresentation = this.presPart.Presentation;
-        var slideIdList = pPresentation.SlideIdList!;
-        var removingPSlideId = (P.SlideId)slideIdList.ChildElements[slide.Number - 1];
-        var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
-        var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
-            .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
-        removingSectionSlideIdListEntry?.Remove();
-        slideIdList.RemoveChild(removingPSlideId);
-        pPresentation.Save();
-
-        var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
-        new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
-
-        var removingSlidePart = (SlidePart)this.presPart.GetPartById(removingSlideIdRelationshipId!);
-        this.presPart.DeletePart(removingSlidePart);
-
-        this.presPart.Presentation.Save();
-    }
-
     public void AddEmptySlide(SlideLayoutType layoutType)
     {
-        var presDocument =  (PresentationDocument)this.presPart.OpenXmlPackage;
+        var presDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
         var slideMasters = new SlideMasterCollection(presDocument.PresentationPart!.SlideMasterParts);
         var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 
@@ -130,6 +107,11 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
         this.Add(slide);
         var addedSlideIndex = this.Count - 1;
         this.slideCollection[addedSlideIndex].Number = position;
+    }
+
+    public void AddJSON(string jsonSlide)
+    {
+        throw new NotImplementedException();
     }
 
     public void Add(ISlide slide)

@@ -10,6 +10,8 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
+using P = DocumentFormat.OpenXml.Presentation;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -25,12 +27,12 @@ namespace ShapeCrawler;
 public interface ISlide
 {
     /// <summary>
-    ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.
+    ///     Gets or sets custom data. Returns <see langword="null"/> if custom data is not presented.
     /// </summary>
     string? CustomData { get; set; }
 
     /// <summary>
-    ///     Gets referenced Slide Layout.
+    ///     Gets slide layout.
     /// </summary>
     ISlideLayout SlideLayout { get; }
 
@@ -40,29 +42,24 @@ public interface ISlide
     int Number { get; set; }
 
     /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
-    /// </summary>
-    SlidePart SlidePart { get; }
-
-    /// <summary>
     ///     Gets the shape collection.
     /// </summary>
     ISlideShapeCollection Shapes { get; }
 
     /// <summary>
-    ///     Gets slide notes as a single text frame.
+    ///     Gets the slide notes.
     /// </summary>
     ITextBox? Notes { get; }
 
     /// <summary>
-    ///     Gets the fill of the slide.
+    ///     Gets the slide fill.
     /// </summary>
     IShapeFill Fill { get; }
 
     /// <summary>
-    ///     List of all text frames on that slide.
+    ///     Gets all slide text boxes.
     /// </summary>
-    public IList<ITextBox> TextFrames();
+    public IList<ITextBox> GetAllTextBoxes();
 
     /// <summary>
     ///     Hides slide.
@@ -90,18 +87,23 @@ public interface ISlide
     void AddNotes(IEnumerable<string> lines);
 
     /// <summary>
-    ///     Returns shape with specified name.
+    ///     Gets shape by name.
     /// </summary>
     /// <param name="name">Shape name.</param>
     /// <returns> An instance of <see cref="IShape"/>.</returns>
     IShape Shape(string name);
 
     /// <summary>
-    ///     Returns shape with specified name.
+    ///     Gets shape by name.
     /// </summary>
     /// <typeparam name="T">Shape type.</typeparam>
     T Shape<T>(string name)
         where T : IShape;
+
+    /// <summary>
+    ///     Removes the slide.
+    /// </summary>
+    void Remove();
 }
 
 internal sealed class Slide : ISlide
@@ -117,7 +119,7 @@ internal sealed class Slide : ISlide
         this.SlidePart = slidePart;
         this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapeCollection(this.SlidePart, new ShapeCollection(slidePart), mediaCollection);
+        this.Shapes = new SlideShapeCollection(new ShapeCollection(slidePart), this.SlidePart, mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
@@ -235,7 +237,31 @@ internal sealed class Slide : ISlide
         where T : IShape
         => this.Shapes.GetByName<T>(name);
 
-    public IList<ITextBox> TextFrames()
+    public void Remove()
+    {
+        // TODO: slide layout and master of removed slide also should be deleted if they are unused
+        var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+        var presPart = presDocument.PresentationPart!;
+        var pPresentation = presDocument.PresentationPart!.Presentation;
+        var slideIdList = pPresentation.SlideIdList!;
+        var removingPSlideId = (P.SlideId)slideIdList.ChildElements[this.Number - 1];
+        var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
+        var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
+            .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
+        removingSectionSlideIdListEntry?.Remove();
+        slideIdList.RemoveChild(removingPSlideId);
+        pPresentation.Save();
+
+        var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
+        new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
+
+        var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
+        presPart.DeletePart(removingSlidePart);
+
+        presPart.Presentation.Save();
+    }
+
+    public IList<ITextBox> GetAllTextBoxes()
     {
         var returnList = new List<ITextBox>();
 

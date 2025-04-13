@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="FluentAssertions" Version="[7.1.0]" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="NUnit" Version="4.3.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
@@ -266,6 +267,8 @@
     <EmbeddedResource Include="Assets\076 bitcoin.pptx" />
     <None Remove="Assets\076 bitcoin.md" />
     <EmbeddedResource Include="Assets\076 bitcoin.md" />
+    <None Remove="Assets\images\11 image 1600x690.jpg" />
+    <EmbeddedResource Include="Assets\images\11 image 1600x690.jpg" />
   </ItemGroup>
 
 </Project>

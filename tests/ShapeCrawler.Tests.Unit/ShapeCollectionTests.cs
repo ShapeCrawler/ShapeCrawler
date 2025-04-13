@@ -391,6 +391,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapesSlide1.AddPicture(image);
+        image.Position = 0;
         shapesSlide2.AddPicture(image);
 
         // Assert
@@ -487,6 +488,23 @@ public class ShapeCollectionTests : SCTest
         rasterImage.Width.Should().Be(500);
         rasterImage.Height.Should().Be(500);
         pres.Validate();
+    }
+    
+    [Test]
+    public void AddPicture_preserves_original_1600_width()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var imageStream = TestAsset("11 image 1600x690.jpg");
+        var shapes = pres.Slide(1).Shapes;
+        
+        // Act
+        shapes.AddPicture(imageStream);
+        
+        // Assert
+        var addedPicture = shapes.Last<IPicture>();
+        var image = new MagickImage(addedPicture.Image!.AsByteArray());
+        image.Width.Should().Be(1600);
     }
     
     [Test]
@@ -942,7 +960,7 @@ public class ShapeCollectionTests : SCTest
         var expectedSlidesCount = pres.Slides.Count + 1;
 
         // Act
-        chart.SeriesList[0].Points[0].Value = 1;
+        chart.SeriesCollection[0].Points[0].Value = 1;
         pres.Slides.Add(pres.Slides[0]);
         
         // Assert

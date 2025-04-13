@@ -14,19 +14,26 @@ namespace ShapeCrawler;
 public interface IParagraphCollection : IReadOnlyList<IParagraph>
 {
     /// <summary>
-    ///     Adds a new paragraph in collection.
+    ///     Adds a new paragraph at the end of the collection.
     /// </summary>
     void Add();
+
+#if DEBUG
+    /// <summary>
+    ///     Adds a new paragraph at the specified index of the collection.
+    /// </summary>
+    void Add(string content, int index);
+#endif
 }
 
 internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagraphCollection
 {
     public int Count => this.ParagraphsCore().Count;
-    
+
     public IParagraph this[int index] => this.ParagraphsCore()[index];
-    
+
     public IEnumerator<IParagraph> GetEnumerator() => this.ParagraphsCore().GetEnumerator();
-    
+
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public void Add()
@@ -35,6 +42,11 @@ internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagrap
         var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
         newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         lastAParagraph.InsertAfterSelf(newAParagraph);
+    }
+
+    public void Add(string content, int index)
+    {
+        throw new System.NotImplementedException();
     }
 
     private List<Paragraph> ParagraphsCore()

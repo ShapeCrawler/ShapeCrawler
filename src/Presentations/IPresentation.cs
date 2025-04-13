@@ -56,17 +56,17 @@ public interface IPresentation : IDisposable
     void Save();
 
     /// <summary>
-    ///     Saves presentation to the stream.
+    ///     Saves presentation and copies in the specified stream.
     /// </summary>
     void Save(Stream stream);
 
     /// <summary>
-    ///     Saves presentation to the file.
+    ///     Saves presentation and copies in the specified file.
     /// </summary>
     public void Save(string file);
     
     /// <summary>
-    ///     Returns the presentation as string in Markdown format.
+    ///     Returns the presentation as a string in Markdown format.
     /// </summary>
     public string AsMarkdown();
 }

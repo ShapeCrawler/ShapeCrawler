@@ -16,6 +16,7 @@ namespace ShapeCrawler.Charts;
 internal sealed class Chart : Shape, IChart
 {
     private readonly Lazy<OpenXmlElement?> firstSeries;
+    private readonly SeriesCollection seriesCollection;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -35,11 +36,11 @@ internal sealed class Chart : Shape, IChart
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(pShapeProperties);
         this.Fill = new ShapeFill(pShapeProperties);
-        this.SeriesList = new SeriesList(
+        this.seriesCollection = new SeriesCollection(
             sdkChartPart,
             this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
-    
+
     public P.GraphicFrame SdkGraphicFrame { get; }
     
     public ChartPart SdkChartPart { get; }
@@ -90,7 +91,7 @@ internal sealed class Chart : Shape, IChart
 
     public IReadOnlyList<ICategory> Categories { get; }
     
-    public ISeriesList SeriesList { get; }
+    public ISeriesCollection SeriesCollection => this.seriesCollection;
     
     public bool HasXValues => this.ParseXValues() != null;
 
@@ -145,7 +146,7 @@ internal sealed class Chart : Shape, IChart
         // However, it can have store multiple series data in the spreadsheet.
         if (this.Type == ChartType.PieChart)
         {
-            return ((SeriesList)this.SeriesList).First().Name;
+            return this.seriesCollection.First().Name;
         }
 
         return null;

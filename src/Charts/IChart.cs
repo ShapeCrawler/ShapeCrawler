@@ -56,7 +56,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets collection of data series.
     /// </summary>
-    ISeriesList SeriesList { get; }
+    ISeriesCollection SeriesCollection { get; }
 
     /// <summary>
     ///     Gets a value indicating whether the chart has x-axis values.
