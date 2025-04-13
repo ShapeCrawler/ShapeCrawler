@@ -21,7 +21,7 @@ public class TableTests : SCTest
 		var tableStyle = table.TableStyle;
 
 		// Assert
-		tableStyle.Should().BeEquivalentTo(TableStyle.MediumStyle2Accent1);
+		tableStyle.Should().BeEquivalentTo(CommonTableStyles.MediumStyle2Accent1);
 		pres.Validate();
 	}
 
@@ -34,14 +34,14 @@ public class TableTests : SCTest
 		var mStream = new MemoryStream();
 
 		// Act
-		table.TableStyle = TableStyle.ThemedStyle1Accent4;
+		table.TableStyle = CommonTableStyles.ThemedStyle1Accent4;
 
 		// Assert
-		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
+		table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
 		pres.Save(mStream);
 		pres = new Presentation(mStream);
         table = pres.Slide(3).Table("Таблица 4");
-		table.TableStyle.Should().BeEquivalentTo(TableStyle.ThemedStyle1Accent4);
+		table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
 		pres.Validate();
 	}
 
