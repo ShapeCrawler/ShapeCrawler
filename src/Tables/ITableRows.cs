@@ -36,9 +36,23 @@ public interface ITableRows : IEnumerable<ITableRow>
     void RemoveAt(int index);
 
     /// <summary>
-    ///     Adds a new row at the end of table.
+    ///     Adds a new row at the end of the table.
     /// </summary>
     void Add();
+
+#if DEBUG
+    /// <summary>
+    ///     Adds a new row at the specified index.
+    /// </summary>
+    void Add(int index);
+
+    /// <summary>
+    ///     Adds a new row at the specified index.
+    /// </summary>
+    /// <param name="index">Index where the new row will be added.</param>
+    /// <param name="templateRowIndex">Row index used as a format template for the new row.</param>
+    void Add(int index, int templateRowIndex);
+#endif
 }
 
 internal sealed class TableRows : ITableRows
@@ -78,9 +92,24 @@ internal sealed class TableRows : ITableRows
         this.aTable.AddRow(columnsCount);
     }
 
+#if DEBUG
+    public void Add(int index)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Add(int index, int templateRowIndex)
+    {
+        throw new NotImplementedException();
+    }
+#endif
+
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
-    
+
     IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
 
-    private List<TableRow> Rows() => [.. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))];
+    private List<TableRow> Rows() =>
+    [
+        .. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
+    ];
 }
