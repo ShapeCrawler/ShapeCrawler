@@ -62,6 +62,7 @@ internal sealed class Paragraph : IParagraph
     private readonly Lazy<Bullet> bullet;
     private readonly SCAParagraph scAParagraph;
     private readonly A.Paragraph aParagraph;
+    private readonly ParagraphPortions portions;
     private TextHorizontalAlignment? alignment;
 
     internal Paragraph(A.Paragraph aParagraph)
@@ -75,26 +76,26 @@ internal sealed class Paragraph : IParagraph
         this.scAParagraph = scAParagraph;
         this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(this.aParagraph);
+        this.portions = new ParagraphPortions(this.aParagraph);
     }
 
     public string Text
     {
         get
         {
-            if (this.Portions.Count == 0)
+            if (this.portions.Count == 0)
             {
                 return string.Empty;
             }
 
-            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
+            return this.portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
         }
 
         set
         {
-            if (!this.Portions.Any())
+            if (!this.portions.Any())
             {
-                this.Portions.AddText(" ");
+                this.portions.AddText(" ");
             }
 
             var removingRuns = this.aParagraph.OfType<A.Run>().Skip(1); // to preserve text formatting
@@ -121,12 +122,12 @@ internal sealed class Paragraph : IParagraph
             {
                 if (!string.IsNullOrEmpty(textLine))
                 {
-                    ((ParagraphPortions)this.Portions).AddLineBreak();
-                    this.Portions.AddText(textLine);
+                    this.portions.AddLineBreak();
+                    this.portions.AddText(textLine);
                 }
                 else
                 {
-                    ((ParagraphPortions)this.Portions).AddLineBreak();
+                    this.portions.AddLineBreak();
                 }
             }
 
@@ -137,7 +138,7 @@ internal sealed class Paragraph : IParagraph
         }
     }
 
-    public IParagraphPortions Portions { get; }
+    public IParagraphPortions Portions => this.portions;
 
     public Bullet Bullet => this.bullet.Value;
 
@@ -197,7 +198,7 @@ internal sealed class Paragraph : IParagraph
 
     public void ReplaceText(string oldValue, string newValue)
     {
-        foreach (var portion in this.Portions.Where(portion => portion is not ParagraphLineBreak))
+        foreach (var portion in this.portions.Where(portion => portion is not ParagraphLineBreak))
         {
             portion.Text = portion.Text.Replace(oldValue, newValue);
         }
@@ -212,7 +213,7 @@ internal sealed class Paragraph : IParagraph
 
     internal void SetFontSize(int fontSize)
     {
-        foreach (var portion in this.Portions)
+        foreach (var portion in this.portions)
         {
             portion.Font!.Size = fontSize;
         }

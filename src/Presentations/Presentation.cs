@@ -239,13 +239,16 @@ public sealed class Presentation : IPresentation
             for (int i = 0; i < aTableRow.ChildElements.Count; i++)
             {
                 var element = aTableRow.ChildElements[i];
-                if (element is A.TableCell)
+                switch (element)
                 {
-                    lastTableCellIndex = i;
-                }
-                else if (element is A.ExtensionList)
-                {
-                    extListIndex = i;
+                    case A.TableCell:
+                        lastTableCellIndex = i;
+                        break;
+                    case A.ExtensionList:
+                        extListIndex = i;
+                        break;
+                    default:
+                        throw new SCException("An error occurred while validating the table row structure.");
                 }
             }
 

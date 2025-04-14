@@ -43,35 +43,37 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
         foreach (var pGroupShapeElement in pGroupElements)
         {
             IShape? shape = null;
-            if (pGroupShapeElement is P.GroupShape pGroupShape)
+            switch (pGroupShapeElement)
             {
-                shape = new GroupShape(pGroupShape);
-            }
-            else if (pGroupShapeElement is P.Shape pShape)
-            {
-                if (pShape.TextBody is not null)
-                {
+                case P.GroupShape pGroupShape:
+                    shape = new GroupShape(pGroupShape);
+                    break;
+                case P.Shape { TextBody: not null } pShape:
                     shape = new GroupedShape(
                         pShape,
                         new Shape(
                             pShape,
                             new TextBox(pShape.TextBody)));
-                }
-                else
-                {
+                    break;
+                case P.Shape pShape:
                     shape = new GroupedShape(
                         pShape,
                         new Shape(pShape));
-                }
-            }
-            else if (pGroupShapeElement is P.Picture pPicture)
-            {
-                var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
-                var blipEmbed = aBlip?.Embed;
-                if (blipEmbed is not null)
-                {
-                    shape = new Picture(pPicture, aBlip!);
-                }
+                    break;
+                case P.Picture pPicture:
+                    {
+                        var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
+                        var blipEmbed = aBlip?.Embed;
+                        if (blipEmbed is not null)
+                        {
+                            shape = new Picture(pPicture, aBlip!);
+                        }
+
+                        break;
+                    } 
+
+                default:
+                    break;
             }
 
             if (shape != null)
