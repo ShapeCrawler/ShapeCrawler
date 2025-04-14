@@ -83,19 +83,19 @@ internal sealed class Paragraph : IParagraph
     {
         get
         {
-            if (this.Portions.Count == 0)
+            if (this.portions.Count == 0)
             {
                 return string.Empty;
             }
 
-            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
+            return this.portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
         }
 
         set
         {
-            if (!this.Portions.Any())
+            if (!this.portions.Any())
             {
-                this.Portions.AddText(" ");
+                this.portions.AddText(" ");
             }
 
             var removingRuns = this.aParagraph.OfType<A.Run>().Skip(1); // to preserve text formatting
@@ -127,7 +127,7 @@ internal sealed class Paragraph : IParagraph
                 }
                 else
                 {
-                    this.Portions.AddLineBreak();
+                    this.portions.AddLineBreak();
                 }
             }
 
@@ -198,7 +198,7 @@ internal sealed class Paragraph : IParagraph
 
     public void ReplaceText(string oldValue, string newValue)
     {
-        foreach (var portion in this.Portions.Where(portion => portion is not ParagraphLineBreak))
+        foreach (var portion in this.portions.Where(portion => portion is not ParagraphLineBreak))
         {
             portion.Text = portion.Text.Replace(oldValue, newValue);
         }
@@ -213,7 +213,7 @@ internal sealed class Paragraph : IParagraph
 
     internal void SetFontSize(int fontSize)
     {
-        foreach (var portion in this.Portions)
+        foreach (var portion in this.portions)
         {
             portion.Font!.Size = fontSize;
         }

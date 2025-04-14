@@ -248,7 +248,7 @@ public sealed class Presentation : IPresentation
                         extListIndex = i;
                         break;
                     default:
-                        throw new SCException();
+                        throw new SCException("An error occurred while validating the table row structure.");
                 }
             }
 
