@@ -62,8 +62,8 @@ internal sealed class Paragraph : IParagraph
     private readonly Lazy<Bullet> bullet;
     private readonly SCAParagraph scAParagraph;
     private readonly A.Paragraph aParagraph;
-    private TextHorizontalAlignment? alignment;
     private readonly ParagraphPortions portions;
+    private TextHorizontalAlignment? alignment;
 
     internal Paragraph(A.Paragraph aParagraph)
         : this(aParagraph, new SCAParagraph(aParagraph))

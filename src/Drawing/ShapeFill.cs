@@ -187,22 +187,22 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
 
     private FillType GetFillType()
     {
-        if (HasSolidFill())
+        if (this.HasSolidFill())
         {
             return FillType.Solid;
         }
 
-        if (HasGradientFill())
+        if (this.HasGradientFill())
         {
             return FillType.Gradient;
         }
 
-        if (HasBlipFill())
+        if (this.HasBlipFill())
         {
             return FillType.Picture;
         }
 
-        if (HasPatternFill())
+        if (this.HasPatternFill())
         {
             return FillType.Pattern;
         }
