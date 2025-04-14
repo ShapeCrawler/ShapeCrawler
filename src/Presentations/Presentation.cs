@@ -247,6 +247,8 @@ public sealed class Presentation : IPresentation
                     case A.ExtensionList:
                         extListIndex = i;
                         break;
+                    default:
+                        throw new SCException();
                 }
             }
 
