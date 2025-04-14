@@ -63,6 +63,7 @@ internal sealed class Paragraph : IParagraph
     private readonly SCAParagraph scAParagraph;
     private readonly A.Paragraph aParagraph;
     private TextHorizontalAlignment? alignment;
+    private readonly ParagraphPortions portions;
 
     internal Paragraph(A.Paragraph aParagraph)
         : this(aParagraph, new SCAParagraph(aParagraph))
@@ -75,7 +76,7 @@ internal sealed class Paragraph : IParagraph
         this.scAParagraph = scAParagraph;
         this.aParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(this.aParagraph);
+        this.portions = new ParagraphPortions(this.aParagraph);
     }
 
     public string Text
@@ -121,12 +122,12 @@ internal sealed class Paragraph : IParagraph
             {
                 if (!string.IsNullOrEmpty(textLine))
                 {
-                    ((ParagraphPortions)this.Portions).AddLineBreak();
-                    this.Portions.AddText(textLine);
+                    this.portions.AddLineBreak();
+                    this.portions.AddText(textLine);
                 }
                 else
                 {
-                    ((ParagraphPortions)this.Portions).AddLineBreak();
+                    this.Portions.AddLineBreak();
                 }
             }
 
@@ -137,7 +138,7 @@ internal sealed class Paragraph : IParagraph
         }
     }
 
-    public IParagraphPortions Portions { get; }
+    public IParagraphPortions Portions => this.portions;
 
     public Bullet Bullet => this.bullet.Value;
 

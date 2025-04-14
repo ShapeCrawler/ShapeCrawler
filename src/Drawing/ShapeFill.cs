@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -165,28 +165,44 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         }
     }
     
+    private bool HasSolidFill()
+    {
+        return openXmlCompositeElement.GetFirstChild<A.SolidFill>() != null;
+    }
+
+    private bool HasGradientFill()
+    {
+        return openXmlCompositeElement.GetFirstChild<A.GradientFill>() != null;
+    }
+
+    private bool HasBlipFill()
+    {
+        return openXmlCompositeElement.GetFirstChild<A.BlipFill>() != null;
+    }
+
+    private bool HasPatternFill()
+    {
+        return openXmlCompositeElement.GetFirstChild<A.PatternFill>() != null;
+    }
+
     private FillType GetFillType()
     {
-        var aSolidFillLocal = openXmlCompositeElement.GetFirstChild<A.SolidFill>();
-        if (aSolidFillLocal != null)
+        if (HasSolidFill())
         {
             return FillType.Solid;
         }
 
-        var aGradFillLocal = openXmlCompositeElement.GetFirstChild<A.GradientFill>();
-        if (aGradFillLocal != null)
+        if (HasGradientFill())
         {
             return FillType.Gradient;
         }
 
-        var aBlipFillLocal = openXmlCompositeElement.GetFirstChild<A.BlipFill>();
-        if (aBlipFillLocal is not null)
+        if (HasBlipFill())
         {
             return FillType.Picture;
         }
 
-        var aPattFillLocal = openXmlCompositeElement.GetFirstChild<A.PatternFill>();
-        if (aPattFillLocal != null)
+        if (HasPatternFill())
         {
             return FillType.Pattern;
         }
