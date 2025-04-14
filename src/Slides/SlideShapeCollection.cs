@@ -15,6 +15,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -248,7 +249,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     }
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount) =>
-        this.AddTable(x, y, columnsCount, rowsCount, TableStyle.MediumStyle2Accent1);
+        this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {
