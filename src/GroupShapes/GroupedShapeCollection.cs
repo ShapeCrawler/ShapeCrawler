@@ -73,7 +73,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                     } 
 
                 default:
-                    throw new SCException();
+                    break;
             }
 
             if (shape != null)
