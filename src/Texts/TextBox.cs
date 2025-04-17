@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Positions;
@@ -207,7 +208,55 @@ internal sealed class TextBox: ITextBox
     
     public void SetMarkdownText(string text)
     {
-        throw new NotImplementedException();
+        var paragraphs = this.Paragraphs.ToList();
+        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
+        if (portionPara == null)
+        {
+            portionPara = paragraphs.First();
+        }
+        else
+        {
+            var removingParagraphs = paragraphs.Where(p => p != portionPara);
+            foreach (var removingParagraph in removingParagraphs)
+            {
+                removingParagraph.Remove();
+            }
+            
+            // Clear existing portions in the paragraph
+            foreach (var portion in portionPara.Portions.ToList())
+            {
+                portion.Remove();
+            }
+        }
+        
+        // Parse markdown and create portions with appropriate formatting
+        var markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
+        var matches = System.Text.RegularExpressions.Regex.Matches(text, markdownPattern);
+        
+        foreach (System.Text.RegularExpressions.Match match in matches)
+        {
+            if (match.Groups["bold"].Success)
+            {
+                var boldText = match.Groups["bold"].Value;
+                portionPara.Portions.AddText(boldText);
+                var portion = portionPara.Portions.Last();
+                portion.Font!.IsBold = true;
+            }
+            else if (match.Groups["regular"].Success)
+            {
+                var regularText = match.Groups["regular"].Value;
+                portionPara.Portions.AddText(regularText);
+                var portion = portionPara.Portions.Last();
+                portion.Font!.IsBold = false;
+            }
+        }
+        
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkText(text, portionPara);
+        }
+        
+        this.ResizeParentShapeOnDemand();
     }
     
     public void SetText(string text)

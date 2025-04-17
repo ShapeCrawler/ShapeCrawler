@@ -50,7 +50,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        public void Text_Setter_can_update_content_multiple_times()
+        public void SetText_can_update_content_multiple_times()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case005_text-frame.pptx"));
@@ -72,7 +72,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
+        public void SetText_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
             var pres = new Presentation(TestAsset("001.pptx"));
@@ -87,8 +87,26 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
+        public void SetMarkdownText()
+        {
+            // Arrange
+            var pres = new Presentation();
+            var shapes = pres.Slide(1).Shapes;
+            shapes.AddShape(100, 100, 200, 200);
+            var shape = shapes.Last();
+            var textBox = shape.TextBox!;
+            
+            // Act
+            textBox.SetMarkdownText("**Hello** World!");
+            
+            // Assert
+            textBox.Paragraphs[0].Portions[0].Font!.IsBold.Should().BeTrue();
+            textBox.Paragraphs[0].Portions[1].Font!.IsBold.Should().BeFalse();
+        }
+
+        [Test]
         [Platform(Exclude = "Linux", Reason = "Test fails on ubuntu-latest")]
-        public void Text_Setter_resizes_shape_to_fit_text()
+        public void SetText_resizes_shape_to_fit_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
@@ -106,7 +124,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Test]
         [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/850")]
-        public void Text_Setter_resizes_shape_to_fit_multi_paragraph_text()
+        public void SetText_resizes_shape_to_fit_multi_paragraph_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
@@ -127,7 +145,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        public void Text_Setter_sets_text_for_New_Shape()
+        public void SetText_sets_text_for_New_Shape()
         {
             // Arrange
             var pres = new Presentation();
@@ -295,7 +313,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        public void Text_Setter_sets_long_text()
+        public void SetText_sets_long_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case013.pptx"));
@@ -363,7 +381,7 @@ namespace ShapeCrawler.Tests.Unit
         [TestCase("001.pptx", 2, "Header 1")]
         [TestCase("autoshape-case004_subtitle.pptx", 1, "Subtitle 1")]
         [TestCase("autoshape-case008_text-frame.pptx", 1, "AutoShape 1")]
-        public void Text_Setter_updates_content(string presName, int slideNumber, string shapeName)
+        public void SetText_updates_content(string presName, int slideNumber, string shapeName)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
@@ -386,7 +404,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Test]
         [SlideShape("autoshape-case012.pptx", 1, "Shape 1")]
-        public void Text_Setter(IShape shape)
+        public void SetText(IShape shape)
         {
             // Arrange
             var textBox = shape.TextBox!;
