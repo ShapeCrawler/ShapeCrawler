@@ -151,6 +151,16 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         this.InitSolidFillOr();
         openXmlCompositeElement.AddNoFill();
     }
+    
+    private static A.ColorScheme GetColorScheme(OpenXmlPart openXmlPart)
+    {
+        return openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!,
+            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+        };
+    }
 
     private void InitSolidFillOr()
     {
@@ -215,16 +225,6 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         return FillType.NoFill;
     }
     
-    private static A.ColorScheme GetColorScheme(OpenXmlPart openXmlPart)
-    {
-        return openXmlPart switch
-        {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!,
-            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
-        };
-    }
-
     private string? ColorHexOrNullOf(string schemeColor)
     {
         var openXmlPart = openXmlCompositeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
