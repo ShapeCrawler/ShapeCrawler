@@ -327,7 +327,7 @@ public class PresentationTests : SCTest
         var pptx = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptx);
         var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
-        textBox.Text = "Test";
+        textBox.SetText("Test");
 
         // Act
         pres.Save();

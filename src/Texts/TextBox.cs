@@ -45,34 +45,6 @@ internal sealed class TextBox: ITextBox
 
             return stringBuilder.ToString();
         }
-
-        set
-        {
-            var paragraphs = this.Paragraphs.ToList();
-            var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
-            if (portionPara == null)
-            {
-                portionPara = paragraphs.First();
-                portionPara.Portions.AddText(value);
-            }
-            else
-            {
-                var removingParagraphs = paragraphs.Where(p => p != portionPara);
-                foreach (var removingParagraph in removingParagraphs)
-                {
-                    removingParagraph.Remove();
-                }
-
-                portionPara.Text = value;
-            }
-
-            if (this.AutofitType == AutofitType.Shrink)
-            {
-                this.ShrinkText(value, portionPara);
-            }
-
-            this.ResizeParentShapeOnDemand();
-        }
     }
 
     public AutofitType AutofitType
@@ -201,7 +173,7 @@ internal sealed class TextBox: ITextBox
         }
     }
 
-    public string SdkXPath => new XmlPath(this.textBody).XPath;
+    public string SDKXPath => new XmlPath(this.textBody).XPath;
 
     public TextVerticalAlignment VerticalAlignment
     {
@@ -231,6 +203,39 @@ internal sealed class TextBox: ITextBox
         }
 
         set => this.SetVerticalAlignment(value);
+    }
+    
+    public void SetMarkdownText(string text)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public void SetText(string text)
+    {
+        var paragraphs = this.Paragraphs.ToList();
+        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
+        if (portionPara == null)
+        {
+            portionPara = paragraphs.First();
+            portionPara.Portions.AddText(text);
+        }
+        else
+        {
+            var removingParagraphs = paragraphs.Where(p => p != portionPara);
+            foreach (var removingParagraph in removingParagraphs)
+            {
+                removingParagraph.Remove();
+            }
+
+            portionPara.Text = text;
+        }
+
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkText(text, portionPara);
+        }
+
+        this.ResizeParentShapeOnDemand();
     }
     
     internal void ResizeParentShapeOnDemand()
