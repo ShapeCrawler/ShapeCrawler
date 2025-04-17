@@ -38,7 +38,7 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     void AddLineBreak();
 }
 
-internal sealed class ParagraphPortions(A.Paragraph aParagraph): IParagraphPortions
+internal sealed class ParagraphPortions(A.Paragraph aParagraph) : IParagraphPortions
 {
     public int Count => this.GetPortions().Count;
 
@@ -112,6 +112,8 @@ internal sealed class ParagraphPortions(A.Paragraph aParagraph): IParagraphPorti
                     var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);
                     break;
+                default:
+                    continue;
             }
         }
 

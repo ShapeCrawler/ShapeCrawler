@@ -93,64 +93,25 @@ internal sealed class PresentationColor
     
     private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
     {
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark1))
+        var mapping = new Dictionary<A.SchemeColorValues, Func<A.Color2Type>>
         {
-            return GetRgbOrSystemColor(aColorScheme.Dark1Color!);
-        }
+            { A.SchemeColorValues.Dark1, () => aColorScheme.Dark1Color! },
+            { A.SchemeColorValues.Light1, () => aColorScheme.Light1Color! },
+            { A.SchemeColorValues.Dark2, () => aColorScheme.Dark2Color! },
+            { A.SchemeColorValues.Light2, () => aColorScheme.Light2Color! },
+            { A.SchemeColorValues.Accent1, () => aColorScheme.Accent1Color! },
+            { A.SchemeColorValues.Accent2, () => aColorScheme.Accent2Color! },
+            { A.SchemeColorValues.Accent3, () => aColorScheme.Accent3Color! },
+            { A.SchemeColorValues.Accent4, () => aColorScheme.Accent4Color! },
+            { A.SchemeColorValues.Accent5, () => aColorScheme.Accent5Color! },
+            { A.SchemeColorValues.Accent6, () => aColorScheme.Accent6Color! },
+            { A.SchemeColorValues.Hyperlink, () => aColorScheme.Hyperlink! },
+            { A.SchemeColorValues.FollowedHyperlink, () => aColorScheme.FollowedHyperlinkColor! }
+        };
 
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light1))
+        if (mapping.TryGetValue(aSchemeColorValue, out var getColorType))
         {
-            return GetRgbOrSystemColor(aColorScheme.Light1Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Dark2))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Dark2Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Light2))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Light2Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent1))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Accent1Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent2))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Accent2Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent3))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Accent3Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent4))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Accent4Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent5))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Accent5Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Accent6))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Accent6Color!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.Hyperlink))
-        {
-            return GetRgbOrSystemColor(aColorScheme.Hyperlink!);
-        }
-
-        if (aSchemeColorValue.Equals(A.SchemeColorValues.FollowedHyperlink))
-        {
-            return GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
+            return GetRgbOrSystemColor(getColorType());
         }
 
         return this.GetThemeMappedColor(aSchemeColorValue);
