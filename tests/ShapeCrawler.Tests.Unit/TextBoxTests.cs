@@ -119,7 +119,6 @@ namespace ShapeCrawler.Tests.Unit
                        """;
             // Act
             textBox.SetMarkdownText(list);
-            pres.Save(@"c:\temp\output.pptx");
             
             // Assert
             textBox.Paragraphs[0].Bullet.Type.Should().NotBe(BulletType.None);
