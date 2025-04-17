@@ -10,7 +10,7 @@ public class Tests
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(100, 100, 200, 200);
         var addedShape = shapes.Last();
-        addedShape.TextBox!.Text = "Hello World!";
+        addedShape.TextBox!.SetText("Hello World!");
         
         addedShape.TextBox.Paragraphs.Add();
         var addedParagraph = addedShape.TextBox.Paragraphs.Last();

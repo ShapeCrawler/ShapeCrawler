@@ -346,7 +346,7 @@ public class FontTests : SCTest
         slide.Shapes.AddTable(40, 40, 6, 5);
         var table = (ITable)slide.Shapes.Last();
         var cell = table[1, 2];
-        cell.TextBox.Text = "Test";
+        cell.TextBox.SetText("Test");
         var font = cell.TextBox.Paragraphs.First().Portions.First().Font;
 
         // Act
@@ -366,11 +366,11 @@ public class FontTests : SCTest
         var shape1 = shapes.Last();
         shapes.AddShape(100,20,30,40);
         var shape2 = shapes.Last();
-        shape1.TextBox!.Text = "Shape 1";
+        shape1.TextBox!.SetText("Shape 1");
         shape1.TextBox!.Paragraphs[0].Portions[0].Font!.LatinName = "Segoe UI Semibold";
 
         // Act
-        shape2.TextBox!.Text = "Shape 2";
+        shape2.TextBox!.SetText("Shape 2");
         shape2.TextBox!.Paragraphs[0].Portions[0].Font!.LatinName = "Aptos";
 
         // Assert

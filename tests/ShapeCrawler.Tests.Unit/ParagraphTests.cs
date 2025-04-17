@@ -76,9 +76,9 @@ public class ParagraphTests : SCTest
         var pres = new Presentation();
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
         var table = pres.Slide(1).Shapes.Last<ITable>();
-        var textFrame = table.Rows[0].Cells[0].TextBox;
-        textFrame.Text = "some-text";
-        var paragraph = textFrame.Paragraphs[0];
+        var textBox = table.Rows[0].Cells[0].TextBox!;
+        textBox.SetText("some-text");
+        var paragraph = textBox.Paragraphs[0];
         
         // Act 
         paragraph.HorizontalAlignment = TextHorizontalAlignment.Center;
@@ -421,7 +421,7 @@ public class ParagraphTests : SCTest
     public void Replacing_Shape_Text_Preserves_Newlines(IShape shape)
     {
         // Act
-        shape.TextBox!.Text = shape.TextBox.Text.Replace("World","Earth");
+        shape.TextBox!.SetText(shape.TextBox.Text.Replace("World","Earth"));
 
         // Assert
         shape.TextBox.Text.Should().Be("Hello"+Environment.NewLine+Environment.NewLine+"Earth");

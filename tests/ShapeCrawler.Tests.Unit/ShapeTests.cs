@@ -572,7 +572,7 @@ public class ShapeTests : SCTest
         var shape = pres.SlideMaster(1).Shape("Shape 1");
 
         // Act
-        shape.TextBox!.Text = "Test";
+        shape.TextBox!.SetText("Test");
 
         // Assert
         shape.TextBox.Text.Should().Be("Test");

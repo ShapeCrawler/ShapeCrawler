@@ -121,24 +121,27 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
             return sb.ToString();
         }
-
-        set => this.SetText(value);
     }
 
     public AutofitType AutofitType { get => AutofitType.None; set => throw new NotSupportedException(); }
 
     public bool TextWrapped => true;
 
-    public string SdkXPath => new XmlPath(aTableCell.TextBody!).XPath;
-    
-    private void SetText(string value)
+    public string SDKXPath => new XmlPath(aTableCell.TextBody!).XPath;
+
+    public void SetMarkdownText(string text)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetText(string text)
     {
         var paragraphs = this.Paragraphs.ToList();
         var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Count != 0);
         if (portionPara == null)
         {
             portionPara = paragraphs.First();
-            portionPara.Portions.AddText(value);
+            portionPara.Portions.AddText(text);
         }
         else
         {
@@ -148,7 +151,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
                 removingParagraph.Remove();
             }
 
-            portionPara.Text = value;
+            portionPara.Text = text;
         }
     }
 }

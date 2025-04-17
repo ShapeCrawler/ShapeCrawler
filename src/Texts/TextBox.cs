@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Positions;
@@ -44,34 +45,6 @@ internal sealed class TextBox: ITextBox
             }
 
             return stringBuilder.ToString();
-        }
-
-        set
-        {
-            var paragraphs = this.Paragraphs.ToList();
-            var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
-            if (portionPara == null)
-            {
-                portionPara = paragraphs.First();
-                portionPara.Portions.AddText(value);
-            }
-            else
-            {
-                var removingParagraphs = paragraphs.Where(p => p != portionPara);
-                foreach (var removingParagraph in removingParagraphs)
-                {
-                    removingParagraph.Remove();
-                }
-
-                portionPara.Text = value;
-            }
-
-            if (this.AutofitType == AutofitType.Shrink)
-            {
-                this.ShrinkText(value, portionPara);
-            }
-
-            this.ResizeParentShapeOnDemand();
         }
     }
 
@@ -201,7 +174,7 @@ internal sealed class TextBox: ITextBox
         }
     }
 
-    public string SdkXPath => new XmlPath(this.textBody).XPath;
+    public string SDKXPath => new XmlPath(this.textBody).XPath;
 
     public TextVerticalAlignment VerticalAlignment
     {
@@ -231,6 +204,49 @@ internal sealed class TextBox: ITextBox
         }
 
         set => this.SetVerticalAlignment(value);
+    }
+    
+    public void SetMarkdownText(string text)
+    {
+        var lines = Regex.Split(text, "\r\n|\r|\n", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
+        if (this.IsList(lines))
+        {
+            this.RenderList(lines);
+        }
+        else
+        {
+            this.RenderRegularText(text);
+        }
+
+        this.ResizeParentShapeOnDemand();
+    }
+    
+    public void SetText(string text)
+    {
+        var paragraphs = this.Paragraphs.ToList();
+        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
+        if (portionPara == null)
+        {
+            portionPara = paragraphs.First();
+            portionPara.Portions.AddText(text);
+        }
+        else
+        {
+            var removingParagraphs = paragraphs.Where(p => p != portionPara);
+            foreach (var p in removingParagraphs)
+            {
+                p.Remove();
+            }
+
+            portionPara.Text = text;
+        }
+
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkText(text, portionPara);
+        }
+
+        this.ResizeParentShapeOnDemand();
     }
     
     internal void ResizeParentShapeOnDemand()
@@ -346,5 +362,103 @@ internal sealed class TextBox: ITextBox
         var position = new Position(parentShape);
         var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
         position.Y -= yOffset;
+    }
+
+    // Detect if the text represents a markdown list
+    private bool IsList(string[] lines)
+    {
+        return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
+    }
+
+    // Render markdown list items as bullet paragraphs
+    private void RenderList(string[] lines)
+    {
+        var paragraphs = this.Paragraphs.ToList();
+        var firstPara = paragraphs.FirstOrDefault();
+        if (firstPara == null)
+        {
+            return;
+        }
+
+        foreach (var p in paragraphs.Skip(1))
+        {
+            p.Remove();
+        }
+
+        foreach (var portion in firstPara.Portions.ToList())
+        {
+            portion.Remove();
+        }
+
+        int paraIndex = 0;
+        foreach (var rawLine in lines)
+        {
+            if (string.IsNullOrWhiteSpace(rawLine))
+            {
+                continue;
+            }
+
+            var line = rawLine.TrimStart();
+            if (!line.StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var content = line[2..];
+            if (paraIndex > 0)
+            {
+                this.Paragraphs.Add();
+            }
+
+            var paragraph = this.Paragraphs[paraIndex];
+            foreach (var portion in paragraph.Portions.ToList())
+            {
+                portion.Remove();
+            }
+
+            paragraph.Portions.AddText(content);
+            paragraph.Bullet.Type = BulletType.Character;
+            paragraph.Bullet.Character = "•";
+            paraIndex++;
+        }
+    }
+
+    // Render markdown text with bold formatting
+    private void RenderRegularText(string text)
+    {
+        var paragraphs = this.Paragraphs.ToList();
+        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any()) ?? paragraphs.First();
+
+        // Clear other paragraphs
+        foreach (var p in paragraphs.Where(p => p != portionPara))
+        {
+            p.Remove();
+        }
+
+        foreach (var portion in portionPara.Portions.ToList())
+        {
+            portion.Remove();
+        }
+
+        const string markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
+        var matches = Regex.Matches(text, markdownPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(1000));
+        foreach (Match match in matches)
+        {
+            if (match.Groups["bold"].Success)
+            {
+                portionPara.Portions.AddText(match.Groups["bold"].Value);
+                portionPara.Portions.Last().Font!.IsBold = true;
+            }
+            else if (match.Groups["regular"].Success)
+            {
+                portionPara.Portions.AddText(match.Groups["regular"].Value);
+                portionPara.Portions.Last().Font!.IsBold = false;
+            }
+        }
+
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkText(text, portionPara);
+        }
     }
 }

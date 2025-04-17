@@ -701,8 +701,8 @@ public class TableTests : SCTest
         var pres = new Presentation();
         pres.Slides[0].Shapes.AddTable(10, 10, 3, 4);
         var table = (ITable)pres.Slides[0].Shapes.Last();
-        table[1, 0].TextBox.Text = "A";
-        table[3, 0].TextBox.Text = "B";
+        table[1, 0].TextBox.SetText("A");
+        table[3, 0].TextBox.SetText("B");
 
         // Act
         table.MergeCells(table[1, 0], table[2, 0]);

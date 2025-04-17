@@ -27,7 +27,7 @@ public interface IParagraph
     IParagraphPortions Portions { get; }
 
     /// <summary>
-    ///     Gets paragraph's bullet. Returns <see langword="null"/> if bullet doesn't exist.
+    ///     Gets bullet.
     /// </summary>
     Bullet Bullet { get; }
 

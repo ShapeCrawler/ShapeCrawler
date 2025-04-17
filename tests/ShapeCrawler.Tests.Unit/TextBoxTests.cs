@@ -42,44 +42,44 @@ namespace ShapeCrawler.Tests.Unit
             // Act
             pres.Slides.AddEmptySlide(layout);
             var newSlide = pres.Slides.Last();
-            var textFrame = newSlide.Shapes.GetByName<IShape>("Holder 5").TextBox;
-            var text = textFrame.Text;
+            var textBox = newSlide.Shapes.GetByName<IShape>("Holder 5").TextBox;
+            var text = textBox!.Text;
 
             // Assert
             text.Should().BeEquivalentTo("");
         }
 
         [Test]
-        public void Text_Setter_can_update_content_multiple_times()
+        public void SetText_can_update_content_multiple_times()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case005_text-frame.pptx"));
-            var textFrame = pres.Slides[0].Shape("TextBox 1").TextBox;
+            var textBox = pres.Slides[0].Shape("TextBox 1").TextBox!;
             var modifiedPres = new MemoryStream();
 
             // Act
-            var newText = textFrame.Text.Replace("{{replace_this}}", "confirm this");
-            textFrame.Text = newText;
-            newText = textFrame.Text.Replace("{{replace_that}}", "confirm that");
-            textFrame.Text = newText;
+            var newText = textBox.Text.Replace("{{replace_this}}", "confirm this");
+            textBox.SetText(newText);
+            newText = textBox.Text.Replace("{{replace_that}}", "confirm that");
+            textBox.SetText(newText);
 
             // Assert
             pres.Save(modifiedPres);
             pres = new Presentation(modifiedPres);
-            textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextBox;
-            textFrame.Text.Should().Contain("confirm this");
-            textFrame.Text.Should().Contain("confirm that");
+            textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextBox;
+            textBox.Text.Should().Contain("confirm this");
+            textBox.Text.Should().Contain("confirm that");
         }
 
         [Test]
-        public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
+        public void SetText_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
             var pres = new Presentation(TestAsset("001.pptx"));
-            var textBox = pres.Slide(1).Shape("TextBox 8").TextBox;
+            var textBox = pres.Slide(1).Shape("TextBox 8").TextBox!;
 
             // Act
-            textBox.Text = "Shrink text on overflow";
+            textBox.SetText("Shrink text on overflow");
 
             // Assert
             textBox.Text.Should().BeEquivalentTo("Shrink text on overflow");
@@ -87,16 +87,55 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
+        public void SetMarkdownText()
+        {
+            // Arrange
+            var pres = new Presentation();
+            var shapes = pres.Slide(1).Shapes;
+            shapes.AddShape(100, 100, 200, 200);
+            var shape = shapes.Last();
+            var textBox = shape.TextBox!;
+            
+            // Act
+            textBox.SetMarkdownText("**Hello** World!");
+            
+            // Assert
+            textBox.Paragraphs[0].Portions[0].Font!.IsBold.Should().BeTrue();
+            textBox.Paragraphs[0].Portions[1].Font!.IsBold.Should().BeFalse();
+        }
+        
+        [Test]
+        public void SetMarkdownText_sets_list()
+        {
+            // Arrange
+            var pres = new Presentation();
+            var shapes = pres.Slide(1).Shapes;
+            shapes.AddShape(100, 100, 200, 200);
+            var shape = shapes.Last();
+            var textBox = shape.TextBox!;
+            var list = """
+                       - Item 1
+                       - Item 2
+                       """;
+            // Act
+            textBox.SetMarkdownText(list);
+            
+            // Assert
+            textBox.Paragraphs[0].Bullet.Type.Should().NotBe(BulletType.None);
+            pres.Validate();
+        }
+        
+        [Test]
         [Platform(Exclude = "Linux", Reason = "Test fails on ubuntu-latest")]
-        public void Text_Setter_resizes_shape_to_fit_text()
+        public void SetText_resizes_shape_to_fit_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
             var shape = pres.Slide(1).Shape("AutoShape 4");
-            var textBox = shape.TextBox;
+            var textBox = shape.TextBox!;
 
             // Act
-            textBox.Text = "AutoShape 4 some text";
+            textBox.SetText("AutoShape 4 some text");
 
             // Assert
             shape.Height.Should().BeApproximately(43.14m, 0.01m);
@@ -106,7 +145,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Test]
         [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/850")]
-        public void Text_Setter_resizes_shape_to_fit_multi_paragraph_text()
+        public void SetText_resizes_shape_to_fit_multi_paragraph_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
@@ -127,19 +166,19 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        public void Text_Setter_sets_text_for_New_Shape()
+        public void SetText_sets_text_for_New_Shape()
         {
             // Arrange
             var pres = new Presentation();
             var shapes = pres.Slides[0].Shapes;
             shapes.AddShape(50, 60, 100, 70);
-            var textFrame = shapes.Last().TextBox;
+            var textBox = shapes.Last().TextBox!;
 
             // Act
-            textFrame.Text = "Test";
+            textBox.SetText("Test");
 
             // Assert
-            textFrame.Text.Should().Be("Test");
+            textBox.Text.Should().Be("Test");
             pres.Validate();
         }
 
@@ -260,13 +299,13 @@ namespace ShapeCrawler.Tests.Unit
             Paragraphs_Add_adds_new_text_paragraph_at_the_end_And_returns_added_paragraph_When_it_has_been_added_after_text_frame_changed()
         {
             var pres = new Presentation(TestAsset("001.pptx"));
-            var autoShape = (IShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
-            var textBox = autoShape.TextBox;
+            var autoShape = pres.Slides[0].Shapes.First(sp => sp.Id == 3);
+            var textBox = autoShape.TextBox!;
             var paragraphs = textBox.Paragraphs;
             var paragraph = textBox.Paragraphs.First();
 
             // Act
-            textBox.Text = "A new text";
+            textBox.SetText("A new text");
             paragraphs.Add();
             var addedParagraph = paragraphs.Last();
 
@@ -295,14 +334,14 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Test]
-        public void Text_Setter_sets_long_text()
+        public void SetText_sets_long_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case013.pptx"));
             var shape = pres.Slide(1).Shape("AutoShape 1");
 
             // Act
-            shape.TextBox.Text = "Some sentence. Some sentence";
+            shape.TextBox!.SetText("Some sentence. Some sentence");
 
             // Assert
             shape.Height.Should().BeApproximately(85.14m, 0.01m);
@@ -363,41 +402,40 @@ namespace ShapeCrawler.Tests.Unit
         [TestCase("001.pptx", 2, "Header 1")]
         [TestCase("autoshape-case004_subtitle.pptx", 1, "Subtitle 1")]
         [TestCase("autoshape-case008_text-frame.pptx", 1, "AutoShape 1")]
-        public void Text_Setter_updates_content(string presName, int slideNumber, string shapeName)
+        public void SetText_updates_content(string presName, int slideNumber, string shapeName)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
+            var textBox = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox!;
             var mStream = new MemoryStream();
 
             // Act
-            textFrame.Text = "Test";
+            textBox.SetText("Test");
 
             // Assert
-            textFrame.Text.Should().BeEquivalentTo("Test");
-            textFrame.Paragraphs.Should().HaveCount(1);
+            textBox.Text.Should().BeEquivalentTo("Test");
+            textBox.Paragraphs.Should().HaveCount(1);
 
             pres.Save(mStream);
             pres = new Presentation(mStream);
-            textFrame = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
-            textFrame.Text.Should().BeEquivalentTo("Test");
-            textFrame.Paragraphs.Should().HaveCount(1);
+            textBox = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox;
+            textBox.Text.Should().BeEquivalentTo("Test");
+            textBox.Paragraphs.Should().HaveCount(1);
         }
 
         [Test]
         [SlideShape("autoshape-case012.pptx", 1, "Shape 1")]
-        public void Text_Setter(IShape shape)
+        public void SetText(IShape shape)
         {
             // Arrange
-            var autoShape = (IShape)shape;
-            var textFrame = autoShape.TextBox;
+            var textBox = shape.TextBox!;
 
             // Act
-            var text = textFrame.Text;
-            textFrame.Text = "some text";
+            var text = textBox.Text;
+            textBox.SetText("some text");
 
             // Assert
-            textFrame.Text.Should().BeEquivalentTo("some text");
+            textBox.Text.Should().BeEquivalentTo("some text");
         }
 
         [Test]
@@ -540,7 +578,7 @@ namespace ShapeCrawler.Tests.Unit
             var textFrame = pres.Slides[slideNumber - 1].GetAllTextBoxes().First();
 
             // Act
-            var sdkXPath = textFrame.SdkXPath;
+            var sdkXPath = textFrame.SDKXPath;
 
             // Assert
             sdkXPath.Should().Be(expectedXPath);

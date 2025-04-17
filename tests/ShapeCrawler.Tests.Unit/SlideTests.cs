@@ -372,7 +372,7 @@ public class SlideTests : SCTest
         var expected = "SlideAddNotes_can_change_notes";
 
         // Act
-        notes.Text = expected;
+        notes.SetText(expected);
 
         // Assert
         notes.Text.Should().Be(expected);
