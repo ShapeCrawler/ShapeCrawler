@@ -209,7 +209,7 @@ internal sealed class TextBox: ITextBox
     public void SetMarkdownText(string text)
     {
         // List support: handle lines starting with "- "
-        var lines = Regex.Split(text, "\r\n|\r|\n");
+        var lines = Regex.Split(text, "\r\n|\r|\n", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
         bool isList = lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
         if (isList)
         {
@@ -297,10 +297,10 @@ internal sealed class TextBox: ITextBox
         }
         
         // Parse markdown and create portions with appropriate formatting
-        var markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
-        var matches = System.Text.RegularExpressions.Regex.Matches(text, markdownPattern);
+        const string markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
+        var matches = Regex.Matches(text, markdownPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(1000));
         
-        foreach (System.Text.RegularExpressions.Match match in matches)
+        foreach (Match match in matches)
         {
             if (match.Groups["bold"].Success)
             {
