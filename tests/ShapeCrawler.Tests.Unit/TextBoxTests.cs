@@ -103,7 +103,29 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Paragraphs[0].Portions[0].Font!.IsBold.Should().BeTrue();
             textBox.Paragraphs[0].Portions[1].Font!.IsBold.Should().BeFalse();
         }
-
+        
+        [Test]
+        public void SetMarkdownText_sets_list()
+        {
+            // Arrange
+            var pres = new Presentation();
+            var shapes = pres.Slide(1).Shapes;
+            shapes.AddShape(100, 100, 200, 200);
+            var shape = shapes.Last();
+            var textBox = shape.TextBox!;
+            var list = """
+                       - Item 1
+                       - Item 2
+                       """;
+            // Act
+            textBox.SetMarkdownText(list);
+            pres.Save(@"c:\temp\output.pptx");
+            
+            // Assert
+            textBox.Paragraphs[0].Bullet.Type.Should().NotBe(BulletType.None);
+            pres.Validate();
+        }
+        
         [Test]
         [Platform(Exclude = "Linux", Reason = "Test fails on ubuntu-latest")]
         public void SetText_resizes_shape_to_fit_text()

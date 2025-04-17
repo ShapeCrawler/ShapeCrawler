@@ -208,6 +208,73 @@ internal sealed class TextBox: ITextBox
     
     public void SetMarkdownText(string text)
     {
+        // List support: handle lines starting with "- "
+        var lines = Regex.Split(text, "\r\n|\r|\n");
+        bool isList = lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
+        if (isList)
+        {
+            // Clear existing paragraphs
+            var paragraphs2 = this.Paragraphs.ToList();
+            var firstPara = paragraphs2.FirstOrDefault();
+            if (firstPara != null)
+            {
+                // Remove other paragraphs
+                foreach (var p in paragraphs2.Skip(1))
+                {
+                    p.Remove();
+                }
+
+                // Clear portions of first paragraph
+                foreach (var portion in firstPara.Portions.ToList())
+                {
+                    portion.Remove();
+                }
+
+                // Add each list item as bullet paragraph
+                int paraIndex = 0;
+                foreach (var rawLine in lines)
+                {
+                    if (string.IsNullOrWhiteSpace(rawLine))
+                    {
+                        continue;
+                    }
+
+                    var line = rawLine.TrimStart();
+                    if (!line.StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var content = line[2..];
+
+                    // For subsequent items, add new paragraph
+                    if (paraIndex > 0)
+                    {
+                        this.Paragraphs.Add();
+                    }
+
+                    var paragraph = this.Paragraphs[paraIndex];
+
+                    // Clear any existing portions
+                    foreach (var portion in paragraph.Portions.ToList())
+                    {
+                        portion.Remove();
+                    }
+
+                    // Add text
+                    paragraph.Portions.AddText(content);
+
+                    // Set bullet
+                    paragraph.Bullet.Type = BulletType.Character;
+                    paragraph.Bullet.Character = "•";
+                    paraIndex++;
+                }
+            }
+            
+            this.ResizeParentShapeOnDemand();
+            return;
+        }
+
         var paragraphs = this.Paragraphs.ToList();
         var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
         if (portionPara == null)
@@ -221,7 +288,7 @@ internal sealed class TextBox: ITextBox
             {
                 removingParagraph.Remove();
             }
-            
+
             // Clear existing portions in the paragraph
             foreach (var portion in portionPara.Portions.ToList())
             {
