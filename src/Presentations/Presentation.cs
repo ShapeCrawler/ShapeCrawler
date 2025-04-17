@@ -12,7 +12,6 @@ using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 
-
 #if NETSTANDARD2_0
 using ShapeCrawler.Extensions;
 #endif
@@ -39,7 +38,9 @@ public sealed class Presentation : IPresentation
         this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
+            this.presDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+                : new PresentationProperties(new DefaultPackageProperties());
     }
 
     /// <summary>
@@ -54,7 +55,9 @@ public sealed class Presentation : IPresentation
         this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
+            this.presDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+                : new PresentationProperties(new DefaultPackageProperties());
     }
 
     /// <summary>
@@ -71,11 +74,13 @@ public sealed class Presentation : IPresentation
         this.Sections = new SectionCollection(this.presDocument);
         this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
-        this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
-            {
-                Modified = SCSettings.TimeProvider.UtcNow
-            };
+        
+        var properties = this.presDocument.CoreFilePropertiesPart != null
+            ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            : new PresentationProperties(new DefaultPackageProperties());
+        
+        properties.Modified = SCSettings.TimeProvider.UtcNow;
+        this.Properties = properties;
     }
 
     internal Presentation(PresentationDocument presDocument)
@@ -87,7 +92,9 @@ public sealed class Presentation : IPresentation
         this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
+            this.presDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+                : new PresentationProperties(new DefaultPackageProperties());
     }
 
     /// <inheritdoc />
