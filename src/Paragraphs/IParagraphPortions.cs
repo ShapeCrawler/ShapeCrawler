@@ -102,16 +102,15 @@ internal sealed class ParagraphPortions(A.Paragraph aParagraph): IParagraphPorti
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
-                    {
-                        var fieldPortion = new Field(aField);
-                        portions.Add(fieldPortion);
-                        break;
-                    }
-
+                    var fieldPortion = new Field(aField);
+                    portions.Add(fieldPortion);
+                    break;
                 case A.Break aBreak:
                     var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);
                     break;
+                default:
+                    continue;
             }
         }
 
