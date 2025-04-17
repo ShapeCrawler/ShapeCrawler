@@ -12,7 +12,6 @@ using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 
-
 #if NETSTANDARD2_0
 using ShapeCrawler.Extensions;
 #endif
@@ -31,53 +30,27 @@ public sealed class Presentation : IPresentation
     ///    Opens presentation from the specified stream.
     /// </summary>
     public Presentation(Stream stream)
+        : this(PresentationDocument.Open(stream, true))
     {
-        this.presDocument = PresentationDocument.Open(stream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
-        this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
 
     /// <summary>
     ///    Opens presentation from the specified file.
     /// </summary>
     public Presentation(string file)
+        : this(PresentationDocument.Open(file, true))
     {
-        this.presDocument = PresentationDocument.Open(file, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
-        this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
     }
 
     /// <summary>
     ///     Creates a new presentation.
     /// </summary>
     public Presentation()
+        : this(new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx"))
     {
-        var assets = new AssetCollection(Assembly.GetExecutingAssembly());
-        var stream = assets.StreamOf("new presentation.pptx");
-
-        this.presDocument = PresentationDocument.Open(stream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
-        this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties)
-            {
-                Modified = SCSettings.TimeProvider.UtcNow
-            };
+        this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
-
+    
     internal Presentation(PresentationDocument presDocument)
     {
         this.presDocument = presDocument;
@@ -87,7 +60,9 @@ public sealed class Presentation : IPresentation
         this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
         this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
         this.Properties =
-            new PresentationProperties(this.presDocument.CoreFilePropertiesPart!.OpenXmlPackage.PackageProperties);
+            this.presDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+                : new PresentationProperties(new DefaultPackageProperties());
     }
 
     /// <inheritdoc />

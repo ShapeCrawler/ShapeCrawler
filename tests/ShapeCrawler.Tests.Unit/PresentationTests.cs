@@ -522,7 +522,6 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    [Explicit("Should be fixed")]
     public void Constructor_does_not_throw_exception_When_the_specified_file_is_a_google_slide_export()
     {
         // Act
