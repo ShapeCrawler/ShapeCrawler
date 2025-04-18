@@ -1,7 +1,7 @@
 namespace ShapeCrawler.Shapes;
 
 /// <summary>
-///     Represents a SmartArt graphic shape interface.
+///     Represents a SmartArt graphic.
 /// </summary>
 public interface ISmartArt : IShape
 {
