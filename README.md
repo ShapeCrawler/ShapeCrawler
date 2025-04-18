@@ -58,7 +58,7 @@ var shapes = pres.Slide(1).Shapes;
 shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
 var addedShape = shapes.Last();
 
-addedShape.TextBox!.Text = "Hello World!";
+addedShape.TextBox!.SetText("Hello World!");
 
 pres.Save("my pres.pptx");
 ```
@@ -106,7 +106,10 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.65.0 - 2025-04-11
-🍀Added `AsMarkdown()` to get presentation string in Markdown format [(example)](https://github.com/ShapeCrawler/ShapeCrawler/blob/af7042bcdf83e77ecf9b1457415af589cf7bda7a/ShapeCrawler.Examples/Presentation.cs#L7-L12)  
+### Version 0.66.0 - 2025-04-18
+🍀Added `IParagraphCollection.Add(string content, int index)` [#986](https://github.com/ShapeCrawler/ShapeCrawler/issues/986)  
+🐞Fixed added picture width [#993](https://github.com/ShapeCrawler/ShapeCrawler/issues/993)  
+🐞Fixed open Google Slides Export [#972](https://github.com/ShapeCrawler/ShapeCrawler/issues/972)  
+🐞Fixed `SetPicture()` [#858](https://github.com/ShapeCrawler/ShapeCrawler/issues/858)  
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
