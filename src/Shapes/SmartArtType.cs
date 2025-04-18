@@ -1,14 +1,12 @@
-using System;
-
 namespace ShapeCrawler.Shapes;
 
 /// <summary>
-///     Represents the type of a SmartArt graphic.
+///     Represents the type of SmartArt graphic.
 /// </summary>
 public enum SmartArtType
 {
     /// <summary>
     ///     A basic block list SmartArt graphic.
     /// </summary>
-    BasicBlockList,
+    BasicBlockList
 }
