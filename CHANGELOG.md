@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.67.0 - Unreleased
+🍀Added support adding Bar Chart.  
+
 ## Version 0.66.0 - 2025-04-18
 🍀Added `IParagraphCollection.Add(string content, int index)` [#986](https://github.com/ShapeCrawler/ShapeCrawler/issues/986)  
 🐞Fixed added picture width [#993](https://github.com/ShapeCrawler/ShapeCrawler/issues/993)  

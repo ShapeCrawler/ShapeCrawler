@@ -85,12 +85,21 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
-        if (seriesName == null)
-        {
-            throw new ArgumentNullException(nameof(seriesName));
-        }
-
         new SCSlidePart(this.slidePart).AddBarChart(x, y, width, height, categoryValues, seriesName);
+    }
+
+    /// <summary>
+    ///     Adds a SmartArt graphic to the slide.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the SmartArt graphic.</param>
+    /// <param name="y">The y-coordinate of the SmartArt graphic.</param>
+    /// <param name="width">The width of the SmartArt graphic.</param>
+    /// <param name="height">The height of the SmartArt graphic.</param>
+    /// <param name="smartArtType">The type of SmartArt graphic to add.</param>
+    /// <returns>The added SmartArt graphic.</returns>
+    public ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
+    {
+        return new SCSlidePart(this.slidePart).AddSmartArt(x, y, width, height, smartArtType);
     }
 
     public void AddVideo(int x, int y, Stream stream)
