@@ -13,7 +13,6 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
-    private A.PatternFill? aPatternFill;
     private A.BlipFill? aBlipFill;
 
     public string? Color
@@ -144,8 +143,6 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
 
             this.aSolidFill = null;
             this.aGradFill = null;
-            this.aPatternFill = null;
-
             this.pictureImage = new SlidePictureImage(this.aBlipFill.Blip!);
         }
     }
