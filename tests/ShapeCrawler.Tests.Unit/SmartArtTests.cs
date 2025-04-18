@@ -8,7 +8,7 @@ namespace ShapeCrawler.Tests.Unit;
 public class SmartArtTests : SCTest
 {
     [Test]
-    [Explicit("Should be fixe with https://github.com/ShapeCrawler/ShapeCrawler/issues/911")]
+    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/911")]
     public void AddSmartArt_CreatesBasicBlockList_WhenCalled()
     {
         // Arrange
