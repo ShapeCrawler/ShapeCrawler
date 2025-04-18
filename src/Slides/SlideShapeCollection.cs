@@ -76,29 +76,6 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
-
-    public void AddBarChart()
-    {
-        // Default values and sample data for a simple bar chart
-        int x = 100;
-        int y = 100;
-        int width = 500;
-        int height = 300;
-        
-        // Create sample data with three categories
-        var categoryValues = new Dictionary<string, double>
-        {
-            { "Category 1", 10 },
-            { "Category 2", 25 },
-            { "Category 3", 15 }
-        };
-        
-        // Use a default series name
-        string seriesName = "Sample Series";
-        
-        // Use same parameter structure as the AddPieChart which is known to work
-        this.AddBarChart(x, y, width, height, categoryValues, seriesName);
-    }
     
     public void AddBarChart(
         int x,
