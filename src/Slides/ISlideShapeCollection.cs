@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 
 #pragma warning disable IDE0130
@@ -78,5 +78,13 @@ public interface ISlideShapeCollection : IShapeCollection
     /// </summary>
     void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
 
+    /// <summary>
+    ///     Adds Bar Chart with default parameters.
+    /// </summary>
     void AddBarChart();
+    
+    /// <summary>
+    ///     Adds Bar Chart with specified parameters.
+    /// </summary>
+    void AddBarChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
 }
