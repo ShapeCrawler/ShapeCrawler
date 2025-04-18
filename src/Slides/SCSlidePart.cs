@@ -48,7 +48,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
     {
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
         var chart = new Chart();
-        chart.Append(new AutoTitleDeleted { Val = false });
+        chart.AppendChild(new AutoTitleDeleted { Val = false });
 
         var plotArea = new PlotArea();
         plotArea.Append(new Layout());
@@ -135,7 +135,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
         var chart = new Chart();
-        chart.Append(new AutoTitleDeleted { Val = false });
+        chart.AppendChild(new AutoTitleDeleted { Val = false });
 
         // Create series
         var series = new BarChartSeries(new Index { Val = 0 }, new Order { Val = 0 });
@@ -158,7 +158,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         }
 
         categoryAxisData.Append(stringLiteral);
-        series.Append(categoryAxisData);
+        series.AppendChild(categoryAxisData);
 
         // --- Values ---
         var values = new Values();
@@ -168,13 +168,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         foreach (var item in categoryValues)
         {
             var point = new NumericPoint { Index = index };
-            point.Append(new NumericValue(item.Value.ToString()));
-            numberLiteral.Append(point);
+            point.AppendChild(new NumericValue(item.Value.ToString()));
+            numberLiteral.AppendChild(point);
             index++;
         }
 
-        values.Append(numberLiteral);
-        series.Append(values);
+        values.AppendChild(numberLiteral);
+        series.AppendChild(values);
 
         // Create bar chart
         const uint axisId1 = 1U;
@@ -192,46 +192,46 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // Add category axis
         var categoryAxis = new CategoryAxis();
-        categoryAxis.Append(new AxisId { Val = axisId1 });
+        categoryAxis.AppendChild(new AxisId { Val = axisId1 });
 
         var scaling = new Scaling();
-        scaling.Append(new Orientation { Val = OrientationValues.MinMax });
-        categoryAxis.Append(scaling);
+        scaling.AppendChild(new Orientation { Val = OrientationValues.MinMax });
+        categoryAxis.AppendChild(scaling);
 
-        categoryAxis.Append(new Delete { Val = false });
-        categoryAxis.Append(new AxisPosition { Val = AxisPositionValues.Bottom });
-        categoryAxis.Append(new CrossingAxis { Val = axisId2 });
+        categoryAxis.AppendChild(new Delete { Val = false });
+        categoryAxis.AppendChild(new AxisPosition { Val = AxisPositionValues.Bottom });
+        categoryAxis.AppendChild(new CrossingAxis { Val = axisId2 });
 
         // Add the category axis to the plot area
-        plotArea.Append(categoryAxis);
+        plotArea.AppendChild(categoryAxis);
 
         // Add value axis
         var valueAxis = new ValueAxis();
-        valueAxis.Append(new AxisId { Val = axisId2 });
+        valueAxis.AppendChild(new AxisId { Val = axisId2 });
 
         scaling = new Scaling();
-        scaling.Append(new Orientation { Val = OrientationValues.MinMax });
-        valueAxis.Append(scaling);
+        scaling.AppendChild(new Orientation { Val = OrientationValues.MinMax });
+        valueAxis.AppendChild(scaling);
 
-        valueAxis.Append(new Delete { Val = false });
-        valueAxis.Append(new AxisPosition { Val = AxisPositionValues.Left });
-        valueAxis.Append(new CrossingAxis { Val = axisId1 });
+        valueAxis.AppendChild(new Delete { Val = false });
+        valueAxis.AppendChild(new AxisPosition { Val = AxisPositionValues.Left });
+        valueAxis.AppendChild(new CrossingAxis { Val = axisId1 });
 
         // Add the value axis to the plot area
-        plotArea.Append(valueAxis);
+        plotArea.AppendChild(valueAxis);
 
         // Add the plot area to the chart
-        chart.Append(plotArea);
+        chart.AppendChild(plotArea);
 
         // Add legend
         var legend = new Legend();
-        legend.Append(new LegendPosition { Val = LegendPositionValues.Right });
+        legend.AppendChild(new LegendPosition { Val = LegendPositionValues.Right });
 
         // Add the legend to the chart
-        chart.Append(legend);
+        chart.AppendChild(legend);
 
         // Add the chart to the chart space
-        chartSpace.Append(chart);
+        chartSpace.AppendChild(chart);
 
         // Save the chart part
         chartPart.ChartSpace = chartSpace;
