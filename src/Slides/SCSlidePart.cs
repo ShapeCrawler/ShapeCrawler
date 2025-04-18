@@ -46,10 +46,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
-        var chartSpace = new ChartSpace();
-        chartSpace.Append(new EditingLanguage { Val = "en-US" });
-        chartSpace.Append(new RoundedCorners { Val = false });
-
+        var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
         var chart = new Chart();
         chart.Append(new AutoTitleDeleted { Val = false });
 
@@ -72,8 +69,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         {
             stringLiteral.Append(new StringPoint
             {
-                Index = catIndex,
-                NumericValue = new NumericValue(categoryToValue.Key)
+                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Key)
             });
             catIndex++;
         }
@@ -84,16 +80,14 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         // --- Values ---
         var numberLiteral = new NumberLiteral
         {
-            FormatCode = new FormatCode("General"),
-            PointCount = new PointCount { Val = categoriesCount }
+            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = categoriesCount }
         };
         catIndex = 0;
         foreach (var categoryToValue in categoryValues)
         {
             numberLiteral.Append(new NumericPoint
             {
-                Index = catIndex,
-                NumericValue = new NumericValue(categoryToValue.Value.ToString())
+                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Value.ToString())
             });
             catIndex++;
         }
@@ -135,33 +129,16 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         string seriesName)
     {
         // Create the ChartSpace element
-        var chartSpace = new ChartSpace();
+        var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
         chartSpace.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart");
         chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
         chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-        
-        // Basic chart settings
-        chartSpace.Append(new EditingLanguage { Val = "en-US" });
-        chartSpace.Append(new RoundedCorners { Val = false });
 
-        var chart = new Chart();
-        chart.Append(new AutoTitleDeleted { Val = false });
-        
-        // Create plot area
-        var plotArea = new PlotArea();
-        plotArea.Append(new Layout());
-
-        // Create bar chart
-        var barChart = new BarChart();
-        barChart.Append(new BarDirection { Val = BarDirectionValues.Column });
-        barChart.Append(new BarGrouping { Val = BarGroupingValues.Clustered });
-        barChart.Append(new VaryColors { Val = false });
+        var chart = new Chart(new AutoTitleDeleted { Val = false });
 
         // Create series
-        var series = new BarChartSeries();
-        series.Append(new Index { Val = 0 });
-        series.Append(new Order { Val = 0 });
-        
+        var series = new BarChartSeries(new Index { Val = 0 }, new Order { Val = 0 });
+
         // Add series name
         var seriesText = new SeriesText(new NumericValue { Text = seriesName });
         series.Append(seriesText);
@@ -169,27 +146,23 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         // --- Categories ---
         var categoriesCount = UInt32Value.FromUInt32((uint)categoryValues.Count);
         var categoryAxisData = new CategoryAxisData();
-        var stringLiteral = new StringLiteral();
-        stringLiteral.Append(new PointCount { Val = categoriesCount });
-        
+        var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
+
         uint index = 0;
         foreach (var item in categoryValues)
         {
-            var point = new StringPoint { Index = index };
-            point.Append(new NumericValue(item.Key));
+            var point = new StringPoint(new NumericValue(item.Key)) { Index = index };
             stringLiteral.Append(point);
             index++;
         }
-        
+
         categoryAxisData.Append(stringLiteral);
         series.Append(categoryAxisData);
 
         // --- Values ---
         var values = new Values();
-        var numberLiteral = new NumberLiteral();
-        numberLiteral.Append(new FormatCode("General"));
-        numberLiteral.Append(new PointCount { Val = categoriesCount });
-        
+        var numberLiteral = new NumberLiteral(new FormatCode("General"), new PointCount { Val = categoriesCount });
+
         index = 0;
         foreach (var item in categoryValues)
         {
@@ -198,65 +171,67 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             numberLiteral.Append(point);
             index++;
         }
-        
+
         values.Append(numberLiteral);
         series.Append(values);
 
-        // Add the series to the bar chart
-        barChart.Append(series);
-
-        // Add axis IDs
-        uint axisId1 = 1U;
-        uint axisId2 = 2U;
-        barChart.Append(new AxisId { Val = axisId1 });
-        barChart.Append(new AxisId { Val = axisId2 });
+        // Create bar chart
+        const uint axisId1 = 1U;
+        const uint axisId2 = 2U;
 
         // Add the bar chart to the plot area
-        plotArea.Append(barChart);
+        var plotArea = new PlotArea(
+            new Layout(), new BarChart(
+                new BarDirection { Val = BarDirectionValues.Column },
+                new BarGrouping { Val = BarGroupingValues.Clustered },
+                new VaryColors { Val = false },
+                series,
+                new AxisId { Val = axisId1 },
+                new AxisId { Val = axisId2 }));
 
         // Add category axis
         var categoryAxis = new CategoryAxis();
         categoryAxis.Append(new AxisId { Val = axisId1 });
-        
+
         var scaling = new Scaling();
         scaling.Append(new Orientation { Val = OrientationValues.MinMax });
         categoryAxis.Append(scaling);
-        
+
         categoryAxis.Append(new Delete { Val = false });
         categoryAxis.Append(new AxisPosition { Val = AxisPositionValues.Bottom });
         categoryAxis.Append(new CrossingAxis { Val = axisId2 });
-        
+
         // Add the category axis to the plot area
         plotArea.Append(categoryAxis);
 
         // Add value axis
         var valueAxis = new ValueAxis();
         valueAxis.Append(new AxisId { Val = axisId2 });
-        
+
         scaling = new Scaling();
         scaling.Append(new Orientation { Val = OrientationValues.MinMax });
         valueAxis.Append(scaling);
-        
+
         valueAxis.Append(new Delete { Val = false });
         valueAxis.Append(new AxisPosition { Val = AxisPositionValues.Left });
         valueAxis.Append(new CrossingAxis { Val = axisId1 });
-        
+
         // Add the value axis to the plot area
         plotArea.Append(valueAxis);
-        
+
         // Add the plot area to the chart
         chart.Append(plotArea);
 
         // Add legend
         var legend = new Legend();
         legend.Append(new LegendPosition { Val = LegendPositionValues.Right });
-        
+
         // Add the legend to the chart
         chart.Append(legend);
-        
+
         // Add the chart to the chart space
         chartSpace.Append(chart);
-        
+
         // Save the chart part
         chartPart.ChartSpace = chartSpace;
     }
@@ -271,13 +246,12 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 new NonVisualDrawingProperties { Id = this.GetNextShapeId(), Name = "Pie Chart" },
                 new NonVisualGraphicFrameDrawingProperties(),
                 new ApplicationNonVisualDrawingProperties()),
-
             Transform = new Transform(
                 new A.Offset { X = new Points(x).AsEmus(), Y = new Points(y).AsEmus() },
                 new A.Extents { Cx = new Points(width).AsEmus(), Cy = new Points(height).AsEmus() }),
             Graphic = new A.Graphic(
                 new A.GraphicData(
-                        new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
+                    new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
                 {
                     Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"
                 })
@@ -296,13 +270,12 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 new NonVisualDrawingProperties { Id = this.GetNextShapeId(), Name = chartName },
                 new NonVisualGraphicFrameDrawingProperties(),
                 new ApplicationNonVisualDrawingProperties()),
-
             Transform = new Transform(
                 new A.Offset { X = new Pixels(x).AsHorizontalEmus(), Y = new Pixels(y).AsVerticalEmus() },
                 new A.Extents { Cx = new Pixels(width).AsHorizontalEmus(), Cy = new Pixels(height).AsVerticalEmus() }),
             Graphic = new A.Graphic(
                 new A.GraphicData(
-                        new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
+                    new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
                 {
                     Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"
                 })
@@ -317,7 +290,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var shapeIds = slidePart.Slide.Descendants<NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0)
             .ToList();
-        
+
         // Find the maximum ID and add 1, or start with 1 if no shapes exist
         return (uint)(shapeIds.Count > 0 ? shapeIds.Max() + 1 : 1);
     }
