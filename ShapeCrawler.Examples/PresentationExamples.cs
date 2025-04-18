@@ -2,11 +2,10 @@
 
 public class PresentationExamples
 {
-    [Test]
-    [Explicit]
+    [Test, Explicit]
     public void Get_markdown()
     {
-        var pres = new Presentation("pres.pptx");
+        using var pres = new Presentation("pres.pptx");
 
         var presMarkdown = pres.AsMarkdown();
     }

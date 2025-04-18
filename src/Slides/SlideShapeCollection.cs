@@ -76,6 +76,22 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
+    
+    public void AddBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName)
+    {
+        if (seriesName == null)
+        {
+            throw new ArgumentNullException(nameof(seriesName));
+        }
+
+        new SCSlidePart(this.slidePart).AddBarChart(x, y, width, height, categoryValues, seriesName);
+    }
 
     public void AddVideo(int x, int y, Stream stream)
     {

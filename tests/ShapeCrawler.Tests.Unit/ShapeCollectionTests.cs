@@ -1083,4 +1083,29 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().Contain(shape=> shape is IChart);
         pres.Validate();
     }
+
+    [Test]
+    public void AddBarChart_adds_bar_chart()
+    {
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        int x = 100;
+        int y = 100;
+        int width = 500;
+        int height = 300;
+        var categoryValues = new Dictionary<string, double>
+        {
+            { "Category 1", 10 },
+            { "Category 2", 25 },
+            { "Category 3", 15 }
+        };
+        string seriesName = "Sample Series";
+        
+        // Act
+        shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
+        
+        // Assert
+        shapes.Should().Contain(shape=> shape is IChart);
+        pres.Validate();
+    }
 }
