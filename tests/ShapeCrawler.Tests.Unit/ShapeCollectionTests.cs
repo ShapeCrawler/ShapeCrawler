@@ -1083,4 +1083,18 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().Contain(shape=> shape is IChart);
         pres.Validate();
     }
+
+    [Test]
+    public void AddBarChart_adds_bar_chart()
+    {
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        
+        // Act
+        shapes.AddBarChart();
+        // pres.Save(@"c:\temp\output.pptx");
+        
+        // Assert
+        pres.Validate();
+    }
 }

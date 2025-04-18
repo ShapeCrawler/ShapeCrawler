@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Xml.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
@@ -178,13 +180,22 @@ public sealed class Presentation : IPresentation
             "The 'mod' attribute is not declared.",
             "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
         };
-        var sdkErrors = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
-        sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
-        sdkErrors = [.. sdkErrors.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath })];
-
-        var customErrors = ValidateATableRows(this.presDocument)
-            .Concat(ValidateASolidFill(this.presDocument))
-            .Concat(sdkErrors.Select(error => error.Description));
+        var sdkValidationErrorInfoCollection = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
+        sdkValidationErrorInfoCollection = sdkValidationErrorInfoCollection.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
+        sdkValidationErrorInfoCollection = [.. sdkValidationErrorInfoCollection.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath })];
+        var sdkErrors = new List<string>();
+        foreach (var validationErrorInfo in sdkValidationErrorInfoCollection)
+        {
+            var xmlError = new XElement("error");
+            xmlError.Add(new XElement("id", validationErrorInfo.Id));
+            xmlError.Add(new XElement("description", validationErrorInfo.Description));
+            xmlError.Add(new XElement("xpath", validationErrorInfo.Path?.XPath));
+            sdkErrors.Add(xmlError.ToString());
+        }
+            
+        var customErrors = ATableRowErrors(this.presDocument)
+            .Concat(ASolidFillErrors(this.presDocument))
+            .Concat(sdkErrors);
         if (customErrors.Any())
         {
             var errorMessages = new StringBuilder();
@@ -197,7 +208,7 @@ public sealed class Presentation : IPresentation
         }
     }
 
-    private static IEnumerable<string> ValidateATableRows(PresentationDocument presDocument)
+    private static IEnumerable<string> ATableRowErrors(PresentationDocument presDocument)
     {
         var aTableRows = presDocument.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.TableRow>());
@@ -237,7 +248,7 @@ public sealed class Presentation : IPresentation
         }
     }
 
-    private static IEnumerable<string> ValidateASolidFill(PresentationDocument presDocument)
+    private static IEnumerable<string> ASolidFillErrors(PresentationDocument presDocument)
     {
         var aText = presDocument.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.Slide.Descendants<A.Text>());

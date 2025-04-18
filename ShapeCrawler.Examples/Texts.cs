@@ -16,7 +16,7 @@ public class Texts
         
         var paragraphPortion = shape.TextBox.Paragraphs.First().Portions.First();
         Console.WriteLine($"Font name: {paragraphPortion.Font!.LatinName}");
-        Console.WriteLine($"Font size: {paragraphPortion.Font.Size}");
+        Console.WriteLine($"Font size: {paragraphPortion.Font.Size}"); 
         
         paragraphPortion.Font.IsBold = true;
         
