@@ -141,8 +141,9 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var series = new BarChartSeries(new Index { Val = 0 }, new Order { Val = 0 });
 
         // Add series name
-        var seriesText = new SeriesText(new NumericValue { Text = seriesName });
-        series.Append(seriesText);
+        var seriesText = new SeriesText();
+        seriesText.AppendChild(new NumericValue { Text = seriesName });
+        series.AppendChild(seriesText);
 
         // --- Categories ---
         var categoriesCount = UInt32Value.FromUInt32((uint)categoryValues.Count);
@@ -152,12 +153,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         uint index = 0;
         foreach (var item in categoryValues)
         {
-            var point = new StringPoint(new NumericValue(item.Key)) { Index = index };
-            stringLiteral.Append(point);
+            var point = new StringPoint() { Index = index };
+            point.AppendChild(new NumericValue(item.Key));
+            stringLiteral.AppendChild(point);
             index++;
         }
 
-        categoryAxisData.Append(stringLiteral);
+        categoryAxisData.AppendChild(stringLiteral);
         series.AppendChild(categoryAxisData);
 
         // --- Values ---
