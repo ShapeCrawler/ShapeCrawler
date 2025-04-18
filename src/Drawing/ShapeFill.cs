@@ -119,17 +119,13 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         }
         else
         {
-            // First, remove any existing fill elements
             openXmlCompositeElement.GetFirstChild<A.SolidFill>()?.Remove();
             openXmlCompositeElement.GetFirstChild<A.GradientFill>()?.Remove();
             openXmlCompositeElement.GetFirstChild<A.PatternFill>()?.Remove();
             openXmlCompositeElement.GetFirstChild<A.NoFill>()?.Remove();
-            // We don't remove existing BlipFill as we're going to replace it
 
             (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
-
-            // This could be refactored to DRY vs SlideShapes.CreatePPicture.
-            // In the process, the image could be de-duped also.
+            
             this.aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
             aStretch.Append(new A.FillRectangle());

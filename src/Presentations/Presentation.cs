@@ -193,7 +193,7 @@ public sealed class Presentation : IPresentation
                 errorMessages.AppendLine(error);
             }
             
-            throw new Exception(errorMessages.ToString());
+            throw new SCException(errorMessages.ToString());
         }
     }
 
