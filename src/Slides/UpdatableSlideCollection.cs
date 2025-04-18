@@ -97,16 +97,16 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
         pSlideIdList.Append(pSlideId);
     }
 
-    public void Insert(int position, ISlide slide)
+    public void Add(ISlide slide, int number)
     {
-        if (position < 1 || position > this.Count + 1)
+        if (number < 1 || number > this.Count + 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(position));
+            throw new ArgumentOutOfRangeException(nameof(number));
         }
 
         this.Add(slide);
         var addedSlideIndex = this.Count - 1;
-        this.slideCollection[addedSlideIndex].Number = position;
+        this.slideCollection[addedSlideIndex].Number = number;
     }
 
     public void AddJSON(string jsonSlide)

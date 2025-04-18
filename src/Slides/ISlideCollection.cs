@@ -28,11 +28,9 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     void Add(ISlide slide);
 
     /// <summary>
-    ///     Inserts slide at specified position.
+    ///     Adds slide at the specified number position.
     /// </summary>
-    /// <param name="position">Position at which specified slide will be inserted.</param>
-    /// <param name="slide">The slide to insert.</param>
-    void Insert(int position, ISlide slide);
+    void Add(ISlide slide, int number);
 #if DEBUG
     /// <summary>
     ///     Adds a new slide from JSON.
