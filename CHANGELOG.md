@@ -1,6 +1,7 @@
 # Changelog  
 
 ## Version 0.65.1 - Unreleased
+🍀Fixed `IParagraphCollection.Add(string content, int index)` [#986](https://github.com/ShapeCrawler/ShapeCrawler/issues/986)  
 🐞Fixed added picture width [#993](https://github.com/ShapeCrawler/ShapeCrawler/issues/993)  
 🐞Fixed open Google Slides Export [#972](https://github.com/ShapeCrawler/ShapeCrawler/issues/972)  
 🐞Fixed `SetPicture()` [#858](https://github.com/ShapeCrawler/ShapeCrawler/issues/858)  
