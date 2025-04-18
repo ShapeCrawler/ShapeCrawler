@@ -119,6 +119,13 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         }
         else
         {
+            // First, remove any existing fill elements
+            openXmlCompositeElement.GetFirstChild<A.SolidFill>()?.Remove();
+            openXmlCompositeElement.GetFirstChild<A.GradientFill>()?.Remove();
+            openXmlCompositeElement.GetFirstChild<A.PatternFill>()?.Remove();
+            openXmlCompositeElement.GetFirstChild<A.NoFill>()?.Remove();
+            // We don't remove existing BlipFill as we're going to replace it
+
             (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
@@ -129,14 +136,24 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
             this.aBlipFill.Append(new A.Blip { Embed = rId });
             this.aBlipFill.Append(aStretch);
 
-            openXmlCompositeElement.Append(this.aBlipFill);
+            // Insert the BlipFill in the correct position in the element structure
+            var aOutline = openXmlCompositeElement.GetFirstChild<A.Outline>();
+            if (aOutline != null)
+            {
+                openXmlCompositeElement.InsertBefore(this.aBlipFill, aOutline);
+            }
+            else
+            {
+                openXmlCompositeElement.Append(this.aBlipFill);
+            }
 
-            this.aSolidFill?.Remove();
-            this.aBlipFill = null;
-            this.aGradFill?.Remove();
+            // Clear other fill properties
+            this.aSolidFill = null;
             this.aGradFill = null;
-            this.aPatternFill?.Remove();
             this.aPatternFill = null;
+            
+            // Initialize the picture image
+            this.pictureImage = new SlidePictureImage(this.aBlipFill.Blip!);
         }
     }
 

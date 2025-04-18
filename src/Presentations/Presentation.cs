@@ -182,16 +182,18 @@ public sealed class Presentation : IPresentation
         sdkErrors = sdkErrors.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
         sdkErrors = [.. sdkErrors.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath })];
 
-        if (sdkErrors.Any())
+        var customErrors = ValidateATableRows(this.presDocument)
+            .Concat(ValidateASolidFill(this.presDocument))
+            .Concat(sdkErrors.Select(error => error.Description));
+        if (customErrors.Any())
         {
-            throw new SCException("Presentation is invalid.");
-        }
-
-        var errors = ValidateATableRows(this.presDocument);
-        errors = errors.Concat(ValidateASolidFill(this.presDocument));
-        if (errors.Any())
-        {
-            throw new SCException("Presentation is invalid.");
+            var errorMessages = new StringBuilder();
+            foreach (var error in customErrors)
+            {
+                errorMessages.AppendLine(error);
+            }
+            
+            throw new Exception(errorMessages.ToString());
         }
     }
 
