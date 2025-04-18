@@ -58,7 +58,7 @@ var shapes = pres.Slide(1).Shapes;
 shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
 var addedShape = shapes.Last();
 
-addedShape.TextBox!.Text = "Hello World!";
+addedShape.TextBox!.SetText("Hello World!");
 
 pres.Save("my pres.pptx");
 ```

@@ -2,8 +2,7 @@ namespace ShapeCrawler.Examples;
 
 public class Tests
 {
-    [Test]
-    [Explicit]
+    [Test, Explicit]
     public void Add_paragraph()
     {
         var pres = new Presentation();
@@ -16,6 +15,6 @@ public class Tests
         var addedParagraph = addedShape.TextBox.Paragraphs.Last();
         addedParagraph.Text = "I'm ShapeCrawler";
         
-        pres.Save(@"C:\temp\pres.pptx");
+        pres.Save(@"c:\temp\pres.pptx");
     }
 }
