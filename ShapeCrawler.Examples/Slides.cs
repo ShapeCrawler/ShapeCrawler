@@ -6,7 +6,7 @@ public class Slides
     public void Remove_slide()
     {
         // Remove first slide
-        using var pres = new Presentation("test.pptx");
+        using var pres = new Presentation("pres.pptx");
         var removingSlide = pres.Slides.First();
         removingSlide.Remove();
 
@@ -14,9 +14,9 @@ public class Slides
         pres.Slides[1].Number = 1;
 
         // Copy slide to another presentation
-        var sourcePresentation = new Presentation("source.pptx");
-        var targetPres = new Presentation("dest.pptx");
-        var copyingSlide = sourcePresentation.Slides[1];
+        using var sourcePres = new Presentation("source.pptx");
+        var targetPres = new Presentation("target.pptx");
+        var copyingSlide = sourcePres.Slides[1];
         targetPres.Slides.Add(copyingSlide);
         
         pres.Save();
