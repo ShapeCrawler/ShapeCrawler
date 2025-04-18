@@ -134,7 +134,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
         chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-        var chart = new Chart(new AutoTitleDeleted { Val = false });
+        var chart = new Chart();
+        chart.Append(new AutoTitleDeleted { Val = false });
 
         // Create series
         var series = new BarChartSeries(new Index { Val = 0 }, new Order { Val = 0 });
