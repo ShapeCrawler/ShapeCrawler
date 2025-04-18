@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement): IShapeFill
+internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement) : IShapeFill
 {
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
@@ -119,24 +119,34 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         }
         else
         {
+            openXmlCompositeElement.GetFirstChild<A.SolidFill>()?.Remove();
+            openXmlCompositeElement.GetFirstChild<A.GradientFill>()?.Remove();
+            openXmlCompositeElement.GetFirstChild<A.PatternFill>()?.Remove();
+            openXmlCompositeElement.GetFirstChild<A.NoFill>()?.Remove();
+
             (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
 
-            // This could be refactored to DRY vs SlideShapes.CreatePPicture.
-            // In the process, the image could be de-duped also.
             this.aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
             aStretch.Append(new A.FillRectangle());
             this.aBlipFill.Append(new A.Blip { Embed = rId });
             this.aBlipFill.Append(aStretch);
 
-            openXmlCompositeElement.Append(this.aBlipFill);
+            var aOutline = openXmlCompositeElement.GetFirstChild<A.Outline>();
+            if (aOutline != null)
+            {
+                openXmlCompositeElement.InsertBefore(this.aBlipFill, aOutline);
+            }
+            else
+            {
+                openXmlCompositeElement.Append(this.aBlipFill);
+            }
 
-            this.aSolidFill?.Remove();
-            this.aBlipFill = null;
-            this.aGradFill?.Remove();
+            this.aSolidFill = null;
             this.aGradFill = null;
-            this.aPatternFill?.Remove();
             this.aPatternFill = null;
+
+            this.pictureImage = new SlidePictureImage(this.aBlipFill.Blip!);
         }
     }
 
@@ -151,13 +161,15 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
         this.InitSolidFillOr();
         openXmlCompositeElement.AddNoFill();
     }
-    
+
     private static A.ColorScheme GetColorScheme(OpenXmlPart openXmlPart)
     {
         return openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!,
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
             _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
         };
     }
@@ -174,7 +186,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
             }
         }
     }
-    
+
     private bool HasSolidFill()
     {
         return openXmlCompositeElement.GetFirstChild<A.SolidFill>() != null;
@@ -224,7 +236,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
 
         return FillType.NoFill;
     }
-    
+
     private string? ColorHexOrNullOf(string schemeColor)
     {
         var openXmlPart = openXmlCompositeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;

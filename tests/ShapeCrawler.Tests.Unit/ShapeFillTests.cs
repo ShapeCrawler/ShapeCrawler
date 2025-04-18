@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
 
@@ -192,14 +192,13 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
-    [Explicit("A bug")] // this attribute should be removed after fixing the issue
     public void SetPicture_should_not_break_presentation()
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
         var shape = pres.Slide(2).Shape("AutoShape 2");
-        var shapeFill = shape.Fill;
         var image = TestAsset("09 png image.png");
+        var shapeFill = shape.Fill!;
 
         // Act
         shapeFill.SetPicture(image);
