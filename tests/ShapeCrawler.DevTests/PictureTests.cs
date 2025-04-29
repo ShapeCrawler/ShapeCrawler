@@ -121,9 +121,9 @@ public class PictureTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("pictures-case001.pptx"));
         var image = TestAsset("10 png image.png");
-        var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
-        var groupedPicture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
-        var groupedPicture2 = groupShape.Shapes.GetByName<IPicture>("Picture 2");
+        var groupShape = pres.Slide(1).Shape("Group 1");
+        var groupedPicture1 = groupShape.GroupedShapes.GetByName<IPicture>("Picture 1");
+        var groupedPicture2 = groupShape.GroupedShapes.GetByName<IPicture>("Picture 2");
         var stream = new MemoryStream();
 
         // Act

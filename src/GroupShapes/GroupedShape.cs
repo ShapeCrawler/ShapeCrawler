@@ -102,8 +102,6 @@ internal sealed class GroupedShape : IShape
         }
     }
 
-    #region Decorated Shape
-
     public decimal Width
     {
         get => this.shape.Width;
@@ -172,13 +170,15 @@ internal sealed class GroupedShape : IShape
     
     public double Rotation => this.shape.Rotation;
     
-    public bool Removeable => this.shape.Removeable;
+    public bool Removeable => this.shape.Removable;
     
     public string SDKXPath => this.shape.SDKXPath;
     
-    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement.CloneNode(true);
+    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
 
     public IPresentation Presentation => this.shape.Presentation;
+    public bool IsGroup => this.shape.IsGroup;
+    public IShapeCollection GroupedShapes => this.shape.GroupedShapes;
 
     public void Remove() => this.shape.Remove();
     
@@ -187,6 +187,4 @@ internal sealed class GroupedShape : IShape
     public IMediaShape AsMedia() => this.shape.AsMedia();
 
     public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
-
-    #endregion Decorated Shape
 }

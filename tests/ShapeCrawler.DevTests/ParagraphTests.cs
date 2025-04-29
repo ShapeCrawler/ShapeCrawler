@@ -164,7 +164,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
-        var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
+        var shape = pres.Slide(1).Shape("Group 1").GroupedShapes.GetByName("Shape 1");
         var paragraph = shape.TextBox.Paragraphs[0];
         
         // Act

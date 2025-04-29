@@ -89,6 +89,17 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets the parent presentation.
     /// </summary>
     IPresentation Presentation { get; }
+    
+    /// <summary>
+    ///     Gets a value indicating whether the shape is a group.
+    /// </summary>
+    bool IsGroup { get; }
+    
+    /// <summary>
+    ///     Gets the grouped shapes. Use <see cref="IsGroup"/> property to check if the shape is a group.
+    /// </summary>
+    /// <exception cref="SCException">Thrown when the shape is not a group.</exception>
+    IShapeCollection GroupedShapes { get; }
 
     /// <summary>
     ///     Removes the shape from the slide.

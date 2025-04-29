@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.GroupShapes;
 
-internal sealed class GroupShape : Shape, IGroupShape
+internal sealed class GroupShape : Shape
 {
     private readonly P.GroupShape pGroupShape;
 
@@ -35,7 +35,7 @@ internal sealed class GroupShape : Shape, IGroupShape
     
     public override IShapeFill Fill { get; }
     
-    public override bool Removeable => true;
+    public override bool Removable => true;
     
     public override double Rotation
     {

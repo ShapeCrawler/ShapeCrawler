@@ -66,6 +66,10 @@ internal class Shape : IShape
             (PresentationDocument)this.pShapeTreeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!
                 .OpenXmlPackage);
 
+    public bool IsGroup => false;
+    
+    public IShapeCollection GroupedShapes=> throw new SCException($"The shape is not a group. Use {nameof(IsGroup)} property to check if the shape is a group.");
+
     public int Id
     {
         get => this.shapeId.Value();
@@ -293,7 +297,7 @@ internal class Shape : IShape
         }
     }
 
-    public virtual bool Removeable => false;
+    public virtual bool Removable => false;
 
     public string SDKXPath => new XmlPath(this.pShapeTreeElement).XPath;
 

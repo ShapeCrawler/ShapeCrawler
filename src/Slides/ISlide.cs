@@ -59,7 +59,7 @@ public interface ISlide
     /// <summary>
     ///     Gets all slide text boxes.
     /// </summary>
-    public IList<ITextBox> GetAllTextBoxes();
+    public IList<ITextBox> GetTextBoxes();
 
     /// <summary>
     ///     Hides slide.
@@ -261,35 +261,25 @@ internal sealed class Slide : ISlide
         presPart.Presentation.Save();
     }
 
-    public IList<ITextBox> GetAllTextBoxes()
+    public IList<ITextBox> GetTextBoxes()
     {
-        var returnList = new List<ITextBox>();
-
         var textBoxes = this.Shapes
             .Where(shape => shape.TextBox is not null)
             .Select(shape => shape.TextBox!)
             .ToList();
-        returnList.AddRange(textBoxes);
+        textBoxes.AddRange(textBoxes);
 
-        // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
-        var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
-        if (tablesOnSlide.Any())
+        var tableTextboxes = this.Shapes.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
+            .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
+        textBoxes.AddRange(tableTextboxes);
+
+        var groupShapes = this.Shapes.OfType<GroupShapes.GroupShape>().ToList();
+        foreach (var groupShape in groupShapes)
         {
-            returnList.AddRange(tablesOnSlide.SelectMany(table =>
-                table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextBox)));
+            this.AddGroupTextBoxes(groupShape, textBoxes);
         }
 
-        // if there are groups on that slide, they need to be added as well since those are not direct descendants of the slide either
-        var groupsOnSlide = this.Shapes.OfType<IGroupShape>().ToList();
-        if (groupsOnSlide.Any())
-        {
-            foreach (var group in groupsOnSlide)
-            {
-                this.AddAllTextboxesInGroupToList(group, returnList);
-            }
-        }
-
-        return returnList;
+        return textBoxes;
     }
 
     /// <inheritdoc/>
@@ -313,14 +303,14 @@ internal sealed class Slide : ISlide
 
     internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
-    private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextBox> textBoxes)
+    private void AddGroupTextBoxes(GroupShapes.GroupShape groupShape, List<ITextBox> textBoxes)
     {
-        foreach (var shape in group.Shapes)
+        foreach (var shape in groupShape.Shapes)
         {
             switch (shape.ShapeContent)
             {
                 case ShapeContent.Group:
-                    this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
+                    this.AddGroupTextBoxes((GroupShapes.GroupShape)shape, textBoxes);
                     break;
                 case ShapeContent.Shape:
                     if (shape.TextBox is not null)

@@ -103,7 +103,7 @@ internal sealed class Table : Shape, ITable
 
     public ITableStyleOptions TableStyleOptions { get; }
 
-    public override bool Removeable => true;
+    public override bool Removable => true;
 
     public override Geometry GeometryType => Geometry.Rectangle;
 

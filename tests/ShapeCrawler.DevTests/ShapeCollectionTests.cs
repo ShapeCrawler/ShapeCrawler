@@ -860,8 +860,8 @@ public class ShapeCollectionTests : SCTest
     public void GetByName_returns_shape_by_specified_name(IShape shape)
     {
         // Arrange
-        var groupShape = (IGroupShape)shape;
-        var shapeCollection = groupShape.Shapes;
+        var groupShape = shape;
+        var shapeCollection = groupShape.GroupedShapes;
             
         // Act
         var resultShape = shapeCollection.GetByName<IShape>("AutoShape 1");
@@ -1080,6 +1080,27 @@ public class ShapeCollectionTests : SCTest
         
         // Assert
         shapes.Should().Contain(shape=> shape is IChart);
+        pres.Validate();
+    }
+    
+    [Test]
+    public void GroupShapes_groups_shapes()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        shapes.AddShape(100, 100, 100, 100, "Shape 1");
+        shapes.AddShape(100, 200, 100, 100, "Shape 2");
+        
+        var shape1 = shapes[0];
+        var shape2 = shapes[1];
+
+        // Act
+        var groupShape = shapes.GroupShapes(new[] { shape1, shape2 });
+
+        // Assert
+        groupShape.Should().NotBeNull();
+        groupShape.Shapes.Should().HaveCount(2);
         pres.Validate();
     }
 }

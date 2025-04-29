@@ -211,7 +211,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textboxes = slide.GetAllTextBoxes();
+        var textboxes = slide.GetTextBoxes();
 
         // Assert
         textboxes.Count.Should().Be(11);
@@ -225,7 +225,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textFrames = slide.GetAllTextBoxes();
+        var textFrames = slide.GetTextBoxes();
 
         // Assert
         textFrames.Count.Should().Be(4);

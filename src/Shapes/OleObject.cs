@@ -27,7 +27,7 @@ internal sealed class OleObject : Shape
 
     public override IShapeFill Fill { get; }
 
-    public override bool Removeable => true;
+    public override bool Removable => true;
 
     public override void Remove() => this.pGraphicFrame.Remove();
 }
