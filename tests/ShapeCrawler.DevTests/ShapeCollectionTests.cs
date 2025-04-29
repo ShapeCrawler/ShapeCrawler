@@ -21,14 +21,14 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
-        var copyingShape = pres.Slides[0].Shapes.GetByName("TextBox")!;
+        var copyingShape = pres.Slides[0].Shapes.Shape("TextBox")!;
         var shapes = pres.Slides[1].Shapes;
 
         // Act
         shapes.Add(copyingShape);
 
         // Assert
-        shapes.GetByName("TextBox 2").Should().NotBeNull();
+        shapes.Shape("TextBox 2").Should().NotBeNull();
     }
 
     [Test]
@@ -36,7 +36,7 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
-        var copyingShape = pres.Slides[0].Shapes.GetByName("Table 1")!;
+        var copyingShape = pres.Slides[0].Shapes.Shape("Table 1")!;
         var shapes = pres.Slides[1].Shapes;
 
         // Act
@@ -52,14 +52,14 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
-        var copyingShape = pres.Slides[0].Shapes.GetByName("Picture")!;
+        var copyingShape = pres.Slides[0].Shapes.Shape("Picture")!;
         var shapes = pres.Slides[0].Shapes;
 
         // Act
         shapes.Add(copyingShape);
 
         // Assert
-        shapes.GetByName("Picture 1").Should().NotBeNull();
+        shapes.Shape("Picture 1").Should().NotBeNull();
         pres.Validate();
     }
 
@@ -69,14 +69,14 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
-        var copyingShape = pres.Slides[0].Shapes.GetByName("Picture")!;
+        var copyingShape = pres.Slides[0].Shapes.Shape("Picture")!;
         var shapes = pres.Slides[1].Shapes;
 
         // Act
         shapes.Add(copyingShape);
 
         // Assert
-        shapes.GetByName("Picture 1").Should().NotBeNull();
+        shapes.Shape("Picture 1").Should().NotBeNull();
         pres.Validate();
     }
 
@@ -866,7 +866,7 @@ public class ShapeCollectionTests : SCTest
         var shapeCollection = groupShape.Shapes;
             
         // Act
-        var resultShape = shapeCollection.GetByName<IShape>("AutoShape 1");
+        var resultShape = shapeCollection.Shape<IShape>("AutoShape 1");
 
         // Assert
         resultShape.Should().NotBeNull();
@@ -932,7 +932,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var chart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         var expectedSlidesCount = pres.Slides.Count + 1;
 
         // Act

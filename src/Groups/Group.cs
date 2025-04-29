@@ -20,11 +20,6 @@ public interface IGroup : IShape
     ///     Gets grouped shapes.
     /// </summary>
     IShapeCollection Shapes { get; }
-
-    /// <summary>
-    ///     Gets the shape.
-    /// </summary>
-    IShape Shape(string shape);
 }
 
 internal sealed class Group : IGroup
@@ -141,7 +136,7 @@ internal sealed class Group : IGroup
     
     public void Duplicate() => this.shape.Duplicate();
     
-    public IShape Shape(string shape) => this.Shapes.GetByName(shape);
+    public IShape Shape(string shape) => this.Shapes.Shape(shape);
 
     public void Remove() => this.shape.Remove();
 

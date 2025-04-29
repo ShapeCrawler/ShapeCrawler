@@ -127,7 +127,7 @@ public class ShapeFillTests : SCTest
         // Arrange
         var pptxStream = TestAsset("009_table.pptx");
         var pres = new Presentation(pptxStream);
-        var shapeFill = pres.Slides[2].Shapes.GetByName("AutoShape 1").Fill;
+        var shapeFill = pres.Slides[2].Shapes.Shape("AutoShape 1").Fill;
 
         // Act
         var imageBytes = shapeFill.Picture!.AsByteArray();
@@ -160,7 +160,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
         var shapeFill = shape.Fill;
 
         // Act
@@ -177,7 +177,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slide(slideNumber).Shapes.GetByName(shapeName);
+        var shape = pres.Slide(slideNumber).Shapes.Shape(shapeName);
         var shapeFill = shape.Fill;
         var image = TestAsset("09 png image.png");
         var greenColor = "32a852";
@@ -214,7 +214,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shapeFill = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).Fill;
+        var shapeFill = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).Fill;
 
         // Act
         shapeFill.SetNoFill();
@@ -229,7 +229,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
         var table = (ITable)shape;
         var shapeFill = table[0, 0].Fill;
 
@@ -247,7 +247,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
         var shapeFill = shape.Fill;
 
         // Act
@@ -298,7 +298,7 @@ public class ShapeFillTests : SCTest
     {
         // Act
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var shapeFill = pres.Slides[1].Shapes.GetByName<IShape>("AutoShape 1").Fill;
+        var shapeFill = pres.Slides[1].Shapes.Shape<IShape>("AutoShape 1").Fill;
 
         // Act-Assert
         shapeFill.Type.Should().Be(FillType.Gradient);

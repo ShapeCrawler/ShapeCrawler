@@ -20,20 +20,13 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
     public T GetById<T>(int id)
         where T : IShape => (T)this.GetGroupedShapes().First(shape => shape.Id == id);
 
-    public T? TryGetById<T>(int id)
-        where T : IShape => (T?)this.GetGroupedShapes().FirstOrDefault(shape => shape.Id == id);
+    public IShape Shape(string name) => this.GetGroupedShapes().First(shape => shape.Name == name);
 
-    T IShapeCollection.GetByName<T>(string name) => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
-
-    T? IShapeCollection.TryGetByName<T>(string name)
-        where T : default => (T?)this.GetGroupedShapes().FirstOrDefault(shape => shape.Name == name);
-
-    public IShape GetByName(string name) => this.GetGroupedShapes().First(shape => shape.Name == name);
+    public T Shape<T>(string name)
+        where T : IShape => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
 
     public T Last<T>()
         where T : IShape => (T)this.GetGroupedShapes().Last(shape => shape is T);
-
-    public T GetByName<T>(string name) => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
 
     public IEnumerator<IShape> GetEnumerator() => this.GetGroupedShapes().GetEnumerator();
 

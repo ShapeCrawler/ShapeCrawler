@@ -28,12 +28,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         where T : IShape => (T?)this.GetShapes().FirstOrDefault(shape => shape.Id == id);
 
     public T GetByName<T>(string name)
-        where T : IShape => (T)this.GetByName(name);
+        where T : IShape => (T)this.Shape(name);
 
-    public T? TryGetByName<T>(string name)
-        where T : IShape => (T?)this.GetShapes().FirstOrDefault(shape => shape.Name == name);
+    public T Shape<T>(string name)
+        where T : IShape => (T)this.GetShapes().First(shape => shape.Name == name);
 
-    public IShape GetByName(string name) =>
+    public IShape Shape(string name) =>
         this.GetShapes().FirstOrDefault(shape => shape.Name == name)
         ?? throw new SCException("Shape not found");
 
@@ -177,6 +177,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     private bool IsOLEObject(A.GraphicData aGraphicData) => 
         aGraphicData.Uri?.Value?.Equals(
             "http://schemas.openxmlformats.org/presentationml/2006/ole",

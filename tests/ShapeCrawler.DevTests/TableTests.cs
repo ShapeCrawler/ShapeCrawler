@@ -174,7 +174,7 @@ public class TableTests : SCTest
         var ms = new MemoryStream();
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         var expectedColumnsCount = table.Columns.Count - 1;
 
         // Act
@@ -184,7 +184,7 @@ public class TableTests : SCTest
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Save(ms);
         pres = new Presentation(ms);
-        table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Validate();
     }
@@ -247,7 +247,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         var columnsCountBefore = table.Columns.Count;
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -268,7 +268,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         var column = table.Columns[0];
         var columnsCountBefore = table.Columns.Count;
 
@@ -286,7 +286,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case002.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         var column = table.Columns[0];
 
         // Act
@@ -306,7 +306,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         var column = table.Columns[1];
 
         // Act
@@ -346,7 +346,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
         var column = table.Columns[0];
         var columWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -367,7 +367,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
 
         // Act
         table.Rows.Add();
@@ -454,7 +454,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var row = pres.Slides[1].Shapes.GetByName<ITable>("Table 4").Rows[1];
+        var row = pres.Slides[1].Shapes.Shape<ITable>("Table 4").Rows[1];
         var cell1X0 = row.Cells[0];
         var cell1X1 = row.Cells[1];
 
@@ -877,7 +877,7 @@ public class TableTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
+        table = pres.Slides[2].Shapes.Shape<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
         static void AssertTable(ITable table, decimal expectedMergedColumnWidth, decimal expectedMergedRowHeight)
@@ -1075,7 +1075,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[1].Shapes.GetByName<ITable>("Table 5");
+        var table = pres.Slides[1].Shapes.Shape<ITable>("Table 5");
         var cell1 = table[1, 1];
         var cell2 = table[2, 1];
 

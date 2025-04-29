@@ -74,7 +74,7 @@ internal sealed class SlideMaster : ISlideMaster
     
     public int Number { get; set; }
     
-    public IShape Shape(string shape) => this.Shapes.GetByName(shape);
+    public IShape Shape(string shape) => this.Shapes.Shape(shape);
     
     private MasterSlideNumber? CreateSlideNumber()
     {

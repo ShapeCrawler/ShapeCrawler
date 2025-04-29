@@ -227,15 +227,15 @@ internal sealed class Slide : ISlide
         }
     }
 
-    public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
+    public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
 
-    public IPicture Picture(string picture) => this.Shapes.GetByName<IPicture>(picture);
+    public IPicture Picture(string picture) => this.Shapes.Shape<IPicture>(picture);
 
-    public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
+    public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
 
     public T Shape<T>(string name)
         where T : IShape
-        => this.Shapes.GetByName<T>(name);
+        => this.Shapes.Shape<T>(name);
 
     public void Remove()
     {
