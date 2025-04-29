@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("ShapeCrawler.Tests.Unit")]
-[assembly: InternalsVisibleTo("ShapeCrawler.Tests.Load")]
+[assembly: InternalsVisibleTo("ShapeCrawler.DevTests")]
+[assembly: InternalsVisibleTo("ShapeCrawler.CITests")]
