@@ -1,4 +1,5 @@
 using FluentAssertions;
+using ImageMagick;
 using ShapeCrawler.DevTests.Helpers;
 
 namespace ShapeCrawler.Tests.Load;
@@ -76,5 +77,31 @@ public class ShapeCollectionTests : SCTest
         var imageParts = sdkPres.PresentationPart!.SlideParts.SelectMany(slidePart => slidePart.ImageParts).Select(imagePart => imagePart.Uri)
             .ToHashSet();
         imageParts.Count.Should().Be(1);
+    }
+    
+    [Test]
+    public void AddPicture_too_large_adds_svg_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestAsset("068 vector image-large.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+
+        // These values are reasonable range for size of an added image
+        picture.Height.Should().BeGreaterThan(0);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeGreaterThan(0);
+        picture.Width.Should().BeLessThan(2400);
+        var rasterImage = new MagickImageInfo(picture.Image!.AsByteArray());
+        rasterImage.Width.Should().Be(500);
+        rasterImage.Height.Should().Be(500);
+        pres.Validate();
     }
 }
