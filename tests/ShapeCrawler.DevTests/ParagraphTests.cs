@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Presentations;
+using ShapeCrawler.Groups;
 
 namespace ShapeCrawler.DevTests;
 
@@ -164,8 +165,9 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
-        var shape = pres.Slide(1).Shape("Group 1").GroupedShapes.GetByName("Shape 1");
-        var paragraph = shape.TextBox.Paragraphs[0];
+        var group = pres.Slide(1).Shape<IGroup>("Group 1");
+        var shape = group.Shapes.GetByName("Shape 1");
+        var paragraph = shape.TextBox!.Paragraphs[0];
         
         // Act
         paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";

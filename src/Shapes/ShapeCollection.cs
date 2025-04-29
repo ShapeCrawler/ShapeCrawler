@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.GroupShapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -19,6 +18,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
     public int Count => this.GetShapes().Count();
 
     public IShape this[int index] => this.GetShapes().ElementAt(index);
+
+    public IShape GetById(int id) => this.GetById<IShape>(id);
 
     public T GetById<T>(int id)
         where T : IShape => (T)this.GetShapes().First(shape => shape.Id == id);
@@ -128,7 +129,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 
     private IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
     {
-        yield return new GroupShape(pGroupShape);
+        yield return new Group(new Shape(pGroupShape), pGroupShape);
     }
 
     private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
@@ -138,9 +139,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         {
             yield break;
         }
-
-        // Check for OLE Object
-        if (this.IsOleObject(aGraphicData))
+        
+        if (this.IsOLEObject(aGraphicData))
         {
             yield return new OleObject(pGraphicFrame);
             yield break;
@@ -177,7 +177,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         }
     }
 
-    private bool IsOleObject(A.GraphicData aGraphicData) => 
+    private bool IsOLEObject(A.GraphicData aGraphicData) => 
         aGraphicData.Uri?.Value?.Equals(
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;

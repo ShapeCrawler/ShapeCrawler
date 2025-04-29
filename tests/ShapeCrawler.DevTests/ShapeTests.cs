@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Text.Json;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Groups;
 
 namespace ShapeCrawler.DevTests;
 
@@ -132,8 +133,8 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slide(1).Shape("Group 2");
-        var groupedShape = groupShape.GroupedShapes.GetByName<IShape>("Shape 1");
+        var groupShape = pres.Slide(1).Shape<IGroup>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
 
         // Act
         groupedShape.Y = 307;
@@ -149,8 +150,8 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slide(1).Shape("Group 2");
-        var groupedShape = groupShape.GroupedShapes.GetByName<IShape>("Shape 2");
+        var groupShape = pres.Slide(1).Shape<IGroup>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
 
         // Act
         groupedShape.Y = 372;
@@ -165,8 +166,8 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slide(1).Shape("Group 2");
-        var groupedShape = groupShape.GroupedShapes.GetByName<IShape>("Shape 1");
+        var groupShape = pres.Slide(1).Shape<IGroup>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
 
         // Act
         groupedShape.X = 49m;
@@ -182,8 +183,8 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slide(1).Shape("Group 2");
-        var groupedShape = groupShape.GroupedShapes.GetByName<IShape>("Shape 1");
+        var groupShape = pres.Slide(1).Shape<IGroup>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 1");
         var groupShapeX = groupShape.X;
 
         // Act
@@ -200,9 +201,11 @@ public class ShapeTests : SCTest
     public void Width_returns_shape_width_in_points()
     {
         // Arrange
-        var shapeCase1 = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        var groupShape = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
-        var shapeCase2 = groupShape.GroupedShapes.First(sp => sp.Id == 5);
+        var pres = new Presentation(TestAsset("006_1 slides.pptx"));
+        var shapeCase1 = pres.Slide(1).Shapes.First(sp => sp.Id == 2);
+        var pres2 = new Presentation(TestAsset("009_table.pptx"));
+        var groupShape = pres2.Slide(2).Shapes.GetById<IGroup>(7);
+        var shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
         var shapeCase3 = new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
         // Act & Assert
@@ -217,8 +220,8 @@ public class ShapeTests : SCTest
         // Arrange
         var pptx = TestAsset("009_table.pptx");
         var pres = new Presentation(pptx);
-        var groupShape = pres.Slide(2).Shape("Group 1");
-        var groupedShape = groupShape.GroupedShapes.GetByName<IShape>("Shape 2");
+        var groupShape = pres.Slide(2).Shape<IGroup>("Group 1");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
 
         // Act
         var height = groupedShape.Height;
@@ -245,10 +248,11 @@ public class ShapeTests : SCTest
     public void Shape_IsNotGroupShape()
     {
         // Arrange
-        var shape = new Presentation(TestAsset("006_1 slides.pptx")).Slides[0].Shapes.First(x => x.Id == 3);
+        var pres = new Presentation(TestAsset("006_1 slides.pptx"));
+        var shape = pres.Slide(1).Shapes.GetById(3);
 
         // Act-Assert
-        shape.IsGroup.Should().BeFalse();
+        shape.Should().NotBeOfType<IGroup>();
     }
 
     [Test]
@@ -500,7 +504,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var shape = pres.Slide(2).Shapes.GetByName("Group 1").GroupedShapes.GetByName<IShape>("Shape 1");
+        var shape = pres.Slide(2).Shape<IGroup>("Group 1").Shape("Shape 1");
 
         // Act
         decimal x = shape.X;

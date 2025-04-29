@@ -76,7 +76,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
-    
+
     public void AddBarChart(
         int x,
         int y,
@@ -178,7 +178,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
     }
 
-    public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
+    public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle, string text = "")
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
@@ -193,6 +193,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         addedShape.Height = height;
         addedShape.Id = nextShapeId;
         addedShape.GeometryType = geometry;
+        addedShape.TextBox!.SetText(text);
     }
 
     public void AddLine(string xml)
@@ -338,6 +339,8 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
                             throw new SCException("Shape is not found.");
         removingShape.Remove();
     }
+
+    public IShape GetById(int id) => this.GetById<IShape>(id);
 
     public T GetById<T>(int id)
         where T : IShape => this.shapes.GetById<T>(id);

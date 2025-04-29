@@ -267,13 +267,12 @@ internal sealed class Slide : ISlide
             .Where(shape => shape.TextBox is not null)
             .Select(shape => shape.TextBox!)
             .ToList();
-        textBoxes.AddRange(textBoxes);
 
         var tableTextboxes = this.Shapes.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
             .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
         textBoxes.AddRange(tableTextboxes);
 
-        var groupShapes = this.Shapes.OfType<GroupShapes.GroupShape>().ToList();
+        var groupShapes = this.Shapes.OfType<Group>().ToList();
         foreach (var groupShape in groupShapes)
         {
             this.AddGroupTextBoxes(groupShape, textBoxes);
@@ -303,14 +302,14 @@ internal sealed class Slide : ISlide
 
     internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
-    private void AddGroupTextBoxes(GroupShapes.GroupShape groupShape, List<ITextBox> textBoxes)
+    private void AddGroupTextBoxes(Group groupShape, List<ITextBox> textBoxes)
     {
         foreach (var shape in groupShape.Shapes)
         {
             switch (shape.ShapeContent)
             {
                 case ShapeContent.Group:
-                    this.AddGroupTextBoxes((GroupShapes.GroupShape)shape, textBoxes);
+                    this.AddGroupTextBoxes((Group)shape, textBoxes);
                     break;
                 case ShapeContent.Shape:
                     if (shape.TextBox is not null)

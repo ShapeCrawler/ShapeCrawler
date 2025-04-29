@@ -82,6 +82,7 @@ internal sealed class Picture : IPicture
 
             return 100m - (amount / 1000m); // value is stored in Open XML as thousandths of a percent
         }
+
         set
         {
             var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>()
@@ -165,6 +166,7 @@ internal sealed class Picture : IPicture
     public string SDKXPath => this.shape.SDKXPath;
 
     public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
+
     public IShapeCollection GroupedShapes => throw new SCException($"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
 
     public IPresentation Presentation => this.shape.Presentation;

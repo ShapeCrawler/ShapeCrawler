@@ -64,7 +64,7 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets the fill of the shape. Returns <see langword="null"/> if the shape cannot be filled, for example, a line.
     /// </summary>
     IShapeFill? Fill { get; }
-    
+
     /// <summary>
     ///     Gets Text Box. Returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
@@ -89,17 +89,6 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets the parent presentation.
     /// </summary>
     IPresentation Presentation { get; }
-    
-    /// <summary>
-    ///     Gets a value indicating whether the shape is a group.
-    /// </summary>
-    bool IsGroup { get; }
-    
-    /// <summary>
-    ///     Gets the grouped shapes. Use <see cref="IsGroup"/> property to check if the shape is a group.
-    /// </summary>
-    /// <exception cref="SCException">Thrown when the shape is not a group.</exception>
-    IShapeCollection GroupedShapes { get; }
 
     /// <summary>
     ///     Removes the shape from the slide.

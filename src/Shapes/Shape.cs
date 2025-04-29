@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Slides;
@@ -61,15 +60,10 @@ internal class Shape : IShape
         set => this.size.Height = value;
     }
 
-    public IPresentation Presentation =>
-        new Presentation(
-            (PresentationDocument)this.pShapeTreeElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!
-                .OpenXmlPackage);
+    public IPresentation Presentation => new Presentation(new SCOpenXmlElement(this.pShapeTreeElement).PresentationDocument);
 
     public bool IsGroup => false;
     
-    public IShapeCollection GroupedShapes=> throw new SCException($"The shape is not a group. Use {nameof(IsGroup)} property to check if the shape is a group.");
-
     public int Id
     {
         get => this.shapeId.Value();

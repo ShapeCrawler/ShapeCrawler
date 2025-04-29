@@ -41,7 +41,7 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds a new Rectangle shape.
     /// </summary>
-    void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle);
+    void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle, string text = "");
 
     /// <summary>
     ///     Adds a line from XML.

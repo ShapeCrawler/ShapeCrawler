@@ -4,7 +4,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.GroupShapes;
+namespace ShapeCrawler.Groups;
 
 internal sealed class GroupedShape : IShape
 {
@@ -24,14 +24,14 @@ internal sealed class GroupedShape : IShape
             var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
-            
+
             var xGroupShapePt = new Emus(aOffset.X!).AsPoints();
             var groupShapeChildXPt = new Emus(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value).AsPoints();
             var groupedShapeXPt = this.shape.X;
-            
+
             return xGroupShapePt - (groupShapeChildXPt - groupedShapeXPt);
         }
-        
+
         set
         {
             this.shape.X = value;
@@ -129,9 +129,9 @@ internal sealed class GroupedShape : IShape
     }
 
     public bool Hidden => this.shape.Hidden;
-    
+
     public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
-   
+
     public Geometry GeometryType
     {
         get => this.shape.GeometryType;
@@ -157,33 +157,33 @@ internal sealed class GroupedShape : IShape
     }
 
     public ShapeContent ShapeContent => this.shape.ShapeContent;
-    
+
     public bool HasOutline => this.shape.HasOutline;
-    
+
     public IShapeOutline Outline => this.shape.Outline;
-    
+
     public bool HasFill => this.shape.HasFill;
-    
+
     public IShapeFill Fill => this.shape.Fill;
-    
+
     public ITextBox? TextBox => this.shape.TextBox;
-    
+
     public double Rotation => this.shape.Rotation;
-    
-    public bool Removeable => this.shape.Removable;
-    
+
+    public bool Removable => this.shape.Removable;
+
     public string SDKXPath => this.shape.SDKXPath;
-    
+
     public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
 
     public IPresentation Presentation => this.shape.Presentation;
+
     public bool IsGroup => this.shape.IsGroup;
-    public IShapeCollection GroupedShapes => this.shape.GroupedShapes;
 
     public void Remove() => this.shape.Remove();
-    
+
     public ITable AsTable() => this.shape.AsTable();
-    
+
     public IMediaShape AsMedia() => this.shape.AsMedia();
 
     public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
