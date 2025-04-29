@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.DevTests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.CITests", "tests\ShapeCrawler.CITests\ShapeCrawler.CITests.csproj", "{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "ShapeCrawler.Examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
