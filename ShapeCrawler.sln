@@ -12,13 +12,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "src\ShapeCr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{093CE2C5-BA5E-45AE-9D06-7E210EE9644A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Unit", "tests\ShapeCrawler.Tests.Unit\ShapeCrawler.Tests.Unit.csproj", "{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.DevTests", "tests\ShapeCrawler.DevTests\ShapeCrawler.DevTests.csproj", "{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Load", "tests\ShapeCrawler.Tests.Load\ShapeCrawler.Tests.Load.csproj", "{5363B6DC-3E0F-4E7F-9471-704FB550CCED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.CITests", "tests\ShapeCrawler.CITests\ShapeCrawler.CITests.csproj", "{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Integration", "tests\ShapeCrawler.Tests.Integration\ShapeCrawler.Tests.Integration.csproj", "{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "ShapeCrawler.Examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +32,6 @@ Global
 		{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5363B6DC-3E0F-4E7F-9471-704FB550CCED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,7 +46,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
-		{5363B6DC-3E0F-4E7F-9471-704FB550CCED} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
 		{1E63D4C0-CDF0-43EE-BC83-31859EB39D15} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
