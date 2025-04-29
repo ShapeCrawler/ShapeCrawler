@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Presentations;
+using ShapeCrawler.Groups;
 
 namespace ShapeCrawler.DevTests;
 
@@ -164,8 +165,9 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
-        var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
-        var paragraph = shape.TextBox.Paragraphs[0];
+        var group = pres.Slide(1).Shape<IGroup>("Group 1");
+        var shape = group.Shapes.Shape("Shape 1");
+        var paragraph = shape.TextBox!.Paragraphs[0];
         
         // Act
         paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";
@@ -200,7 +202,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptxStream = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptxStream);
-        var paragraph = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 3").TextBox!.Paragraphs[0];
+        var paragraph = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 3").TextBox!.Paragraphs[0];
             
         // Act
         paragraph.ReplaceText("Some text", "Some text2");
@@ -228,7 +230,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case001.pptx"));
-        var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("AutoShape 1");
+        var shape = pres.SlideMasters[0].Shapes.Shape<IShape>("AutoShape 1");
         shape.TextBox!.Paragraphs.Add();
         var paragraph = shape.TextBox.Paragraphs.Last();
         var expectedPortionCount = paragraph.Portions.Count + 1;
@@ -270,7 +272,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presName));
-        var paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox.Paragraphs[0];
         var mStream = new MemoryStream();
         
         // Act
@@ -281,7 +283,7 @@ public class ParagraphTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.Slides[slideNumber - 1].Shapes.GetByName<IShape>(shapeName).TextBox.Paragraphs[0];
+        paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox.Paragraphs[0];
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
     }
 

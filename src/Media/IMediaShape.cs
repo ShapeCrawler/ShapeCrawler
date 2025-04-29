@@ -48,7 +48,7 @@ internal class MediaShape : Shape, IMediaShape
     
     public override IShapeFill Fill { get; }
     
-    public override bool Removeable => true;
+    public override bool Removable => true;
 
     public string Mime
     {

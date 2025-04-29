@@ -42,7 +42,7 @@ public class SlideShapeAttribute : Attribute, ITestBuilder
         var pres = new Presentation(pptxStream);
         var shape = this.shapeId.HasValue 
             ? pres.Slides[this.slideNumber - 1].Shapes.GetById<IShape>(this.shapeId.Value) 
-            : pres.Slides[this.slideNumber - 1].Shapes.GetByName<IShape>(this.shapeName);
+            : pres.Slides[this.slideNumber - 1].Shapes.Shape<IShape>(this.shapeName);
 
         var parameters = this.expectedResult != null
             ? new TestCaseParameters(new[] { shape, this.expectedResult })

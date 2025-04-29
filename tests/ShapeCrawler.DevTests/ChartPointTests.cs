@@ -136,7 +136,7 @@ public class ChartPointTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var chart = pres.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
+        var chart = pres.Slides[--slideNumber].Shapes.Shape<IChart>(shapeName);
         var point = chart.SeriesCollection[0].Points[0];
         const int newChartPointValue = 6;
 
@@ -147,7 +147,7 @@ public class ChartPointTests : SCTest
         point.Value.Should().Be(newChartPointValue);
 
         pres = SaveAndOpenPresentation(pres);
-        chart = pres.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
+        chart = pres.Slides[slideNumber].Shapes.Shape<IChart>(shapeName);
         point = chart.SeriesCollection[0].Points[0];
         point.Value.Should().Be(newChartPointValue);
     }

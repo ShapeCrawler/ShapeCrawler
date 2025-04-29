@@ -5,6 +5,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Groups;
+
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
@@ -36,7 +38,7 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
-        var pictureShape = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7");
+        var pictureShape = presentation.Slides[0].SlideLayout.Shapes.Shape<IPicture>("Picture 7");
             
         // Act
         var picByteArray = pictureShape.Image.AsByteArray();
@@ -51,7 +53,7 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
-        var image = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7").Image;
+        var image = presentation.Slides[0].SlideLayout.Shapes.Shape<IPicture>("Picture 7").Image;
             
         // Act
         var mimeType = image.Mime;
@@ -67,7 +69,7 @@ public class PictureTests : SCTest
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
         var slideMaster = presentation.SlideMasters[0];
-      var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
+      var pictureShape = slideMaster.Shapes.Shape<IPicture>("Picture 9");
             
         // Act
         var picByteArray = pictureShape.Image.AsByteArray();
@@ -84,7 +86,7 @@ public class PictureTests : SCTest
         var pngStream = TestAsset("10 png image.png");
         var pres = new Presentation(pptx);
         var mStream = new MemoryStream();
-        var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
+        var picture = pres.Slides[1].Shapes.Shape<IPicture>("Picture 1");
         var image = picture.Image!; 
         var lengthBefore = image.AsByteArray().Length;
         
@@ -94,7 +96,7 @@ public class PictureTests : SCTest
         // Assert
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
+        picture = pres.Slides[1].Shapes.Shape<IPicture>("Picture 1");
         var lengthAfter = picture.Image!.AsByteArray().Length;
 
         lengthAfter.Should().NotBe(lengthBefore);
@@ -106,7 +108,7 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case002.pptx");
         var pres = new Presentation(pptxStream);
-        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("Picture 1");
+        var picture = pres.Slides[0].Shapes.Shape<IPicture>("Picture 1");
 
         // Act
         var svgContent = picture.SvgContent;
@@ -121,9 +123,9 @@ public class PictureTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("pictures-case001.pptx"));
         var image = TestAsset("10 png image.png");
-        var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
-        var groupedPicture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
-        var groupedPicture2 = groupShape.Shapes.GetByName<IPicture>("Picture 2");
+        var groupShape = pres.Slide(1).Shape<IGroup>("Group 1");
+        var groupedPicture1 = groupShape.Shapes.Shape<IPicture>("Picture 1");
+        var groupedPicture2 = groupShape.Shapes.Shape<IPicture>("Picture 2");
         var stream = new MemoryStream();
 
         // Act
@@ -142,7 +144,7 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var pictureImage = pres.Slides[0].Shapes.GetByName<IPicture>("Picture 3").Image;
+        var pictureImage = pres.Slides[0].Shapes.Shape<IPicture>("Picture 3").Image;
             
         // Act
         var fileName = pictureImage!.Name;
@@ -157,7 +159,7 @@ public class PictureTests : SCTest
         // Arrange
         var pre = new Presentation(TestAsset("pictures-case002.pptx"));
         var shapes = pre.Slide(1).Shapes;
-        var picture = shapes.GetByName<IPicture>("Picture 2");
+        var picture = shapes.Shape<IPicture>("Picture 2");
 
         // Act
         picture.SendToBack();
@@ -293,7 +295,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("060_picture-transparency.pptx"));
-        var picture = pres.Slides[0].Shapes.GetByName<IPicture>("50%");
+        var picture = pres.Slides[0].Shapes.Shape<IPicture>("50%");
 
         // Act
         picture.Transparency = transparency;

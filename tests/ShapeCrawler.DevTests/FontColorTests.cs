@@ -126,7 +126,7 @@ public class FontColorTests : SCTest
         // Arrange
         var stream = new MemoryStream();
         var pres = new Presentation(TestAsset("061_font-color.pptx"));
-        var fontColor = pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
+        var fontColor = pres.SlideMasters[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         
         // Act
         fontColor.Update("#007F00");
@@ -135,7 +135,7 @@ public class FontColorTests : SCTest
         pres.Save(stream);
         pres = new Presentation(stream);
         pres.Validate();
-        fontColor = pres.SlideMasters[0].Shapes.GetByName("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
+        fontColor = pres.SlideMasters[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         fontColor.Hex.Should().Be("007F00");
     }
     

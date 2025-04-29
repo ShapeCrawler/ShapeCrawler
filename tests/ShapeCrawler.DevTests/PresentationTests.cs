@@ -326,7 +326,7 @@ public class PresentationTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptx);
-        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
+        var textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.SetText("Test");
 
         // Act
@@ -334,7 +334,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres = new Presentation(pptx);
-        textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextBox!;
+        textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
 

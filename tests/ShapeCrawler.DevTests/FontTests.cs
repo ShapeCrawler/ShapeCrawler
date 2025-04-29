@@ -276,7 +276,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
         var font = shape.TextBox.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -385,7 +385,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presentation));
-        var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        var font = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
         var oldSize = font.Size;
         var newSize = oldSize + 2.4m;
@@ -397,7 +397,7 @@ public class FontTests : SCTest
         pres.Validate();
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        font = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         font.Size.Should().Be(newSize);
     }
     
@@ -431,7 +431,7 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presentation));
-        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
         var font = shape.TextBox!.Paragraphs[0].Portions[1].Font;
 
         // Act
@@ -458,7 +458,7 @@ public class FontTests : SCTest
 
         // Assert
         pres = new Presentation(mStream);
-        font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
+        font = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         font.OffsetEffect.Should().NotBe(oldOffsetSize);
         font.OffsetEffect.Should().Be(expectedOffsetEffect);
     }

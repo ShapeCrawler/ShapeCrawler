@@ -211,24 +211,21 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textboxes = slide.GetAllTextBoxes();
+        var textboxes = slide.GetTextBoxes();
 
         // Assert
         textboxes.Count.Should().Be(11);
     }
 
     [Test]
-    public void TextFrames_returns_list_of_all_text_frames_on_that_slide()
+    public void GetTextBoxes_returns_all_slide_textboxes()
     {
         // Arrange
         var pres = new Presentation(TestAsset("011_dt.pptx"));
-        var slide = pres.Slides.First();
+        var slide = pres.Slide(1);
 
-        // Act
-        var textFrames = slide.GetAllTextBoxes();
-
-        // Assert
-        textFrames.Count.Should().Be(4);
+        // Act & Assert
+        slide.GetTextBoxes().Count.Should().Be(4);
     }
 
     [Test]

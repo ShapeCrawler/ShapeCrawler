@@ -12,7 +12,7 @@ public class BulletTests : SCTest
         // Arrange
         var pptxStream = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptxStream);
-        var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
+        var shape = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 1");
         var bullet = shape.TextBox!.Paragraphs[0].Bullet;
 
         // Act
@@ -26,7 +26,7 @@ public class BulletTests : SCTest
         var savedPreStream = new MemoryStream();
         pres.Save(savedPreStream);
         var newPresentation = new Presentation(savedPreStream);
-        shape = newPresentation.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
+        shape = newPresentation.Slides[0].Shapes.Shape<IShape>("AutoShape 1");
         bullet = shape.TextBox!.Paragraphs[0].Bullet;
         bullet.Type.Should().Be(BulletType.Character);
         bullet.Character.Should().Be("*");

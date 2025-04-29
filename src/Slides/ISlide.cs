@@ -59,7 +59,7 @@ public interface ISlide
     /// <summary>
     ///     Gets all slide text boxes.
     /// </summary>
-    public IList<ITextBox> GetAllTextBoxes();
+    public IList<ITextBox> GetTextBoxes();
 
     /// <summary>
     ///     Hides slide.
@@ -227,15 +227,15 @@ internal sealed class Slide : ISlide
         }
     }
 
-    public ITable Table(string name) => this.Shapes.GetByName<ITable>(name);
+    public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
 
-    public IPicture Picture(string picture) => this.Shapes.GetByName<IPicture>(picture);
+    public IPicture Picture(string picture) => this.Shapes.Shape<IPicture>(picture);
 
-    public IShape Shape(string name) => this.Shapes.GetByName<IShape>(name);
+    public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
 
     public T Shape<T>(string name)
         where T : IShape
-        => this.Shapes.GetByName<T>(name);
+        => this.Shapes.Shape<T>(name);
 
     public void Remove()
     {
@@ -261,35 +261,24 @@ internal sealed class Slide : ISlide
         presPart.Presentation.Save();
     }
 
-    public IList<ITextBox> GetAllTextBoxes()
+    public IList<ITextBox> GetTextBoxes()
     {
-        var returnList = new List<ITextBox>();
-
         var textBoxes = this.Shapes
             .Where(shape => shape.TextBox is not null)
             .Select(shape => shape.TextBox!)
             .ToList();
-        returnList.AddRange(textBoxes);
 
-        // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
-        var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
-        if (tablesOnSlide.Any())
+        var tableTextboxes = this.Shapes.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
+            .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
+        textBoxes.AddRange(tableTextboxes);
+
+        var groupShapes = this.Shapes.OfType<Group>().ToList();
+        foreach (var groupShape in groupShapes)
         {
-            returnList.AddRange(tablesOnSlide.SelectMany(table =>
-                table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextBox)));
+            this.AddGroupTextBoxes(groupShape, textBoxes);
         }
 
-        // if there are groups on that slide, they need to be added as well since those are not direct descendants of the slide either
-        var groupsOnSlide = this.Shapes.OfType<IGroupShape>().ToList();
-        if (groupsOnSlide.Any())
-        {
-            foreach (var group in groupsOnSlide)
-            {
-                this.AddAllTextboxesInGroupToList(group, returnList);
-            }
-        }
-
-        return returnList;
+        return textBoxes;
     }
 
     /// <inheritdoc/>
@@ -313,24 +302,17 @@ internal sealed class Slide : ISlide
 
     internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
-    private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextBox> textBoxes)
+    private void AddGroupTextBoxes(IGroup groupShape, List<ITextBox> textBoxes)
     {
-        foreach (var shape in group.Shapes)
+        foreach (var shape in groupShape.Shapes)
         {
-            switch (shape.ShapeContent)
+            if (shape is IGroup group)
             {
-                case ShapeContent.Group:
-                    this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
-                    break;
-                case ShapeContent.Shape:
-                    if (shape.TextBox is not null)
-                    {
-                        textBoxes.Add(shape.TextBox);
-                    }
-
-                    break;
-                default:
-                    throw new SCException("Unsupported shape content type.");
+                this.AddGroupTextBoxes(group, textBoxes);
+            }
+            else if(shape.TextBox is not null)
+            {
+                textBoxes.Add(shape.TextBox);
             }
         }
     }

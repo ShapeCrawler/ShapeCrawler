@@ -7,31 +7,26 @@ using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Picture = ShapeCrawler.Drawing.Picture;
 
-namespace ShapeCrawler.GroupShapes;
+namespace ShapeCrawler.Groups;
 
-internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement> pGroupElements): IShapeCollection
+internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement> pGroupElements) : IShapeCollection
 {
     public int Count => this.GetGroupedShapes().Count;
 
     public IShape this[int index] => this.GetGroupedShapes()[index];
 
+    public IShape GetById(int id) => this.GetById<IShape>(id);
+
     public T GetById<T>(int id)
         where T : IShape => (T)this.GetGroupedShapes().First(shape => shape.Id == id);
 
-    public T? TryGetById<T>(int id) 
-        where T : IShape => (T?)this.GetGroupedShapes().FirstOrDefault(shape => shape.Id == id);
+    public IShape Shape(string name) => this.GetGroupedShapes().First(shape => shape.Name == name);
 
-    T IShapeCollection.GetByName<T>(string name) => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
+    public T Shape<T>(string name)
+        where T : IShape => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
 
-    T? IShapeCollection.TryGetByName<T>(string name) 
-        where T : default => (T?)this.GetGroupedShapes().FirstOrDefault(shape => shape.Name == name);
-
-    public IShape GetByName(string name) => this.GetGroupedShapes().First(shape => shape.Name == name);
-
-    public T Last<T>() 
+    public T Last<T>()
         where T : IShape => (T)this.GetGroupedShapes().Last(shape => shape is T);
-
-    public T GetByName<T>(string name) => (T)this.GetGroupedShapes().First(shape => shape.Name == name);
 
     public IEnumerator<IShape> GetEnumerator() => this.GetGroupedShapes().GetEnumerator();
 
@@ -46,7 +41,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
             switch (pGroupShapeElement)
             {
                 case P.GroupShape pGroupShape:
-                    shape = new GroupShape(pGroupShape);
+                    shape = new Group(new Shape(pGroupShape), pGroupShape);
                     break;
                 case P.Shape { TextBody: not null } pShape:
                     shape = new GroupedShape(
@@ -70,7 +65,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                         }
 
                         break;
-                    } 
+                    }
 
                 default:
                     break;

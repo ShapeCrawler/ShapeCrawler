@@ -76,7 +76,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
         new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
     }
-    
+
     public void AddBarChart(
         int x,
         int y,
@@ -339,19 +339,18 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         removingShape.Remove();
     }
 
+    public IShape GetById(int id) => this.GetById<IShape>(id);
+
     public T GetById<T>(int id)
         where T : IShape => this.shapes.GetById<T>(id);
 
-    public T? TryGetById<T>(int id)
-        where T : IShape => this.shapes.TryGetById<T>(id);
-
     public T GetByName<T>(string name)
-        where T : IShape => this.shapes.GetByName<T>(name);
+        where T : IShape => this.shapes.Shape<T>(name);
 
-    public T? TryGetByName<T>(string name)
-        where T : IShape => this.shapes.TryGetByName<T>(name);
+    public T Shape<T>(string name)
+        where T : IShape => this.shapes.Shape<T>(name);
 
-    public IShape GetByName(string name) => this.shapes.GetByName(name);
+    public IShape Shape(string name) => this.shapes.Shape(name);
 
     public T Last<T>()
         where T : IShape => this.shapes.Last<T>();

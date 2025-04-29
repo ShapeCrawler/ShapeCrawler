@@ -17,7 +17,6 @@ internal sealed class Picture : IPicture
     private readonly Shape shape;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
-    private readonly ShapeGeometry shapeGeometry;
 
     internal Picture(P.Picture pPicture, A.Blip aBlip)
     {
@@ -26,78 +25,17 @@ internal sealed class Picture : IPicture
         this.aBlip = aBlip;
         this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
         this.Fill = new ShapeFill(pPicture.ShapeProperties!);
-        this.shapeGeometry = new ShapeGeometry(pPicture.ShapeProperties!);
-    }
-
-    public decimal X
-    {
-        get => this.shape.X;
-        set => this.shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => this.shape.Y;
-        set => this.shape.Y = value;
     }
 
     public IImage Image => new SlidePictureImage(this.aBlip);
 
     public string? SvgContent => this.GetSvgContent();
-
-    public Geometry GeometryType
-    {
-        get => this.shapeGeometry.GeometryType;
-        set => this.shapeGeometry.GeometryType = value;
-    }
-
-    public decimal CornerSize
-    {
-        get => this.shapeGeometry.CornerSize;
-        set => this.shapeGeometry.CornerSize = value;
-    }
-
-    public decimal[] Adjustments
-    {
-        get => this.shapeGeometry.Adjustments;
-        set => this.shapeGeometry.Adjustments = value;
-    }
-
-    public decimal Width
-    {
-        get => this.shape.Width;
-        set => this.shape.Width = value;
-    }
-
-    public decimal Height
-    {
-        get => this.shape.Height;
-        set => this.shape.Height = value;
-    }
-
-    public int Id => this.shape.Id;
-
-    public string Name
-    {
-        get => this.shape.Name;
-        set => this.shape.Name = value;
-    }
-
-    public string AltText
-    {
-        get => this.shape.AltText;
-        set => this.shape.AltText = value;
-    }
-
-    public bool Hidden => this.shape.Hidden;
-
-    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
-
-    public string? CustomData { get; set; }
-
+    
     public ShapeContent ShapeContent => ShapeContent.Picture;
-
+    
     public bool HasOutline => true;
+    
+    public bool Removable => true;
 
     public IShapeOutline Outline { get; }
 
@@ -106,15 +44,8 @@ internal sealed class Picture : IPicture
     public IShapeFill Fill { get; }
 
     public ITextBox? TextBox => null;
-
-    public double Rotation => this.shape.Rotation;
-
-    public bool Removeable => true;
-
-    public string SDKXPath => this.shape.SDKXPath;
-
-    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
-
+    
+    
     public CroppingFrame Crop
     {
         get
@@ -161,6 +92,82 @@ internal sealed class Picture : IPicture
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
+    
+    public bool IsGroup => false;
+
+    public Geometry GeometryType
+    {
+        get => this.shape.GeometryType;
+        set => this.shape.GeometryType = value;
+    }
+
+    public decimal CornerSize
+    {
+        get => this.shape.CornerSize;
+        set => this.shape.CornerSize = value;
+    }
+
+    public decimal[] Adjustments
+    {
+        get => this.shape.Adjustments;
+        set => this.shape.Adjustments = value;
+    }
+
+    public decimal Width
+    {
+        get => this.shape.Width;
+        set => this.shape.Width = value;
+    }
+
+    public decimal Height
+    {
+        get => this.shape.Height;
+        set => this.shape.Height = value;
+    }
+    
+    public decimal X
+    {
+        get => this.shape.X;
+        set => this.shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get => this.shape.Y;
+        set => this.shape.Y = value;
+    }
+
+    public int Id => this.shape.Id;
+
+    public string Name
+    {
+        get => this.shape.Name;
+        set => this.shape.Name = value;
+    }
+
+    public string AltText
+    {
+        get => this.shape.AltText;
+        set => this.shape.AltText = value;
+    }
+
+    public bool Hidden => this.shape.Hidden;
+
+    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
+
+    public string? CustomData
+    {
+        get => this.shape.CustomData;
+        set => this.shape.CustomData = value;
+    }
+
+    public double Rotation => this.shape.Rotation;
+
+    public string SDKXPath => this.shape.SDKXPath;
+
+    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
+
+    public IShapeCollection GroupedShapes => throw new SCException($"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
 
     public IPresentation Presentation => this.shape.Presentation;
 
@@ -169,7 +176,7 @@ internal sealed class Picture : IPicture
         throw new NotImplementedException();
     }
 
-    public ITable AsTable() => throw new SCException("Picture cannot be converted to table");
+    public ITable AsTable() => throw new SCException($"Picture cannot be converted to table. Use {nameof(IShape.ShapeContent)} property to check if the shape is a table.");
 
     public IMediaShape AsMedia()
     {

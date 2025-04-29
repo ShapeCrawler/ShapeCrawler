@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 public interface IShapeGeometry
 {
     /// <summary>
-    ///     Gets or sets the defined geometry form of the shape.
+    ///     Gets or sets the geometry form.
     /// </summary>
     Geometry GeometryType { get; set; }
 

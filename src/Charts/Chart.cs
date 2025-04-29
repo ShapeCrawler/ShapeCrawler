@@ -112,7 +112,7 @@ internal sealed class Chart : Shape, IChart
     
     public IAxesManager Axes => this.GetAxes();
     
-    public override bool Removeable => true;
+    public override bool Removable => true;
     
     public byte[] BookByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
     

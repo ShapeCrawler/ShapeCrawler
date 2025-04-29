@@ -131,7 +131,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptxStream = TestAsset(pptxFile);
         var pres = new Presentation(pptxStream);
-        var chart = pres.Slides[0].Shapes.GetByName<IChart>(chartName);
+        var chart = pres.Slides[0].Shapes.Shape<IChart>(chartName);
         var expectedSeriesCount = chart.SeriesCollection.Count - 1; 
             
         // Act
@@ -305,7 +305,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         
         // Act
         var minimum = barChart.Axes.ValueAxis.Minimum;
@@ -320,7 +320,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         var mStream = new MemoryStream();
         
         // Act
@@ -328,7 +328,7 @@ public class ChartTests : SCTest
 
         // Assert
         pres.Save(mStream);
-        barChart = new Presentation(mStream).Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        barChart = new Presentation(mStream).Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         barChart.Axes.ValueAxis.Minimum.Should().Be(1);
         pres.Validate();
     }
@@ -339,7 +339,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         
         // Act
         barChart.Axes.ValueAxis!.Maximum = 7;
@@ -355,7 +355,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         
         // Act
         var maximum = barChart.Axes.ValueAxis.Maximum;

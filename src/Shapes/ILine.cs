@@ -104,7 +104,7 @@ internal sealed class SlideLine : Shape, ILine
         }
     }
 
-    public override bool Removeable => true;
+    public override bool Removable => true;
     
     public override void Remove() => this.pConnectionShape.Remove();
 }
