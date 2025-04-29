@@ -29,6 +29,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <summary>
     ///     Gets shape by name.
     /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
     T Shape<T>(string name) 
         where T : IShape;
     

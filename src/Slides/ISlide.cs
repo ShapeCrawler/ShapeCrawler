@@ -302,24 +302,17 @@ internal sealed class Slide : ISlide
 
     internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.SlidePart.OpenXmlPackage;
 
-    private void AddGroupTextBoxes(Group groupShape, List<ITextBox> textBoxes)
+    private void AddGroupTextBoxes(IGroup groupShape, List<ITextBox> textBoxes)
     {
         foreach (var shape in groupShape.Shapes)
         {
-            switch (shape.ShapeContent)
+            if (shape is IGroup group)
             {
-                case ShapeContent.Group:
-                    this.AddGroupTextBoxes((Group)shape, textBoxes);
-                    break;
-                case ShapeContent.Shape:
-                    if (shape.TextBox is not null)
-                    {
-                        textBoxes.Add(shape.TextBox);
-                    }
-
-                    break;
-                default:
-                    throw new SCException("Unsupported shape content type.");
+                this.AddGroupTextBoxes(group, textBoxes);
+            }
+            else if(shape.TextBox is not null)
+            {
+                textBoxes.Add(shape.TextBox);
             }
         }
     }
