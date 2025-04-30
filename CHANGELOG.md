@@ -2,6 +2,7 @@
 
 ## Version 0.67.0 - Unreleased
 🍀Added support adding Bar Chart.  
+🍀Added support shapes grouping [D951](https://github.com/ShapeCrawler/ShapeCrawler/discussions/951)  
 
 ## Version 0.66.0 - 2025-04-18
 🍀Added `IParagraphCollection.Add(string content, int index)` [#986](https://github.com/ShapeCrawler/ShapeCrawler/issues/986)  
@@ -55,11 +56,11 @@
 
 ## Version 0.57.0 - 2024-11-29
 🍀Added `IShape.AltText` [#13](https://github.com/ShapeCrawler/ShapeCrawler/issues/13)  
-🍀Added `ITable.AddColumn()` and `ITable.InsertColumnAfter()` [D-783](https://github.com/ShapeCrawler/ShapeCrawler/discussions/783)  
+🍀Added `ITable.AddColumn()` and `ITable.InsertColumnAfter()` [D783](https://github.com/ShapeCrawler/ShapeCrawler/discussions/783)  
 🐞Fixed `Shape.Rotation` [#9](https://github.com/ShapeCrawler/ShapeCrawler/issues/9)  
 
 ## Version 0.56.0 - 2024-11-22
-🍀Added `IPicture.SendToBack()` [D-777](https://github.com/ShapeCrawler/ShapeCrawler/discussions/777)
+🍀Added `IPicture.SendToBack()` [D777](https://github.com/ShapeCrawler/ShapeCrawler/discussions/777)
 
 ## Version 0.55.1 - 2024-10-18
 🐞Fixed `ISlides.Count` [#749](https://github.com/ShapeCrawler/ShapeCrawler/issues/749)  

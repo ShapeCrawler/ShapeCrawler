@@ -39,9 +39,20 @@ public interface ISlideShapeCollection : IShapeCollection
     void AddVideo(int x, int y, Stream stream);
 
     /// <summary>
-    ///     Adds a new Rectangle shape.
+    ///     Adds a new shape.
     /// </summary>
     void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle);
+    
+    /// <summary>
+    ///     Adds a new shape.
+    /// </summary>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in points.</param>
+    /// <param name="height">Height in points.</param>
+    /// <param name="geometry">Geometry form.</param>
+    /// <param name="text">Text content.</param>
+    void AddShape(int x, int y, int width, int height, Geometry geometry, string text);
 
     /// <summary>
     ///     Adds a line from XML.
@@ -95,4 +106,9 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <param name="smartArtType">The type of SmartArt graphic to add.</param>
     /// <returns>The added SmartArt graphic.</returns>
     ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType);
+
+    /// <summary>
+    ///     Groups the specified shapes.
+    /// </summary>
+    IGroup Group(IShape[] shapes);
 }
