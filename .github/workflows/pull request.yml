@@ -10,20 +10,24 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-13, macos-14 ] # macos-14 is macOS 14 Arm64
-        framework_version: [ 'net9.0', 'net48' ]
-        exclude:
+        include:
+          # Windows runs both framework versions
+          - os: windows-latest
+            framework_version: 'net9.0'
+          - os: windows-latest
+            framework_version: 'net48'
+          # Linux and macOS only run net9.0
           - os: ubuntu-latest
-            framework_version: 'net48'
-          - os: macos-13
-            framework_version: 'net48'
+            framework_version: 'net9.0'
           - os: macos-14
-            framework_version: 'net48'
+            framework_version: 'net9.0'
       fail-fast: false    
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x      
-      - name: Test
-        run: dotnet test ShapeCrawler.Filter.slnf -c Release -f ${{ matrix.framework_version }}
+      - name: Run tests
+        run: |
+          dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj -c Release -f ${{ matrix.framework_version }}
+          dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj -c Release -f ${{ matrix.framework_version }}

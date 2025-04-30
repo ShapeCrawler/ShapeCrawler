@@ -2,27 +2,47 @@ name: Beta
 
 on:
   push:
-    branches: [master]
-
+    branches: [ master ]
   workflow_dispatch:
 
-jobs:  
-  publish:
-    name: Publish beta
-    runs-on: windows-latest
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            framework_version: 'net9.0'
+          - os: windows-latest
+            framework_version: 'net48'
+          - os: windows-latest
+            framework_version: 'net472'
+          - os: ubuntu-latest
+            framework_version: 'net9.0'
+          - os: macos-14
+            framework_version: 'net9.0'
+          - os: macos-13
+            framework_version: 'net9.0'
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Run tests
+        run: dotnet test --configuration Release --framework ${{ matrix.framework_version }} tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj
 
-      - name: Generate version with timestamp
+  publish:
+    name: Publish
+    runs-on: windows-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate version
         id: versioning
+        run: echo "PACKAGE_VERSION=${{ vars.VERSION }}-beta.$(Get-Date -Format 'yyyyMMddHHmm')" >> $env:GITHUB_ENV
+      - name: Create and publish package
         run: |
-          $version = "${{ vars.VERSION }}-beta"
-          $date = Get-Date -Format "yyyyMMddHHmm"
-          $versionWithDate = "$version.$date"
-          echo "PACKAGE_VERSION=$versionWithDate" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Create package
-        run: dotnet pack src\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
-
-      - name: Publish package
-        run: dotnet nuget push "src\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }}
+          dotnet pack src\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
+          dotnet nuget push "src\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }}
