@@ -166,7 +166,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         groupShape.Append(groupShapeProperties);
         
         // Move each shape to the group
-        foreach (var shape in shapes)
+        foreach (var shape in groupingShapes)
         {
             // Get the OpenXml element for the shape
             var openXmlElement = shape.SDKOpenXmlElement;
@@ -309,14 +309,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         if (!string.IsNullOrEmpty(text))
         {
             // Create TextBody if it doesn't exist
-            if (pShape.TextBody is null)
+            pShape.TextBody ??= new P.TextBody
             {
-                pShape.TextBody = new P.TextBody
-                {
-                    BodyProperties = new A.BodyProperties(),
-                    ListStyle = new A.ListStyle()
-                };
-            }
+                BodyProperties = new A.BodyProperties(),
+                ListStyle = new A.ListStyle()
+            };
 
             // Create a paragraph with the provided text
             var paragraph = new A.Paragraph();
