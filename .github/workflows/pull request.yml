@@ -26,4 +26,4 @@ jobs:
       - name: Run Dev tests
         run: dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj -c Release -f ${{ matrix.framework_version }}
       - name: Run CI tests
-        run: dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.CITests.csproj -c Release -f ${{ matrix.framework_version }}
+        run: dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj -c Release -f ${{ matrix.framework_version }}
