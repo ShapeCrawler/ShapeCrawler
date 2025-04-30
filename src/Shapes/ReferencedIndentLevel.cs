@@ -47,7 +47,7 @@ internal readonly ref struct ReferencedIndentLevel
         throw new SCException("Not implemented.");
     }
 
-    internal int? ReferencedFontSizeOrNull()
+    internal decimal? ReferencedFontSizeOrNull()
     {
         var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
@@ -75,7 +75,7 @@ internal readonly ref struct ReferencedIndentLevel
                 var font = fonts.FontOrNull(indentLevel);
                 if (font.HasValue)
                 {
-                    return (int)font.Value.Size!;
+                    return (int)font.Value.Size! / 100m;
                 }
             }
 
@@ -85,7 +85,7 @@ internal readonly ref struct ReferencedIndentLevel
             var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
             if (bodyStyleFont.HasValue)
             {
-                return (int)bodyStyleFont.Value.Size!;
+                return (int)bodyStyleFont.Value.Size! / 100m;
             }
 
             return null;
@@ -93,12 +93,12 @@ internal readonly ref struct ReferencedIndentLevel
 
         var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
         var layoutIndentFont = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentFont.HasValue && layoutIndentFont.Value.Size.HasValue)
+        if (layoutIndentFont is { Size: not null })
         {
-            return (int)layoutIndentFont.Value.Size!;
+            return (int)layoutIndentFont.Value.Size! / 100m;
         }
 
-        return this.MasterFontSizeOrNull(refLayoutPShapeOfSlide, indentLevel);
+        return this.MasterFontSizeOrNull(refLayoutPShapeOfSlide, indentLevel) / 100m;
     }
 
     internal A.LatinFont? ReferencedALatinFontOrNull()
