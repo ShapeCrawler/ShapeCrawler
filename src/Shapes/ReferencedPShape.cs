@@ -7,18 +7,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal readonly ref struct ReferencedPShape
+internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
 {
-    private readonly OpenXmlElement pShapeTreeElement;
-
-    internal ReferencedPShape(OpenXmlElement pShapeTreeElement)
-    {
-        this.pShapeTreeElement = pShapeTreeElement;
-    }
-
     internal Transform2D ATransform2D()
     {
-        var pShape = (P.Shape)this.pShapeTreeElement;
+        var pShape = (P.Shape)pShapeTreeElement;
         var openXmlPart = pShape.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (openXmlPart is SlidePart sdkSlidePart)
         {

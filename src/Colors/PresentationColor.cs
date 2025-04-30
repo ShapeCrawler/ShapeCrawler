@@ -6,19 +6,12 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Colors;
 
-internal sealed class PresentationColor
+internal sealed class PresentationColor(OpenXmlPart openXmlPart)
 {
-    private readonly OpenXmlPart openXmlPart;
-
-    internal PresentationColor(OpenXmlPart openXmlPart)
+    internal IndentFont? PresentationOrThemeFontOrNull(int indentLevel)
     {
-        this.openXmlPart = openXmlPart;
-    }
-    
-    internal IndentFont? PresentationFontOrThemeFontOrNull(int indentLevel)
-    {
-        var sdkPresDoc = (PresentationDocument)this.openXmlPart.OpenXmlPackage;
-        var pDefaultTextStyle = sdkPresDoc.PresentationPart!.Presentation.DefaultTextStyle;
+        var presDocument = (PresentationDocument)openXmlPart.OpenXmlPackage;
+        var pDefaultTextStyle = presDocument.PresentationPart!.Presentation.DefaultTextStyle;
         if (pDefaultTextStyle != null)
         {
             var pDefaultTextStyleFont = new IndentFonts(pDefaultTextStyle).FontOrNull(indentLevel);
@@ -28,7 +21,7 @@ internal sealed class PresentationColor
             }
         }
 
-        var aTextDefault = sdkPresDoc.PresentationPart!.ThemePart?.Theme.ObjectDefaults!
+        var aTextDefault = presDocument.PresentationPart!.ThemePart?.Theme.ObjectDefaults!
             .TextDefault;
         return aTextDefault != null
             ? new IndentFonts(aTextDefault).FontOrNull(indentLevel)
@@ -37,7 +30,8 @@ internal sealed class PresentationColor
     
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
-        var aColorScheme = GetColorScheme(this.openXmlPart);
+        var aColorScheme = GetColorScheme(openXmlPart);
+        
         return this.GetColorValue(aColorScheme, aSchemeColorValue);
     }
     
@@ -48,15 +42,15 @@ internal sealed class PresentationColor
             : colorType.SystemColor!.LastColor!.Value!;
     }
 
-    private static A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)
+    private static A.ColorScheme GetColorScheme(OpenXmlPart openXmlPart)
     {
-        return sdkTypedOpenXmlPart switch
+        return openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
-            _ => ((SlideMasterPart)sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
         };
     }
     
@@ -119,11 +113,11 @@ internal sealed class PresentationColor
     
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)
     {
-        var pColorMap = this.openXmlPart switch
+        var pColorMap = openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster.ColorMap!,
-            _ => ((SlideMasterPart)this.openXmlPart).SlideMaster.ColorMap!
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster.ColorMap!
         };
         if (themeColor == A.SchemeColorValues.Text1)
         {
@@ -145,7 +139,7 @@ internal sealed class PresentationColor
 
     private string GetThemeColorByString(string fontSchemeColor)
     {
-        var aColorScheme = GetColorScheme(this.openXmlPart);
+        var aColorScheme = GetColorScheme(openXmlPart);
         return GetColorFromScheme(aColorScheme, fontSchemeColor);
     }
 }

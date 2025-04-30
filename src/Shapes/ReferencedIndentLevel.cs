@@ -12,15 +12,15 @@ namespace ShapeCrawler.Shapes;
 internal readonly ref struct ReferencedIndentLevel
 {
     private readonly A.Text aText;
-    private readonly PresentationColor presColor;
+    private readonly PresentationColor presentationColor;
 
     internal ReferencedIndentLevel(A.Text aText)
     {
         this.aText = aText;
-        this.presColor = new PresentationColor(aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!);
+        this.presentationColor = new PresentationColor(aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!);
     }
 
-    internal string? ColorHexOrNull()
+    internal string? ReferencedColorHexOrNull()
     {
         var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (openXmlPart is SlidePart)
@@ -36,7 +36,7 @@ internal readonly ref struct ReferencedIndentLevel
         throw new SCException("Not implemented.");
     }
 
-    internal bool? FontBoldFlagOrNull()
+    internal bool? ReferencedFontBoldFlagOrNull()
     {
         var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (openXmlPart is SlidePart)
@@ -44,25 +44,73 @@ internal readonly ref struct ReferencedIndentLevel
             return this.SlideFontBoldFlagOrNull();
         }
 
-        return LayoutFontBoldFlagOrNull();
+        throw new SCException("Not implemented.");
     }
 
-    internal int? FontSizeOrNull() => this.SlideFontSizeOrNull();
+    internal decimal? ReferencedFontSizeOrNull()
+    {
+        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
+        var slidePShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (slidePShape == null)
+        {
+            return null;
+        }
 
-    internal A.LatinFont? ALatinFontOrNull()
+        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (slidePh == null)
+        {
+            return null;
+        }
+
+        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNull(slidePShape);
+        if (refLayoutPShapeOfSlide == null)
+        {
+            var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
+            if (refMasterPShape != null)
+            {
+                var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+                var font = fonts.FontOrNull(indentLevel);
+                if (font.HasValue)
+                {
+                    return (int)font.Value.Size! / 100m;
+                }
+            }
+
+            var sdkSlidePart = (SlidePart)openXmlPart;
+            var bodyStyleFonts =
+                new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+            var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
+            if (bodyStyleFont.HasValue)
+            {
+                return (int)bodyStyleFont.Value.Size! / 100m;
+            }
+
+            return null;
+        }
+
+        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
+        var layoutIndentFont = layoutFonts.FontOrNull(indentLevel);
+        if (layoutIndentFont is { Size: not null })
+        {
+            return (int)layoutIndentFont.Value.Size! / 100m;
+        }
+
+        return this.MasterFontSizeOrNull(refLayoutPShapeOfSlide, indentLevel) / 100m;
+    }
+
+    internal A.LatinFont? ReferencedALatinFontOrNull()
     {
         var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         return openXmlPart switch
         {
-            SlidePart sdkSlidePart => this.SlideALatinFontOrNull(sdkSlidePart),
+            SlidePart slidePart => this.SlideALatinFontOrNull(slidePart),
             SlideMasterPart => this.SlideMasterALatinFont(),
-            _ => LayoutALatinFontOrNull()
+            _ => throw new SCException("Not implemented.")
         };
     }
-
-    private static bool? LayoutFontBoldFlagOrNull() => throw new System.NotImplementedException();
-
-    private static A.LatinFont LayoutALatinFontOrNull() => throw new SCException("Not implemented.");
     
     private P.Shape? ReferencedLayoutPShapeOrNull(P.Shape pShape)
     {
@@ -118,7 +166,7 @@ internal readonly ref struct ReferencedIndentLevel
 
         if (indentFont.Value.ASchemeColor != null)
         {
-            referencedShapeColorOrNull = this.presColor.ThemeColorHex(indentFont.Value.ASchemeColor.Val!.Value);
+            referencedShapeColorOrNull = this.presentationColor.ThemeColorHex(indentFont.Value.ASchemeColor.Val!.Value);
             return true;
         }
 
@@ -362,60 +410,6 @@ internal readonly ref struct ReferencedIndentLevel
         }
 
         return null;
-    }
-
-    private int? SlideFontSizeOrNull()
-    {
-        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-        var slidePShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
-        if (slidePShape == null)
-        {
-            return null;
-        }
-
-        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>();
-        if (slidePh == null)
-        {
-            return null;
-        }
-
-        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNull(slidePShape);
-        if (refLayoutPShapeOfSlide == null)
-        {
-            var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
-            if (refMasterPShape != null)
-            {
-                var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
-                var font = fonts.FontOrNull(indentLevel);
-                if (font.HasValue)
-                {
-                    return (int)font.Value.Size!;
-                }
-            }
-
-            var sdkSlidePart = (SlidePart)openXmlPart;
-            var bodyStyleFonts =
-                new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
-            var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
-            if (bodyStyleFont.HasValue)
-            {
-                return (int)bodyStyleFont.Value.Size!;
-            }
-
-            return null;
-        }
-
-        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
-        var layoutIndentFont = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentFont.HasValue && layoutIndentFont.Value.Size.HasValue)
-        {
-            return (int)layoutIndentFont.Value.Size!;
-        }
-
-        return this.MasterFontSizeOrNull(refLayoutPShapeOfSlide, indentLevel);
     }
 
     private int? MasterFontSizeOrNull(P.Shape refLayoutPShapeOfSlide, int indentLevel)

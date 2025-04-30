@@ -15,14 +15,14 @@ internal class PortionFontSize(A.Text aText): IFontSize
         get
         {
             // Try getting font size from run properties
-            var runPropertiesFontSize = this.GetFontSizeFromRunProperties();
+            var runPropertiesFontSize = this.GetRunPropertiesFontSizeOrNull();
             if (runPropertiesFontSize.HasValue)
             {
                 return runPropertiesFontSize.Value;
             }
 
             // Try getting font size from referenced indent level
-            var referencedIndentFontSize = this.GetFontSizeFromReferencedIndentLevel();
+            var referencedIndentFontSize = new ReferencedIndentLevel(aText).ReferencedFontSizeOrNull();
             if (referencedIndentFontSize.HasValue)
             {
                 return referencedIndentFontSize.Value;
@@ -36,7 +36,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             var parentShape = this.GetParentShapeOrNull();
             if (parentShape != null)
             {
-                var placeholderFontSize = this.GetFontSizeFromPlaceholder(parentShape, slideMasterPart, indentLevel);
+                var placeholderFontSize = GetFontSizeFromPlaceholder(parentShape, slideMasterPart, indentLevel);
                 if (placeholderFontSize.HasValue)
                 {
                     return placeholderFontSize.Value;
@@ -78,38 +78,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
         }
     }
 
-    private decimal? GetFontSizeFromRunProperties()
-    {
-        var hundredsPoints = aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
-        return hundredsPoints.HasValue ? hundredsPoints.Value / 100m : null;
-    }
-
-    private decimal? GetFontSizeFromReferencedIndentLevel()
-    {
-        var hundredsPoints = new ReferencedIndentLevel(aText).FontSizeOrNull();
-        return hundredsPoints.HasValue ? hundredsPoints.Value / 100m : null;
-    }
-
-    private SlideMasterPart GetSlideMasterPart()
-    {
-        var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        return openXmlPart is SlideMasterPart slideMasterPart
-            ? slideMasterPart
-            : ((SlidePart)openXmlPart).SlideLayoutPart!.SlideMasterPart!;
-    }
-
-    private Shape? GetParentShapeOrNull()
-    {
-        var parentPShape = aText.Ancestors<P.Shape>().FirstOrDefault();
-        if (parentPShape is null)
-        {
-            return null;
-        }
-        
-        return new Shape(aText.Ancestors<P.Shape>().First());
-    }
-
-    private decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
+    private static decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
     {
         if (shape.PlaceholderType == null)
         {
@@ -136,7 +105,32 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
         return null;
     }
+    
+    private decimal? GetRunPropertiesFontSizeOrNull()
+    {
+        var hundredsPoints = aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
+        
+        return hundredsPoints / 100m;
+    }
 
+    private SlideMasterPart GetSlideMasterPart()
+    {
+        var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        
+        return openXmlPart as SlideMasterPart ?? ((SlidePart)openXmlPart).SlideLayoutPart!.SlideMasterPart!;
+    }
+
+    private Shape? GetParentShapeOrNull()
+    {
+        var parentPShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (parentPShape is null)
+        {
+            return null;
+        }
+        
+        return new Shape(aText.Ancestors<P.Shape>().First());
+    }
+    
     private decimal? GetFontSizeFromPresentationDefaults(int indentLevel)
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;

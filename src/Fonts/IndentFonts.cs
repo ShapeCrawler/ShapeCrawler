@@ -8,35 +8,40 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal readonly record struct IndentFonts
+internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeElement)
 {
-    private readonly OpenXmlCompositeElement sdkOpenXmlCompositeElement;
-
-    internal IndentFonts(OpenXmlCompositeElement sdkOpenXmlCompositeElement)
-    {
-        this.sdkOpenXmlCompositeElement = sdkOpenXmlCompositeElement;
-    }
-
-    #region APIs
-
-    internal IndentFont? FontOrNull(int indentLevelFor)
+    internal IndentFont? FontOrNull(int indentLevel)
     {
         // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
-        var lvlParagraphPropertyList = this.sdkOpenXmlCompositeElement.Elements()
+        var lvlParagraphPropertyList = openXmlCompositeElement.Elements()
             .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
 
         // Try to find matching font from level-specific paragraph properties
-        var indentFont = this.FindFontFromLevelProperties(lvlParagraphPropertyList, indentLevelFor);
+        var indentFont = FindFontFromLevelProperties(lvlParagraphPropertyList, indentLevel);
         if (indentFont.HasValue)
         {
             return indentFont;
         }
 
         // Fallback for level 1
-        return indentLevelFor == 1 ? this.FindFontFromTextBody() : null;
+        return indentLevel == 1 ? this.FindFontFromTextBody() : null;
+    }
+    
+    internal bool? BoldFlagOrNull(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+
+        return indentFont?.IsBold;
     }
 
-    private IndentFont? FindFontFromLevelProperties(IEnumerable<OpenXmlElement> lvlParagraphPropertyList, int targetLevel)
+    internal A.LatinFont? ALatinFontOrNull(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+
+        return indentFont?.ALatinFont;
+    }
+
+    private static IndentFont? FindFontFromLevelProperties(IEnumerable<OpenXmlElement> lvlParagraphPropertyList, int targetLevel)
     {
         foreach (var textPr in lvlParagraphPropertyList)
         {
@@ -113,7 +118,7 @@ internal readonly record struct IndentFonts
 
     private IndentFont? FindFontFromTextBody()
     {
-        if (this.sdkOpenXmlCompositeElement.Parent is not P.TextBody pTextBody)
+        if (openXmlCompositeElement.Parent is not P.TextBody pTextBody)
         {
             return null;
         }
@@ -131,51 +136,4 @@ internal readonly record struct IndentFonts
             Size = endParaRunPrFs
         };
     }
-
-    internal ColorType? ColorType(int indentLevel)
-    {
-        var indentFont = this.FontOrNull(indentLevel);
-        if (indentFont is null)
-        {
-            return null;
-        }
-
-        if (indentFont.Value.ARgbColorModelHex != null)
-        {
-            return ShapeCrawler.ColorType.RGB;
-        }
-
-        if (indentFont.Value.ASchemeColor != null)
-        {
-            return ShapeCrawler.ColorType.Theme;
-        }
-
-        if (indentFont.Value.ASystemColor != null)
-        {
-            return ShapeCrawler.ColorType.Standard;
-        }
-
-        if (indentFont.Value.APresetColor != null)
-        {
-            return ShapeCrawler.ColorType.Preset;
-        }
-
-        return null;
-    }
-
-    internal bool? BoldFlagOrNull(int indentLevel)
-    {
-        var indentFont = this.FontOrNull(indentLevel);
-
-        return indentFont?.IsBold;
-    }
-
-    internal A.LatinFont? ALatinFontOrNull(int indentLevel)
-    {
-        var indentFont = this.FontOrNull(indentLevel);
-
-        return indentFont?.ALatinFont;
-    }
-
-    #endregion APIs
 }

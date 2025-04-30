@@ -170,7 +170,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        aLatinFont = new ReferencedIndentLevel(this.aText).ALatinFontOrNull();
+        aLatinFont = new ReferencedIndentLevel(this.aText).ReferencedALatinFontOrNull();
         if (aLatinFont != null)
         {
             return aLatinFont;
@@ -192,7 +192,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return true;
         }
 
-        bool? isFontBold = new ReferencedIndentLevel(this.aText).FontBoldFlagOrNull();
+        bool? isFontBold = new ReferencedIndentLevel(this.aText).ReferencedFontBoldFlagOrNull();
         if (isFontBold.HasValue)
         {
             return isFontBold.Value;
