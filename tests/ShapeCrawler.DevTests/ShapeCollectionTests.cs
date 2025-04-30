@@ -1084,4 +1084,24 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().Contain(shape=> shape is IChart);
         pres.Validate();
     }
+    
+    [Test]
+    public void Group_groups_shapes()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        shapes.AddShape(100, 100, 100, 100, Geometry.Rectangle, "Shape 1");
+        shapes.AddShape(100, 200, 100, 100, Geometry.Rectangle, "Shape 2");
+        var shape1 = shapes[0];
+        var shape2 = shapes[1];
+    
+        // Act
+        var group = shapes.Group([shape1, shape2]);
+        
+        // Assert
+        group.Should().BeAssignableTo<IGroup>();
+        group.Shapes.Should().HaveCount(2);
+        pres.Validate();
+    }
 }

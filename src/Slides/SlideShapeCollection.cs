@@ -102,6 +102,99 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         return new SCSlidePart(this.slidePart).AddSmartArt(x, y, width, height, smartArtType);
     }
 
+    public IGroup Group(IShape[] groupingShapes)
+    {
+        // Create a new group shape
+        var groupShape = new P.GroupShape();
+        
+        // Create non-visual properties for the group shape
+        var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
+        var idAndName = this.GenerateIdAndName();
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
+        {
+            Id = (uint)idAndName.Item1,
+            Name = idAndName.Item2
+        };
+        var nonVisualGroupShapeDrawingProperties = new P.NonVisualGroupShapeDrawingProperties();
+        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+        
+        nonVisualGroupShapeProperties.Append(nonVisualDrawingProperties);
+        nonVisualGroupShapeProperties.Append(nonVisualGroupShapeDrawingProperties);
+        nonVisualGroupShapeProperties.Append(applicationNonVisualDrawingProperties);
+        
+        // Create group shape properties
+        var groupShapeProperties = new P.GroupShapeProperties();
+        
+        // Calculate the bounding box for all shapes
+        decimal minX = decimal.MaxValue;
+        decimal minY = decimal.MaxValue;
+        decimal maxX = decimal.MinValue;
+        decimal maxY = decimal.MinValue;
+        
+        foreach (var shape in groupingShapes)
+        {
+            minX = Math.Min(minX, shape.X);
+            minY = Math.Min(minY, shape.Y);
+            maxX = Math.Max(maxX, shape.X + shape.Width);
+            maxY = Math.Max(maxY, shape.Y + shape.Height);
+        }
+        
+        // Create transform group
+        var transformGroup = new A.TransformGroup();
+        var offset = new A.Offset 
+        { 
+            X = (int)minX, 
+            Y = (int)minY 
+        };
+        var extents = new A.Extents 
+        { 
+            Cx = (int)(maxX - minX), 
+            Cy = (int)(maxY - minY) 
+        };
+        var childOffset = new A.ChildOffset { X = 0, Y = 0 };
+        var childExtents = new A.ChildExtents { Cx = extents.Cx, Cy = extents.Cy };
+        
+        transformGroup.Append(offset);
+        transformGroup.Append(extents);
+        transformGroup.Append(childOffset);
+        transformGroup.Append(childExtents);
+        
+        groupShapeProperties.Append(transformGroup);
+        
+        // Add properties to the group shape
+        groupShape.Append(nonVisualGroupShapeProperties);
+        groupShape.Append(groupShapeProperties);
+        
+        // Move each shape to the group
+        foreach (var shape in groupingShapes)
+        {
+            // Get the OpenXml element for the shape
+            var openXmlElement = shape.SDKOpenXmlElement;
+            
+            // Remove the shape from its current parent
+            if (openXmlElement.Parent is not null)
+            {
+                openXmlElement.Remove();
+            }
+            
+            // Add the shape to the group
+            groupShape.Append(openXmlElement);
+        }
+        
+        // Add the group shape to the slide
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(groupShape);
+        
+        // Create and return the group object
+        var shapeObj = new Shape(groupShape);
+
+        foreach (var grouping in groupingShapes)
+        {
+            grouping.Remove();
+        }
+        
+        return new Group(shapeObj, groupShape);
+    }
+
     public void AddVideo(int x, int y, Stream stream)
     {
         var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
@@ -193,6 +286,46 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         addedShape.Height = height;
         addedShape.Id = nextShapeId;
         addedShape.GeometryType = geometry;
+    }
+
+    public void AddShape(int x, int y, int width, int height, Geometry geometry, string text)
+    {
+        // First add the basic shape
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = this.GetNextShapeId();
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        var addedShape = this.shapes.Last<Shape>();
+        addedShape.Name = geometry.ToString();
+        addedShape.X = x;
+        addedShape.Y = y;
+        addedShape.Width = width;
+        addedShape.Height = height;
+        addedShape.Id = nextShapeId;
+        addedShape.GeometryType = geometry;
+
+        // Add text to the shape
+        if (!string.IsNullOrEmpty(text))
+        {
+            // Create TextBody if it doesn't exist
+            pShape.TextBody ??= new P.TextBody
+            {
+                BodyProperties = new A.BodyProperties(),
+                ListStyle = new A.ListStyle()
+            };
+
+            // Create a paragraph with the provided text
+            var paragraph = new A.Paragraph();
+            var run = new A.Run();
+            var textElement = new A.Text { Text = text };
+            
+            run.AppendChild(textElement);
+            paragraph.AppendChild(run);
+            
+            // Add the paragraph to the TextBody
+            pShape.TextBody.AppendChild(paragraph);
+        }
     }
 
     public void AddLine(string xml)
