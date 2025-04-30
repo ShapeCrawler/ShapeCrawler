@@ -86,7 +86,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
     private decimal? GetFontSizeFromReferencedIndentLevel()
     {
-        var hundredsPoints = new ReferencedIndentLevel(aText).FontSizeOrNull();
+        var hundredsPoints = new ReferencedIndentLevel(aText).ReferencedFontSizeOrNull();
         return hundredsPoints.HasValue ? hundredsPoints.Value / 100m : null;
     }
 

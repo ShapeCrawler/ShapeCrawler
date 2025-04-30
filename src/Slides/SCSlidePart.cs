@@ -43,9 +43,6 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     internal ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
     {
-        // Generate the smart art diagram data
-        var diagramData = this.GenerateSmartArtData();
-
         // Create a new GraphicFrame
         var graphicFrame = new GraphicFrame();
 
@@ -86,7 +83,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
 
         // Return a simplified SmartArt implementation for now
-        return new SmartArt(graphicFrame, diagramData);
+        return new SmartArt(graphicFrame);
     }
 
     private static void GeneratePieChartContent(
@@ -343,14 +340,6 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             .ToList();
 
         // Find the maximum ID and add 1, or start with 1 if no shapes exist
-        return (uint)(shapeIds.Count > 0 ? shapeIds.Max() + 1 : 1);
-    }
-
-    private OpenXmlPart GenerateSmartArtData()
-    {
-        // This is a simplified implementation
-        // For now, we're just returning a mock part object to satisfy the interface
-        // In a real implementation, you'd create actual diagram parts with specific content
-        return slidePart;
+        return shapeIds.Count > 0 ? shapeIds.Max() + 1 : 1;
     }
 }

@@ -5,15 +5,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Colors;
 
-internal sealed class ShapeColor
+internal readonly ref struct ShapeColor
 {
     private readonly P.Shape pShape;
     private readonly PresentationColor presColor;
 
-    #region Constructors
-
-    internal ShapeColor(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
-        : this(new PresentationColor(sdkTypedOpenXmlPart), aText.Ancestors<P.Shape>().First())
+    internal ShapeColor(OpenXmlPart openXmlPart, A.Text aText)
+        : this(new PresentationColor(openXmlPart), aText.Ancestors<P.Shape>().First())
     {
     }
 
@@ -22,8 +20,6 @@ internal sealed class ShapeColor
         this.pShape = pShape;
         this.presColor = presColor;
     }
-
-    #endregion Constructors
 
     internal string? HexOrNull()
     {
@@ -46,6 +42,7 @@ internal sealed class ShapeColor
         if (sdkAFontReference.PresetColor != null)
         {
             var coloName = sdkAFontReference.PresetColor.Val!.Value.ToString();
+            
             return ColorTranslator.HexFromName(coloName);
         }
 

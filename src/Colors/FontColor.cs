@@ -23,7 +23,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
             
             if (aSolidFill != null)
             {
-                return this.GetColorTypeFromSolidFill(openXmlPart, aSolidFill);
+                return GetColorTypeFromSolidFill(openXmlPart, aSolidFill);
             }
 
             var textBodyColor = this.GetTextBodyStyleColor();
@@ -45,7 +45,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         get
         {
             var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-            var pSlideMaster = this.GetSlideMaster(openXmlPart);
+            var pSlideMaster = GetSlideMaster(openXmlPart);
             
             // From SolidFill
             var solidFillHex = this.GetSolidFillHex(pSlideMaster);
@@ -89,7 +89,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         aRunProperties.InsertAt(aSolidFill, 0);
     }
 
-    private P.SlideMaster GetSlideMaster(OpenXmlPart openXmlPart)
+    private static P.SlideMaster GetSlideMaster(OpenXmlPart openXmlPart)
     {
         return openXmlPart switch
         {
@@ -138,7 +138,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         // From Referenced Shape
         if (openXmlPart is not SlideMasterPart)
         {
-            var refShapeFontColorHex = new ReferencedIndentLevel(aText).ColorHexOrNull();
+            var refShapeFontColorHex = new ReferencedIndentLevel(aText).ReferencedColorHexOrNull();
             if (refShapeFontColorHex != null)
             {
                 return refShapeFontColorHex;
@@ -160,7 +160,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
 
         // Presentation level
         var presColor = new PresentationColor(openXmlPart);
-        var presParaLevelFont = presColor.PresentationFontOrThemeFontOrNull(indentLevel);
+        var presParaLevelFont = presColor.PresentationOrThemeFontOrNull(indentLevel);
         if (presParaLevelFont.HasValue)
         {
             return presColor.ThemeColorHex(presParaLevelFont.Value.ASchemeColor!.Val!);
@@ -170,7 +170,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         return presColor.ThemeColorHex(A.SchemeColorValues.Text1);
     }
 
-    private ColorType GetColorTypeFromSolidFill(OpenXmlPart openXmlPart, A.SolidFill aSolidFill)
+    private static ColorType GetColorTypeFromSolidFill(OpenXmlPart openXmlPart, A.SolidFill aSolidFill)
     {
         var pSlideMaster = openXmlPart switch
         {
@@ -238,6 +238,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         }
 
         response = (ColorType.NotDefined, null);
+        
         return false;
     }
 }
