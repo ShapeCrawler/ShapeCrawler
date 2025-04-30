@@ -82,7 +82,7 @@ pres.Save();
 
 
 ### More samples
-You can find more usage samples by visiting the [**Wiki page**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) or [**Unit Tests folder**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/tests/ShapeCrawler.Tests.Unit).
+You can find more usage samples by visiting the [**Wiki page**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) or [**Examples**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples).
 
 ## Prerelease Version
 To access the latest prerelease builds from the branch `master`, use the NuGet package source `https://www.myget.org/F/shape/api/v3/index.json`.
