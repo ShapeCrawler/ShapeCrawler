@@ -26,6 +26,20 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
         // Fallback for level 1
         return indentLevel == 1 ? this.FindFontFromTextBody() : null;
     }
+    
+    internal bool? BoldFlagOrNull(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+
+        return indentFont?.IsBold;
+    }
+
+    internal A.LatinFont? ALatinFontOrNull(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+
+        return indentFont?.ALatinFont;
+    }
 
     private static IndentFont? FindFontFromLevelProperties(IEnumerable<OpenXmlElement> lvlParagraphPropertyList, int targetLevel)
     {
@@ -121,19 +135,5 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
         {
             Size = endParaRunPrFs
         };
-    }
-    
-    internal bool? BoldFlagOrNull(int indentLevel)
-    {
-        var indentFont = this.FontOrNull(indentLevel);
-
-        return indentFont?.IsBold;
-    }
-
-    internal A.LatinFont? ALatinFontOrNull(int indentLevel)
-    {
-        var indentFont = this.FontOrNull(indentLevel);
-
-        return indentFont?.ALatinFont;
     }
 }

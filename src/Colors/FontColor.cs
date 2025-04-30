@@ -88,6 +88,18 @@ internal sealed class FontColor(A.Text aText): IFontColor
         aSolidFill.Append(rgbColorModelHex);
         aRunProperties.InsertAt(aSolidFill, 0);
     }
+    
+    private static ColorType GetColorTypeFromSolidFill(OpenXmlPart openXmlPart, A.SolidFill aSolidFill)
+    {
+        var pSlideMaster = openXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster
+        };
+        var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
+        return typeAndColor.Item1;
+    }
 
     private static P.SlideMaster GetSlideMaster(OpenXmlPart openXmlPart)
     {
@@ -169,19 +181,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         // Get default
         return presColor.ThemeColorHex(A.SchemeColorValues.Text1);
     }
-
-    private static ColorType GetColorTypeFromSolidFill(OpenXmlPart openXmlPart, A.SolidFill aSolidFill)
-    {
-        var pSlideMaster = openXmlPart switch
-        {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
-            _ => ((SlideMasterPart)openXmlPart).SlideMaster
-        };
-        var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
-        return typeAndColor.Item1;
-    }
-
+    
     private ColorType? GetTextBodyStyleColor()
     {
         var aParagraph = aText.Ancestors<A.Paragraph>().First();
