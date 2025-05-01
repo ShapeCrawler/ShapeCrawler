@@ -30,17 +30,14 @@ ShapeCrawler is a .NET library for manipulating PowerPoint presentations. It pro
 ## Quick Start
 > `dotnet add package ShapeCrawler`
 
-```c#
-// open existing presentation
+```C#
 using var pres = new Presentation("pres.pptx");
-
 var shapes = pres.Slide(1).Shapes;
 
-// get number of shapes on slide
 var shapesCount = shapes.Count;
 
-// get text
-var shape = shapes.GetByName("TextBox 1");
+// Get text
+var shape = shapes.Shape("TextBox 1");
 var text = shape.TextBox!.Text;
 ```
 
