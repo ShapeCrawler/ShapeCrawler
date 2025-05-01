@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
