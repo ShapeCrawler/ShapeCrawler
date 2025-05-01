@@ -103,10 +103,8 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.66.0 - 2025-04-18
-🍀Added `IParagraphCollection.Add(string content, int index)` [#986](https://github.com/ShapeCrawler/ShapeCrawler/issues/986)  
-🐞Fixed added picture width [#993](https://github.com/ShapeCrawler/ShapeCrawler/issues/993)  
-🐞Fixed open Google Slides Export [#972](https://github.com/ShapeCrawler/ShapeCrawler/issues/972)  
-🐞Fixed `SetPicture()` [#858](https://github.com/ShapeCrawler/ShapeCrawler/issues/858)  
+### Version 0.67.0 - 2025-05-01
+🍀Added support adding Bar Chart.  
+🍀Added support shapes grouping [D951](https://github.com/ShapeCrawler/ShapeCrawler/discussions/951)  
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
