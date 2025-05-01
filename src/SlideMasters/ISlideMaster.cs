@@ -46,6 +46,11 @@ public interface ISlideMaster
     /// <param name="shape">The name of the shape.</param>
     /// <returns>The requested shape.</returns>
     IShape Shape(string shape);
+
+    /// <summary>
+    ///     Gets slide layout by name.
+    /// </summary>
+    ISlideLayout SlideLayout(string name);
 }
 
 internal sealed class SlideMaster : ISlideMaster
@@ -63,25 +68,29 @@ internal sealed class SlideMaster : ISlideMaster
     }
 
     public IImage? Background => null;
-    
+
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.layouts.Value;
-    
+
     public IShapeCollection Shapes { get; }
-    
+
     public ITheme Theme => new Theme(this.sdkSlideMasterPart, this.sdkSlideMasterPart.ThemePart!.Theme);
-    
+
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
-    
+
     public int Number { get; set; }
-    
+
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
-    
+
+    public ISlideLayout SlideLayout(string name) => this.layouts.Value.First(l => l.Name == name);
+
     private MasterSlideNumber? CreateSlideNumber()
     {
         var pSldNum = this.sdkSlideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!
             .Elements<P.Shape>()
-            .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
-        
+            .FirstOrDefault(s =>
+                s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value ==
+                P.PlaceholderValues.SlideNumber);
+
         return pSldNum is null ? null : new MasterSlideNumber(pSldNum);
     }
 }

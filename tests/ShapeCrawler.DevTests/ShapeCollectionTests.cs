@@ -386,7 +386,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
+        pres.Slides.Add(layout);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
         var image = TestAsset("063 vector image.svg");
@@ -409,7 +410,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        pres.Slides.Add(layout);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
 
@@ -432,7 +434,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var layout = pres.SlideMaster(0).SlideLayouts.First(l => l.Name == "Blank");
+        pres.Slides.Add(layout);
         var slide = pres.Slides[0];
         var shapes = slide.Shapes;
         var image = TestAsset("09 png image.png");
@@ -745,7 +748,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        pres.Slides.Add(layout);
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("09 png image.png");
 
@@ -953,7 +957,7 @@ public class ShapeCollectionTests : SCTest
         var slides = pres.Slides;
 
         // Act
-        slides.AddEmptySlide(layout);
+        slides.Add(layout);
 
         // Assert
         var addedSlide = slides.Last();
@@ -962,34 +966,34 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddEmptySlide_adds_empty_slide()
+    public void Add_adds_a_new_slide()
     {
         // Arrange
         var pres = new Presentation();
+        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
         var slides = pres.Slides;
 
         // Act
-        slides.AddEmptySlide(SlideLayoutType.Blank);
+        slides.Add(layout);
 
         // Assert
         slides[1].Shapes.Should().HaveCount(3);
     }
 
     [Test]
-    public void AddEmptySlide_adds_slide_from_layout()
+    public void Add_adds_slide()
     {
         // Arrange
         var pres = new Presentation(TestAsset("017.pptx"));
-        var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
+        var layout = pres.SlideMasters[0].SlideLayouts.First(l=>l.Name == "Title and Content");
 
         // Act
-        pres.Slides.AddEmptySlide(SlideLayoutType.Title);
+        pres.Slides.Add(layout);
 
         // Assert
         var addedSlide = pres.Slides.Last();
-        titleAndContentLayout.Type.Should().Be(SlideLayoutType.Title);
         addedSlide.Should().NotBeNull();
-        titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
+        layout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
     }
     
     [Test]

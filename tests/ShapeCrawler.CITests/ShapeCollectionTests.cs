@@ -11,7 +11,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
+        pres.Slides.Add(layout);
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("063 vector image.svg");
         shapes.AddPicture(image);
@@ -61,7 +62,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
+        pres.Slides.Add(layout);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
 

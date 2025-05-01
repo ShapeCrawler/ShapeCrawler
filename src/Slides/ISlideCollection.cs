@@ -13,17 +13,12 @@ namespace ShapeCrawler;
 public interface ISlideCollection : IReadOnlyList<ISlide>
 {
     /// <summary>
-    ///     Adds a new slide based on the existing layout.
+    ///     Adds a new slide using specified layout.
     /// </summary>
-    void AddEmptySlide(ISlideLayout layout);
+    void Add(ISlideLayout layout);
 
     /// <summary>
-    ///     Adds a new slide based on the predefined layout type.
-    /// </summary>
-    void AddEmptySlide(SlideLayoutType layoutType);
-
-    /// <summary>
-    ///     Adds specified slide.
+    ///     Adds slide.
     /// </summary>
     void Add(ISlide slide);
 
@@ -36,7 +31,7 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     ///     Adds a new slide from JSON.
     /// </summary>
     /// <param name="jsonSlide">Slide in JSON format.</param>
-    [System.Diagnostics.CodeAnalysis.Experimental("SC0001")]
+    [System.Diagnostics.CodeAnalysis.Experimental("SCE0001")]
     void AddJSON(string jsonSlide);
 #endif
 }
