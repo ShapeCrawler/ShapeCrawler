@@ -10,10 +10,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🍀Added `IParagraphCollection.Add(string content, int index)` [#986](https://github.com/ShapeCrawler/ShapeCrawler/issues/986)  
-🐞Fixed added picture width [#993](https://github.com/ShapeCrawler/ShapeCrawler/issues/993)  
-🐞Fixed open Google Slides Export [#972](https://github.com/ShapeCrawler/ShapeCrawler/issues/972)  
-🐞Fixed `SetPicture()` [#858](https://github.com/ShapeCrawler/ShapeCrawler/issues/858)  </PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added support adding Bar Chart.  
+🍀Added support shapes grouping [D951](https://github.com/ShapeCrawler/ShapeCrawler/discussions/951)  </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>

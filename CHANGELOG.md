@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.67.0 - Unreleased
+## Version 0.67.0 - 2025-05-01
 🍀Added support adding Bar Chart.  
 🍀Added support shapes grouping [D951](https://github.com/ShapeCrawler/ShapeCrawler/discussions/951)  
 
