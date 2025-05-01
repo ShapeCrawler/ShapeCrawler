@@ -30,16 +30,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public void AddEmptySlide(SlideLayoutType layoutType)
-    {
-        var presDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
-        var slideMasters = new SlideMasterCollection(presDocument.PresentationPart!.SlideMasterParts);
-        var layout = slideMasters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
-
-        this.AddEmptySlide(layout);
-    }
-
-    public void AddEmptySlide(ISlideLayout layout)
+    public void Add(ISlideLayout layout)
     {
         var rId = new SCOpenXmlPart(this.presPart).GetNextRelationshipId();
         var sdkSlidePart = this.presPart.AddNewPart<SlidePart>(rId);

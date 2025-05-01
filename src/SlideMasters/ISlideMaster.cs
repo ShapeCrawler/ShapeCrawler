@@ -46,6 +46,11 @@ public interface ISlideMaster
     /// <param name="shape">The name of the shape.</param>
     /// <returns>The requested shape.</returns>
     IShape Shape(string shape);
+
+    /// <summary>
+    ///     Gets slide layout by name.
+    /// </summary>
+    ISlideLayout SlideLayout(string name);
 }
 
 internal sealed class SlideMaster : ISlideMaster
@@ -75,7 +80,8 @@ internal sealed class SlideMaster : ISlideMaster
     public int Number { get; set; }
     
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
-    
+    public ISlideLayout SlideLayout(string name) => this.layouts.Value.First(l=>l.Name == name);
+
     private MasterSlideNumber? CreateSlideNumber()
     {
         var pSldNum = this.sdkSlideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!

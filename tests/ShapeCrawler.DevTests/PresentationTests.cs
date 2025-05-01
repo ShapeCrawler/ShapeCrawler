@@ -157,15 +157,16 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Slides_AddEmptySlide()
+    public void Slides_Add_adds_a_new_slide()
     {
         // Arrange
         var pres = new Presentation();
         var removingSlide = pres.Slides[0];
+        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
 
         // Act
         removingSlide.Remove();
-        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        pres.Slides.Add(layout);
 
         // Assert
         pres.Slides.Count.Should().Be(1);
