@@ -18,38 +18,18 @@ public class ChartTests : SCTest
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
     {
         // Arrange
-        var pptx = TestAsset("024_chart.pptx");
-        var pres = new Presentation(pptx);
-        IChart chart = pres.Slides[1].Shapes.First(sp => sp.Id == 5) as IChart;
+        var pres = new Presentation(TestAsset("024_chart.pptx"));
+        var chart = pres.Slide(2).Shapes.GetById<IChart>(5);
+        var scatterChart = chart.AsScatterChart();
 
         // Act
-        double xValue = chart.XValues[0];
+        // double xValue = chart.XValues[0];
+        double xValue = scatterChart.XAxis.Values[0];
 
         // Assert
         xValue.Should().Be(10);
-        chart.HasXValues.Should().BeTrue();
     }
-
-    [Test]
-    public void HasXValues()
-    {
-        // Arrange
-        var pptx = TestAsset("025_chart.pptx");
-        var pres = new Presentation(pptx);
-        ISlide slide1 = pres.Slides[0];
-        ISlide slide2 = pres.Slides[1];
-        IChart chart8 = slide1.Shapes.First(x => x.Id == 8) as IChart;
-        IChart chart11 = slide2.Shapes.First(x => x.Id == 11) as IChart;
-
-        // Act
-        var chart8HasXValues = chart8.HasXValues;
-        var chart11HasXValues = chart11.HasXValues;
-
-        // Assert
-        chart8HasXValues.Should().BeFalse();
-        chart11HasXValues.Should().BeFalse();
-    }
-
+    
     [Test]
     public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
     {
@@ -91,8 +71,6 @@ public class ChartTests : SCTest
         string charTitleCase9 = chartCase9.Title;
         string charTitleCase10 = chartCase10.Title;
         string charTitleCase11 = chartCase11.Title;
-        bool hasTitleCase4 = chartCase4.HasTitle;
-        bool hasTitleCase6 = chartCase6.HasTitle;
 
         // Assert
         charTitleCase1.Should().BeEquivalentTo("Test title");
@@ -104,8 +82,6 @@ public class ChartTests : SCTest
         charTitleCase9.Should().BeEquivalentTo("Sales3");
         charTitleCase10.Should().BeEquivalentTo("Sales4");
         charTitleCase11.Should().BeEquivalentTo("Sales5");
-        hasTitleCase4.Should().BeFalse();
-        hasTitleCase6.Should().BeFalse();
     }
         
     [Test]
@@ -207,7 +183,7 @@ public class ChartTests : SCTest
         category.Name = "Category 1_new";
 
         // Assert
-        var mStream = new MemoryStream(lineChart.BookByteArray());
+        var mStream = new MemoryStream(lineChart.GetSpreadsheetByteArray());
         var workbook = new XLWorkbook(mStream);
         var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
         cellValue.Should().BeEquivalentTo("Category 1_new");
@@ -300,15 +276,15 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void Axes_ValueAxis_Minimum_Getter()
+    public void XAxis_Minimum()
     {
         // Arrange
-        var pptx = TestAsset("001 bar chart.pptx");
-        var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var chart = pres.Slide(1).Shapes.Shape<IChart>("Bar Chart 1");
+        var barChart = chart.AsBarChart();
         
         // Act
-        var minimum = barChart.Axes.ValueAxis.Minimum;
+        var minimum = chart.XAxis.Minimum;
         
         // Assert
         minimum.Should().Be(0);

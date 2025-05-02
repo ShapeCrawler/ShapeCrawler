@@ -24,29 +24,29 @@ internal sealed class Chart : Shape, IChart
 
     private string? chartTitle;
 
-    internal Chart(ChartPart sdkChartPart, P.GraphicFrame pGraphicFrame, IReadOnlyList<ICategory> categories)
+    internal Chart(ChartPart chartPart, P.GraphicFrame pGraphicFrame, IReadOnlyList<ICategory> categories)
         : base(pGraphicFrame)
     {
-        this.SdkChartPart = sdkChartPart;
+        this.SdkChartPart = chartPart;
         this.SdkGraphicFrame = pGraphicFrame;
         this.Categories = categories;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.SdkPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.SdkPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+        var pShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(pShapeProperties);
         this.Fill = new ShapeFill(pShapeProperties);
         this.seriesCollection = new SeriesCollection(
-            sdkChartPart,
+            chartPart,
             this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
-    public P.GraphicFrame SdkGraphicFrame { get; }
-    
-    public ChartPart SdkChartPart { get; }
-    
-    public C.PlotArea SdkPlotArea { get; }
-    
+    private P.GraphicFrame SdkGraphicFrame { get; }
+
+    private ChartPart SdkChartPart { get; }
+
+    private C.PlotArea SdkPlotArea { get; }
+
     public ChartType Type
     {
         get
@@ -64,9 +64,9 @@ internal sealed class Chart : Shape, IChart
     }
 
     public override ShapeContent ShapeContent => ShapeContent.Chart;
-    
+
     public override IShapeOutline Outline { get; }
-    
+
     public override IShapeFill Fill { get; }
 
     public bool HasTitle
@@ -90,9 +90,9 @@ internal sealed class Chart : Shape, IChart
     public bool HasCategories => false;
 
     public IReadOnlyList<ICategory> Categories { get; }
-    
+
     public ISeriesCollection SeriesCollection => this.seriesCollection;
-    
+
     public bool HasXValues => this.ParseXValues() != null;
 
     public List<double> XValues
@@ -101,23 +101,27 @@ internal sealed class Chart : Shape, IChart
         {
             if (this.ParseXValues() == null)
             {
-                throw new NotSupportedException($"This chart type has not {nameof(this.XValues)} property. You can check it via {nameof(this.HasXValues)} property.");
+                throw new NotSupportedException(
+                    $"This chart type has not {nameof(this.XValues)} property. You can check it via {nameof(this.HasXValues)} property.");
             }
 
             return this.ParseXValues() !;
         }
     }
-    
+
     public override Geometry GeometryType => Geometry.Rectangle;
-    
+
     public IAxesManager Axes => this.GetAxes();
-    
+
     public override bool Removable => true;
-    
-    public byte[] BookByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
-    
+
+    public byte[] GetSpreadsheetByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
+
+    public IScatterChart AsScatterChart() => throw new SCException(
+        $"The chart is not a scatter chart. Use {nameof(this.Type)} property to check if the chart is a scatter chart.");
+
     public override void Remove() => this.SdkGraphicFrame.Remove();
-    
+
     private IAxesManager GetAxes() => new AxesManager(this.SdkPlotArea);
 
     private string? GetTitleOrDefault()

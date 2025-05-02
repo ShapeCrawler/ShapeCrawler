@@ -13,7 +13,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
 {
     public int Count => this.GetShapes().Count();
 
@@ -92,11 +92,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
             yield return new Shape(pShape);
         }
     }
-    
+
     private IEnumerable<IShape> GetShapes()
     {
         var pShapeTree = this.GetShapeTreeFromPart();
-        
+
         foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
             foreach (var shape in this.CreateShapesFromElement(element))
@@ -139,7 +139,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
         {
             yield break;
         }
-        
+
         if (this.IsOLEObject(aGraphicData))
         {
             yield return new OleObject(pGraphicFrame);
@@ -178,7 +178,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
     }
 
     // ReSharper disable once InconsistentNaming
-    private bool IsOLEObject(A.GraphicData aGraphicData) => 
+    private bool IsOLEObject(A.GraphicData aGraphicData) =>
         aGraphicData.Uri?.Value?.Equals(
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;
@@ -187,37 +187,46 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-        var sdkChartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
-        var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
+        var chartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
+        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         // Combination chart with multiple chart types
         if (cCharts.Count() > 1)
         {
             yield return new Chart(
-                sdkChartPart,
+                chartPart,
                 pGraphicFrame,
-                new Categories(sdkChartPart, cCharts));
+                new Categories(chartPart, cCharts));
             yield break;
         }
 
-        var chartType = cCharts.Single().LocalName;
-        
+        var chartTypeName = cCharts.Single().LocalName;
+
         // Charts with categories
-        if (chartType is "lineChart" or "barChart" or "pieChart")
+        if (chartTypeName is "lineChart" or "barChart" or "pieChart")
         {
             yield return new Chart(
-                sdkChartPart,
+                chartPart,
                 pGraphicFrame,
-                new Categories(sdkChartPart, cCharts));
+                new Categories(chartPart, cCharts));
+            yield break;
+        }
+
+        if (chartTypeName is "scatterChart")
+        {
+            yield return new ScatterChart(
+                new Chart(chartPart, pGraphicFrame, new NullCategories()),
+                chartPart
+            );
             yield break;
         }
 
         // Charts without categories
-        if (chartType is "scatterChart" or "bubbleChart")
+        if (chartTypeName is "bubbleChart")
         {
             yield return new Chart(
-                sdkChartPart,
+                chartPart,
                 pGraphicFrame,
                 new NullCategories());
             yield break;
@@ -225,9 +234,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart): IShapeCollection
 
         // Default chart handling
         yield return new Chart(
-            sdkChartPart,
+            chartPart,
             pGraphicFrame,
-            new Categories(sdkChartPart, cCharts));
+            new Categories(chartPart, cCharts));
     }
 
     private IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)

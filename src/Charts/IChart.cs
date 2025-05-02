@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
-using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -19,27 +16,7 @@ public interface IChart : IShape
     ChartType Type { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart has a title.
-    /// </summary>
-    public bool HasTitle { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Presentation.GraphicFrame"/>.
-    /// </summary>
-    public P.GraphicFrame SdkGraphicFrame { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.ChartPart"/>.
-    /// </summary>
-    public ChartPart SdkChartPart { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Drawing.Charts.PlotArea"/>.
-    /// </summary>
-    public C.PlotArea SdkPlotArea { get; }
-    
-    /// <summary>
-    ///     Gets chart title.
+    ///     Gets chart title. Returns <c>null</c> if the chart does not have a title.
     /// </summary>
     string? Title { get; }
 
@@ -59,22 +36,13 @@ public interface IChart : IShape
     ISeriesCollection SeriesCollection { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart has x-axis values.
+    ///     Gets the byte array of the underlying data source spreadsheet.
     /// </summary>
-    bool HasXValues { get; }
+    byte[] GetSpreadsheetByteArray();
 
     /// <summary>
-    ///     Gets collection of x-axis values.
+    ///     Represents the chart as a Scatter.  
     /// </summary>
-    List<double> XValues { get; } // TODO: should be excluded
-    
-    /// <summary>
-    ///     Gets chart axes manager.
-    /// </summary>
-    IAxesManager Axes { get; }
-
-    /// <summary>
-    ///     Gets byte array of excel book containing chart data source.
-    /// </summary>
-    byte[] BookByteArray();
+    /// <exception cref="SCException">Thrown if the chart is not a Scatter.</exception>
+    IScatterChart AsScatterChart();
 }
