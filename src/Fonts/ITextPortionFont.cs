@@ -10,12 +10,12 @@ namespace ShapeCrawler;
 public interface ITextPortionFont : IFont
 {
     /// <summary>
-    ///     Gets or sets font for the Latin characters. Returns <see langword="null"/> if the Latin font is not present.
+    ///     Gets or sets the font for the Latin characters. Returns <c>null</c> if the Latin font is not presented.
     /// </summary>
     string? LatinName { get; set; }
     
     /// <summary>
-    ///     Gets or sets font for the East Asian characters.
+    ///     Gets or sets the font for the East Asian characters.
     /// </summary>
     string EastAsianName { get; set; }
 

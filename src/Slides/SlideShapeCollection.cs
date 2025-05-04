@@ -304,28 +304,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         addedShape.Height = height;
         addedShape.Id = nextShapeId;
         addedShape.GeometryType = geometry;
-
-        // Add text to the shape
-        if (!string.IsNullOrEmpty(text))
-        {
-            // Create TextBody if it doesn't exist
-            pShape.TextBody ??= new P.TextBody
-            {
-                BodyProperties = new A.BodyProperties(),
-                ListStyle = new A.ListStyle()
-            };
-
-            // Create a paragraph with the provided text
-            var paragraph = new A.Paragraph();
-            var run = new A.Run();
-            var textElement = new A.Text { Text = text };
-            
-            run.AppendChild(textElement);
-            paragraph.AppendChild(run);
-            
-            // Add the paragraph to the TextBody
-            pShape.TextBody.AppendChild(paragraph);
-        }
+        addedShape.TextBox!.SetText(text);
     }
 
     public void AddLine(string xml)
