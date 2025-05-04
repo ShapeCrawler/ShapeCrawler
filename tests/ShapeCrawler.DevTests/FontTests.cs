@@ -17,11 +17,11 @@ public class FontTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var rectangle = slide.Shapes.Last();
-        rectangle.TextBox.Paragraphs[0].Portions.AddText("test");
+        rectangle.TextBox!.Paragraphs[0].Portions.AddText("test");
         var font = rectangle.TextBox!.Paragraphs[0].Portions[0].Font;
 
         // Act
-        font.EastAsianName = "SimSun";
+        font!.EastAsianName = "SimSun";
 
         // Assert
         font.EastAsianName.Should().Be("SimSun");
@@ -461,5 +461,26 @@ public class FontTests : SCTest
         font = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font;
         font.OffsetEffect.Should().NotBe(oldOffsetSize);
         font.OffsetEffect.Should().Be(expectedOffsetEffect);
+    }
+    
+    [Test]
+    public void LatinName_Setter()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slide(1);
+        slide.Shapes.AddShape(0, 0, 100, 100, Geometry.Rectangle, "Test");
+        var addedShape = slide.Shapes.Last();
+        var font = addedShape.TextBox!.Paragraphs[0].Portions[0].Font!;
+        var stream = new MemoryStream();
+        
+        // Act
+        font.LatinName = "Times New Roman";
+        
+        // Assert
+        pres.Save(stream);
+        font = new Presentation(stream).Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font!;
+        font.LatinName.Should().Be("Times New Roman");
+        pres.Validate();
     }
 }
