@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
@@ -9,7 +8,7 @@ internal class AxisChart : IChart
 {
     private readonly IChart chart;
 
-    internal AxisChart(IChart chart, ChartPart chartPart, P.GraphicFrame pGraphicFrame)
+    internal AxisChart(IChart chart, ChartPart chartPart)
     {
         this.chart = chart;
         this.XAxis = new XAxis(chartPart);
@@ -23,7 +22,11 @@ internal class AxisChart : IChart
         set => this.chart.X = value;
     }
 
-    public decimal Y { get; set; }
+    public decimal Y
+    {
+        get => this.chart.Y;
+        set => this.chart.Y = value;
+    }
 
     public Geometry GeometryType
     {

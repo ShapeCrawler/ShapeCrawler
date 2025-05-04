@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -15,11 +14,9 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class Chart : Shape, IChart
 {
-    private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly SeriesCollection seriesCollection;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ChartPart chartPart;
-    private readonly C.PlotArea plotArea;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -32,15 +29,14 @@ internal sealed class Chart : Shape, IChart
     {
         this.chartPart = chartPart;
         this.pGraphicFrame = pGraphicFrame;
-        this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        this.cXCharts = this.plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        var plotArea1 = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cXCharts = plotArea1.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var pShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(pShapeProperties);
         this.Fill = new ShapeFill(pShapeProperties);
         this.seriesCollection = new SeriesCollection(
             chartPart,
-            this.plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
+            plotArea1.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
     public ChartType Type
@@ -69,7 +65,7 @@ internal sealed class Chart : Shape, IChart
     {
         get
         {
-            this.chartTitle = this.GetTitleOrDefault();
+            this.chartTitle = this.GetTitleOrNull();
             return this.chartTitle;
         }
     }
@@ -80,22 +76,6 @@ internal sealed class Chart : Shape, IChart
 
     public ISeriesCollection SeriesCollection => this.seriesCollection;
 
-    public bool HasXValues => this.ParseXValues() != null;
-
-    public List<double> XValues
-    {
-        get
-        {
-            if (this.ParseXValues() == null)
-            {
-                throw new NotSupportedException(
-                    $"This chart type has not {nameof(this.XValues)} property. You can check it via {nameof(this.HasXValues)} property.");
-            }
-
-            return this.ParseXValues() !;
-        }
-    }
-
     public override Geometry GeometryType => Geometry.Rectangle;
 
     public override bool Removable => true;
@@ -104,7 +84,7 @@ internal sealed class Chart : Shape, IChart
 
     public override void Remove() => this.pGraphicFrame.Remove();
 
-    private string? GetTitleOrDefault()
+    private string? GetTitleOrNull()
     {
         var cTitle = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
@@ -154,36 +134,5 @@ internal sealed class Chart : Shape, IChart
         }
 
         return false;
-    }
-
-    private List<double>? ParseXValues()
-    {
-        var cXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
-        if (cXValues?.NumberReference == null)
-        {
-            return null;
-        }
-
-        if (cXValues.NumberReference.NumberingCache != null)
-        {
-            var cNumericValues = cXValues.NumberReference.NumberingCache.Descendants<C.NumericValue>();
-            var cachedPointValues = new List<double>(cNumericValues.Count());
-            foreach (var numericValue in cNumericValues)
-            {
-                var number = double.Parse(numericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
-                var roundNumber = Math.Round(number, 1);
-                cachedPointValues.Add(roundNumber);
-            }
-
-            return cachedPointValues;
-        }
-
-        return new Spreadsheet(this.chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
-    }
-
-    private OpenXmlElement? GetFirstSeries()
-    {
-        return this.cXCharts.First().ChildElements
-            .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
     }
 }

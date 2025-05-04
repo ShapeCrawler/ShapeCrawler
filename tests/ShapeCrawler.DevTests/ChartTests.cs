@@ -30,11 +30,11 @@ public class ChartTests : SCTest
     }
     
     [Test]
-    public void Categories_is_null_When_chart_does_not_have_categories()
+    public void Categories_is_null_When_the_chart_type_doesnt_have_categories()
     {
         // Arrange
         var pres = new Presentation(TestAsset("021.pptx"));
-        var chart = pres.Slide(3).Shapes.GetById<IChart>(4);
+        var chart = pres.Slide(3).Chart(4);
 
         // Act & Assert
         chart.Categories.Should().BeNull();

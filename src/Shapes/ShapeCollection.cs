@@ -200,8 +200,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 new CategoryChart(
                     new Chart(chartPart, pGraphicFrame),
                     chartPart),
-                chartPart,
-                pGraphicFrame);
+                chartPart);
 
             yield break;
         }
@@ -215,8 +214,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 new CategoryChart(
                     new Chart(chartPart, pGraphicFrame),
                     chartPart),
-                chartPart,
-                pGraphicFrame);
+                chartPart);
             yield break;
         }
 
@@ -235,8 +233,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         {
             yield return new AxisChart(
                 new Chart(chartPart, pGraphicFrame),
-                chartPart,
-                pGraphicFrame);
+                chartPart);
             yield break;
         }
 

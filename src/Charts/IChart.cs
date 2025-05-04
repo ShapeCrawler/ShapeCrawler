@@ -27,7 +27,7 @@ public interface IChart : IShape
     public IReadOnlyList<ICategory>? Categories { get; }
     
     /// <summary>
-    ///     Gets X-Axis. Returns <c>null</c> if the chart doesn't have an X-Axis, e.g., Pie.
+    ///     Gets X-Axis. Returns <c>null</c> if the chart type doesn't have an X-Axis, e.g., Pie.
     /// </summary>
     IXAxis? XAxis { get; }
 

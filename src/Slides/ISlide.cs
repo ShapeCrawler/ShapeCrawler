@@ -109,6 +109,11 @@ public interface ISlide
     ///     Gets chart by name.
     /// </summary>
     IChart Chart(string name);
+    
+    /// <summary>
+    ///     Gets chart by ID.
+    /// </summary>
+    IChart Chart(int id);
 }
 
 internal sealed class Slide : ISlide
@@ -267,6 +272,8 @@ internal sealed class Slide : ISlide
     }
 
     public IChart Chart(string name) => this.Shapes.Shape<IChart>(name);
+
+    public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
 
     public IList<ITextBox> GetTextBoxes()
     {
