@@ -10,8 +10,8 @@ using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable PossibleMultipleEnumeration
 
+// ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
 internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
@@ -192,16 +192,16 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        if (cCharts.Count() > 1) // combination chart has multiple chart types
+        
+        if (cCharts.Count() > 1) 
         {
+            // combination chart has multiple chart types
             yield return new AxisChart(
                 new CategoryChart(
                     new Chart(chartPart, pGraphicFrame),
-                    chartPart
-                ),
+                    chartPart),
                 chartPart,
-                pGraphicFrame
-            );
+                pGraphicFrame);
 
             yield break;
         }
@@ -216,8 +216,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                     new Chart(chartPart, pGraphicFrame),
                     chartPart),
                 chartPart,
-                pGraphicFrame
-            );
+                pGraphicFrame);
             yield break;
         }
 
@@ -226,28 +225,25 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         {
             yield return new CategoryChart(
                     new Chart(chartPart, pGraphicFrame),
-                    chartPart
-                );
+                    chartPart);
 
             yield break;
         }
 
         // With axis
-        if (chartTypeName is "scatterChart" or "bubbleChart") // Scatter: Bubble
+        if (chartTypeName is "scatterChart" or "bubbleChart")
         {
             yield return new AxisChart(
                 new Chart(chartPart, pGraphicFrame),
                 chartPart,
-                pGraphicFrame
-            );
+                pGraphicFrame);
             yield break;
         }
 
         // Other
         yield return new Chart(
             chartPart,
-            pGraphicFrame
-        );
+            pGraphicFrame);
     }
 
     private IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)

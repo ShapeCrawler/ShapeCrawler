@@ -23,4 +23,3 @@ internal class SmartArt : Shape, ISmartArt
     
     public ISmartArtNodeCollection Nodes { get; }
 }
-

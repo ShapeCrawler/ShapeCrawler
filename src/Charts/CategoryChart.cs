@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Charts;
 
 internal class CategoryChart : IChart
 {
@@ -77,6 +75,7 @@ internal class CategoryChart : IChart
     }
 
     public bool Hidden => this.chart.Hidden;
+
     public PlaceholderType? PlaceholderType => this.chart.PlaceholderType;
 
     public string? CustomData
@@ -86,16 +85,27 @@ internal class CategoryChart : IChart
     }
 
     public ShapeContent ShapeContent => this.chart.ShapeContent;
+
     public IShapeOutline? Outline => this.chart.Outline;
+
     public IShapeFill? Fill => this.chart.Fill;
+
     public ITextBox? TextBox => this.chart.TextBox;
+   
     public double Rotation => this.chart.Rotation;
+    
     public string SDKXPath => this.chart.SDKXPath;
+    
     public OpenXmlElement SDKOpenXmlElement => this.chart.SDKOpenXmlElement;
+
     public IPresentation Presentation => this.chart.Presentation;
+
     public ChartType Type => this.chart.Type;
+
     public string? Title => this.chart.Title;
+
     public IXAxis? XAxis => this.chart.XAxis;
+
     public ISeriesCollection SeriesCollection => this.chart.SeriesCollection;
 
     #endregion Composition Properties

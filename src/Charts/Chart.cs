@@ -17,6 +17,9 @@ internal sealed class Chart : Shape, IChart
 {
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly SeriesCollection seriesCollection;
+    private readonly P.GraphicFrame pGraphicFrame;
+    private readonly ChartPart chartPart;
+    private readonly C.PlotArea plotArea;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -27,24 +30,18 @@ internal sealed class Chart : Shape, IChart
     internal Chart(ChartPart chartPart, P.GraphicFrame pGraphicFrame)
         : base(pGraphicFrame)
     {
-        this.SdkChartPart = chartPart;
-        this.SdkGraphicFrame = pGraphicFrame;
+        this.chartPart = chartPart;
+        this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.SdkPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        this.cXCharts = this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        this.plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cXCharts = this.plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var pShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(pShapeProperties);
         this.Fill = new ShapeFill(pShapeProperties);
         this.seriesCollection = new SeriesCollection(
             chartPart,
-            this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
+            this.plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
-
-    private P.GraphicFrame SdkGraphicFrame { get; }
-
-    private ChartPart SdkChartPart { get; }
-
-    private C.PlotArea SdkPlotArea { get; }
 
     public ChartType Type
     {
@@ -78,6 +75,7 @@ internal sealed class Chart : Shape, IChart
     }
 
     public IReadOnlyList<ICategory>? Categories { get; }
+
     public IXAxis? XAxis { get; }
 
     public ISeriesCollection SeriesCollection => this.seriesCollection;
@@ -102,13 +100,13 @@ internal sealed class Chart : Shape, IChart
 
     public override bool Removable => true;
 
-    public byte[] GetWorksheetByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
+    public byte[] GetWorksheetByteArray() => new Spreadsheet(this.chartPart).AsByteArray();
 
-    public override void Remove() => this.SdkGraphicFrame.Remove();
+    public override void Remove() => this.pGraphicFrame.Remove();
 
     private string? GetTitleOrDefault()
     {
-        var cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -180,7 +178,7 @@ internal sealed class Chart : Shape, IChart
             return cachedPointValues;
         }
 
-        return new Spreadsheet(this.SdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
+        return new Spreadsheet(this.chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
     }
 
     private OpenXmlElement? GetFirstSeries()

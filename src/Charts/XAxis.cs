@@ -14,7 +14,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
     {
         get
         {
-            var cXValues = FirstSeries().GetFirstChild<C.XValues>()!;
+            var cXValues = this.FirstSeries().GetFirstChild<C.XValues>()!;
 
             if (cXValues.NumberReference!.NumberingCache != null)
             {
@@ -27,15 +27,47 @@ internal class XAxis(ChartPart chartPart) : IXAxis
                     cachedPointValues.Add(roundNumber);
                 }
 
-                return cachedPointValues.ToArray();
+                return [.. cachedPointValues];
             }
 
-            return new Spreadsheet(chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text).ToArray();
+            return [.. new Spreadsheet(chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text)];
         }
     }
 
-    public int Minimum { get; set; }
-    public int Maximum { get; set; }
+    public double Minimum
+    {
+        get
+        {
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!.Scaling!;
+            var cMin = cScaling.MinAxisValue;
+            
+            return cMin == null ? 0 : cMin.Val!;
+        }
+
+        set
+        {
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!.Scaling!;
+            cScaling.MinAxisValue = new C.MinAxisValue { Val = value };
+        }
+    }
+
+    public double Maximum
+    {
+        get
+        {
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!.Scaling!;
+            var cMax = cScaling.MaxAxisValue;
+            const double defaultMax = 6;
+            
+            return cMax == null ? defaultMax : cMax.Val!;
+        }
+
+        set
+        {
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!.Scaling!;
+            cScaling.MaxAxisValue = new C.MaxAxisValue { Val = value };
+        }
+    }
 
     private OpenXmlElement FirstSeries()
     {

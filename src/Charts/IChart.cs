@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.Charts;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130

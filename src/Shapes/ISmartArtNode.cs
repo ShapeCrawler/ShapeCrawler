@@ -1,5 +1,3 @@
-using System;
-
 namespace ShapeCrawler.Shapes;
 
 /// <summary>
