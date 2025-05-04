@@ -7,42 +7,39 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class ChartPoint : IChartPoint
 {
-    private readonly ChartPart sdkChartPart;
+    private readonly ChartPart chartPart;
     private readonly C.NumericValue cNumericValue;
-    private readonly string sheet;
+    private readonly string worksheetName;
     private readonly string address;
 
-    internal ChartPoint(ChartPart sdkChartPart, C.NumericValue cNumericValue, string sheet, string address)
+    internal ChartPoint(ChartPart chartPart, C.NumericValue cNumericValue, string worksheetName, string address)
     {
-        this.sdkChartPart = sdkChartPart;
+        this.chartPart = chartPart;
         this.cNumericValue = cNumericValue;
-        this.sheet = sheet;
+        this.worksheetName = worksheetName;
         this.address = address;
     }
 
     public double Value
     {
-        get => this.ParseValue();
-        set => this.UpdateValue(value);
-    }
-
-    private double ParseValue()
-    {
-        var cachedValue = double.Parse(this.cNumericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
-
-        return Math.Round(cachedValue, 2);
-    }
-
-    private void UpdateValue(double value)
-    {
-        this.cNumericValue.Text = value.ToString(CultureInfo.InvariantCulture);
-
-        if (this.sdkChartPart.EmbeddedPackagePart == null)
+        get
         {
-            return;
+            var cachedValue = double.Parse(this.cNumericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+
+            return Math.Round(cachedValue, 2);
         }
 
-        new Spreadsheet(this.sdkChartPart).Sheet(this.sheet)
-            .UpdateCell(this.address, value.ToString(CultureInfo.InvariantCulture));
+        set
+        {
+            this.cNumericValue.Text = value.ToString(CultureInfo.InvariantCulture);
+
+            if (this.chartPart.EmbeddedPackagePart == null)
+            {
+                return;
+            }
+
+            new Workbook(this.chartPart.EmbeddedPackagePart).Sheet(this.worksheetName)
+                .UpdateCell(this.address, value.ToString(CultureInfo.InvariantCulture));
+        }
     }
 }

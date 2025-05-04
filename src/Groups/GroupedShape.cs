@@ -6,36 +6,27 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Groups;
 
-internal sealed class GroupedShape : IShape
+internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
 {
-    private readonly P.Shape pShape;
-    private readonly Shape shape;
-
-    internal GroupedShape(P.Shape pShape, Shape shape)
-    {
-        this.pShape = pShape;
-        this.shape = shape;
-    }
-
     public decimal X
     {
         get
         {
-            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
+            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
 
             var xGroupShapePt = new Emus(aOffset.X!).AsPoints();
             var groupShapeChildXPt = new Emus(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value).AsPoints();
-            var groupedShapeXPt = this.shape.X;
+            var groupedShapeXPt = shape.X;
 
             return xGroupShapePt - (groupShapeChildXPt - groupedShapeXPt);
         }
 
         set
         {
-            this.shape.X = value;
-            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
+            shape.X = value;
+            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
@@ -56,7 +47,7 @@ internal sealed class GroupedShape : IShape
             }
 
             var groupRightEmu = aOffset.X!.Value + aExtents.Cx!.Value;
-            var groupedRightEmu = new Points(this.shape.X + this.shape.Width).AsEmus();
+            var groupedRightEmu = new Points(shape.X + shape.Width).AsEmus();
             if (groupedRightEmu > groupRightEmu)
             {
                 var diffEmu = groupedRightEmu - groupRightEmu;
@@ -68,11 +59,11 @@ internal sealed class GroupedShape : IShape
 
     public decimal Y
     {
-        get => this.shape.Y;
+        get => shape.Y;
         set
         {
-            this.shape.Y = value;
-            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
+            shape.Y = value;
+            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
@@ -104,87 +95,87 @@ internal sealed class GroupedShape : IShape
 
     public decimal Width
     {
-        get => this.shape.Width;
-        set => this.shape.Width = value;
+        get => shape.Width;
+        set => shape.Width = value;
     }
 
     public decimal Height
     {
-        get => this.shape.Height;
-        set => this.shape.Height = value;
+        get => shape.Height;
+        set => shape.Height = value;
     }
 
-    public int Id => this.shape.Id;
+    public int Id => shape.Id;
 
     public string Name
     {
-        get => this.shape.Name;
-        set => this.shape.Name = value;
+        get => shape.Name;
+        set => shape.Name = value;
     }
 
     public string AltText
     {
-        get => this.shape.AltText;
-        set => this.shape.AltText = value;
+        get => shape.AltText;
+        set => shape.AltText = value;
     }
 
-    public bool Hidden => this.shape.Hidden;
+    public bool Hidden => shape.Hidden;
 
-    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
+    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public Geometry GeometryType
     {
-        get => this.shape.GeometryType;
-        set => this.shape.GeometryType = value;
+        get => shape.GeometryType;
+        set => shape.GeometryType = value;
     }
 
     public decimal CornerSize
     {
-        get => this.shape.CornerSize;
-        set => this.shape.CornerSize = value;
+        get => shape.CornerSize;
+        set => shape.CornerSize = value;
     }
 
     public decimal[] Adjustments
     {
-        get => this.shape.Adjustments;
-        set => this.shape.Adjustments = value;
+        get => shape.Adjustments;
+        set => shape.Adjustments = value;
     }
 
     public string? CustomData
     {
-        get => this.shape.CustomData;
-        set => this.shape.CustomData = value;
+        get => shape.CustomData;
+        set => shape.CustomData = value;
     }
 
-    public ShapeContent ShapeContent => this.shape.ShapeContent;
+    public ShapeContent ShapeContent => shape.ShapeContent;
 
-    public bool HasOutline => this.shape.HasOutline;
+    public bool HasOutline => shape.HasOutline;
 
-    public IShapeOutline Outline => this.shape.Outline;
+    public IShapeOutline Outline => shape.Outline;
 
-    public bool HasFill => this.shape.HasFill;
+    public bool HasFill => shape.HasFill;
 
-    public IShapeFill Fill => this.shape.Fill;
+    public IShapeFill Fill => shape.Fill;
 
-    public ITextBox? TextBox => this.shape.TextBox;
+    public ITextBox? TextBox => shape.TextBox;
 
-    public double Rotation => this.shape.Rotation;
+    public double Rotation => shape.Rotation;
 
-    public bool Removable => this.shape.Removable;
+    public bool Removable => shape.Removable;
 
-    public string SDKXPath => this.shape.SDKXPath;
+    public string SDKXPath => shape.SDKXPath;
 
-    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
+    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
 
-    public IPresentation Presentation => this.shape.Presentation;
+    public IPresentation Presentation => shape.Presentation;
 
-    public bool IsGroup => this.shape.IsGroup;
+    public bool IsGroup => shape.IsGroup;
 
-    public void Remove() => this.shape.Remove();
+    public void Remove() => shape.Remove();
 
-    public ITable AsTable() => this.shape.AsTable();
+    public ITable AsTable() => shape.AsTable();
 
-    public IMediaShape AsMedia() => this.shape.AsMedia();
+    public IMediaShape AsMedia() => shape.AsMedia();
 
     public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
 }

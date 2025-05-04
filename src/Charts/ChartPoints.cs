@@ -108,7 +108,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         else
         {
             // Empty cells of range don't have the corresponding C.NumericValue.
-            var quPoints = System.Math.Min(addresses.Count, numericValues?.Count ?? 0);
+            var quPoints = Math.Min(addresses.Count, numericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
                 points.Add(new ChartPoint(this.chartPart, numericValues?[i]!, sheetName, addresses[i]));

@@ -37,15 +37,15 @@ public interface ISeries
 
 internal sealed class Series : ISeries
 {
-    private readonly ChartPart sdkChartPart;
+    private readonly ChartPart chartPart;
     private readonly OpenXmlElement cSer;
 
     internal Series(ChartPart sdkChartPart, OpenXmlElement cSer, ChartType type)
     {
-        this.sdkChartPart = sdkChartPart;
+        this.chartPart = sdkChartPart;
         this.cSer = cSer;
         this.Type = type;
-        this.Points = new ChartPoints(this.sdkChartPart, this.cSer);
+        this.Points = new ChartPoints(this.chartPart, this.cSer);
     }
 
     public ChartType Type { get; }
@@ -61,6 +61,6 @@ internal sealed class Series : ISeries
         var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
         var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
 
-        return fromCache ?? new Spreadsheet(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
+        return fromCache ?? new Workbook(this.chartPart.EmbeddedPackagePart!).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
     }
 }
