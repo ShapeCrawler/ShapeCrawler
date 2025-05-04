@@ -321,18 +321,14 @@ public class ChartTests : SCTest
     }
     
     [Test]
-    public void Axes_ValueAxis_Maximum_Getter_returns_default_6()
+    public void XAxis_Maximum_Getter_returns_default_6()
     {
-        // Arrange
-        var pptx = TestAsset("001 bar chart.pptx");
-        var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
+        // Arrange  
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var barChart = pres.Slide(1).Chart("Bar Chart 1");
         
-        // Act
-        var maximum = barChart.XAxis!.Maximum;
-        
-        // Assert
-        maximum.Should().Be(6);
+        // Act & Assert
+        barChart.XAxis!.Maximum.Should().Be(6);
     }
     
     [Test]

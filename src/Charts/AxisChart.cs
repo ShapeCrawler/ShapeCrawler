@@ -2,12 +2,25 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal class AxisChart(IChart chart, ChartPart chartPart, P.GraphicFrame pGraphicFrame) : IChart
+internal class AxisChart : IChart
 {
+    private readonly IChart chart;
+    private readonly ChartPart chartPart;
+    private readonly P.GraphicFrame pGraphicFrame;
+
+    internal AxisChart(IChart chart, ChartPart chartPart, P.GraphicFrame pGraphicFrame)
+    {
+        this.chart = chart;
+        this.chartPart = chartPart;
+        this.pGraphicFrame = pGraphicFrame;
+        this.XAxis = new XAxis(chartPart);
+    }
+    
     public IXAxis? XAxis { get; }
 
     public decimal X
