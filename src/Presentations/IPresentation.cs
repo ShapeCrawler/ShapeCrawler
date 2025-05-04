@@ -46,7 +46,7 @@ public interface IPresentation : IDisposable
     IPresentationProperties Properties { get; }
     
     /// <summary>
-    ///     Returns slide with specified order number.
+    ///     Gets slide by number.
     /// </summary>
     ISlide Slide(int number);
 

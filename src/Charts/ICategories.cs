@@ -9,17 +9,8 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Categories : IReadOnlyList<ICategory>
+internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
 {
-    private readonly IEnumerable<OpenXmlElement> cCharts;
-    private readonly ChartPart sdkChartPart;
-
-    internal Categories(ChartPart sdkChartPart, IEnumerable<OpenXmlElement> cCharts)
-    {
-        this.cCharts = cCharts;
-        this.sdkChartPart = sdkChartPart;
-    }
-
     public int Count => this.CategoryList().Count;
     
     public ICategory this[int index] => this.CategoryList()[index];
@@ -69,7 +60,9 @@ internal sealed class Categories : IReadOnlyList<ICategory>
     private List<ICategory> CategoryList()
     {
         var categoryList = new List<ICategory>();
-        var firstSeries = this.cCharts.First().ChildElements
+        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
+        var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        var firstSeries = cCharts.First().ChildElements
             .First(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         var cCatAxisData = (C.CategoryAxisData)firstSeries.First(x => x is C.CategoryAxisData);
 
@@ -101,7 +94,7 @@ internal sealed class Categories : IReadOnlyList<ICategory>
             var addresses = new CellsRange(cellsRange).Addresses();
             for (var i = 0; i < addresses.Count; i++)
             {
-                var category = new SheetCategory(this.sdkChartPart, sheetName, addresses[i], cachedValues[i]);
+                var category = new SheetCategory(chartPart, sheetName, addresses[i], cachedValues[i]);
                 categoryList.Add(category);
             }
         }

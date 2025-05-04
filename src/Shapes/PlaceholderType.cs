@@ -76,16 +76,6 @@ public enum PlaceholderType
     Footer,
 
     /// <summary>
-    ///     OLEObject.
-    /// </summary>
-    OleObject,
-
-    /// <summary>
-    ///     Chart.
-    /// </summary>
-    Chart,
-
-    /// <summary>
     ///     Slide Image.
     /// </summary>
     SlideImage

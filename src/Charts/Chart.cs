@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -15,8 +14,9 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class Chart : Shape, IChart
 {
-    private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly SeriesCollection seriesCollection;
+    private readonly P.GraphicFrame pGraphicFrame;
+    private readonly ChartPart chartPart;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -24,29 +24,21 @@ internal sealed class Chart : Shape, IChart
 
     private string? chartTitle;
 
-    internal Chart(ChartPart sdkChartPart, P.GraphicFrame pGraphicFrame, IReadOnlyList<ICategory> categories)
+    internal Chart(ChartPart chartPart, P.GraphicFrame pGraphicFrame)
         : base(pGraphicFrame)
     {
-        this.SdkChartPart = sdkChartPart;
-        this.SdkGraphicFrame = pGraphicFrame;
-        this.Categories = categories;
-        this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.SdkPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        this.cXCharts = this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+        this.chartPart = chartPart;
+        this.pGraphicFrame = pGraphicFrame;
+        var plotArea1 = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cXCharts = plotArea1.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        var pShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(pShapeProperties);
         this.Fill = new ShapeFill(pShapeProperties);
         this.seriesCollection = new SeriesCollection(
-            sdkChartPart,
-            this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
+            chartPart,
+            plotArea1.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
-    public P.GraphicFrame SdkGraphicFrame { get; }
-    
-    public ChartPart SdkChartPart { get; }
-    
-    public C.PlotArea SdkPlotArea { get; }
-    
     public ChartType Type
     {
         get
@@ -64,65 +56,37 @@ internal sealed class Chart : Shape, IChart
     }
 
     public override ShapeContent ShapeContent => ShapeContent.Chart;
-    
-    public override IShapeOutline Outline { get; }
-    
-    public override IShapeFill Fill { get; }
 
-    public bool HasTitle
-    {
-        get
-        {
-            this.chartTitle ??= this.GetTitleOrDefault();
-            return this.chartTitle != null;
-        }
-    }
+    public override IShapeOutline Outline { get; }
+
+    public override IShapeFill Fill { get; }
 
     public string? Title
     {
         get
         {
-            this.chartTitle = this.GetTitleOrDefault();
+            this.chartTitle = this.GetTitleOrNull();
             return this.chartTitle;
         }
     }
 
-    public bool HasCategories => false;
+    public IReadOnlyList<ICategory>? Categories { get; }
 
-    public IReadOnlyList<ICategory> Categories { get; }
-    
+    public IXAxis? XAxis { get; }
+
     public ISeriesCollection SeriesCollection => this.seriesCollection;
-    
-    public bool HasXValues => this.ParseXValues() != null;
 
-    public List<double> XValues
-    {
-        get
-        {
-            if (this.ParseXValues() == null)
-            {
-                throw new NotSupportedException($"This chart type has not {nameof(this.XValues)} property. You can check it via {nameof(this.HasXValues)} property.");
-            }
-
-            return this.ParseXValues() !;
-        }
-    }
-    
     public override Geometry GeometryType => Geometry.Rectangle;
-    
-    public IAxesManager Axes => this.GetAxes();
-    
-    public override bool Removable => true;
-    
-    public byte[] BookByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
-    
-    public override void Remove() => this.SdkGraphicFrame.Remove();
-    
-    private IAxesManager GetAxes() => new AxesManager(this.SdkPlotArea);
 
-    private string? GetTitleOrDefault()
+    public override bool Removable => true;
+
+    public byte[] GetWorksheetByteArray() => new Spreadsheet(this.chartPart).AsByteArray();
+
+    public override void Remove() => this.pGraphicFrame.Remove();
+
+    private string? GetTitleOrNull()
     {
-        var cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -170,36 +134,5 @@ internal sealed class Chart : Shape, IChart
         }
 
         return false;
-    }
-
-    private List<double>? ParseXValues()
-    {
-        var cXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
-        if (cXValues?.NumberReference == null)
-        {
-            return null;
-        }
-
-        if (cXValues.NumberReference.NumberingCache != null)
-        {
-            var cNumericValues = cXValues.NumberReference.NumberingCache.Descendants<C.NumericValue>();
-            var cachedPointValues = new List<double>(cNumericValues.Count());
-            foreach (var numericValue in cNumericValues)
-            {
-                var number = double.Parse(numericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
-                var roundNumber = Math.Round(number, 1);
-                cachedPointValues.Add(roundNumber);
-            }
-
-            return cachedPointValues;
-        }
-
-        return new Spreadsheet(this.SdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
-    }
-
-    private OpenXmlElement? GetFirstSeries()
-    {
-        return this.cXCharts.First().ChildElements
-            .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
     }
 }

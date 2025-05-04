@@ -30,26 +30,13 @@ internal class SmartArtNodeCollection : ISmartArtNodeCollection
         return node;
     }
     
-    /// <summary>
-    ///     Gets the enumerator for the SmartArt nodes.
-    /// </summary>
-    /// <returns>An enumerator that iterates through the collection.</returns>
-    public IEnumerator<ISmartArtNode> GetEnumerator()
-    {
-        return this.nodes.Cast<ISmartArtNode>().GetEnumerator();
-    }
-    
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
-    
+    public IEnumerator<ISmartArtNode> GetEnumerator() => this.nodes.Cast<ISmartArtNode>().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
     internal void UpdateNodeText(string nodeId, string text)
     {
         var node = this.nodes.FirstOrDefault(n => n.ModelId == nodeId);
-        if (node != null)
-        {
-            ((SmartArtNode)node).UpdateText(text);
-        }
+        node?.UpdateText(text);
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
-using P = DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Charts;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -14,67 +12,32 @@ namespace ShapeCrawler;
 public interface IChart : IShape
 {
     /// <summary>
-    ///     Gets the chart type.
+    ///     Gets chart type.
     /// </summary>
     ChartType Type { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart has a title.
-    /// </summary>
-    public bool HasTitle { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Presentation.GraphicFrame"/>.
-    /// </summary>
-    public P.GraphicFrame SdkGraphicFrame { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.ChartPart"/>.
-    /// </summary>
-    public ChartPart SdkChartPart { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Drawing.Charts.PlotArea"/>.
-    /// </summary>
-    public C.PlotArea SdkPlotArea { get; }
-    
-    /// <summary>
-    ///     Gets chart title.
+    ///     Gets title. Returns <c>null</c> if the chart doesn't have a title.
     /// </summary>
     string? Title { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart has categories.
+    ///     Gets category collection. Returns <c>null</c> if the chart type doesn't have categories, e.g., Scatter.
     /// </summary>
-    bool HasCategories { get; }
+    public IReadOnlyList<ICategory>? Categories { get; }
+    
+    /// <summary>
+    ///     Gets X-Axis. Returns <c>null</c> if the chart type doesn't have an X-Axis, e.g., Pie.
+    /// </summary>
+    IXAxis? XAxis { get; }
 
     /// <summary>
-    ///     Gets the collection of categories.
-    /// </summary>
-    public IReadOnlyList<ICategory> Categories { get; }
-
-    /// <summary>
-    ///     Gets collection of data series.
+    ///     Gets series collection.
     /// </summary>
     ISeriesCollection SeriesCollection { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart has x-axis values.
+    ///     Gets byte array of the chart data store worksheet.
     /// </summary>
-    bool HasXValues { get; }
-
-    /// <summary>
-    ///     Gets collection of x-axis values.
-    /// </summary>
-    List<double> XValues { get; } // TODO: should be excluded
-    
-    /// <summary>
-    ///     Gets chart axes manager.
-    /// </summary>
-    IAxesManager Axes { get; }
-
-    /// <summary>
-    ///     Gets byte array of excel book containing chart data source.
-    /// </summary>
-    byte[] BookByteArray();
+    byte[] GetWorksheetByteArray();
 }
