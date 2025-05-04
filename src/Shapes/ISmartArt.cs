@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml;
+
 namespace ShapeCrawler.Shapes;
 
 /// <summary>
@@ -10,3 +12,15 @@ public interface ISmartArt : IShape
     /// </summary>
     ISmartArtNodeCollection Nodes { get; }
 }
+
+internal class SmartArt : Shape, ISmartArt
+{
+    internal SmartArt(OpenXmlElement pShapeTreeElement) 
+        : base(pShapeTreeElement)
+    {
+        this.Nodes = new SmartArtNodeCollection();
+    }
+    
+    public ISmartArtNodeCollection Nodes { get; }
+}
+

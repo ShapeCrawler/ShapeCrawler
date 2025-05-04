@@ -19,8 +19,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("024_chart.pptx"));
-        var chart = pres.Slide(2).Shapes.GetById<IChart>(5);
-        var scatterChart = chart.AsScatterChart();
+        var scatterChart = pres.Slide(2).Shapes.GetById<IChart>(5);
 
         // Act
         // double xValue = chart.XValues[0];
@@ -31,16 +30,14 @@ public class ChartTests : SCTest
     }
     
     [Test]
-    public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
+    public void Categories_is_null_When_chart_does_not_have_categories()
     {
         // Arrange
-        IChart chart = (IChart)new Presentation(TestAsset("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var pres = new Presentation(TestAsset("021.pptx"));
+        var chart = pres.Slide(3).Shapes.GetById<IChart>(4);
 
-        // Act
-        bool hasChartCategories = chart.HasCategories;
-
-        // Assert
-        hasChartCategories.Should().BeFalse();
+        // Act & Assert
+        chart.Categories.Should().BeNull();
     }
 
     [Test]
@@ -183,7 +180,7 @@ public class ChartTests : SCTest
         category.Name = "Category 1_new";
 
         // Assert
-        var mStream = new MemoryStream(lineChart.GetSpreadsheetByteArray());
+        var mStream = new MemoryStream(lineChart.GetWorksheetByteArray());
         var workbook = new XLWorkbook(mStream);
         var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
         cellValue.Should().BeEquivalentTo("Category 1_new");
@@ -280,11 +277,10 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var chart = pres.Slide(1).Shapes.Shape<IChart>("Bar Chart 1");
-        var barChart = chart.AsBarChart();
+        var barChart = pres.Slide(1).Shapes.Shape<IChart>("Bar Chart 1");
         
         // Act
-        var minimum = chart.XAxis.Minimum;
+        var minimum = barChart.XAxis.Minimum;
         
         // Assert
         minimum.Should().Be(0);
@@ -294,18 +290,17 @@ public class ChartTests : SCTest
     public void Axes_ValueAxis_Minimum_Setter()
     {
         // Arrange
-        var pptx = TestAsset("001 bar chart.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
         var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         var mStream = new MemoryStream();
         
         // Act
-        barChart.Axes.ValueAxis.Minimum = 1;
+        barChart.XAxis!.Minimum = 1;
 
         // Assert
         pres.Save(mStream);
         barChart = new Presentation(mStream).Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
-        barChart.Axes.ValueAxis.Minimum.Should().Be(1);
+        barChart.XAxis!.Minimum.Should().Be(1);
         pres.Validate();
     }
     
@@ -318,10 +313,10 @@ public class ChartTests : SCTest
         var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         
         // Act
-        barChart.Axes.ValueAxis!.Maximum = 7;
+        barChart.XAxis!.Maximum = 7;
 
         // Assert
-        barChart.Axes.ValueAxis.Maximum.Should().Be(7);
+        barChart.XAxis.Maximum.Should().Be(7);
         pres.Validate();
     }
     
@@ -334,7 +329,7 @@ public class ChartTests : SCTest
         var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
         
         // Act
-        var maximum = barChart.Axes.ValueAxis.Maximum;
+        var maximum = barChart.XAxis!.Maximum;
         
         // Assert
         maximum.Should().Be(6);

@@ -10,6 +10,7 @@ using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Shapes;
 
@@ -191,52 +192,62 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        // Combination chart with multiple chart types
-        if (cCharts.Count() > 1)
+        if (cCharts.Count() > 1) // combination chart has multiple chart types
         {
-            yield return new Chart(
+            yield return new AxisChart(
+                new CategoryChart(
+                    new Chart(chartPart, pGraphicFrame),
+                    chartPart
+                ),
                 chartPart,
-                pGraphicFrame,
-                new Categories(chartPart, cCharts));
+                pGraphicFrame
+            );
+
             yield break;
         }
 
         var chartTypeName = cCharts.Single().LocalName;
 
-        // Charts with categories
-        if (chartTypeName is "lineChart" or "barChart" or "pieChart")
+        // With axis and categories
+        if (chartTypeName is "lineChart" or "barChart")
         {
-            yield return new Chart(
+            yield return new AxisChart(
+                new CategoryChart(
+                    new Chart(chartPart, pGraphicFrame),
+                    chartPart),
                 chartPart,
-                pGraphicFrame,
-                new Categories(chartPart, cCharts));
-            yield break;
-        }
-
-        if (chartTypeName is "scatterChart")
-        {
-            yield return new ScatterChart(
-                new Chart(chartPart, pGraphicFrame, new NullCategories()),
-                chartPart
+                pGraphicFrame
             );
             yield break;
         }
 
-        // Charts without categories
-        if (chartTypeName is "bubbleChart")
+        // With categories
+        if (chartTypeName is "pieChart")
         {
-            yield return new Chart(
-                chartPart,
-                pGraphicFrame,
-                new NullCategories());
+            yield return new CategoryChart(
+                    new Chart(chartPart, pGraphicFrame),
+                    chartPart
+                );
+
             yield break;
         }
 
-        // Default chart handling
+        // With axis
+        if (chartTypeName is "scatterChart" or "bubbleChart") // Scatter: Bubble
+        {
+            yield return new AxisChart(
+                new Chart(chartPart, pGraphicFrame),
+                chartPart,
+                pGraphicFrame
+            );
+            yield break;
+        }
+
+        // Other
         yield return new Chart(
             chartPart,
-            pGraphicFrame,
-            new Categories(chartPart, cCharts));
+            pGraphicFrame
+        );
     }
 
     private IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)

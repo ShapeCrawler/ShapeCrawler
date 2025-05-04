@@ -11,38 +11,32 @@ namespace ShapeCrawler;
 public interface IChart : IShape
 {
     /// <summary>
-    ///     Gets the chart type.
+    ///     Gets chart type.
     /// </summary>
     ChartType Type { get; }
 
     /// <summary>
-    ///     Gets chart title. Returns <c>null</c> if the chart does not have a title.
+    ///     Gets title. Returns <c>null</c> if the chart doesn't have a title.
     /// </summary>
     string? Title { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart has categories.
+    ///     Gets category collection. Returns <c>null</c> if the chart type doesn't have categories, e.g., Scatter.
     /// </summary>
-    bool HasCategories { get; }
+    public IReadOnlyList<ICategory>? Categories { get; }
+    
+    /// <summary>
+    ///     Gets X-Axis. Returns <c>null</c> if the chart doesn't have an X-Axis, e.g., Pie.
+    /// </summary>
+    IXAxis? XAxis { get; }
 
     /// <summary>
-    ///     Gets the collection of categories.
-    /// </summary>
-    public IReadOnlyList<ICategory> Categories { get; }
-
-    /// <summary>
-    ///     Gets collection of data series.
+    ///     Gets series collection.
     /// </summary>
     ISeriesCollection SeriesCollection { get; }
 
     /// <summary>
-    ///     Gets the byte array of the underlying data source spreadsheet.
+    ///     Gets byte array of the chart data store worksheet.
     /// </summary>
-    byte[] GetSpreadsheetByteArray();
-
-    /// <summary>
-    ///     Represents the chart as a Scatter.  
-    /// </summary>
-    /// <exception cref="SCException">Thrown if the chart is not a Scatter.</exception>
-    IScatterChart AsScatterChart();
+    byte[] GetWorksheetByteArray();
 }

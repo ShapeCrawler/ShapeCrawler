@@ -33,7 +33,10 @@ internal class XAxis(ChartPart chartPart) : IXAxis
             return new Spreadsheet(chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text).ToArray();
         }
     }
-    
+
+    public int Minimum { get; set; }
+    public int Maximum { get; set; }
+
     private OpenXmlElement FirstSeries()
     {
         var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;

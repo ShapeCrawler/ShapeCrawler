@@ -24,12 +24,11 @@ internal sealed class Chart : Shape, IChart
 
     private string? chartTitle;
 
-    internal Chart(ChartPart chartPart, P.GraphicFrame pGraphicFrame, IReadOnlyList<ICategory> categories)
+    internal Chart(ChartPart chartPart, P.GraphicFrame pGraphicFrame)
         : base(pGraphicFrame)
     {
         this.SdkChartPart = chartPart;
         this.SdkGraphicFrame = pGraphicFrame;
-        this.Categories = categories;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.SdkPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.SdkPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
@@ -69,15 +68,6 @@ internal sealed class Chart : Shape, IChart
 
     public override IShapeFill Fill { get; }
 
-    public bool HasTitle
-    {
-        get
-        {
-            this.chartTitle ??= this.GetTitleOrDefault();
-            return this.chartTitle != null;
-        }
-    }
-
     public string? Title
     {
         get
@@ -87,9 +77,8 @@ internal sealed class Chart : Shape, IChart
         }
     }
 
-    public bool HasCategories => false;
-
-    public IReadOnlyList<ICategory> Categories { get; }
+    public IReadOnlyList<ICategory>? Categories { get; }
+    public IXAxis? XAxis { get; }
 
     public ISeriesCollection SeriesCollection => this.seriesCollection;
 
@@ -111,18 +100,11 @@ internal sealed class Chart : Shape, IChart
 
     public override Geometry GeometryType => Geometry.Rectangle;
 
-    public IAxesManager Axes => this.GetAxes();
-
     public override bool Removable => true;
 
-    public byte[] GetSpreadsheetByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
-
-    public IScatterChart AsScatterChart() => throw new SCException(
-        $"The chart is not a scatter chart. Use {nameof(this.Type)} property to check if the chart is a scatter chart.");
+    public byte[] GetWorksheetByteArray() => new Spreadsheet(this.SdkChartPart).AsByteArray();
 
     public override void Remove() => this.SdkGraphicFrame.Remove();
-
-    private IAxesManager GetAxes() => new AxesManager(this.SdkPlotArea);
 
     private string? GetTitleOrDefault()
     {

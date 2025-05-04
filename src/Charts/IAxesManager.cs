@@ -4,18 +4,8 @@ namespace ShapeCrawler;
 
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
-/// <summary>
-///     Represents a chart axes manager.
-/// </summary>
-public interface IAxesManager
-{
-    /// <summary>
-    ///     Gets value axis. Returns <see langword="null"/> if chart has no value axis, e.g. pie chart.
-    /// </summary>
-    IAxis? ValueAxis { get; }
-}
 
-internal sealed record AxesManager : IAxesManager
+internal sealed record AxesManager
 {
     private readonly C.PlotArea cPlotArea;
 
