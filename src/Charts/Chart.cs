@@ -80,7 +80,7 @@ internal sealed class Chart : Shape, IChart
 
     public override bool Removable => true;
 
-    public byte[] GetWorksheetByteArray() => new Spreadsheet(this.chartPart).AsByteArray();
+    public byte[] GetWorksheetByteArray() => new Workbook(this.chartPart).AsByteArray();
 
     public override void Remove() => this.pGraphicFrame.Remove();
 

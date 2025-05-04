@@ -2,20 +2,19 @@
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
-///     Represents font of a text portion.
+///     Represents a text portion font.
 /// </summary>
 public interface ITextPortionFont : IFont
 {
     /// <summary>
-    ///     Gets or sets the font for the Latin characters. Returns <c>null</c> if the Latin font is not present.
+    ///     Gets or sets a font for the Latin characters. Returns <c>null</c> if the Latin font is not present.
     /// </summary>
     string? LatinName { get; set; }
     
     /// <summary>
-    ///     Gets or sets the font for the East Asian characters.
+    ///     Gets or sets a font for the East Asian characters.
     /// </summary>
     string EastAsianName { get; set; }
 
@@ -40,7 +39,7 @@ public interface ITextPortionFont : IFont
     A.TextUnderlineValues Underline { get; set; }
 
     /// <summary>
-    ///     Gets font color formatting.
+    ///     Gets the font color.
     /// </summary>
     IFontColor Color { get; }
 }

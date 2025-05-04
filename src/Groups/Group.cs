@@ -9,7 +9,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a group shape.
@@ -17,7 +16,7 @@ namespace ShapeCrawler;
 public interface IGroup : IShape
 {
     /// <summary>
-    ///     Gets grouped shapes.
+    ///     Gets grouped shape collection.
     /// </summary>
     IShapeCollection Shapes { get; }
 }
@@ -32,8 +31,9 @@ internal sealed class Group : IGroup
         this.shape = shape;
         this.pGroupShape = pGroupShape;
         this.Shapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
-        this.Outline = new SlideShapeOutline(pGroupShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new ShapeFill(pGroupShape.Descendants<P.ShapeProperties>().First());
+        var pShapeProperties = pGroupShape.Descendants<P.ShapeProperties>().First();
+        this.Outline = new SlideShapeOutline(pShapeProperties);
+        this.Fill = new ShapeFill(pShapeProperties);
     }
 
     public IShapeCollection Shapes { get; }

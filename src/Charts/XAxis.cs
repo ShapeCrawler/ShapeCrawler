@@ -30,7 +30,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
                 return [.. cachedPointValues];
             }
 
-            return [.. new Spreadsheet(chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text)];
+            return [.. new Workbook(chartPart).FormulaValues(cXValues.NumberReference.Formula!.Text)];
         }
     }
 

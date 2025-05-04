@@ -8,18 +8,16 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Sheet(EmbeddedPackagePart embeddedPackagePart, string sheetName)
+internal sealed class Worksheet(EmbeddedPackagePart embeddedPackagePart, string sheetName)
 {
-    internal void UpdateCell(string address, string value)
-    {
-        this.UpdateCell(address, value, X.CellValues.Number);
-    }
+    internal void UpdateCell(string address, string value) => this.UpdateCell(address, value, X.CellValues.Number);
 
     internal void UpdateCell(string address, string value, X.CellValues type)
     {
         var stream = embeddedPackagePart.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, true);
-        var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+        var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>()
+            .First(xSheet => xSheet.Name == sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkSpreadsheetDocument.WorkbookPart!.GetPartById(xSheet.Id!);
         var xCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
         var xCell = xCells.FirstOrDefault(xCell => xCell.CellReference == address);

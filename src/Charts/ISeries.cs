@@ -61,6 +61,6 @@ internal sealed class Series : ISeries
         var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
         var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
 
-        return fromCache ?? new Spreadsheet(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
+        return fromCache ?? new Workbook(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
     }
 }

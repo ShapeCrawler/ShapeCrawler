@@ -9,9 +9,9 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Spreadsheet(ChartPart chartPart)
+internal sealed class Workbook(ChartPart chartPart)
 {
-    internal Sheet Sheet(string sheetName) => new(chartPart.EmbeddedPackagePart!, sheetName);
+    internal Worksheet Sheet(string sheetName) => new(chartPart.EmbeddedPackagePart!, sheetName);
 
     internal List<double> FormulaValues(string formula)
     {
