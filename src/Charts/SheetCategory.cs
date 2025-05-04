@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 namespace ShapeCrawler.Charts;
 
 internal sealed class SheetCategory(
-    ChartPart sdkChartPart,
+    ChartPart chartPart,
     string sheetName,
     string cellAddress,
     NumericValue cachedValue) : ICategory
@@ -21,7 +21,7 @@ internal sealed class SheetCategory(
         set
         {
             cachedValue.Text = value;
-            new Workbook(sdkChartPart).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);
+            new Workbook(chartPart.EmbeddedPackagePart!).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);
         }
     }
 }

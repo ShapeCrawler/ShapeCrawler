@@ -9,9 +9,9 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Workbook(ChartPart chartPart)
+internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
 {
-    internal Worksheet Sheet(string sheetName) => new(chartPart.EmbeddedPackagePart!, sheetName);
+    internal Worksheet Sheet(string sheetName) => new(embeddedPackagePart, sheetName);
 
     internal List<double> FormulaValues(string formula)
     {
@@ -19,7 +19,7 @@ internal sealed class Workbook(ChartPart chartPart)
         var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
         var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> A2:A5
 
-        var stream = chartPart.EmbeddedPackagePart!.GetStream();
+        var stream = embeddedPackagePart!.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, false);
         var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!;
         var sdkSheet = sdkWorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
@@ -49,7 +49,7 @@ internal sealed class Workbook(ChartPart chartPart)
 
     internal byte[] AsByteArray()
     {
-        var stream = chartPart.EmbeddedPackagePart!.GetStream();
+        var stream = embeddedPackagePart!.GetStream();
         var mStream = new MemoryStream();
         stream.CopyTo(mStream);
 

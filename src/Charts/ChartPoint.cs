@@ -28,6 +28,7 @@ internal sealed class ChartPoint : IChartPoint
 
             return Math.Round(cachedValue, 2);
         }
+
         set
         {
             this.cNumericValue.Text = value.ToString(CultureInfo.InvariantCulture);
@@ -37,7 +38,7 @@ internal sealed class ChartPoint : IChartPoint
                 return;
             }
 
-            new Workbook(this.chartPart).Sheet(this.worksheetName)
+            new Workbook(this.chartPart.EmbeddedPackagePart).Sheet(this.worksheetName)
                 .UpdateCell(this.address, value.ToString(CultureInfo.InvariantCulture));
         }
     }
