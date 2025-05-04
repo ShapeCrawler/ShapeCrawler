@@ -481,5 +481,6 @@ public class FontTests : SCTest
         pres.Save(stream);
         font = new Presentation(stream).Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font!;
         font.LatinName.Should().Be("Times New Roman");
+        pres.Validate();
     }
 }
