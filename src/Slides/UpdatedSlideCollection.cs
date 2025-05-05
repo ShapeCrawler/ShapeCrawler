@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,29 +11,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class UpdatableSlideCollection : ISlideCollection
+internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, PresentationPart presPart) : ISlideCollection
 {
-    private readonly SlideCollection slideCollection;
-    private readonly PresentationPart presPart;
+    public int Count => slideCollection.Count;
 
-    internal UpdatableSlideCollection(PresentationPart presPart)
-    {
-        this.slideCollection = new SlideCollection(presPart.SlideParts);
-        this.presPart = presPart;
-    }
+    public ISlide this[int index] => slideCollection[index];
 
-    public int Count => this.slideCollection.Count;
-
-    public ISlide this[int index] => this.slideCollection[index];
-
-    public IEnumerator<ISlide> GetEnumerator() => this.slideCollection.GetEnumerator();
+    public IEnumerator<ISlide> GetEnumerator() => slideCollection.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public void Add(ISlideLayout layout)
     {
-        var rId = new SCOpenXmlPart(this.presPart).GetNextRelationshipId();
-        var sdkSlidePart = this.presPart.AddNewPart<SlidePart>(rId);
+        var rId = new SCOpenXmlPart(presPart).GetNextRelationshipId();
+        var sdkSlidePart = presPart.AddNewPart<SlidePart>(rId);
         sdkSlidePart.Slide = new P.Slide(
             new P.CommonSlideData(
                 new P.ShapeTree(
@@ -46,7 +37,9 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
         var layoutInternal = (SlideLayout)layout;
         sdkSlidePart.AddPart(layoutInternal.SdkSlideLayoutPart(), "rId1");
 
-        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+        // Check if we're using a blank layout - if so, don't copy any shapes
+        if (layout.Name != "Blank" && 
+            layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
             commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
@@ -80,7 +73,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
             };
         }
 
-        var pSlideIdList = this.presPart.Presentation.SlideIdList!;
+        var pSlideIdList = presPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
             ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
             : 256; // according to the scheme, this id starts at 256
@@ -97,7 +90,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
 
         this.Add(slide);
         var addedSlideIndex = this.Count - 1;
-        this.slideCollection[addedSlideIndex].Number = number;
+        slideCollection[addedSlideIndex].Number = number;
     }
 
     public void AddJSON(string jsonSlide)
@@ -109,7 +102,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
     {
         var addingSlide = (Slide)slide;
         var addingSlidePresStream = new MemoryStream();
-        var targetPresDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
+        var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
         var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;

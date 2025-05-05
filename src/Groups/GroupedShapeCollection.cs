@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
-using Picture = ShapeCrawler.Drawing.Picture;
 
 namespace ShapeCrawler.Groups;
 

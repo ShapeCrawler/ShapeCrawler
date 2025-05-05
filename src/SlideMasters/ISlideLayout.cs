@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System;
+using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
@@ -25,6 +27,11 @@ public interface ISlideLayout
     ///     Gets slide master.
     /// </summary>
     ISlideMaster SlideMaster { get; }
+
+    /// <summary>
+    ///     Gets layout number.
+    /// </summary>
+    int Number { get; }
 }
 
 internal sealed class SlideLayout : ISlideLayout
@@ -44,10 +51,12 @@ internal sealed class SlideLayout : ISlideLayout
     }
 
     public string Name => this.slideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
-    
+
     public IShapeCollection Shapes { get; }
-    
+
     public ISlideMaster SlideMaster { get; }
-    
+
+    public int Number => int.Parse(Regex.Match(slideLayoutPart.Uri.ToString(), @"\d+").Value);
+
     internal SlideLayoutPart SdkSlideLayoutPart() => this.slideLayoutPart;
 }

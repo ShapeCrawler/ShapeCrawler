@@ -51,15 +51,18 @@ public sealed class Presentation : IPresentation
     {
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
-    
+
     internal Presentation(PresentationDocument presDocument)
     {
         this.presDocument = presDocument;
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
-        this.Slides = new UpdatableSlideCollection(this.presDocument.PresentationPart);
-        this.Footer = new Footer(new UpdatableSlideCollection(this.presDocument.PresentationPart));
+        this.Slides = new UpdatedSlideCollection(
+            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
+            this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatedSlideCollection(
+            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
         this.Properties =
             this.presDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -132,7 +135,7 @@ public sealed class Presentation : IPresentation
         using var stream = new FileStream(file, FileMode.Create);
         this.Save(stream);
     }
-    
+
     /// <inheritdoc />
     public string AsMarkdown()
     {
@@ -142,8 +145,10 @@ public sealed class Presentation : IPresentation
             markdown.AppendLine($"# Slide {slide.Number}");
             var textShapes = slide.Shapes.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
                 && shape.PlaceholderType != PlaceholderType.SlideNumber);
-            var titleShape = textShapes.FirstOrDefault(shape => shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
-            var nonTitleShapes = textShapes.Where(shape => !shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            var titleShape = textShapes.FirstOrDefault(shape =>
+                shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            var nonTitleShapes =
+                textShapes.Where(shape => !shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
             if (titleShape != null)
             {
                 markdown.AppendLine($"## {titleShape.TextBox!.Text}");
@@ -162,7 +167,7 @@ public sealed class Presentation : IPresentation
 
         return markdown.ToString();
     }
-    
+
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>
@@ -179,9 +184,15 @@ public sealed class Presentation : IPresentation
             "The 'mod' attribute is not declared.",
             "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
         };
-        var sdkValidationErrorInfoCollection = new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
-        sdkValidationErrorInfoCollection = sdkValidationErrorInfoCollection.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
-        sdkValidationErrorInfoCollection = [.. sdkValidationErrorInfoCollection.DistinctBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath })];
+        var sdkValidationErrorInfoCollection =
+            new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
+        sdkValidationErrorInfoCollection =
+            sdkValidationErrorInfoCollection.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
+        sdkValidationErrorInfoCollection =
+        [
+            .. sdkValidationErrorInfoCollection.DistinctBy(errorInfo =>
+                new { errorInfo.Description, errorInfo.Path?.XPath })
+        ];
         var sdkErrors = new List<string>();
         foreach (var validationErrorInfo in sdkValidationErrorInfoCollection)
         {
@@ -191,7 +202,7 @@ public sealed class Presentation : IPresentation
             xmlError.Add(new XElement("xpath", validationErrorInfo.Path?.XPath));
             sdkErrors.Add(xmlError.ToString());
         }
-            
+
         var customErrors = ATableRowErrors(this.presDocument)
             .Concat(ASolidFillErrors(this.presDocument))
             .Concat(sdkErrors);
@@ -202,7 +213,7 @@ public sealed class Presentation : IPresentation
             {
                 errorMessages.AppendLine(error);
             }
-            
+
             throw new SCException(errorMessages.ToString());
         }
     }

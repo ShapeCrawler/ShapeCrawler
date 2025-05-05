@@ -172,6 +172,38 @@ public class PresentationTests : SCTest
         pres.Slides.Count.Should().Be(1);
         pres.Validate();
     }
+    
+    [Test]
+    public void Slides_Add_adds_a_new_slide_using_blank_layout()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+        var stream = new MemoryStream();
+
+        // Act
+        pres.Slides.Add(layout);
+
+        // Assert
+        pres.Save(stream);
+        new Presentation(stream).Slide(2).Shapes.Should().BeEmpty();
+    }
+    
+    [Test]
+    public void Slides_Add_adds_a_new_slide_using_layout_with_one_shape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var layout = pres.SlideMaster(1).SlideLayout(6);
+        var stream = new MemoryStream();
+
+        // Act
+        pres.Slides.Add(layout);
+
+        // Assert
+        pres.Save(stream);
+        new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
+    }
 
     [Test]
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
