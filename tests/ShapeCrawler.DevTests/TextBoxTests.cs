@@ -35,14 +35,12 @@ namespace ShapeCrawler.DevTests
         public void Text_Getter_returns_text_from_New_Slide()
         {
             // Arrange
-            var pptx = TestAsset("031.pptx");
-            var pres = new Presentation(pptx);
-            var layout = pres.SlideMasters[0].SlideLayouts[0];
+            var pres = new Presentation(TestAsset("031.pptx"));
+            var layout = pres.SlideMaster(1).SlideLayout(1);
 
             // Act
             pres.Slides.Add(layout);
-            var newSlide = pres.Slides.Last();
-            var textBox = newSlide.Shapes.Shape<IShape>("Holder 5").TextBox;
+            var textBox = pres.Slide(2).Shape("Holder 5").TextBox;
             var text = textBox!.Text;
 
             // Assert

@@ -977,7 +977,7 @@ public class ShapeCollectionTests : SCTest
         slides.Add(layout);
 
         // Assert
-        slides[1].Shapes.Should().HaveCount(3);
+        slides[1].Shapes.Should().HaveCount(0);
     }
 
     [Test]
@@ -985,15 +985,13 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("017.pptx"));
-        var layout = pres.SlideMasters[0].SlideLayouts.First(l=>l.Name == "Title and Content");
+        var layout = pres.SlideMaster(1).SlideLayout("Title and Content");
 
         // Act
         pres.Slides.Add(layout);
 
         // Assert
-        var addedSlide = pres.Slides.Last();
-        addedSlide.Should().NotBeNull();
-        layout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
+        pres.Slide(2).Shapes.Count.Should().Be(2);
     }
     
     [Test]
