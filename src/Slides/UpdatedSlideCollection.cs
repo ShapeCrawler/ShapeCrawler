@@ -112,17 +112,15 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         throw new NotImplementedException();
     }
 
-    public void Add(ISlide slide)
+    public void Add(ISlide addingSlide)
     {
-        var addingSlide = slide as Slide;
-        var addingSlidePresStream = new MemoryStream();
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var addingSlidePresDocument = addingSlide!.SdkPresentationDocument().Clone(addingSlidePresStream);
+        var addingSlidePresDocument = addingSlide.GetSDKPresentationDocument();
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[addingSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
         new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart

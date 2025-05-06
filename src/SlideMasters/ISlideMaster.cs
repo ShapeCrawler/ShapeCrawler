@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
@@ -80,7 +81,14 @@ internal sealed class SlideMaster : ISlideMaster
 
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
 
-    public int Number { get; set; }
+    public int Number
+    {
+        get
+        {
+            var match = Regex.Match(this.slideMasterPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
+            return int.Parse(match.Value);      
+        }
+    } 
 
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
 

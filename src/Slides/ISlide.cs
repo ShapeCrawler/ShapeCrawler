@@ -114,6 +114,13 @@ public interface ISlide
     ///     Gets chart by ID.
     /// </summary>
     IChart Chart(int id);
+
+    /// <summary>
+    ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
+    /// </summary>
+    /// <returns></returns>
+    // ReSharper disable once InconsistentNaming
+    PresentationDocument GetSDKPresentationDocument();
 }
 
 internal sealed class Slide : ISlide
@@ -274,6 +281,13 @@ internal sealed class Slide : ISlide
 
     public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
 
+    public PresentationDocument GetSDKPresentationDocument()
+    {
+        var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
+
+        return presDocument.Clone();
+    }
+
     public IList<ITextBox> GetTextBoxes()
     {
         var textBoxes = this.Shapes
@@ -312,8 +326,6 @@ internal sealed class Slide : ISlide
             }
         }
     }
-
-    internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.slidePart.OpenXmlPackage;
 
     private void AddGroupTextBoxes(IGroup groupShape, List<ITextBox> textBoxes)
     {
