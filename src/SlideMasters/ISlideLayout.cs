@@ -1,10 +1,11 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System;
+using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a Slide Layout.
@@ -25,29 +26,35 @@ public interface ISlideLayout
     ///     Gets slide master.
     /// </summary>
     ISlideMaster SlideMaster { get; }
+
+    /// <summary>
+    ///     Gets layout number.
+    /// </summary>
+    int Number { get; }
 }
 
 internal sealed class SlideLayout : ISlideLayout
 {
-    private readonly SlideLayoutPart slideLayoutPart;
-
-    internal SlideLayout(SlideLayoutPart sdkLayoutPart)
-        : this(sdkLayoutPart, new SlideMaster(sdkLayoutPart.SlideMasterPart!))
+    internal SlideLayout(SlideLayoutPart slideLayoutPart)
     {
+        this.SlideLayoutPart = slideLayoutPart;
+        this.Shapes = new ShapeCollection(slideLayoutPart);
     }
-
-    private SlideLayout(SlideLayoutPart sdkLayoutPart, ISlideMaster slideMaster)
-    {
-        this.slideLayoutPart = sdkLayoutPart;
-        this.SlideMaster = slideMaster;
-        this.Shapes = new ShapeCollection(this.slideLayoutPart);
-    }
-
-    public string Name => this.slideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
     
+    public string Name => this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+
     public IShapeCollection Shapes { get; }
+
+    public ISlideMaster SlideMaster => new SlideMaster(this.SlideLayoutPart.SlideMasterPart!);
+
+    public int Number
+    {
+        get
+        {
+            var match = Regex.Match(this.SlideLayoutPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
+            return int.Parse(match.Value);
+        }
+    }
     
-    public ISlideMaster SlideMaster { get; }
-    
-    internal SlideLayoutPart SdkSlideLayoutPart() => this.slideLayoutPart;
+    internal SlideLayoutPart SlideLayoutPart { get; }
 }

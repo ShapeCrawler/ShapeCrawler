@@ -136,7 +136,7 @@ public class PresentationTests : SCTest
         destPres.Save(savedPre);
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
-        destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
+        destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count().Should().Be(1);
         destPres.Validate();
     }
 
@@ -166,11 +166,43 @@ public class PresentationTests : SCTest
 
         // Act
         removingSlide.Remove();
-        pres.Slides.Add(layout);
+        pres.Slides.Add(layout.Number);
 
         // Assert
         pres.Slides.Count.Should().Be(1);
         pres.Validate();
+    }
+    
+    [Test]
+    public void Slides_Add_adds_a_new_slide_using_blank_layout()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+        var stream = new MemoryStream();
+
+        // Act
+        pres.Slides.Add(layout.Number);
+
+        // Assert
+        pres.Save(stream);
+        new Presentation(stream).Slide(2).Shapes.Should().BeEmpty();
+    }
+    
+    [Test]
+    public void Slides_Add_adds_a_new_slide_using_layout_with_one_shape()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var layout = pres.SlideMaster(1).SlideLayout(6);
+        var stream = new MemoryStream();
+
+        // Act
+        pres.Slides.Add(layout.Number);
+
+        // Assert
+        pres.Save(stream);
+        new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
     }
 
     [Test]
@@ -235,12 +267,12 @@ public class PresentationTests : SCTest
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {
         // Arrange
-        IPresentation presentationCase1 = new Presentation(TestAsset("001.pptx"));
-        IPresentation presentationCase2 = new Presentation(TestAsset("002.pptx"));
+        var pres1 = new Presentation(TestAsset("001.pptx"));
+        var pres2 = new Presentation(TestAsset("002.pptx"));
 
         // Act
-        int slideMastersCountCase1 = presentationCase1.SlideMasters.Count;
-        int slideMastersCountCase2 = presentationCase2.SlideMasters.Count;
+        var slideMastersCountCase1 = pres1.SlideMasters.Count();
+        var slideMastersCountCase2 = pres2.SlideMasters.Count();
 
         // Assert
         slideMastersCountCase1.Should().Be(1);

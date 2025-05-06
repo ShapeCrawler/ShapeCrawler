@@ -10,7 +10,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning disable IDE0130
 
 /// <summary>
 ///     Represents a table on a slide.

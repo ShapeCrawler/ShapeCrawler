@@ -27,7 +27,7 @@ namespace ShapeCrawler;
 public interface ISlide
 {
     /// <summary>
-    ///     Gets or sets custom data. Returns <see langword="null"/> if custom data is not presented.
+    ///     Gets or sets custom data. Returns <see langword="null"/> if the custom data is not presented.
     /// </summary>
     string? CustomData { get; set; }
 
@@ -79,7 +79,7 @@ public interface ISlide
     /// <summary>
     ///     Gets picture by name.
     /// </summary>
-    IPicture Picture(string picture);
+    IPicture Picture(string name);
 
     /// <summary>
     ///     Adds specified lines to the slide notes.
@@ -114,6 +114,12 @@ public interface ISlide
     ///     Gets chart by ID.
     /// </summary>
     IChart Chart(int id);
+
+    /// <summary>
+    ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
+    PresentationDocument GetSDKPresentationDocument();
 }
 
 internal sealed class Slide : ISlide
@@ -204,15 +210,15 @@ internal sealed class Slide : ISlide
             if (this.fill is null)
             {
                 var pcSld = this.slidePart.Slide.CommonSlideData
-                            ?? this.slidePart.Slide.AppendChild<DocumentFormat.OpenXml.Presentation.CommonSlideData>(
+                            ?? this.slidePart.Slide.AppendChild<CommonSlideData>(
                                 new());
 
                 // Background element needs to be first, else it gets ignored.
-                var pBg = pcSld.GetFirstChild<DocumentFormat.OpenXml.Presentation.Background>()
-                          ?? pcSld.InsertAt<DocumentFormat.OpenXml.Presentation.Background>(new(), 0);
+                var pBg = pcSld.GetFirstChild<Background>()
+                          ?? pcSld.InsertAt<Background>(new(), 0);
 
-                var pBgPr = pBg.GetFirstChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>()
-                            ?? pBg.AppendChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>(new());
+                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>()
+                            ?? pBg.AppendChild<BackgroundProperties>(new());
 
                 this.fill = new ShapeFill(pBgPr);
             }
@@ -238,7 +244,7 @@ internal sealed class Slide : ISlide
 
     public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
 
-    public IPicture Picture(string picture) => this.Shapes.Shape<IPicture>(picture);
+    public IPicture Picture(string name) => this.Shapes.Shape<IPicture>(name);
 
     public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
 
@@ -273,6 +279,13 @@ internal sealed class Slide : ISlide
     public IChart Chart(string name) => this.Shapes.Shape<IChart>(name);
 
     public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
+
+    public PresentationDocument GetSDKPresentationDocument()
+    {
+        var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
+
+        return presDocument.Clone();
+    }
 
     public IList<ITextBox> GetTextBoxes()
     {
@@ -312,8 +325,6 @@ internal sealed class Slide : ISlide
             }
         }
     }
-
-    internal PresentationDocument SdkPresentationDocument() => (PresentationDocument)this.slidePart.OpenXmlPackage;
 
     private void AddGroupTextBoxes(IGroup groupShape, List<ITextBox> textBoxes)
     {

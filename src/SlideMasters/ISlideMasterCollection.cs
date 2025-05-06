@@ -3,50 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 
+// ReSharper disable PossibleMultipleEnumeration
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a collections of Slide Masters.
+///     Represents slide master collection.
 /// </summary>
 public interface ISlideMasterCollection : IEnumerable<ISlideMaster>
 {
     /// <summary>
-    ///     Gets the number of series items in the collection.
-    /// </summary>
-    int Count { get; }
-
-    /// <summary>
-    ///     Gets the element at the specified index.
+    ///     Gets slide master by index.
     /// </summary>
     ISlideMaster this[int index] { get; }
 }
 
-internal sealed class SlideMasterCollection : ISlideMasterCollection
+internal sealed class SlideMasterCollection(IEnumerable<SlideMasterPart> slideMasterParts) : ISlideMasterCollection
 {
-    private readonly List<ISlideMaster> slideMasters;
+    public ISlideMaster this[int index] => this.SlideMasters().ElementAt(index);
 
-    internal SlideMasterCollection(IEnumerable<SlideMasterPart> sdkMasterParts)
+    public IEnumerator<ISlideMaster> GetEnumerator() => this.SlideMasters().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+    internal SlideMaster SlideMaster(int number) =>
+        this.SlideMasters().First(slideMaster => slideMaster.Number == number);
+
+    private IEnumerable<SlideMaster> SlideMasters()
     {
-        this.slideMasters = new List<ISlideMaster>(sdkMasterParts.Count());
-        foreach (var sdkMasterPart in sdkMasterParts)
+        foreach (var slideMaster in slideMasterParts)
         {
-            this.slideMasters.Add(new SlideMaster(sdkMasterPart));
+            yield return new SlideMaster(slideMaster);
         }
-    }
-    
-    public int Count => this.slideMasters.Count;
-
-    public ISlideMaster this[int index] => this.slideMasters[index];
-
-    public IEnumerator<ISlideMaster> GetEnumerator()
-    {
-        return this.slideMasters.GetEnumerator();
-    }
-    
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
     }
 }

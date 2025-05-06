@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
@@ -8,7 +8,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a Slide Master.
@@ -21,9 +20,9 @@ public interface ISlideMaster
     IImage? Background { get; }
 
     /// <summary>
-    ///     Gets the collection of Slide Layouts.
+    ///     Gets slide layout collection.
     /// </summary>
-    IReadOnlyList<ISlideLayout> SlideLayouts { get; }
+    ISlideLayoutCollection SlideLayouts { get; }
 
     /// <summary>
     ///     Gets the collection of master shapes.
@@ -51,41 +50,57 @@ public interface ISlideMaster
     ///     Gets slide layout by name.
     /// </summary>
     ISlideLayout SlideLayout(string name);
+
+    /// <summary>
+    ///     Gets slide layout by number.
+    /// </summary>
+    ISlideLayout SlideLayout(int number);
 }
 
 internal sealed class SlideMaster : ISlideMaster
 {
-    private readonly Lazy<SlideLayouts> layouts;
+    private readonly SlideLayoutCollection layouts;
     private readonly Lazy<MasterSlideNumber?> slideNumber;
-    private readonly SlideMasterPart sdkSlideMasterPart;
+    private readonly SlideMasterPart slideMasterPart;
 
-    internal SlideMaster(SlideMasterPart sdkSlideMasterPart)
+    internal SlideMaster(SlideMasterPart slideMasterPart)
     {
-        this.sdkSlideMasterPart = sdkSlideMasterPart;
-        this.layouts = new Lazy<SlideLayouts>(() => new SlideLayouts(this.sdkSlideMasterPart));
+        this.slideMasterPart = slideMasterPart;
+        this.layouts = new SlideLayoutCollection(slideMasterPart);
         this.slideNumber = new Lazy<MasterSlideNumber?>(this.CreateSlideNumber);
-        this.Shapes = new ShapeCollection(this.sdkSlideMasterPart);
+        this.Shapes = new ShapeCollection(this.slideMasterPart);
     }
 
     public IImage? Background => null;
 
-    public IReadOnlyList<ISlideLayout> SlideLayouts => this.layouts.Value;
+    public ISlideLayoutCollection SlideLayouts => this.layouts;
 
     public IShapeCollection Shapes { get; }
 
-    public ITheme Theme => new Theme(this.sdkSlideMasterPart, this.sdkSlideMasterPart.ThemePart!.Theme);
+    public ITheme Theme => new Theme(this.slideMasterPart, this.slideMasterPart.ThemePart!.Theme);
 
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
 
-    public int Number { get; set; }
+    public int Number
+    {
+        get
+        {
+            var match = Regex.Match(this.slideMasterPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
+            return int.Parse(match.Value);      
+        }
+    } 
 
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
 
-    public ISlideLayout SlideLayout(string name) => this.layouts.Value.First(l => l.Name == name);
+    public ISlideLayout SlideLayout(string name) => this.layouts.First(l => l.Name == name);
+
+    public ISlideLayout SlideLayout(int number) => this.layouts.First(l => l.Number == number);
+
+    internal SlideLayout InternalSlideLayout(int number) => this.layouts.Layout(number);
 
     private MasterSlideNumber? CreateSlideNumber()
     {
-        var pSldNum = this.sdkSlideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!
+        var pSldNum = this.slideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!
             .Elements<P.Shape>()
             .FirstOrDefault(s =>
                 s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value ==

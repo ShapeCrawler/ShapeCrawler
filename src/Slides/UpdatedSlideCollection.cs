@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -11,30 +10,21 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class UpdatableSlideCollection : ISlideCollection
+internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, PresentationPart presPart) : ISlideCollection
 {
-    private readonly SlideCollection slideCollection;
-    private readonly PresentationPart presPart;
+    public int Count => slideCollection.Count;
 
-    internal UpdatableSlideCollection(PresentationPart presPart)
-    {
-        this.slideCollection = new SlideCollection(presPart.SlideParts);
-        this.presPart = presPart;
-    }
+    public ISlide this[int index] => slideCollection[index];
 
-    public int Count => this.slideCollection.Count;
-
-    public ISlide this[int index] => this.slideCollection[index];
-
-    public IEnumerator<ISlide> GetEnumerator() => this.slideCollection.GetEnumerator();
+    public IEnumerator<ISlide> GetEnumerator() => slideCollection.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public void Add(ISlideLayout layout)
+    public void Add(int layoutNumber)
     {
-        var rId = new SCOpenXmlPart(this.presPart).GetNextRelationshipId();
-        var sdkSlidePart = this.presPart.AddNewPart<SlidePart>(rId);
-        sdkSlidePart.Slide = new P.Slide(
+        var rId = new SCOpenXmlPart(presPart).GetNextRelationshipId();
+        var slidePart = presPart.AddNewPart<SlidePart>(rId);
+        slidePart.Slide = new P.Slide(
             new P.CommonSlideData(
                 new P.ShapeTree(
                     new P.NonVisualGroupShapeProperties(
@@ -43,10 +33,12 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
                         new P.ApplicationNonVisualDrawingProperties()),
                     new P.GroupShapeProperties(new A.TransformGroup()))),
             new P.ColorMapOverride(new A.MasterColorMapping()));
-        var layoutInternal = (SlideLayout)layout;
-        sdkSlidePart.AddPart(layoutInternal.SdkSlideLayoutPart(), "rId1");
+        var layout = new SlideMasterCollection(presPart.SlideMasterParts).SlideMaster(1).InternalSlideLayout(layoutNumber);
+        slidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
-        if (layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+        // Check if we're using a blank layout - if so, don't copy any shapes
+        if (layout.Name != "Blank" && 
+            layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
             commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
@@ -56,6 +48,19 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
                 .Where(shape => shape.NonVisualShapeProperties!
                     .OfType<P.ApplicationNonVisualDrawingProperties>()
                     .Any(anvdp => anvdp.PlaceholderShape is not null))
+                
+                // Different handling based on layout type
+                .Where(shape =>
+                {
+                    var placeholderType = shape.NonVisualShapeProperties!
+                        .OfType<P.ApplicationNonVisualDrawingProperties>()
+                        .FirstOrDefault()?.PlaceholderShape?.Type?.Value;
+                    
+                    
+                    return placeholderType != P.PlaceholderValues.Footer && 
+                               placeholderType != P.PlaceholderValues.DateAndTime && 
+                               placeholderType != P.PlaceholderValues.SlideNumber;
+                })
 
                 // And creates a new shape with the placeholder.
                 .Select(shape => new P.Shape
@@ -69,7 +74,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
                     ShapeProperties = new P.ShapeProperties()
                 });
 
-            sdkSlidePart.Slide.CommonSlideData = new P.CommonSlideData()
+            slidePart.Slide.CommonSlideData = new P.CommonSlideData()
             {
                 ShapeTree = new P.ShapeTree(placeholderShapes)
                 {
@@ -80,7 +85,7 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
             };
         }
 
-        var pSlideIdList = this.presPart.Presentation.SlideIdList!;
+        var pSlideIdList = presPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
             ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
             : 256; // according to the scheme, this id starts at 256
@@ -97,25 +102,24 @@ internal sealed class UpdatableSlideCollection : ISlideCollection
 
         this.Add(slide);
         var addedSlideIndex = this.Count - 1;
-        this.slideCollection[addedSlideIndex].Number = number;
+        slideCollection[addedSlideIndex].Number = number;
     }
 
+    // ReSharper disable once InconsistentNaming
     public void AddJSON(string jsonSlide)
     {
         throw new NotImplementedException();
     }
 
-    public void Add(ISlide slide)
+    public void Add(ISlide addingSlide)
     {
-        var addingSlide = (Slide)slide;
-        var addingSlidePresStream = new MemoryStream();
-        var targetPresDocument = (PresentationDocument)this.presPart.OpenXmlPackage;
-        var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
+        var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
+        var addingSlidePresDocument = addingSlide.GetSDKPresentationDocument();
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[addingSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
         new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart

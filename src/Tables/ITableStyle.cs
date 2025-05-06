@@ -5,12 +5,12 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a table style of a table.
+///     Represents a table style.
 /// </summary>
 public interface ITableStyle
 {
     /// <summary>
-    ///     Gets the name of the style.
+    ///     Gets the name.
     /// </summary> 
     public string Name { get; }
 }

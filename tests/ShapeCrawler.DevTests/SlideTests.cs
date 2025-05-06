@@ -66,7 +66,7 @@ public class SlideTests : SCTest
         // Arrange
         var pres = new Presentation();
         var layout = pres.SlideMaster(1).SlideLayout("Blank");
-        pres.Slides.Add(layout);
+        pres.Slides.Add(layout.Number);
         var slide = pres.Slides[0];
         var image = TestAsset("10 png image.png");
 
