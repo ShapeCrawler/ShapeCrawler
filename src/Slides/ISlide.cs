@@ -118,7 +118,6 @@ public interface ISlide
     /// <summary>
     ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
     /// </summary>
-    /// <returns></returns>
     // ReSharper disable once InconsistentNaming
     PresentationDocument GetSDKPresentationDocument();
 }
