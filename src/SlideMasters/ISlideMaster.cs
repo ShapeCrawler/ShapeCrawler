@@ -87,6 +87,7 @@ internal sealed class SlideMaster : ISlideMaster
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
 
     public ISlideLayout SlideLayout(string name) => this.layouts.Value.First(l => l.Name == name);
+
     public ISlideLayout SlideLayout(int number) => this.layouts.Value.First(l => l.Number == number);
 
     private MasterSlideNumber? CreateSlideNumber()

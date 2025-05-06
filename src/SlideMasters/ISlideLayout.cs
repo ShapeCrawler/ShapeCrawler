@@ -1,12 +1,10 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a Slide Layout.
@@ -56,7 +54,7 @@ internal sealed class SlideLayout : ISlideLayout
 
     public ISlideMaster SlideMaster { get; }
 
-    public int Number => int.Parse(Regex.Match(slideLayoutPart.Uri.ToString(), @"\d+").Value);
+    public int Number => int.Parse(Regex.Match(this.slideLayoutPart.Uri.ToString(), @"\d+").Value);
 
     internal SlideLayoutPart SdkSlideLayoutPart() => this.slideLayoutPart;
 }

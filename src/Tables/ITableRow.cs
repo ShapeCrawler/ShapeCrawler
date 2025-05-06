@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 #pragma warning disable IDE0130
 
 /// <summary>
-///     Represents table row.
+///     Represents a table row.
 /// </summary>
 public interface ITableRow
 {

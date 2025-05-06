@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.67.1 - Unreleased
+🐞Fixed adding slide with a certain layout [#933](https://github.com/ShapeCrawler/ShapeCrawler/issues/933)  
+
 ## Version 0.67.0 - 2025-05-01
 🍀Added support adding Bar Chart.  
 🍀Added support shapes grouping [D951](https://github.com/ShapeCrawler/ShapeCrawler/discussions/951)  

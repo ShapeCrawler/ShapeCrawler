@@ -51,16 +51,16 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                     .Any(anvdp => anvdp.PlaceholderShape is not null))
                 
                 // Different handling based on layout type
-                .Where(shape => {
+                .Where(shape =>
+                {
                     var placeholderType = shape.NonVisualShapeProperties!
                         .OfType<P.ApplicationNonVisualDrawingProperties>()
                         .FirstOrDefault()?.PlaceholderShape?.Type?.Value;
                     
                     
-                        return placeholderType != P.PlaceholderValues.Footer && 
+                    return placeholderType != P.PlaceholderValues.Footer && 
                                placeholderType != P.PlaceholderValues.DateAndTime && 
                                placeholderType != P.PlaceholderValues.SlideNumber;
-           
                 })
 
                 // And creates a new shape with the placeholder.

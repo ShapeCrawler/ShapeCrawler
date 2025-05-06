@@ -40,7 +40,7 @@ namespace ShapeCrawler.DevTests
 
             // Act
             pres.Slides.Add(layout);
-            var textBox = pres.Slide(2).Shape("Holder 5").TextBox;
+            var textBox = pres.Slides.Last().Shape("Holder 2").TextBox;
             var text = textBox!.Text;
 
             // Assert
