@@ -577,4 +577,19 @@ public class PresentationTests : SCTest
         // Assert
         actualMarkdown.Should().BeEquivalentTo(expectedMarkdown);
     }
+
+    [Test]
+    public void Slides_RemoveThenAdd_ShouldNotCorruptPresentation()
+    {
+        // Arrange
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slide(1);
+        var destPres = new Presentation(TestAsset("001.pptx"));
+        
+        // Act
+        destPres.Slide(2).Remove();
+        destPres.Slides.Add(sourceSlide, 1);
+        
+        // Assert
+        destPres.Save(@"c:\temp\output.pptx"); // corrupted
+    }
 }

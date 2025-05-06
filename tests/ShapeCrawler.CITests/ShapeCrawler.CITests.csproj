@@ -3,7 +3,6 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <OutputType>Library</OutputType>
@@ -16,6 +15,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TargetFrameworks>net9.0;net48;net472</TargetFrameworks>
+    <WarningsAsErrors>NU1608</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

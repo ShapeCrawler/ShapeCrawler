@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -100,30 +101,170 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             throw new ArgumentOutOfRangeException(nameof(number));
         }
 
-        this.Add(slide);
-        var addedSlideIndex = this.Count - 1;
-        slideCollection[addedSlideIndex].Number = number;
+        var presentationDocument = (PresentationDocument)presPart.OpenXmlPackage;
+        var presentationPart = presentationDocument.PresentationPart!;
+        var addingSlidePresDocument = slide.GetSDKPresentationDocument();
+        var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
+        
+        // Get the source slide's information
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
+        
+        // Clone the slide to avoid corrupting references
+        SlidePart clonedSlidePart;
+        
+        // Create a clean new slide part in the target presentation with a predictable relationship ID
+        string newSlideRelId = "rId" + new Random().Next(100000, 999999).ToString();
+        clonedSlidePart = presentationPart.AddNewPart<SlidePart>(newSlideRelId);
+        
+        // Copy the content from source slide to new slide
+        using (var sourceStream = sourceSlidePart.GetStream())
+        {
+            sourceStream.Position = 0;
+            using (var destStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write))
+            {
+                sourceStream.CopyTo(destStream);
+            }
+        }
+        
+        // Ensure layout relationship is properly set up
+        var sourceLayoutPart = sourceSlidePart.SlideLayoutPart;
+        if (sourceLayoutPart != null)
+        {
+            // First see if there's a matching layout in the target presentation
+            SlideLayoutPart? targetLayoutPart = null;
+            
+            // Try to find a matching layout by type or name
+            foreach (var masterPart in presentationPart.SlideMasterParts)
+            {
+                foreach (var layoutPart in masterPart.SlideLayoutParts)
+                {
+                    if (LayoutsMatch(layoutPart, sourceLayoutPart))
+                    {
+                        targetLayoutPart = layoutPart;
+                        break;
+                    }
+                }
+                
+                if (targetLayoutPart != null)
+                    break;
+            }
+            
+            // If no matching layout found, create one
+            if (targetLayoutPart == null)
+            {
+                // Get or create a master part
+                SlideMasterPart masterPart;
+                if (presentationPart.SlideMasterParts.Any())
+                {
+                    masterPart = presentationPart.SlideMasterParts.First();
+                }
+                else
+                {
+                    masterPart = presentationPart.AddNewPart<SlideMasterPart>();
+                    
+                    // Copy the master content from source
+                    var sourceMasterPart = sourceLayoutPart.SlideMasterPart;
+                    if (sourceMasterPart != null)
+                    {
+                        using (var sourceStream = sourceMasterPart.GetStream())
+                        {
+                            sourceStream.Position = 0;
+                            using (var destStream = masterPart.GetStream(FileMode.Create, FileAccess.Write))
+                            {
+                                sourceStream.CopyTo(destStream);
+                            }
+                        }
+                    }
+                }
+                
+                // Create a new layout part linked to the master
+                targetLayoutPart = masterPart.AddNewPart<SlideLayoutPart>();
+                
+                // Copy the layout content
+                using (var sourceStream = sourceLayoutPart.GetStream())
+                {
+                    sourceStream.Position = 0;
+                    using (var destStream = targetLayoutPart.GetStream(FileMode.Create, FileAccess.Write))
+                    {
+                        sourceStream.CopyTo(destStream);
+                    }
+                }
+            }
+            
+            // Link the new slide to the layout
+            clonedSlidePart.AddPart(targetLayoutPart);
+        }
+        
+        // Create a new slide ID with the correct position
+        uint maxSlideId = 256; // Default starting ID
+        if (presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().Any())
+        {
+            maxSlideId = presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>()
+                .Max(id => id.Id!.Value) + 1;
+        }
+        
+        // Create the new slide ID
+        var slideId = new P.SlideId 
+        { 
+            Id = maxSlideId, 
+            RelationshipId = newSlideRelId 
+        };
+        
+        // Insert at the specified position
+        var slideIdList = presentationPart.Presentation.SlideIdList!;
+        if (number > slideIdList.Elements<P.SlideId>().Count())
+        {
+            slideIdList.Append(slideId);
+        }
+        else
+        {
+            slideIdList.InsertAt(slideId, number - 1);
+        }
+        
+        // Save changes
+        presentationPart.Presentation.Save();
+    }
+    
+    // Helper method to determine if two layouts match
+    private bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
+    {
+        // Compare by type if available
+        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
+        {
+            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
+        }
+        
+        // Otherwise compare by name
+        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
+        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
+        
+        if (name1 != null && name2 != null)
+        {
+            return name1 == name2;
+        }
+        
+        // If no reliable way to compare, just return false to be safe
+        return false;
     }
 
-    // ReSharper disable once InconsistentNaming
     public void AddJSON(string jsonSlide)
     {
         throw new NotImplementedException();
     }
 
-    public void Add(ISlide addingSlide)
+    public void Add(ISlide slide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var addingSlidePresDocument = addingSlide.GetSDKPresentationDocument();
+        var addingSlidePresDocument = slide.GetSDKPresentationDocument();
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[addingSlide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
-            .SlideLayoutPart!);
+        new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
 
         var wrappedPresentationPart = new SCPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
@@ -137,7 +278,6 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     private static P.TextBody ResolveTextBody(P.Shape shape)
     {
-        // Creates a new TextBody
         if (shape.TextBody is null)
         {
             return new P.TextBody(new A.Paragraph(new A.EndParagraphRunProperties()))

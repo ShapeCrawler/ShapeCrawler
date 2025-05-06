@@ -259,20 +259,38 @@ internal sealed class Slide : ISlide
         var presPart = presDocument.PresentationPart!;
         var pPresentation = presDocument.PresentationPart!.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
-        var removingPSlideId = (P.SlideId)slideIdList.ChildElements[this.Number - 1];
+        
+        // Find the exact SlideId corresponding to this slide
+        var slideIdRelationship = presPart.GetIdOfPart(this.slidePart);
+        var removingPSlideId = slideIdList.Elements<P.SlideId>()
+            .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship);
+        
+        if (removingPSlideId == null)
+        {
+            throw new SCException("Could not find slide ID in presentation.");
+        }
+        
+        // Handle section references
         var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
         var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
             .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
         removingSectionSlideIdListEntry?.Remove();
+        
+        // Remove the slide ID
         slideIdList.RemoveChild(removingPSlideId);
+        
+        // Save to update the structure
         pPresentation.Save();
 
+        // Remove from custom shows
         var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
         new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
+        // Delete the slide part
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
 
+        // Final save to ensure structure is consistent
         presPart.Presentation.Save();
     }
 
