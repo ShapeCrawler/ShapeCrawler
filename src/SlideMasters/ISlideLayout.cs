@@ -35,34 +35,26 @@ public interface ISlideLayout
 
 internal sealed class SlideLayout : ISlideLayout
 {
-    private readonly SlideLayoutPart slideLayoutPart;
-
-    internal SlideLayout(SlideLayoutPart sdkLayoutPart)
-        : this(sdkLayoutPart, new SlideMaster(sdkLayoutPart.SlideMasterPart!))
+    internal SlideLayout(SlideLayoutPart slideLayoutPart)
     {
+        this.SlideLayoutPart = slideLayoutPart;
+        this.Shapes = new ShapeCollection(slideLayoutPart);
     }
-
-    private SlideLayout(SlideLayoutPart sdkLayoutPart, ISlideMaster slideMaster)
-    {
-        this.slideLayoutPart = sdkLayoutPart;
-        this.SlideMaster = slideMaster;
-        this.Shapes = new ShapeCollection(this.slideLayoutPart);
-    }
-
-    public string Name => this.slideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    
+    public string Name => this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
 
     public IShapeCollection Shapes { get; }
 
-    public ISlideMaster SlideMaster { get; }
+    public ISlideMaster SlideMaster => new SlideMaster(this.SlideLayoutPart.SlideMasterPart!);
 
     public int Number
     {
         get
         {
-            var match = Regex.Match(this.slideLayoutPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
+            var match = Regex.Match(this.SlideLayoutPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
             return int.Parse(match.Value);
         }
     }
-
-    internal SlideLayoutPart SDKSlideLayoutPart() => this.slideLayoutPart;
+    
+    internal SlideLayoutPart SlideLayoutPart { get; }
 }

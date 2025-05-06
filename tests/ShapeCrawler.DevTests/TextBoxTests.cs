@@ -39,7 +39,7 @@ namespace ShapeCrawler.DevTests
             var layout = pres.SlideMaster(1).SlideLayout(1);
 
             // Act
-            pres.Slides.Add(layout);
+            pres.Slides.Add(layout.Number);
             var textBox = pres.Slides.Last().Shape("Holder 2").TextBox;
             var text = textBox!.Text;
 

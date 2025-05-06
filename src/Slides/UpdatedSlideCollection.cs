@@ -21,7 +21,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public void Add(ISlideLayout layout)
+    public void Add(int layoutNumber)
     {
         var rId = new SCOpenXmlPart(presPart).GetNextRelationshipId();
         var slidePart = presPart.AddNewPart<SlidePart>(rId);
@@ -34,12 +34,12 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                         new P.ApplicationNonVisualDrawingProperties()),
                     new P.GroupShapeProperties(new A.TransformGroup()))),
             new P.ColorMapOverride(new A.MasterColorMapping()));
-        var internalLayout = layout as SlideLayout;
-        slidePart.AddPart(internalLayout!.SDKSlideLayoutPart(), "rId1");
+        var layout = new SlideMasterCollection(presPart.SlideMasterParts).SlideMaster(1).InternalSlideLayout(layoutNumber);
+        slidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
         // Check if we're using a blank layout - if so, don't copy any shapes
         if (layout.Name != "Blank" && 
-            internalLayout.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+            layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
             commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
@@ -106,6 +106,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         slideCollection[addedSlideIndex].Number = number;
     }
 
+    // ReSharper disable once InconsistentNaming
     public void AddJSON(string jsonSlide)
     {
         throw new NotImplementedException();
