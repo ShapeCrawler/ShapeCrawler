@@ -78,7 +78,6 @@ internal sealed class Picture : IPicture
 
     public ITextBox? TextBox => null;
     
-    
     public CroppingFrame Crop
     {
         get

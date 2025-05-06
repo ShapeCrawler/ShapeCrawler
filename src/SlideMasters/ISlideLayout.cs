@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 
@@ -54,7 +55,14 @@ internal sealed class SlideLayout : ISlideLayout
 
     public ISlideMaster SlideMaster { get; }
 
-    public int Number => int.Parse(Regex.Match(this.slideLayoutPart.Uri.ToString(), @"\d+").Value);
+    public int Number
+    {
+        get
+        {
+            var match = Regex.Match(this.slideLayoutPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
+            return int.Parse(match.Value);
+        }
+    }
 
-    internal SlideLayoutPart SdkSlideLayoutPart() => this.slideLayoutPart;
+    internal SlideLayoutPart SDKSlideLayoutPart() => this.slideLayoutPart;
 }

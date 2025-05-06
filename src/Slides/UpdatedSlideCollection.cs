@@ -24,8 +24,8 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     public void Add(ISlideLayout layout)
     {
         var rId = new SCOpenXmlPart(presPart).GetNextRelationshipId();
-        var sdkSlidePart = presPart.AddNewPart<SlidePart>(rId);
-        sdkSlidePart.Slide = new P.Slide(
+        var slidePart = presPart.AddNewPart<SlidePart>(rId);
+        slidePart.Slide = new P.Slide(
             new P.CommonSlideData(
                 new P.ShapeTree(
                     new P.NonVisualGroupShapeProperties(
@@ -34,12 +34,12 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                         new P.ApplicationNonVisualDrawingProperties()),
                     new P.GroupShapeProperties(new A.TransformGroup()))),
             new P.ColorMapOverride(new A.MasterColorMapping()));
-        var layoutInternal = (SlideLayout)layout;
-        sdkSlidePart.AddPart(layoutInternal.SdkSlideLayoutPart(), "rId1");
+        var internalLayout = layout as SlideLayout;
+        slidePart.AddPart(internalLayout!.SDKSlideLayoutPart(), "rId1");
 
         // Check if we're using a blank layout - if so, don't copy any shapes
         if (layout.Name != "Blank" && 
-            layoutInternal.SdkSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+            internalLayout.SDKSlideLayoutPart().SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
             commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
@@ -75,7 +75,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                     ShapeProperties = new P.ShapeProperties()
                 });
 
-            sdkSlidePart.Slide.CommonSlideData = new P.CommonSlideData()
+            slidePart.Slide.CommonSlideData = new P.CommonSlideData()
             {
                 ShapeTree = new P.ShapeTree(placeholderShapes)
                 {
@@ -113,10 +113,10 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     public void Add(ISlide slide)
     {
-        var addingSlide = (Slide)slide;
+        var addingSlide = slide as Slide;
         var addingSlidePresStream = new MemoryStream();
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var addingSlidePresDocument = addingSlide.SdkPresentationDocument().Clone(addingSlidePresStream);
+        var addingSlidePresDocument = addingSlide!.SdkPresentationDocument().Clone(addingSlidePresStream);
 
         var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
         var targetPresPart = targetPresDocument.PresentationPart!;
