@@ -581,15 +581,73 @@ public class PresentationTests : SCTest
     [Test]
     public void Slides_RemoveThenAdd_ShouldNotCorruptPresentation()
     {
-        // Arrange
-        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slide(1);
-        var destPres = new Presentation(TestAsset("001.pptx"));
+        string outputPath = @"c:\temp\output.pptx";
         
-        // Act
-        destPres.Slide(2).Remove();
-        destPres.Slides.Add(sourceSlide, 1);
+        // Put operations in a separate scope to ensure objects are disposed
+        {
+            // Arrange
+            var sourcePresentation = new Presentation(TestAsset("001.pptx"));
+            var initialSlideCount = sourcePresentation.Slides.Count;
+            var sourceSlide = sourcePresentation.Slides[0];
+            
+            var destPres = new Presentation(TestAsset("001.pptx"));
+            
+            // Act
+            destPres.Slides[0].Remove();
+            destPres.Slides.Add(sourceSlide, 1);
+            
+            // Save the presentation to a temporary file
+            destPres.Save(outputPath); // was corrupted before fix
+            
+            // Allow objects to be garbage collected
+            sourcePresentation = null;
+            destPres = null;
+        }
         
-        // Assert
-        destPres.Save(@"c:\temp\output.pptx"); // corrupted
+        // Force GC to clean up presentations
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        
+        // Assert - in a separate scope with fresh objects
+        VerifyPresentationIntegrity(outputPath);
+    }
+    
+    private void VerifyPresentationIntegrity(string presentationPath)
+    {
+        // 1. First verify the presentation can be opened without corruption
+        using (var pres = new Presentation(presentationPath))
+        {
+            // If we get here without exceptions, the file is not corrupted
+            pres.Should().NotBeNull();
+        }
+        
+        // 2. Then verify specific relationships with OpenXml SDK
+        using (var pptDoc = DocumentFormat.OpenXml.Packaging.PresentationDocument.Open(presentationPath, false))
+        {
+            var presPart = pptDoc.PresentationPart;
+            presPart.Should().NotBeNull();
+            
+            // Verify slide ID list exists
+            var slideIdList = presPart.Presentation.SlideIdList;
+            slideIdList.Should().NotBeNull();
+            
+            // Verify all slides have valid relationships
+            foreach (var slideIdElement in slideIdList.ChildElements)
+            {
+                var slideId = (DocumentFormat.OpenXml.Presentation.SlideId)slideIdElement;
+                slideId.RelationshipId.Should().NotBeNull();
+                
+                var slidePart = presPart.GetPartById(slideId.RelationshipId);
+                slidePart.Should().NotBeNull();
+                slidePart.Should().BeOfType<DocumentFormat.OpenXml.Packaging.SlidePart>();
+                
+                // Verify slide has relationship to layout
+                var slide = (slidePart as DocumentFormat.OpenXml.Packaging.SlidePart);
+                slide.SlideLayoutPart.Should().NotBeNull();
+                
+                // Verify layout has relationship to master
+                slide.SlideLayoutPart.SlideMasterPart.Should().NotBeNull();
+            }
+        }
     }
 }
