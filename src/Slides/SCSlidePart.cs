@@ -62,8 +62,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         int y,
         int width,
         int height,
-        Dictionary<string, List<double>> categoryValues,
-        List<string> seriesNames)
+        IDictionary<string, List<double>> categoryValues,
+        IList<string> seriesNames)
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
@@ -449,8 +449,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private static void GenerateStackedColumnChartContent(
         ChartPart chartPart,
-        Dictionary<string, List<double>> categoryValues,
-        List<string> seriesNames)
+        IDictionary<string, List<double>> categoryValues,
+        IList<string> seriesNames)
     {
         // Create the ChartSpace element
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });

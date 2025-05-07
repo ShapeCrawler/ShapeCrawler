@@ -2,6 +2,7 @@
 
 ## Version 0.68.0 - Unreleased
 🍀Added support adding Scatter Chart [#65](https://github.com/ShapeCrawler/ShapeCrawler/issues/65)    
+🍀Added support adding Stacked Column Chart [#221](https://github.com/ShapeCrawler/ShapeCrawler/issues/221)    
 🐞Fixed adding slide with a certain layout [#933](https://github.com/ShapeCrawler/ShapeCrawler/issues/933)  
 🐞Fixed adding slide [#956](https://github.com/ShapeCrawler/ShapeCrawler/issues/956)  
 
