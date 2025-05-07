@@ -150,7 +150,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         // From Referenced Shape
         if (openXmlPart is not SlideMasterPart)
         {
-            var refShapeFontColorHex = new ReferencedIndentLevel(aText).ReferencedColorHexOrNull();
+            var refShapeFontColorHex = new ReferencedIndentLevel(aText).ColorHexOrNull();
             if (refShapeFontColorHex != null)
             {
                 return refShapeFontColorHex;

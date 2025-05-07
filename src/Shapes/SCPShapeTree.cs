@@ -5,6 +5,8 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable PossibleMultipleEnumeration
+
 namespace ShapeCrawler.Shapes;
 
 // ReSharper disable once InconsistentNaming
@@ -42,30 +44,28 @@ internal readonly ref struct SCPShapeTree(P.ShapeTree pShapeTree)
         }
     }
 
-    internal P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholder)
+    internal P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholderShape)
     {
-        var pShapes = pShapeTree.Elements<P.Shape>();
-        foreach (var layoutPShape in pShapes)
+        var pShapes = pShapeTree.Elements<P.Shape>().Where(x =>
+            x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!.GetFirstChild<P.PlaceholderShape>() !=
+            null);
+        foreach (var pShape in pShapes)
         {
-            var layoutPPlaceholder = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>();
-            if (layoutPPlaceholder == null)
-            {
-                continue;
-            }
+            var refPPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()!;
 
-            if (pPlaceholder.Type?.Value == layoutPPlaceholder.Type?.Value &&
-                pPlaceholder.Index?.Value == layoutPPlaceholder.Index?.Value)
+            if (pPlaceholderShape.Type?.Value == refPPlaceholderShape.Type?.Value &&
+                pPlaceholderShape.Index?.Value == refPPlaceholderShape.Index?.Value)
             {
-                return layoutPShape;
+                return pShape;
             }
         }
 
-        if (pPlaceholder.Type?.Value is not null)
+        if (pPlaceholderShape.Type?.Value is not null)
         {
             var byType = pShapes.FirstOrDefault(layoutPShape =>
                 layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                    .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == pPlaceholder.Type.Value);
+                    .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == pPlaceholderShape.Type.Value);
 
             if (byType != null)
             {

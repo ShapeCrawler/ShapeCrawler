@@ -204,23 +204,7 @@ public class PresentationTests : SCTest
         pres.Save(stream);
         new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
     }
-
-    [Test]
-    public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
-    {
-        // Arrange
-        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slides[0];
-        string sourceSlideId = Guid.NewGuid().ToString();
-        sourceSlide.CustomData = sourceSlideId;
-        var destPre = new Presentation(TestAsset("002.pptx"));
-
-        // Act
-        destPre.Slides.Add( sourceSlide, 2);
-
-        // Assert
-        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
-    }
-
+    
     [Test]
     [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/864")]
     public void Slides_Add_should_not_break_hyperlink()
@@ -236,7 +220,7 @@ public class PresentationTests : SCTest
         pres.Validate();
         // TODO: Add assertion
     }
-
+    
 #if DEBUG
     [Test]
     [Explicit]
@@ -472,21 +456,19 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Slides_Insert_inserts_slide_at_the_specified_position()
+    public void Slides_Add_adds_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = TestAsset("001.pptx");
-        var sourceSlide = new Presentation(pptx).Slides[0];
+        var sourceSlide = new Presentation(TestAsset("001.pptx")).Slide(1);
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        pptx = TestAsset("002.pptx");
-        var destPre = new Presentation(pptx);
+        var destPres = new Presentation(TestAsset("002.pptx"));
 
         // Act
-        destPre.Slides.Add(sourceSlide, 2);
+        destPres.Slides.Add(sourceSlide, 2);
 
         // Assert
-        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
+        destPres.Slide(2).CustomData.Should().Be(sourceSlideId);
     }
 
     [Test]
@@ -577,6 +559,25 @@ public class PresentationTests : SCTest
         // Assert
         actualMarkdown.Should().BeEquivalentTo(expectedMarkdown);
     }
+    
+    [Test]
+    public void Save_does_not_throw_exception_When_stream_is_a_File_stream()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var file = Path.GetTempFileName();
+        using var stream = File.OpenWrite(file);
+        
+        // Act
+        var saving = () => pres.Save(stream);
+        
+        // Assert
+        saving.Should().NotThrow();
+        
+        // Cleanup
+        stream.Close();
+        File.Delete(file);
+    }
 
     [Test]
     public void Slides_RemoveThenAdd_ShouldNotCorruptPresentation()
@@ -590,6 +591,7 @@ public class PresentationTests : SCTest
         destPres.Slides.Add(sourceSlide, 1);
         
         // Assert
+        throw new Exception("Add assertion");
         destPres.Save(@"c:\temp\output.pptx"); // corrupted
     }
 }
