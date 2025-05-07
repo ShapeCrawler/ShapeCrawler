@@ -460,8 +460,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 new NonVisualGraphicFrameDrawingProperties(),
                 new ApplicationNonVisualDrawingProperties()),
             Transform = new Transform(
-                new A.Offset { X = new Pixels(x).AsHorizontalEmus(), Y = new Pixels(y).AsVerticalEmus() },
-                new A.Extents { Cx = new Pixels(width).AsHorizontalEmus(), Cy = new Pixels(height).AsVerticalEmus() }),
+                new A.Offset { X = new Points(x).AsEmus(), Y = new Points(y).AsEmus() },
+                new A.Extents { Cx = new Points(width).AsEmus(), Cy = new Points(height).AsEmus() }),
             Graphic = new A.Graphic(
                 new A.GraphicData(
                     new ChartReference { Id = slidePart.GetIdOfPart(chartPart) })
