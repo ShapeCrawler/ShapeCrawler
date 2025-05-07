@@ -203,6 +203,11 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
         }
 
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        return this.GetColorFromLayoutPlaceholderType(pPlaceholderShape, openXmlPart, indentLevel);
+    }
+
+    private string? GetColorFromLayoutPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart, int indentLevel)
+    {
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
             var pTitleStyle = ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
@@ -224,7 +229,7 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
                 return masterTitleColor;
             }
         }
-
+        
         return null;
     }
 
@@ -316,13 +321,15 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
         {
             return this.GetColorFromTitlePlaceholder(openXmlPart, indentLevel);
         }
-        
-        if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
+        else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
             return this.GetColorFromBodyPlaceholder(openXmlPart, indentLevel);
         }
-
-        return null;
+        else
+        {
+            // No specific color handling for other placeholder types
+            return null;
+        }
     }
 
     private string? GetColorFromTitlePlaceholder(OpenXmlPart openXmlPart, int indentLevel)
