@@ -103,7 +103,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         int y,
         int width,
         int height,
-        IDictionary<string, List<double>> categoryValues,
+        IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames)
     {
         new SCSlidePart(this.slidePart).AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);

@@ -116,7 +116,7 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <param name="height">Height in points.</param>
     /// <param name="categoryValues">Dictionary mapping categories to a list of values for each series.</param>
     /// <param name="seriesNames">List of series names in the same order as the values in categoryValues.</param>
-    void AddStackedColumnChart(int x, int y, int width, int height, IDictionary<string, List<double>> categoryValues, IList<string> seriesNames);
+    void AddStackedColumnChart(int x, int y, int width, int height, IDictionary<string, IList<double>> categoryValues, IList<string> seriesNames);
 
     /// <summary>
     ///     Adds a SmartArt graphic to the slide.
