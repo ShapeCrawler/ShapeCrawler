@@ -168,6 +168,9 @@ public sealed class Presentation : IPresentation
         return markdown.ToString();
     }
 
+    /// <inheritdoc />
+    public PresentationDocument GetSDKPresentationDocument() => this.presDocument.Clone();
+
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>

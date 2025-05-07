@@ -116,10 +116,10 @@ public interface ISlide
     IChart Chart(int id);
 
     /// <summary>
-    ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
+    ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    PresentationDocument GetSDKPresentationDocument();
+    PresentationPart GetSDKPresentationPart();
 }
 
 internal sealed class Slide : ISlide
@@ -259,20 +259,33 @@ internal sealed class Slide : ISlide
         var presPart = presDocument.PresentationPart!;
         var pPresentation = presDocument.PresentationPart!.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
-        var removingPSlideId = (P.SlideId)slideIdList.ChildElements[this.Number - 1];
+        
+        // Find the exact SlideId corresponding to this slide
+        var slideIdRelationship = presPart.GetIdOfPart(this.slidePart);
+        var removingPSlideId = slideIdList.Elements<P.SlideId>()
+            .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ?? throw new SCException("Could not find slide ID in presentation.");
+
+        // Handle section references
         var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
         var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
             .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
         removingSectionSlideIdListEntry?.Remove();
+        
+        // Remove the slide ID
         slideIdList.RemoveChild(removingPSlideId);
+        
+        // Save to update the structure
         pPresentation.Save();
 
+        // Remove from custom shows
         var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
         new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
 
+        // Delete the slide part
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
 
+        // Final save to ensure structure is consistent
         presPart.Presentation.Save();
     }
 
@@ -280,11 +293,11 @@ internal sealed class Slide : ISlide
 
     public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
 
-    public PresentationDocument GetSDKPresentationDocument()
+    public PresentationPart GetSDKPresentationPart()
     {
         var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
 
-        return presDocument.Clone();
+        return presDocument.Clone().PresentationPart!;
     }
 
     public IList<ITextBox> GetTextBoxes()
@@ -381,7 +394,7 @@ internal sealed class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = new SCOpenXmlPart(this.slidePart).GetNextRelationshipId();
+        var rid = new SCOpenXmlPart(this.slidePart).NextRelationshipId();
         var notesSlidePart1 = this.slidePart.AddNewPart<NotesSlidePart>(rid);
         var notesSlide = new NotesSlide(
             new CommonSlideData(

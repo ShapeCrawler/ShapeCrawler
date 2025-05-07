@@ -236,7 +236,7 @@ internal sealed class Picture : IPicture
         var sourceSdkSlidePart = openXmlPart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.aBlip.Embed!.Value!);
 
-        var targetImagePartRId = new SCOpenXmlPart(openXmlPart).GetNextRelationshipId();
+        var targetImagePartRId = new SCOpenXmlPart(openXmlPart).NextRelationshipId();
 
         var targetImagePart = openXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);

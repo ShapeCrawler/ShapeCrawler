@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
 internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
@@ -13,18 +14,16 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
     {
         var pShape = (P.Shape)pShapeTreeElement;
         var openXmlPart = pShape.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        if (openXmlPart is SlidePart sdkSlidePart)
+        if (openXmlPart is SlidePart slidePart)
         {
-            var layoutPShape = LayoutPShapeOrNullOf(pShape, sdkSlidePart);
+            var layoutPShape = LayoutPShapeOrNullOf(pShape, slidePart);
             if (layoutPShape != null && layoutPShape.ShapeProperties!.Transform2D != null)
             {
                 return layoutPShape.ShapeProperties.Transform2D;
             }
-
-            return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
         }
 
-        return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
+        return MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
     }
 
     private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape source)
@@ -35,7 +34,6 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
             var target = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
                 .GetFirstChild<P.PlaceholderShape>();
             
-            // Skip shapes without placeholder information
             if (target == null)
             {
                 continue;
@@ -104,7 +102,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
                 .GetFirstChild<P.PlaceholderShape>()?.Type == source.Type);
     }
 
-    private static P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
+    private static P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart slidePart)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -114,7 +112,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         }
 
         var layoutPShapes =
-            sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
+            slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
 
         var referencedPShape = PShapeOrNullOf(layoutPShapes, pPlaceholderShape);
         if (referencedPShape != null)
@@ -125,7 +123,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         return null;
     }
 
-    private P.Shape MasterPShapeOf(P.Shape pShape)
+    private static P.Shape MasterPShapeOf(P.Shape pShape)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>() !;

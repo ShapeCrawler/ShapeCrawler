@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -22,7 +23,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     public void Add(int layoutNumber)
     {
-        var rId = new SCOpenXmlPart(presPart).GetNextRelationshipId();
+        var rId = new SCOpenXmlPart(presPart).NextRelationshipId();
         var slidePart = presPart.AddNewPart<SlidePart>(rId);
         slidePart.Slide = new P.Slide(
             new P.CommonSlideData(
@@ -37,8 +38,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         slidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
         // Check if we're using a blank layout - if so, don't copy any shapes
-        if (layout.Name != "Blank" && 
-            layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
             commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
@@ -100,9 +100,21 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             throw new ArgumentOutOfRangeException(nameof(number));
         }
 
-        this.Add(slide);
-        var addedSlideIndex = this.Count - 1;
-        slideCollection[addedSlideIndex].Number = number;
+        var sourceSlidePresPart = slide.GetSDKPresentationPart();
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
+        
+        var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
+        string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
+        var clonedSlidePart = presentationPart.AddNewPart<SlidePart>(newSlideRelId);
+
+        CopySlideContent(sourceSlidePart, clonedSlidePart);
+        CopyCustomXmlParts(sourceSlidePart, clonedSlidePart);
+        this.LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
+        InsertSlideAtPosition(presentationPart, newSlideRelId, number);
+        
+        // Save changes
+        presentationPart.Presentation.Save();
     }
 
     // ReSharper disable once InconsistentNaming
@@ -111,19 +123,16 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         throw new NotImplementedException();
     }
 
-    public void Add(ISlide addingSlide)
+    public void Add(ISlide slide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var addingSlidePresDocument = addingSlide.GetSDKPresentationDocument();
-
-        var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
+        var sourceSlidePresPart = slide.GetSDKPresentationPart();
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[addingSlide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
-            .SlideLayoutPart!);
+        new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart.SlideLayoutPart!);
 
         var wrappedPresentationPart = new SCPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
@@ -134,10 +143,105 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(targetPresDocument, masterId);
     }
+    
+    private static void CopySlideContent(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        using var sourceStream = sourceSlidePart.GetStream();
+        sourceStream.Position = 0;
+        using var destStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destStream);
+    }
+
+    private static void CopyCustomXmlParts(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        var sourceCustomXmlParts = sourceSlidePart.CustomXmlParts.ToList();
+        if (!sourceCustomXmlParts.Any())
+        {
+            return;
+        }
+        
+        foreach(var sourceCustomXmlPart in sourceCustomXmlParts)
+        {
+            var newCustomXmlPart = clonedSlidePart.AddCustomXmlPart(sourceCustomXmlPart.ContentType);
+            using var sourceStream = sourceCustomXmlPart.GetStream();
+            sourceStream.Position = 0;
+            using var destStream = newCustomXmlPart.GetStream(FileMode.Create, FileAccess.Write);
+            sourceStream.CopyTo(destStream);
+        }
+    }
+
+    private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    {
+        // Get or create a master part
+        var masterPart = GetOrCreateMasterPart(presentationPart, sourceLayoutPart);
+        
+        // Create a new layout part linked to the master
+        var targetLayoutPart = masterPart.AddNewPart<SlideLayoutPart>();
+        
+        // Copy the layout content
+        CopyPartContent(sourceLayoutPart, targetLayoutPart);
+
+        return targetLayoutPart;
+    }
+
+    private static SlideMasterPart GetOrCreateMasterPart(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    {
+        if (presentationPart.SlideMasterParts.Any())
+        {
+            return presentationPart.SlideMasterParts.First();
+        }
+        
+        var masterPart = presentationPart.AddNewPart<SlideMasterPart>();
+        
+        // Copy the master content from source
+        var sourceMasterPart = sourceLayoutPart.SlideMasterPart;
+        if (sourceMasterPart != null)
+        {
+            CopyPartContent(sourceMasterPart, masterPart);
+        }
+
+        return masterPart;
+    }
+
+    private static void CopyPartContent(OpenXmlPart sourcePart, OpenXmlPart targetPart)
+    {
+        using var sourceStream = sourcePart.GetStream();
+        sourceStream.Position = 0;
+        using var destStream = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destStream);
+    }
+
+    private static void InsertSlideAtPosition(PresentationPart presentationPart, string relationshipId, int position)
+    {
+        // Create a new slide ID with the correct position
+        uint maxSlideId = 256; // Default starting ID
+        if (presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().Any())
+        {
+            maxSlideId = presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>()
+                .Max(id => id.Id!.Value) + 1;
+        }
+        
+        // Create the new slide ID
+        var slideId = new P.SlideId 
+        { 
+            Id = maxSlideId, 
+            RelationshipId = relationshipId 
+        };
+        
+        // Insert at the specified position
+        var slideIdList = presentationPart.Presentation.SlideIdList!;
+        if (position > slideIdList.Elements<P.SlideId>().Count())
+        {
+            slideIdList.Append(slideId);
+        }
+        else
+        {
+            slideIdList.InsertAt(slideId, position - 1);
+        }
+    }
 
     private static P.TextBody ResolveTextBody(P.Shape shape)
     {
-        // Creates a new TextBody
         if (shape.TextBody is null)
         {
             return new P.TextBody(new A.Paragraph(new A.EndParagraphRunProperties()))
@@ -218,5 +322,56 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         }
 
         return currentId + 1;
+    }
+    
+    private void LinkToLayoutPart(SlidePart sourceSlidePart, SlidePart clonedSlidePart, PresentationPart presentationPart)
+    {
+        var sourceLayoutPart = sourceSlidePart.SlideLayoutPart;
+        if (sourceLayoutPart == null)
+        {
+            return;
+        }
+
+        var targetLayoutPart = this.FindMatchingLayout(presentationPart, sourceLayoutPart) ?? CreateNewLayout(presentationPart, sourceLayoutPart);
+
+        // Link the new slide to the layout
+        clonedSlidePart.AddPart(targetLayoutPart);
+    }
+
+    private SlideLayoutPart? FindMatchingLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    {
+        foreach (var masterPart in presentationPart.SlideMasterParts)
+        {
+            foreach (var layoutPart in masterPart.SlideLayoutParts)
+            {
+                if (this.LayoutsMatch(layoutPart, sourceLayoutPart))
+                {
+                    return layoutPart;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    private bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
+    {
+        // Compare by type if available
+        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
+        {
+            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
+        }
+        
+        // Otherwise compare by name
+        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
+        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
+        
+        if (name1 != null && name2 != null)
+        {
+            return name1 == name2;
+        }
+        
+        // If no reliable way to compare, just return false to be safe
+        return false;
     }
 }

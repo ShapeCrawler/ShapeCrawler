@@ -24,13 +24,13 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     void Add(string content, int index);
 }
 
-internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagraphCollection
+internal class ParagraphCollection(OpenXmlElement textBody) : IParagraphCollection
 {
-    public int Count => this.ParagraphsCore().Count;
+    public int Count => this.Paragraphs().Count();
 
-    public IParagraph this[int index] => this.ParagraphsCore()[index];
+    public IParagraph this[int index] => this.Paragraphs().ElementAt(index);
 
-    public IEnumerator<IParagraph> GetEnumerator() => this.ParagraphsCore().GetEnumerator();
+    public IEnumerator<IParagraph> GetEnumerator() => this.Paragraphs().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
@@ -53,7 +53,7 @@ internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagrap
         if (index == aParagraphs.Count)
         {
             this.Add();
-            this.ParagraphsCore().Last().Text = content;
+            this.Paragraphs().Last().Text = content;
         }
         else
         {
@@ -61,7 +61,7 @@ internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagrap
 
             // Preserve paragraph properties
             var pPr = refParagraph.GetFirstChild<A.ParagraphProperties>()
-                             ?.CloneNode(true) as A.ParagraphProperties;
+                ?.CloneNode(true) as A.ParagraphProperties;
 
             // Clone and clear children
             var newAParagraph = (A.Paragraph)refParagraph.CloneNode(true);
@@ -97,21 +97,12 @@ internal readonly struct ParagraphCollection(OpenXmlElement textBody): IParagrap
         }
     }
 
-    private List<Paragraph> ParagraphsCore()
+    private IEnumerable<Paragraph> Paragraphs()
     {
-        var aParagraphs = textBody.Elements<A.Paragraph>().ToList();
-        if (!aParagraphs.Any())
-        {
-            return [];
-        }
-
-        var paraList = new List<Paragraph>();
+        var aParagraphs = textBody.Elements<A.Paragraph>();
         foreach (var aPara in aParagraphs)
         {
-            var para = new Paragraph(aPara);
-            paraList.Add(para);
+            yield return new Paragraph(aPara);
         }
-
-        return paraList;
     }
 }
