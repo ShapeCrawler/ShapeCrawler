@@ -203,8 +203,7 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
         return this.GetColorFromLayoutPlaceholderType(pPlaceholderShape, openXmlPart, indentLevel);
     }
 
-    private string? GetColorFromLayoutPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart,
-        int indentLevel)
+    private string? GetColorFromLayoutPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart, int indentLevel)
     {
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
@@ -313,8 +312,7 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
             : null;
     }
 
-    private string? GetColorFromPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart,
-        int indentLevel)
+    private string? GetColorFromPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart, int indentLevel)
     {
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
