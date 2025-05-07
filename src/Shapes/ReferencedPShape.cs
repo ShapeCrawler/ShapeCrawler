@@ -4,8 +4,8 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable PossibleMultipleEnumeration
 
+// ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
 internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)

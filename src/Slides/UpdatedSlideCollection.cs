@@ -121,8 +121,20 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         using (var sourceStream = sourceSlidePart.GetStream())
         {
             sourceStream.Position = 0;
-            using (var destStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write))
+            using var destStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write);
+            sourceStream.CopyTo(destStream);
+        }
+
+        // Copy CustomData
+        var sourceCustomXmlParts = sourceSlidePart.CustomXmlParts.ToList();
+        if (sourceCustomXmlParts.Any())
+        {
+            foreach(var sourceCustomXmlPart in sourceCustomXmlParts)
             {
+                var newCustomXmlPart = clonedSlidePart.AddCustomXmlPart(sourceCustomXmlPart.ContentType);
+                using var sourceStream = sourceCustomXmlPart.GetStream();
+                sourceStream.Position = 0;
+                using var destStream = newCustomXmlPart.GetStream(FileMode.Create, FileAccess.Write);
                 sourceStream.CopyTo(destStream);
             }
         }
@@ -139,7 +151,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             {
                 foreach (var layoutPart in masterPart.SlideLayoutParts)
                 {
-                    if (LayoutsMatch(layoutPart, sourceLayoutPart))
+                    if (this.LayoutsMatch(layoutPart, sourceLayoutPart))
                     {
                         targetLayoutPart = layoutPart;
                         break;
@@ -147,7 +159,9 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                 }
                 
                 if (targetLayoutPart != null)
+                {
                     break;
+                }
             }
             
             // If no matching layout found, create one
@@ -167,14 +181,10 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                     var sourceMasterPart = sourceLayoutPart.SlideMasterPart;
                     if (sourceMasterPart != null)
                     {
-                        using (var sourceStream = sourceMasterPart.GetStream())
-                        {
-                            sourceStream.Position = 0;
-                            using (var destStream = masterPart.GetStream(FileMode.Create, FileAccess.Write))
-                            {
-                                sourceStream.CopyTo(destStream);
-                            }
-                        }
+                        using var sourceStream = sourceMasterPart.GetStream();
+                        sourceStream.Position = 0;
+                        using var destStream = masterPart.GetStream(FileMode.Create, FileAccess.Write);
+                        sourceStream.CopyTo(destStream);
                     }
                 }
                 
@@ -185,10 +195,8 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                 using (var sourceStream = sourceLayoutPart.GetStream())
                 {
                     sourceStream.Position = 0;
-                    using (var destStream = targetLayoutPart.GetStream(FileMode.Create, FileAccess.Write))
-                    {
-                        sourceStream.CopyTo(destStream);
-                    }
+                    using var destStream = targetLayoutPart.GetStream(FileMode.Create, FileAccess.Write);
+                    sourceStream.CopyTo(destStream);
                 }
             }
             
@@ -225,29 +233,8 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         // Save changes
         presentationPart.Presentation.Save();
     }
-    
-    // Helper method to determine if two layouts match
-    private bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
-    {
-        // Compare by type if available
-        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
-        {
-            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
-        }
-        
-        // Otherwise compare by name
-        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
-        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
-        
-        if (name1 != null && name2 != null)
-        {
-            return name1 == name2;
-        }
-        
-        // If no reliable way to compare, just return false to be safe
-        return false;
-    }
 
+    // ReSharper disable once InconsistentNaming
     public void AddJSON(string jsonSlide)
     {
         throw new NotImplementedException();
@@ -358,5 +345,26 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         }
 
         return currentId + 1;
+    }
+    
+    private bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
+    {
+        // Compare by type if available
+        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
+        {
+            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
+        }
+        
+        // Otherwise compare by name
+        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
+        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
+        
+        if (name1 != null && name2 != null)
+        {
+            return name1 == name2;
+        }
+        
+        // If no reliable way to compare, just return false to be safe
+        return false;
     }
 }

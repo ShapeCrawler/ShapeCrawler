@@ -1,4 +1,5 @@
 using System.Globalization;
+using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
@@ -580,7 +581,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void Slides_RemoveThenAdd_ShouldNotCorruptPresentation()
+    public void Slides_RemoveThenAdd_EnsuresUniqueSlideIds()
     {
         // Arrange
         var sourceSlide = new Presentation(TestAsset("001.pptx")).Slide(1);
@@ -591,7 +592,9 @@ public class PresentationTests : SCTest
         destPres.Slides.Add(sourceSlide, 1);
         
         // Assert
-        throw new Exception("Add assertion");
-        destPres.Save(@"c:\temp\output.pptx"); // corrupted
+        var slideIdRelationshipIdList =
+            destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
+                .Select(s => s.RelationshipId);
+        slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
     }
 }

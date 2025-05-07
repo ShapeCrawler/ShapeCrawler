@@ -6,7 +6,6 @@ using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler.Shapes;
 
 // ReSharper disable once InconsistentNaming

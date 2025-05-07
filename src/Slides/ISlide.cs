@@ -116,7 +116,7 @@ public interface ISlide
     IChart Chart(int id);
 
     /// <summary>
-    ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
+    ///     Gets a copy of the underlying parent <see cref="PresentationDocument"/>.
     /// </summary>
     // ReSharper disable once InconsistentNaming
     PresentationDocument GetSDKPresentationDocument();
@@ -263,13 +263,8 @@ internal sealed class Slide : ISlide
         // Find the exact SlideId corresponding to this slide
         var slideIdRelationship = presPart.GetIdOfPart(this.slidePart);
         var removingPSlideId = slideIdList.Elements<P.SlideId>()
-            .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship);
-        
-        if (removingPSlideId == null)
-        {
-            throw new SCException("Could not find slide ID in presentation.");
-        }
-        
+            .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ?? throw new SCException("Could not find slide ID in presentation.");
+
         // Handle section references
         var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
         var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
