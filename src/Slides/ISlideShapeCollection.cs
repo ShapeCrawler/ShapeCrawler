@@ -108,6 +108,17 @@ public interface ISlideShapeCollection : IShapeCollection
     void AddScatterChart(int x, int y, int width, int height, Dictionary<double, double> pointValues, string seriesName);
 
     /// <summary>
+    ///     Adds a Stacked Column Chart with specified parameters.
+    /// </summary>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in point.</param>
+    /// <param name="height">Height in points.</param>
+    /// <param name="categoryValues">Dictionary mapping categories to a list of values for each series.</param>
+    /// <param name="seriesNames">List of series names in the same order as the values in categoryValues.</param>
+    void AddStackedColumnChart(int x, int y, int width, int height, Dictionary<string, List<double>> categoryValues, List<string> seriesNames);
+
+    /// <summary>
     ///     Adds a SmartArt graphic to the slide.
     /// </summary>
     /// <param name="x">The x-coordinate of the SmartArt graphic.</param>

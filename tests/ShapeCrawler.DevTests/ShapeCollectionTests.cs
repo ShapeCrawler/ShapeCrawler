@@ -1117,6 +1117,33 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddStackedColumnChart_adds_stacked_column_chart()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        int x = 100;
+        int y = 100;
+        int width = 500;
+        int height = 300;
+        var categoryValues = new Dictionary<string, List<double>>
+        {
+            { "Category 1", new List<double> { 10, 20 } },
+            { "Category 2", new List<double> { 30, 40 } },
+            { "Category 3", new List<double> { 50, 60 } }
+        };
+        var seriesNames = new List<string> { "Series 1", "Series 2" };
+
+        // Act
+        shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+
+        // Assert
+        var chart = shapes.OfType<IChart>().Last();
+        chart.Type.Should().Be(ChartType.BarChart);
+        pres.Validate();
+    }
+
+    [Test]
     public void Group_groups_shapes()
     {
         // Arrange

@@ -98,6 +98,17 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         new SCSlidePart(this.slidePart).AddScatterChart(x, y, width, height, pointValues, seriesName);
     }
 
+    public void AddStackedColumnChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, List<double>> categoryValues,
+        List<string> seriesNames)
+    {
+        new SCSlidePart(this.slidePart).AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+    }
+
     /// <summary>
     ///     Adds a SmartArt graphic to the slide.
     /// </summary>
