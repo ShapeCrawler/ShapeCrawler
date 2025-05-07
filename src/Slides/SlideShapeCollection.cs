@@ -87,6 +87,17 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         new SCSlidePart(this.slidePart).AddBarChart(x, y, width, height, categoryValues, seriesName);
     }
 
+    public void AddScatterChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<double, double> pointValues,
+        string seriesName)
+    {
+        new SCSlidePart(this.slidePart).AddScatterChart(x, y, width, height, pointValues, seriesName);
+    }
+
     /// <summary>
     ///     Adds a SmartArt graphic to the slide.
     /// </summary>

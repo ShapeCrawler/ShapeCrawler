@@ -1088,6 +1088,35 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
+    public void AddScatterChart_adds_scatter_chart()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slide(1).Shapes;
+        int x = 100;
+        int y = 100;
+        int width = 500;
+        int height = 300;
+        var pointValues = new Dictionary<double, double>
+        {
+            { 1.0, 5.2 },
+            { 2.0, 7.3 },
+            { 3.0, 8.1 },
+            { 4.0, 9.5 },
+            { 5.0, 12.3 }
+        };
+        string seriesName = "Data Series";
+        
+        // Act
+        shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
+        
+        // Assert
+        var chart = shapes.OfType<IChart>().Last();
+        chart.Type.Should().Be(ChartType.ScatterChart);
+        pres.Validate();
+    }
+
+    [Test]
     public void Group_groups_shapes()
     {
         // Arrange

@@ -21,7 +21,7 @@ public interface IParagraph
     string Text { get; set; }
 
     /// <summary>
-    ///     Gets the collection of paragraph portions.
+    ///     Gets paragraph portion collection.
     /// </summary>
     IParagraphPortions Portions { get; }
 
@@ -36,7 +36,7 @@ public interface IParagraph
     TextHorizontalAlignment HorizontalAlignment { get; set; }
 
     /// <summary>
-    ///     Gets or sets paragraph's indent level.
+    ///     Gets or sets paragraph indent level.
     /// </summary>
     int IndentLevel { get; set; }
 
@@ -165,15 +165,15 @@ internal sealed class Paragraph : IParagraph
                 return TextHorizontalAlignment.Center;
             }
 
-            if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Center)
+            if (aTextAlignmentType.Value == A.TextAlignmentTypeValues.Center)
             {
                 this.alignment = TextHorizontalAlignment.Center;
             }
-            else if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Right)
+            else if (aTextAlignmentType.Value == A.TextAlignmentTypeValues.Right)
             {
                 this.alignment = TextHorizontalAlignment.Right;
             }
-            else if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Justified)
+            else if (aTextAlignmentType.Value == A.TextAlignmentTypeValues.Justified)
             {
                 this.alignment = TextHorizontalAlignment.Justify;
             }
