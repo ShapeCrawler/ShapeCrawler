@@ -8,7 +8,7 @@ internal static class TypedOpenXmlPartExtensions
 {
     internal static (string, ImagePart) AddImagePart(this OpenXmlPart openXmlPart, Stream stream, string mimeType)
     {
-        var rId = new SCOpenXmlPart(openXmlPart).GetNextRelationshipId();
+        var rId = new SCOpenXmlPart(openXmlPart).NextRelationshipId();
 
         var imagePart = openXmlPart.AddNewPart<ImagePart>(mimeType, rId);
         stream.Position = 0;

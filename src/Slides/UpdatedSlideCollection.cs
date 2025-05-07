@@ -23,7 +23,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     public void Add(int layoutNumber)
     {
-        var rId = new SCOpenXmlPart(presPart).GetNextRelationshipId();
+        var rId = new SCOpenXmlPart(presPart).NextRelationshipId();
         var slidePart = presPart.AddNewPart<SlidePart>(rId);
         slidePart.Slide = new P.Slide(
             new P.CommonSlideData(
@@ -38,8 +38,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         slidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
         // Check if we're using a blank layout - if so, don't copy any shapes
-        if (layout.Name != "Blank" && 
-            layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
             commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
@@ -101,22 +100,14 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             throw new ArgumentOutOfRangeException(nameof(number));
         }
 
-        var presentationDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var presentationPart = presentationDocument.PresentationPart!;
-        var addingSlidePresDocument = slide.GetSDKPresentationDocument();
-        var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
-        
-        // Get the source slide's information
+        var sourceSlidePresPart = slide.GetSDKPresentationPart();
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         
-        // Clone the slide to avoid corrupting references
-        SlidePart clonedSlidePart;
-        
-        // Create a clean new slide part in the target presentation with a predictable relationship ID
-        string newSlideRelId = "rId" + new Random().Next(100000, 999999).ToString();
-        clonedSlidePart = presentationPart.AddNewPart<SlidePart>(newSlideRelId);
-        
+        var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
+        string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
+        var clonedSlidePart = presentationPart.AddNewPart<SlidePart>(newSlideRelId);
+
         // Copy the content from source slide to new slide
         using (var sourceStream = sourceSlidePart.GetStream())
         {
@@ -243,9 +234,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     public void Add(ISlide slide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var addingSlidePresDocument = slide.GetSDKPresentationDocument();
-
-        var sourceSlidePresPart = addingSlidePresDocument.PresentationPart!;
+        var sourceSlidePresPart = slide.GetSDKPresentationPart();
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
