@@ -2,6 +2,7 @@
 
 ## Version 0.67.1 - Unreleased
 🐞Fixed adding slide with a certain layout [#933](https://github.com/ShapeCrawler/ShapeCrawler/issues/933)  
+🐞Fixed adding slide [#956](https://github.com/ShapeCrawler/ShapeCrawler/issues/956)  
 
 ## Version 0.67.0 - 2025-05-01
 🍀Added support adding Bar Chart.  
