@@ -1126,7 +1126,7 @@ public class ShapeCollectionTests : SCTest
         int y = 100;
         int width = 500;
         int height = 300;
-        var categoryValues = new Dictionary<string, List<double>>
+        var categoryValues = new Dictionary<string, IList<double>>
         {
             { "Category 1", new List<double> { 10, 20 } },
             { "Category 2", new List<double> { 30, 40 } },
