@@ -97,12 +97,12 @@ public interface ISlideShapeCollection : IShapeCollection
     void AddBarChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
     
     /// <summary>
-    ///     Adds Scatter Chart with specified parameters.
+    ///     Adds Scatter Chart.
     /// </summary>
-    /// <param name="x">X coordinate in pixels.</param>
-    /// <param name="y">Y coordinate in pixels.</param>
-    /// <param name="width">Width in pixels.</param>
-    /// <param name="height">Height in pixels.</param>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in point.</param>
+    /// <param name="height">Height in points.</param>
     /// <param name="pointValues">Dictionary of x and y coordinate values for each point.</param>
     /// <param name="seriesName">Name of the data series.</param>
     void AddScatterChart(int x, int y, int width, int height, Dictionary<double, double> pointValues, string seriesName);
