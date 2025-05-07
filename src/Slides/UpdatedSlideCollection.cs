@@ -108,118 +108,10 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
         var clonedSlidePart = presentationPart.AddNewPart<SlidePart>(newSlideRelId);
 
-        // Copy the content from source slide to new slide
-        using (var sourceStream = sourceSlidePart.GetStream())
-        {
-            sourceStream.Position = 0;
-            using var destStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write);
-            sourceStream.CopyTo(destStream);
-        }
-
-        // Copy CustomData
-        var sourceCustomXmlParts = sourceSlidePart.CustomXmlParts.ToList();
-        if (sourceCustomXmlParts.Any())
-        {
-            foreach(var sourceCustomXmlPart in sourceCustomXmlParts)
-            {
-                var newCustomXmlPart = clonedSlidePart.AddCustomXmlPart(sourceCustomXmlPart.ContentType);
-                using var sourceStream = sourceCustomXmlPart.GetStream();
-                sourceStream.Position = 0;
-                using var destStream = newCustomXmlPart.GetStream(FileMode.Create, FileAccess.Write);
-                sourceStream.CopyTo(destStream);
-            }
-        }
-        
-        // Ensure layout relationship is properly set up
-        var sourceLayoutPart = sourceSlidePart.SlideLayoutPart;
-        if (sourceLayoutPart != null)
-        {
-            // First see if there's a matching layout in the target presentation
-            SlideLayoutPart? targetLayoutPart = null;
-            
-            // Try to find a matching layout by type or name
-            foreach (var masterPart in presentationPart.SlideMasterParts)
-            {
-                foreach (var layoutPart in masterPart.SlideLayoutParts)
-                {
-                    if (this.LayoutsMatch(layoutPart, sourceLayoutPart))
-                    {
-                        targetLayoutPart = layoutPart;
-                        break;
-                    }
-                }
-                
-                if (targetLayoutPart != null)
-                {
-                    break;
-                }
-            }
-            
-            // If no matching layout found, create one
-            if (targetLayoutPart == null)
-            {
-                // Get or create a master part
-                SlideMasterPart masterPart;
-                if (presentationPart.SlideMasterParts.Any())
-                {
-                    masterPart = presentationPart.SlideMasterParts.First();
-                }
-                else
-                {
-                    masterPart = presentationPart.AddNewPart<SlideMasterPart>();
-                    
-                    // Copy the master content from source
-                    var sourceMasterPart = sourceLayoutPart.SlideMasterPart;
-                    if (sourceMasterPart != null)
-                    {
-                        using var sourceStream = sourceMasterPart.GetStream();
-                        sourceStream.Position = 0;
-                        using var destStream = masterPart.GetStream(FileMode.Create, FileAccess.Write);
-                        sourceStream.CopyTo(destStream);
-                    }
-                }
-                
-                // Create a new layout part linked to the master
-                targetLayoutPart = masterPart.AddNewPart<SlideLayoutPart>();
-                
-                // Copy the layout content
-                using (var sourceStream = sourceLayoutPart.GetStream())
-                {
-                    sourceStream.Position = 0;
-                    using var destStream = targetLayoutPart.GetStream(FileMode.Create, FileAccess.Write);
-                    sourceStream.CopyTo(destStream);
-                }
-            }
-            
-            // Link the new slide to the layout
-            clonedSlidePart.AddPart(targetLayoutPart);
-        }
-        
-        // Create a new slide ID with the correct position
-        uint maxSlideId = 256; // Default starting ID
-        if (presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().Any())
-        {
-            maxSlideId = presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>()
-                .Max(id => id.Id!.Value) + 1;
-        }
-        
-        // Create the new slide ID
-        var slideId = new P.SlideId 
-        { 
-            Id = maxSlideId, 
-            RelationshipId = newSlideRelId 
-        };
-        
-        // Insert at the specified position
-        var slideIdList = presentationPart.Presentation.SlideIdList!;
-        if (number > slideIdList.Elements<P.SlideId>().Count())
-        {
-            slideIdList.Append(slideId);
-        }
-        else
-        {
-            slideIdList.InsertAt(slideId, number - 1);
-        }
+        CopySlideContent(sourceSlidePart, clonedSlidePart);
+        CopyCustomXmlParts(sourceSlidePart, clonedSlidePart);
+        this.LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
+        InsertSlideAtPosition(presentationPart, newSlideRelId, number);
         
         // Save changes
         presentationPart.Presentation.Save();
@@ -250,6 +142,102 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         AddNewSlideId(targetPresDocument, addedSlidePart);
         var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(targetPresDocument, masterId);
+    }
+    
+    private static void CopySlideContent(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        using var sourceStream = sourceSlidePart.GetStream();
+        sourceStream.Position = 0;
+        using var destStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destStream);
+    }
+
+    private static void CopyCustomXmlParts(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        var sourceCustomXmlParts = sourceSlidePart.CustomXmlParts.ToList();
+        if (!sourceCustomXmlParts.Any())
+        {
+            return;
+        }
+        
+        foreach(var sourceCustomXmlPart in sourceCustomXmlParts)
+        {
+            var newCustomXmlPart = clonedSlidePart.AddCustomXmlPart(sourceCustomXmlPart.ContentType);
+            using var sourceStream = sourceCustomXmlPart.GetStream();
+            sourceStream.Position = 0;
+            using var destStream = newCustomXmlPart.GetStream(FileMode.Create, FileAccess.Write);
+            sourceStream.CopyTo(destStream);
+        }
+    }
+
+    private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    {
+        // Get or create a master part
+        var masterPart = GetOrCreateMasterPart(presentationPart, sourceLayoutPart);
+        
+        // Create a new layout part linked to the master
+        var targetLayoutPart = masterPart.AddNewPart<SlideLayoutPart>();
+        
+        // Copy the layout content
+        CopyPartContent(sourceLayoutPart, targetLayoutPart);
+
+        return targetLayoutPart;
+    }
+
+    private static SlideMasterPart GetOrCreateMasterPart(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    {
+        if (presentationPart.SlideMasterParts.Any())
+        {
+            return presentationPart.SlideMasterParts.First();
+        }
+        
+        var masterPart = presentationPart.AddNewPart<SlideMasterPart>();
+        
+        // Copy the master content from source
+        var sourceMasterPart = sourceLayoutPart.SlideMasterPart;
+        if (sourceMasterPart != null)
+        {
+            CopyPartContent(sourceMasterPart, masterPart);
+        }
+
+        return masterPart;
+    }
+
+    private static void CopyPartContent(OpenXmlPart sourcePart, OpenXmlPart targetPart)
+    {
+        using var sourceStream = sourcePart.GetStream();
+        sourceStream.Position = 0;
+        using var destStream = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destStream);
+    }
+
+    private static void InsertSlideAtPosition(PresentationPart presentationPart, string relationshipId, int position)
+    {
+        // Create a new slide ID with the correct position
+        uint maxSlideId = 256; // Default starting ID
+        if (presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().Any())
+        {
+            maxSlideId = presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>()
+                .Max(id => id.Id!.Value) + 1;
+        }
+        
+        // Create the new slide ID
+        var slideId = new P.SlideId 
+        { 
+            Id = maxSlideId, 
+            RelationshipId = relationshipId 
+        };
+        
+        // Insert at the specified position
+        var slideIdList = presentationPart.Presentation.SlideIdList!;
+        if (position > slideIdList.Elements<P.SlideId>().Count())
+        {
+            slideIdList.Append(slideId);
+        }
+        else
+        {
+            slideIdList.InsertAt(slideId, position - 1);
+        }
     }
 
     private static P.TextBody ResolveTextBody(P.Shape shape)
@@ -334,6 +322,36 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         }
 
         return currentId + 1;
+    }
+    
+    private void LinkToLayoutPart(SlidePart sourceSlidePart, SlidePart clonedSlidePart, PresentationPart presentationPart)
+    {
+        var sourceLayoutPart = sourceSlidePart.SlideLayoutPart;
+        if (sourceLayoutPart == null)
+        {
+            return;
+        }
+
+        var targetLayoutPart = this.FindMatchingLayout(presentationPart, sourceLayoutPart) ?? CreateNewLayout(presentationPart, sourceLayoutPart);
+
+        // Link the new slide to the layout
+        clonedSlidePart.AddPart(targetLayoutPart);
+    }
+
+    private SlideLayoutPart? FindMatchingLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    {
+        foreach (var masterPart in presentationPart.SlideMasterParts)
+        {
+            foreach (var layoutPart in masterPart.SlideLayoutParts)
+            {
+                if (this.LayoutsMatch(layoutPart, sourceLayoutPart))
+                {
+                    return layoutPart;
+                }
+            }
+        }
+        
+        return null;
     }
     
     private bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
