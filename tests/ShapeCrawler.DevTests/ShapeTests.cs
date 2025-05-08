@@ -39,21 +39,21 @@ public class ShapeTests : SCTest
         // Assert
         mime.Should().Be("audio/mpeg");
     }
-    
-    #if DEBUG
+
+#if DEBUG
     [Test, Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/581")]
-    public void AddAudio_adds_audio_shape_with_the_default_start_mode_In_Click_Sequence()
+    public void StartMode_Setter_sets_audio_start_mode_Automatically()
     {
         // Arrange
         var pres = new Presentation();
         var mp3 = TestAsset("064 mp3.mp3");
         var shapes = pres.Slide(1).Shapes;
-        shapes.AddAudio(x:300, y: 100, mp3, AudioType.MP3);
+        shapes.AddAudio(x: 300, y: 100, mp3, AudioType.MP3);
         var addedAudio = pres.Slide(1).First<IMediaShape>();
 
         // Act
         addedAudio.StartMode = AudioStartMode.Automatically;
-        
+
         // Assert
         pres = SaveAndOpenPresentation(pres);
         pres.Validate();
@@ -628,7 +628,8 @@ public class ShapeTests : SCTest
         var shape = shapes[0];
 
         // Act-Assert
-        shape.CornerSize.Should().Be(35m, "Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
+        shape.CornerSize.Should().Be(35m,
+            "Rounded rectangles with no specified corner size behave as if the value was set to 35%.");
     }
 
     [Test]
@@ -636,7 +637,8 @@ public class ShapeTests : SCTest
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 0", "0")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded X", "35")]
     [SlideShape("057_corner-radius.pptx", 4, "Top Rounded 1", "100")]
-    public void CornerSize_Getter_returns_corner_size_for_Top_Rounded_Rectangle(IShape shape, string expectedCornerSizeStr)
+    public void CornerSize_Getter_returns_corner_size_for_Top_Rounded_Rectangle(IShape shape,
+        string expectedCornerSizeStr)
     {
         // Arrange
         var expectedCornerSize = decimal.Parse(expectedCornerSizeStr);
@@ -849,7 +851,7 @@ public class ShapeTests : SCTest
     [TestCase("Can", "[100]")]
     [TestCase("Sun", "[93.75]")]
     [TestCase("Moon", "[175]")]
-    [TestCase("SmileyFace", "[-9.306]")] 
+    [TestCase("SmileyFace", "[-9.306]")]
     [TestCase("FoldedCorner", "[100]")]
     [TestCase("Bevel", "[11.266]")]
     [TestCase("Frame", "[100]")]
@@ -860,11 +862,10 @@ public class ShapeTests : SCTest
     [TestCase("Arc", "[14144.04,9163.314]")]
     [TestCase("LeftBracket", "[100]")]
     [TestCase("RightBracket", "[0]")]
-
     public void Adjustments_getter_returns_values(string name, string expectedAdjustmentsJson)
     {
         // Arrange
-        var shape = 
+        var shape =
             new Presentation(TestAsset("062_shape-adjustments.pptx"))
                 .Slides[0]
                 .Shapes
@@ -907,7 +908,7 @@ public class ShapeTests : SCTest
     public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_existing_shape()
     {
         // Arrange
-        var shape = 
+        var shape =
             new Presentation(TestAsset("062_shape-adjustments.pptx"))
                 .Slides[0]
                 .Shapes
@@ -916,13 +917,13 @@ public class ShapeTests : SCTest
         // Act
 
         // Here, we are setting only ONE adjustment on a shape which allows two
-        shape.Adjustments = [ 10m ];
+        shape.Adjustments = [10m];
 
         // Assert
 
         // First adjustment should be what we set
         // Second adjustment should be untouched from the source file.
-        shape.Adjustments.Should().BeEquivalentTo([ 10m, 78.704m ]);
+        shape.Adjustments.Should().BeEquivalentTo([10m, 78.704m]);
     }
 
     [Test]
@@ -938,15 +939,15 @@ public class ShapeTests : SCTest
 
         // Here, we are setting only ONE adjustment on a shape which allows two
         // And this is a new shape, so doesn't even have a second adjustment
-        shape.Adjustments = [ 10m ];
+        shape.Adjustments = [10m];
 
         // Assert
 
         // First adjustment should be what we set
         // Second adjustment should be zero.
-        shape.Adjustments.Should().BeEquivalentTo([ 10m, 0m ]);
+        shape.Adjustments.Should().BeEquivalentTo([10m, 0m]);
     }
-    
+
     [Test]
     public void Duplicate_duplicates_AutoShape()
     {
@@ -960,7 +961,7 @@ public class ShapeTests : SCTest
         addedShape.Duplicate();
 
         // Assert
-        var copyAddedShape = shapes.Last(); 
+        var copyAddedShape = shapes.Last();
         shapes.Should().HaveCount(2);
         copyAddedShape.Id.Should().Be(2, "because it is the second shape in the collection");
     }
