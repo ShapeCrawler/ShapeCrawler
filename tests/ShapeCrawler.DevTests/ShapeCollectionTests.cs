@@ -336,7 +336,8 @@ public class ShapeCollectionTests : SCTest
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
         addedAudio.X.Should().Be(300);
     }
-    #if DEBUG
+
+#if DEBUG
     [Test, Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/581")]
     public void AddAudio_adds_audio_shape_with_the_default_start_mode_In_Click_Sequence()
     {
