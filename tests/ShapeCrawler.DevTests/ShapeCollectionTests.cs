@@ -330,13 +330,31 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[1].Shapes;
 
         // Act
-        shapes.AddAudio(300, 100, wav, AudioType.Wave);
+        shapes.AddAudio(300, 100, wav, AudioType.WAVE);
 
         // Assert
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
         addedAudio.X.Should().Be(300);
     }
+    
+    [Test, Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/581")]
+    public void AddAudio_adds_audio_shape_with_the_default_start_mode_In_Click_Sequence()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var mp3 = TestAsset("064 mp3.mp3");
+        var shapes = pres.Slide(1).Shapes;
 
+        // Act
+        shapes.AddAudio(x: 300, y: 100, mp3, AudioType.MP3);
+
+        // Assert
+        pres = SaveAndOpenPresentation(pres);
+        var addedAudio = pres.Slide(1).First<IMediaShape>();
+        pres.Validate();
+        addedAudio.StartMode.Should().Be(AudioStartMode.InClickSequence);
+    }
+    
     [Test]
     public void AddVideo_adds_Video_shape()
     {

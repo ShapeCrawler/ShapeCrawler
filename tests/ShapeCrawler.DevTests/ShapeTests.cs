@@ -34,10 +34,29 @@ public class ShapeTests : SCTest
         var audioShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Audio 1");
 
         // Act
-        var mime = audioShape.Mime;
+        var mime = audioShape.MIME;
 
         // Assert
         mime.Should().Be("audio/mpeg");
+    }
+    
+    [Test, Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/581")]
+    public void AddAudio_adds_audio_shape_with_the_default_start_mode_In_Click_Sequence()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var mp3 = TestAsset("064 mp3.mp3");
+        var shapes = pres.Slide(1).Shapes;
+        shapes.AddAudio(x:300, y: 100, mp3, AudioType.MP3);
+        var addedAudio = pres.Slide(1).First<IMediaShape>();
+
+        // Act
+        addedAudio.StartMode = AudioStartMode.Automatically;
+        
+        // Assert
+        pres = SaveAndOpenPresentation(pres);
+        pres.Validate();
+        addedAudio.StartMode.Should().Be(AudioStartMode.Automatically);
     }
 
     [Test]
@@ -64,7 +83,7 @@ public class ShapeTests : SCTest
         var videoShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Video 1");
 
         // Act
-        var mime = videoShape.Mime;
+        var mime = videoShape.MIME;
 
         // Assert
         mime.Should().Be("video/mp4");
