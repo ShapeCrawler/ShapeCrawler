@@ -109,7 +109,7 @@ public interface ISlide
     ///     Gets chart by name.
     /// </summary>
     IChart Chart(string name);
-    
+
     /// <summary>
     ///     Gets chart by ID.
     /// </summary>
@@ -120,6 +120,12 @@ public interface ISlide
     /// </summary>
     // ReSharper disable once InconsistentNaming
     PresentationPart GetSDKPresentationPart();
+
+    /// <summary>
+    ///     Gets the first shape in the slide.
+    /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
+    T First<T>();
 }
 
 internal sealed class Slide : ISlide
@@ -259,21 +265,22 @@ internal sealed class Slide : ISlide
         var presPart = presDocument.PresentationPart!;
         var pPresentation = presDocument.PresentationPart!.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
-        
+
         // Find the exact SlideId corresponding to this slide
         var slideIdRelationship = presPart.GetIdOfPart(this.slidePart);
         var removingPSlideId = slideIdList.Elements<P.SlideId>()
-            .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ?? throw new SCException("Could not find slide ID in presentation.");
+                                   .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ??
+                               throw new SCException("Could not find slide ID in presentation.");
 
         // Handle section references
         var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
         var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
             .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
         removingSectionSlideIdListEntry?.Remove();
-        
+
         // Remove the slide ID
         slideIdList.RemoveChild(removingPSlideId);
-        
+
         // Save to update the structure
         pPresentation.Save();
 
@@ -299,6 +306,8 @@ internal sealed class Slide : ISlide
 
         return presDocument.Clone().PresentationPart!;
     }
+
+    public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
     public IList<ITextBox> GetTextBoxes()
     {
@@ -347,7 +356,7 @@ internal sealed class Slide : ISlide
             {
                 this.AddGroupTextBoxes(group, textBoxes);
             }
-            else if(shape.TextBox is not null)
+            else if (shape.TextBox is not null)
             {
                 textBoxes.Add(shape.TextBox);
             }

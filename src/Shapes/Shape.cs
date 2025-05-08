@@ -102,68 +102,46 @@ internal class Shape : IShape
             }
 
             var pPlaceholderValue = pPlaceholderShape.Type;
+            
+            // Return default value if placeholder type is null
             if (pPlaceholderValue == null)
             {
                 return ShapeCrawler.PlaceholderType.Content;
             }
 
-            if (pPlaceholderValue == P.PlaceholderValues.Title)
+            // Handle direct enum value mappings
+            var placeholderValueMappings = new System.Collections.Generic.Dictionary<P.PlaceholderValues, PlaceholderType>
             {
-                return ShapeCrawler.PlaceholderType.Title;
+                { P.PlaceholderValues.Title, ShapeCrawler.PlaceholderType.Title },
+                { P.PlaceholderValues.CenteredTitle, ShapeCrawler.PlaceholderType.CenteredTitle },
+                { P.PlaceholderValues.Body, ShapeCrawler.PlaceholderType.Text },
+                { P.PlaceholderValues.Diagram, ShapeCrawler.PlaceholderType.SmartArt },
+                { P.PlaceholderValues.ClipArt, ShapeCrawler.PlaceholderType.OnlineImage }
+            };
+
+            if (placeholderValueMappings.TryGetValue(pPlaceholderValue, out var mappedType))
+            {
+                return mappedType;
             }
 
-            if (pPlaceholderValue == P.PlaceholderValues.CenteredTitle)
+            // Handle string-based values
+            var value = pPlaceholderValue.ToString()!;
+            var stringValueMappings = new System.Collections.Generic.Dictionary<string, PlaceholderType>(StringComparer.OrdinalIgnoreCase)
             {
-                return ShapeCrawler.PlaceholderType.CenteredTitle;
+                { "dt", ShapeCrawler.PlaceholderType.DateAndTime },
+                { "ftr", ShapeCrawler.PlaceholderType.Footer },
+                { "sldNum", ShapeCrawler.PlaceholderType.SlideNumber },
+                { "pic", ShapeCrawler.PlaceholderType.Picture },
+                { "tbl", ShapeCrawler.PlaceholderType.Table },
+                { "sldImg", ShapeCrawler.PlaceholderType.SlideImage }
+            };
+
+            if (stringValueMappings.TryGetValue(value, out var stringMappedType))
+            {
+                return stringMappedType;
             }
 
-            if (pPlaceholderValue == P.PlaceholderValues.Body)
-            {
-                return ShapeCrawler.PlaceholderType.Text;
-            }
-
-            if (pPlaceholderValue == P.PlaceholderValues.Diagram)
-            {
-                return ShapeCrawler.PlaceholderType.SmartArt;
-            }
-
-            if (pPlaceholderValue == P.PlaceholderValues.ClipArt)
-            {
-                return ShapeCrawler.PlaceholderType.OnlineImage;
-            }
-
-            var value = pPlaceholderValue.ToString() !;
-
-            if (value == "dt")
-            {
-                return ShapeCrawler.PlaceholderType.DateAndTime;
-            }
-
-            if (value == "ftr")
-            {
-                return ShapeCrawler.PlaceholderType.Footer;
-            }
-
-            if (value == "sldNum")
-            {
-                return ShapeCrawler.PlaceholderType.SlideNumber;
-            }
-
-            if (value == "pic")
-            {
-                return ShapeCrawler.PlaceholderType.Picture;
-            }
-
-            if (value == "tbl")
-            {
-                return ShapeCrawler.PlaceholderType.Table;
-            }
-
-            if (value == "sldImg")
-            {
-                return ShapeCrawler.PlaceholderType.SlideImage;
-            }
-
+            // Fallback for other values
             return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), value, true);
         }
     }

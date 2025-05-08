@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
@@ -8,7 +9,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a shape containing video content.
@@ -18,12 +18,20 @@ public interface IMediaShape : IShape
     /// <summary>
     ///     Gets MIME type.
     /// </summary>
-    string Mime { get; }
+    // ReSharper disable once InconsistentNaming
+    string MIME { get; }
     
     /// <summary>
     ///     Gets bytes of video content.
     /// </summary>
     public byte[] AsByteArray();
+    
+#if DEBUG
+    /// <summary>
+    ///     Gets or sets audio start mode.
+    /// </summary>
+    AudioStartMode StartMode { get; set; }
+#endif
 }
 
 internal class MediaShape : Shape, IMediaShape
@@ -50,7 +58,7 @@ internal class MediaShape : Shape, IMediaShape
     
     public override bool Removable => true;
 
-    public string Mime
+    public string MIME
     {
         get
         {
@@ -62,6 +70,12 @@ internal class MediaShape : Shape, IMediaShape
 
             return relationship.DataPart.ContentType;
         }
+    }
+    
+    public AudioStartMode StartMode
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
     }
 
     public byte[] AsByteArray()

@@ -26,33 +26,30 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         return MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
     }
 
-    private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape source)
+    private static P.Shape? PShapeOrNull(IEnumerable<P.Shape> pShapes, P.PlaceholderShape sourcePPlaceholderShape)
     {
-        // Try to find a match based on specific conditions
         foreach (var pShape in pShapes)
         {
-            var target = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
+            var targetPPlaceholderShape = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
                 .GetFirstChild<P.PlaceholderShape>();
             
-            if (target == null)
+            if (targetPPlaceholderShape == null)
             {
                 continue;
             }
 
-            // Check if the shape matches any of our matching conditions
-            if (IsIndexMatch(source, target) || 
-                IsBodyWithMatchingIndex(source, target) ||
-                IsTitleMatch(source, target) ||
-                IsCenteredTitleMatch(source, target) ||
-                IsGeneralTypeMatch(source, target) ||
-                IsTitleCenteredTitleMatch(source, target))
+            if (IsIndexMatch(sourcePPlaceholderShape, targetPPlaceholderShape) || 
+                IsBodyWithIndexMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
+                IsTitleMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
+                IsCenteredTitleMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
+                IsGeneralTypeMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
+                IsTitleCenteredTitleMatch(sourcePPlaceholderShape, targetPPlaceholderShape))
             {
                 return pShape;
             }
         }
 
-        // Fallback: try to find a shape with matching type
-        return FindShapeByType(pShapes, source);
+        return FindShapeByType(pShapes, sourcePPlaceholderShape);
     }
     
     private static bool IsIndexMatch(P.PlaceholderShape source, P.PlaceholderShape target)
@@ -62,7 +59,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
                source.Index == target.Index;
     }
 
-    private static bool IsBodyWithMatchingIndex(P.PlaceholderShape source, P.PlaceholderShape target)
+    private static bool IsBodyWithIndexMatch(P.PlaceholderShape source, P.PlaceholderShape target)
     {
         return source.Type?.Value == P.PlaceholderValues.Body &&
                source.Index is not null && 
@@ -114,7 +111,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         var layoutPShapes =
             slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
 
-        var referencedPShape = PShapeOrNullOf(layoutPShapes, pPlaceholderShape);
+        var referencedPShape = PShapeOrNull(layoutPShapes, pPlaceholderShape);
         if (referencedPShape != null)
         {
             return referencedPShape;
@@ -136,7 +133,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
                 .ShapeTree!.Elements<P.Shape>()
         };
 
-        var referencedPShape = PShapeOrNullOf(masterPShapes, pPlaceholderShape);
+        var referencedPShape = PShapeOrNull(masterPShapes, pPlaceholderShape);
         if (referencedPShape != null)
         {
             return referencedPShape;
