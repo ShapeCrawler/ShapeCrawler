@@ -605,7 +605,6 @@ public class ShapeCollectionTests : SCTest
         });
     }
 
-    [Test]
     [TestCase("09 png image.png", "image/png")]
     [TestCase("06 jpeg image.jpg", "image/jpeg")]
     [TestCase("03 gif image.gif", "image/gif")]
@@ -778,7 +777,7 @@ public class ShapeCollectionTests : SCTest
         destPres.Slide(1).Shapes.Add(picture);
         
         // Assert
-        destPres.Save(@"c:\temp\output.pptx");
+        destPres.Validate();
     }
     
     [Test]
