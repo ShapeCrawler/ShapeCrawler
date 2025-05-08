@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -230,21 +230,35 @@ internal sealed class Picture : IPicture
 
     internal void CopyTo(P.ShapeTree pShapeTree)
     {
+        // Clone the picture and add it to the target shape tree
         new SCPShapeTree(pShapeTree).Add(this.pPicture);
-
-        var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var sourceSdkSlidePart = openXmlPart;
-        var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.aBlip.Embed!.Value!);
-
-        var targetImagePartRId = new SCOpenXmlPart(openXmlPart).NextRelationshipId();
-
-        var targetImagePart = openXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
+        
+        // Get the source slide part and target slide part
+        var sourceOpenXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var sourceImagePart = (ImagePart)sourceOpenXmlPart.GetPartById(this.aBlip.Embed!.Value!);
+        var targetOpenXmlPart = pShapeTree.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        
+        // If source and target parts are the same, no need to create a new relationship
+        if (sourceOpenXmlPart == targetOpenXmlPart)
+        {
+            return;
+        }
+        
+        // Source and target are different slides, so we need to create a proper relationship
+        // Read the source image
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
         sourceImageStream.Position = 0;
+        
+        // Determine target part relationship ID
+        string targetImagePartRId = new SCOpenXmlPart(targetOpenXmlPart).NextRelationshipId();
+        
+        // Create a new image part in the target slide
+        var targetImagePart = targetOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         targetImagePart.FeedData(sourceImageStream);
-
-        var copy = this.pPicture.CloneNode(true);
-        copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
+        
+        // Update the copied shape with the correct relationship ID
+        var copyElement = pShapeTree.Elements<P.Picture>().Last();
+        copyElement.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
 
     /// <summary>
@@ -308,7 +322,7 @@ internal sealed class Picture : IPicture
         var svgId = svgBlipList.First().Embed!.Value!;
 
         var imagePart = (ImagePart)openXmlPart.GetPartById(svgId);
-        using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
+        using var svgStream = imagePart.GetStream(FileMode.Open);
         using var sReader = new StreamReader(svgStream);
 
         return sReader.ReadToEnd();

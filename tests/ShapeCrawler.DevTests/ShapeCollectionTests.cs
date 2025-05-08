@@ -764,6 +764,23 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
+    public void AddPicture_adds_picture_from_another_presentation()
+    {
+        // Arrange
+        var sourcePres = new Presentation();
+        var image = TestAsset("09 png image.png");
+        sourcePres.Slide(1).Shapes.AddPicture(image);
+        var picture = sourcePres.Slide(1).First<IPicture>();
+        var destPres = new Presentation();
+        
+        // Act
+        destPres.Slide(1).Shapes.Add(picture);
+        
+        // Assert
+        destPres.Validate();
+    }
+    
+    [Test]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_to_a_loaded_presentation()
     {
         // Arrange

@@ -39,11 +39,8 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
             }
 
             if (IsIndexMatch(sourcePPlaceholderShape, targetPPlaceholderShape) || 
-                IsBodyWithIndexMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
-                IsTitleMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
-                IsCenteredTitleMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
-                IsGeneralTypeMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
-                IsTitleCenteredTitleMatch(sourcePPlaceholderShape, targetPPlaceholderShape))
+                IsTypeMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
+                IsGeneralTypeMatch(sourcePPlaceholderShape, targetPPlaceholderShape))
             {
                 return pShape;
             }
@@ -57,6 +54,14 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         return source.Index is not null && 
                target.Index is not null && 
                source.Index == target.Index;
+    }
+
+    private static bool IsTypeMatch(P.PlaceholderShape source, P.PlaceholderShape target)
+    {
+        return IsBodyWithIndexMatch(source, target) ||
+               IsTitleMatch(source, target) ||
+               IsCenteredTitleMatch(source, target) ||
+               IsTitleCenteredTitleMatch(source, target);
     }
 
     private static bool IsBodyWithIndexMatch(P.PlaceholderShape source, P.PlaceholderShape target)
