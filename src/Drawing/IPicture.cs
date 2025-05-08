@@ -247,7 +247,6 @@ internal sealed class Picture : IPicture
         // Source and target are different slides, so we need to create a proper relationship
         // Read the source image
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
-        var imageHash = new ImageStream(sourceImageStream).Base64Hash;
         sourceImageStream.Position = 0;
         
         // Determine target part relationship ID

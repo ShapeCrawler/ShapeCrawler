@@ -132,5 +132,5 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Groups the specified shapes.
     /// </summary>
-    IGroup Group(IShape[] shapes);
+    IGroup Group(IShape[] groupingShapes);
 }
