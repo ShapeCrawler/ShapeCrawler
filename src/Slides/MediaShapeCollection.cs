@@ -24,7 +24,7 @@ internal sealed class MediaShapeCollection(
     SlidePart slidePart,
     MediaCollection mediaCollection)
 {
-    internal void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.Mp3);
+    internal void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
 
     internal void AddAudio(int x, int y, Stream audio, AudioType type)
     {
@@ -32,11 +32,11 @@ internal sealed class MediaShapeCollection(
         string? extension;
         switch (type)
         {
-            case AudioType.Mp3:
+            case AudioType.MP3:
                 contentType = "audio/mpeg";
                 extension = ".mp3";
                 break;
-            case AudioType.Wave:
+            case AudioType.WAVE:
                 contentType = "audio/wav";
                 extension = ".wav";
                 break;

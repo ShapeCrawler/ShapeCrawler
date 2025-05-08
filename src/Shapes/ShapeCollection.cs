@@ -118,16 +118,16 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         return element switch
         {
-            P.GroupShape pGroupShape => this.CreateGroupShape(pGroupShape),
+            P.GroupShape pGroupShape => CreateGroupShape(pGroupShape),
             P.ConnectionShape pConnectionShape => CreateConnectionShape(pConnectionShape),
             P.Shape pShape => CreateShape(pShape),
             P.GraphicFrame pGraphicFrame => this.CreateGraphicFrameShapes(pGraphicFrame),
-            P.Picture pPicture => this.CreatePictureShapes(pPicture),
+            P.Picture pPicture => CreatePictureShapes(pPicture),
             _ => []
         };
     }
 
-    private IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
+    private static IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
     {
         yield return new Group(new Shape(pGroupShape), pGroupShape);
     }
@@ -140,7 +140,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             yield break;
         }
 
-        if (this.IsOLEObject(aGraphicData))
+        if (IsOLEObject(aGraphicData))
         {
             yield return new OleObject(pGraphicFrame);
             yield break;
@@ -178,7 +178,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     }
 
     // ReSharper disable once InconsistentNaming
-    private bool IsOLEObject(A.GraphicData aGraphicData) =>
+    private static bool IsOLEObject(A.GraphicData aGraphicData) =>
         aGraphicData.Uri?.Value?.Equals(
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;
@@ -242,7 +242,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             pGraphicFrame);
     }
 
-    private IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
+    private static IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
     {
         var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
             .ChildElements.FirstOrDefault();
