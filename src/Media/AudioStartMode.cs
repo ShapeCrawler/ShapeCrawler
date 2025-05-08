@@ -1,7 +1,8 @@
-﻿namespace ShapeCrawler;
+﻿#pragma warning disable IDE0130
+namespace ShapeCrawler;
 
 /// <summary>
-///     Audio start mode
+///     Audio start mode.
 /// </summary>
 public enum AudioStartMode
 {

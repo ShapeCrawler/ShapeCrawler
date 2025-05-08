@@ -40,6 +40,7 @@ public class ShapeTests : SCTest
         mime.Should().Be("audio/mpeg");
     }
     
+    #if DEBUG
     [Test, Explicit("Should be implemented with https://github.com/ShapeCrawler/ShapeCrawler/issues/581")]
     public void AddAudio_adds_audio_shape_with_the_default_start_mode_In_Click_Sequence()
     {
@@ -58,6 +59,7 @@ public class ShapeTests : SCTest
         pres.Validate();
         addedAudio.StartMode.Should().Be(AudioStartMode.Automatically);
     }
+#endif
 
     [Test]
     public void VideoShape_BinaryData_returns_video_bytes()

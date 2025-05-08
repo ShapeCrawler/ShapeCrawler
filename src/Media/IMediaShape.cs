@@ -71,6 +71,12 @@ internal class MediaShape : Shape, IMediaShape
             return relationship.DataPart.ContentType;
         }
     }
+    
+    public AudioStartMode StartMode
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
 
     public byte[] AsByteArray()
     {
@@ -84,12 +90,6 @@ internal class MediaShape : Shape, IMediaShape
         stream.Close();
 
         return ms.ToArray();
-    }
-
-    public AudioStartMode StartMode
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
     }
 
     public override void Remove() => this.pPicture.Remove();

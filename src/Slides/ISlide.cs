@@ -121,6 +121,10 @@ public interface ISlide
     // ReSharper disable once InconsistentNaming
     PresentationPart GetSDKPresentationPart();
 
+    /// <summary>
+    ///     Gets the first shape in the slide.
+    /// </summary>
+    /// <typeparam name="T">Shape type.</typeparam>
     T First<T>();
 }
 

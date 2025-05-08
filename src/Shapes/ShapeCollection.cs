@@ -80,6 +80,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         yield return new SlideLine(pConnectionShape);
     }
+    
+    private static IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
+    {
+        yield return new Group(new Shape(pGroupShape), pGroupShape);
+    }
 
     private static IEnumerable<IShape> CreateShape(P.Shape pShape)
     {
@@ -93,6 +98,32 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
     }
 
+    // ReSharper disable once InconsistentNaming
+    private static bool IsOLEObject(A.GraphicData aGraphicData) =>
+        aGraphicData.Uri?.Value?.Equals(
+            "http://schemas.openxmlformats.org/presentationml/2006/ole",
+            StringComparison.Ordinal) ?? false;
+    
+    private static IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
+    {
+        var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
+            .ChildElements.FirstOrDefault();
+
+        // Check for media shapes
+        if (element is A.AudioFromFile or A.VideoFromFile)
+        {
+            yield return new MediaShape(pPicture);
+            yield break;
+        }
+
+        // Regular picture
+        var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
+        if (aBlip?.Embed != null)
+        {
+            yield return new Picture(pPicture, aBlip);
+        }
+    }
+    
     private IEnumerable<IShape> GetShapes()
     {
         var pShapeTree = this.GetShapeTreeFromPart();
@@ -125,11 +156,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             P.Picture pPicture => CreatePictureShapes(pPicture),
             _ => []
         };
-    }
-
-    private static IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
-    {
-        yield return new Group(new Shape(pGroupShape), pGroupShape);
     }
 
     private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
@@ -176,12 +202,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             yield return new Table(pGraphicFrame);
         }
     }
-
-    // ReSharper disable once InconsistentNaming
-    private static bool IsOLEObject(A.GraphicData aGraphicData) =>
-        aGraphicData.Uri?.Value?.Equals(
-            "http://schemas.openxmlformats.org/presentationml/2006/ole",
-            StringComparison.Ordinal) ?? false;
 
     private IEnumerable<IShape> CreateChartShapes(P.GraphicFrame pGraphicFrame)
     {
@@ -240,25 +260,5 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         yield return new Chart(
             chartPart,
             pGraphicFrame);
-    }
-
-    private static IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
-    {
-        var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
-            .ChildElements.FirstOrDefault();
-
-        // Check for media shapes
-        if (element is A.AudioFromFile or A.VideoFromFile)
-        {
-            yield return new MediaShape(pPicture);
-            yield break;
-        }
-
-        // Regular picture
-        var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
-        if (aBlip?.Embed != null)
-        {
-            yield return new Picture(pPicture, aBlip);
-        }
     }
 }
