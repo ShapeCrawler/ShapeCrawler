@@ -605,6 +605,7 @@ public class ShapeCollectionTests : SCTest
         });
     }
 
+    [Test]
     [TestCase("09 png image.png", "image/png")]
     [TestCase("06 jpeg image.jpg", "image/jpeg")]
     [TestCase("03 gif image.gif", "image/gif")]
@@ -761,6 +762,23 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var addedPictureImage = shapes.Last<IPicture>().Image!;
         addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)imageStream.Length + fileSizeTolerance);
+    }
+    
+    [Test]
+    public void AddPicture_adds_picture_from_another_presentation()
+    {
+        // Arrange
+        var sourcePres = new Presentation();
+        var image = TestAsset("09 png image.png");
+        sourcePres.Slide(1).Shapes.AddPicture(image);
+        var picture = sourcePres.Slide(1).First<IPicture>();
+        var destPres = new Presentation();
+        
+        // Act
+        destPres.Slide(1).Shapes.Add(picture);
+        
+        // Assert
+        destPres.Save(@"c:\temp\output.pptx");
     }
     
     [Test]
