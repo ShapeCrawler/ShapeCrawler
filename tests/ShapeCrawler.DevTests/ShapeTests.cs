@@ -56,6 +56,7 @@ public class ShapeTests : SCTest
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
+        addedAudio = pres.Slide(1).First<IMediaShape>();
         pres.Validate();
         addedAudio.StartMode.Should().Be(AudioStartMode.Automatically);
     }
