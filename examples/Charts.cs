@@ -10,4 +10,19 @@ public class Charts
         var point = chart.SeriesCollection[0].Points[0];
         point.Value = 10;
     }
+    
+    [Test, Explicit]
+    public static void Update_chart_category()
+    {
+        using var pres = new Presentation("pres.pptx");
+        var slide = pres.Slide(1);
+        var chart = slide.First<IChart>();
+
+        if (chart.Type == ChartType.BarChart)
+        {
+            Console.WriteLine("Chart type is BarChart");
+        }
+        
+        chart.Categories![0].Name = "Price";
+    }
 }
