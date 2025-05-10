@@ -157,7 +157,7 @@ public class GroupTests : SCTest
     public void GroupedShape_Width()
     {
         // Arrange
-        using var pres = new Presentation(@"c:\temp\grouped shape.pptx");
+        var pres = new Presentation(TestAsset("077 grouped shape.pptx"));
         var groupedShape = pres.Slide(1)
             .Shape<IGroup>("Group 19")
             .Shape<IGroup>("Group 86")
@@ -174,8 +174,7 @@ public class GroupTests : SCTest
     public void GroupedShape_X()
     {
         // Arrange
-        using var pres = new Presentation(@"c:\temp\grouped shape.pptx");
-        // var testShape = pres.Slide(2).Shape("Test X");
+        var pres = new Presentation(TestAsset("077 grouped shape.pptx"));
         var groupedShape = pres.Slide(1)
             .Shape<IGroup>("Group 19")
             .Shape<IGroup>("Group 86")
@@ -191,8 +190,7 @@ public class GroupTests : SCTest
     public void GroupedShape_Y_Setter_returns_absolute_y_coordinate()
     {
         // Arrange
-        using var pres = new Presentation(@"c:\temp\grouped shape.pptx");
-        // var testShape = pres.Slide(2).Shape("Test X");
+        using var pres = new Presentation(TestAsset("077 grouped shape.pptx"));
         var groupedShape = pres.Slide(1)
             .Shape<IGroup>("Group 19")
             .Shape<IGroup>("Group 86")

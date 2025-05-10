@@ -80,7 +80,39 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
 
     public decimal Y
     {
-        get => shape.Y;
+        get
+        {
+            // Get all ancestor group shapes to account for nested groups
+            var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
+            if (pGroupShapes.Count == 0)
+                return shape.Y;
+
+            // Start with the shape's relative Y coordinate
+            decimal absoluteY = shape.Y;
+            
+            // Apply the formula for each parent group in the hierarchy, from innermost to outermost
+            foreach (var pGroupShape in pGroupShapes)
+            {
+                var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+                var childOffset = transformGroup.ChildOffset!;
+                var childExtents = transformGroup.ChildExtents!;
+                var offset = transformGroup.Offset!;
+                var extents = transformGroup.Extents!;
+                
+                // Calculate scale factor (ratio of group extents to child extents)
+                decimal scaleFactor = 1.0m;
+                if (childExtents.Cy!.Value != 0) // Avoid division by zero
+                {
+                    scaleFactor = (decimal)extents.Cy!.Value / childExtents.Cy!.Value;
+                }
+                
+                // Apply the formula: (childOffset - groupChildOffset) * scaleFactor + groupOffset
+                var childOffsetY = new Emus(childOffset.Y!.Value).AsPoints();
+                absoluteY = (absoluteY - childOffsetY) * scaleFactor + new Emus(offset.Y!.Value).AsPoints();
+            }
+            
+            return absoluteY;
+        }
         set
         {
             shape.Y = value;
