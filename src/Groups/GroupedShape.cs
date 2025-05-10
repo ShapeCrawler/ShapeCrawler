@@ -15,7 +15,9 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
             // Get all ancestor group shapes to account for nested groups
             var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
+            {
                 return shape.X;
+            }
 
             // Start with the shape's relative X coordinate
             decimal absoluteX = shape.X;
@@ -31,14 +33,14 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
                 
                 // Calculate scale factor (ratio of group extents to child extents)
                 decimal scaleFactor = 1.0m;
-                if (childExtents.Cx!.Value != 0) // Avoid division by zero
+                if (childExtents.Cx!.Value != 0)
                 {
                     scaleFactor = (decimal)extents.Cx!.Value / childExtents.Cx!.Value;
                 }
                 
                 // Apply the formula: (childOffset - groupChildOffset) * scaleFactor + groupOffset
                 var childOffsetX = new Emus(childOffset.X!.Value).AsPoints();
-                absoluteX = (absoluteX - childOffsetX) * scaleFactor + new Emus(offset.X!.Value).AsPoints();
+                absoluteX = ((absoluteX - childOffsetX) * scaleFactor) + new Emus(offset.X!.Value).AsPoints();
             }
             
             return absoluteX;
@@ -85,7 +87,9 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
             // Get all ancestor group shapes to account for nested groups
             var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
+            {
                 return shape.Y;
+            }
 
             // Start with the shape's relative Y coordinate
             decimal absoluteY = shape.Y;
@@ -101,18 +105,19 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
                 
                 // Calculate scale factor (ratio of group extents to child extents)
                 decimal scaleFactor = 1.0m;
-                if (childExtents.Cy!.Value != 0) // Avoid division by zero
+                if (childExtents.Cy!.Value != 0)
                 {
                     scaleFactor = (decimal)extents.Cy!.Value / childExtents.Cy!.Value;
                 }
                 
                 // Apply the formula: (childOffset - groupChildOffset) * scaleFactor + groupOffset
                 var childOffsetY = new Emus(childOffset.Y!.Value).AsPoints();
-                absoluteY = (absoluteY - childOffsetY) * scaleFactor + new Emus(offset.Y!.Value).AsPoints();
+                absoluteY = ((absoluteY - childOffsetY) * scaleFactor) + new Emus(offset.Y!.Value).AsPoints();
             }
             
             return absoluteY;
         }
+
         set
         {
             shape.Y = value;
@@ -153,7 +158,9 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
             // Get all ancestor group shapes to account for nested groups
             var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
+            {
                 return shape.Width;
+            }
 
             // Calculate cumulative scale factor through all parent groups
             decimal cumulativeScaleFactor = 1.0m;
@@ -166,14 +173,17 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
                 
                 // Skip if either value is zero to avoid division by zero
                 if (childExtentsWidth == 0)
+                {
                     continue;
-                    
+                }
+
                 var scaleFactor = (decimal)extentsWidth / childExtentsWidth;
                 cumulativeScaleFactor *= scaleFactor;
             }
             
             return shape.Width * cumulativeScaleFactor;
         }
+
         set
         {
             shape.Width = value;
@@ -181,7 +191,6 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
-            var aChildOffset = aTransformGroup.ChildOffset!;
             var aChildExtents = aTransformGroup.ChildExtents!;
             var groupedShapeWidthEmus = new Points(value).AsEmus();
             var groupShapeWidthEmus = aExtents.Cx!;
@@ -213,7 +222,9 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
             // Get all ancestor group shapes to account for nested groups
             var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
+            {
                 return shape.Height;
+            }
 
             // Calculate cumulative scale factor through all parent groups
             decimal cumulativeScaleFactor = 1.0m;
@@ -226,8 +237,10 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
                 
                 // Skip if either value is zero to avoid division by zero
                 if (childExtentsCy == 0)
+                {
                     continue;
-                    
+                }
+
                 var scaleFactor = (decimal)extentsCy / childExtentsCy;
                 cumulativeScaleFactor *= scaleFactor;
             }

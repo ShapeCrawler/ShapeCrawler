@@ -23,11 +23,12 @@ public interface IGroup : IShape
     /// <summary>
     ///     Gets a shape by name.
     /// </summary>
-    /// <param name="groupedShapeName"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <typeparam name="T">Shape type.</typeparam>
     T Shape<T>(string groupedShapeName);
     
+    /// <summary>
+    ///     Gets a shape by name.
+    /// </summary>
     IShape Shape(string groupedShapeName);
 }
 
@@ -47,9 +48,6 @@ internal sealed class Group : IGroup
     }
 
     public IShapeCollection Shapes { get; }
-
-    public T Shape<T>(string groupedShapeName) =>
-        (T)this.Shapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);
 
     public Geometry GeometryType
     {
@@ -150,6 +148,9 @@ internal sealed class Group : IGroup
     public void Duplicate() => this.shape.Duplicate();
     
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
+    
+    public T Shape<T>(string groupedShapeName) =>
+        (T)this.Shapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);
 
     public void Remove() => this.shape.Remove();
 
