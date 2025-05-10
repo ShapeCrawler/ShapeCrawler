@@ -1,0 +1,19 @@
+name: Validate commit messages
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install commitlint
+        run: npm install --save-dev @commitlint/{core,cli}
+      - name: Lint commit messages
+        run: |
+          git log origin/master..HEAD --format='%s' \
+            | grep -Ev '^Merge feature' \
+            && echo "❌ Messages must start with 'Merge feature'" \
+            && exit 1 \
+            || echo "✅ All messages valid"
