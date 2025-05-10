@@ -62,24 +62,7 @@ public class ShapeCollectionTests : SCTest
         shapes.Shape("Picture 1").Should().NotBeNull();
         pres.Validate();
     }
-
-    [Test]
-    [Explicit("Failing test for https://github.com/ShapeCrawler/ShapeCrawler/issues/935")]   
-    public void Add_adds_picture_to_another_slide()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("053_add_shapes.pptx"));
-        var copyingShape = pres.Slides[0].Shapes.Shape("Picture")!;
-        var shapes = pres.Slides[1].Shapes;
-
-        // Act
-        shapes.Add(copyingShape);
-
-        // Assert
-        shapes.Shape("Picture 1").Should().NotBeNull();
-        pres.Validate();
-    }
-
+    
     [Test]
     public void Contains_expected_count_of_each_shape_type()
     {

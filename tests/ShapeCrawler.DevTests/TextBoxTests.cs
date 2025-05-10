@@ -142,13 +142,12 @@ namespace ShapeCrawler.DevTests
         }
 
         [Test]
-        [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/850")]
-        public void SetText_resizes_shape_to_fit_multi_paragraph_text()
+        public void SetText_updates_shape_height_to_fit_text()
         {
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
             var shape = pres.Slide(1).Shape("AutoShape 4");
-            var textBox = shape.TextBox;
+            var textBox = shape.TextBox!;
 
             // Act
             textBox.Paragraphs.Add();
@@ -159,8 +158,7 @@ namespace ShapeCrawler.DevTests
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
             
             // Assert
-            pres.Validate();
-            // TODO: Add assertion
+            shape.Height.Should().BeApproximately(95m, 1m);
         }
 
         [Test]
