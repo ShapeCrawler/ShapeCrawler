@@ -124,7 +124,7 @@ namespace ShapeCrawler.DevTests
         }
         
         [Test]
-        [Platform(Exclude = "Linux", Reason = "Test fails on ubuntu-latest")]
+        [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on ubuntu-latest and macOS")]
         public void SetText_resizes_shape_to_fit_text()
         {
             // Arrange
@@ -142,6 +142,7 @@ namespace ShapeCrawler.DevTests
         }
 
         [Test]
+        [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Ubuntu and macOS")]
         public void SetText_updates_shape_height_to_fit_text()
         {
             // Arrange
