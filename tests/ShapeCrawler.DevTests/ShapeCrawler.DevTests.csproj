@@ -270,6 +270,8 @@
     <EmbeddedResource Include="Assets\076 bitcoin.md" />
     <None Remove="Assets\images\11 image 1600x690.jpg" />
     <EmbeddedResource Include="Assets\images\11 image 1600x690.jpg" />
+    <None Remove="Assets\077 grouped shape.pptx" />
+    <EmbeddedResource Include="Assets\077 grouped shape.pptx" />
   </ItemGroup>
 
 </Project>

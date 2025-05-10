@@ -92,10 +92,10 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // Add transform properties
         var transform = new Transform();
-        transform.Append(new A.Offset { X = new Pixels(x).AsHorizontalEmus(), Y = new Pixels(y).AsVerticalEmus() });
+        transform.Append(new A.Offset { X = new Points(x).AsEmus(), Y = new Points(y).AsEmus() });
         transform.Append(new A.Extents
         {
-            Cx = new Pixels(width).AsHorizontalEmus(), Cy = new Pixels(height).AsVerticalEmus()
+            Cx = new Points(width).AsEmus(), Cy = new Points(height).AsEmus()
         });
         graphicFrame.Append(transform);
 
