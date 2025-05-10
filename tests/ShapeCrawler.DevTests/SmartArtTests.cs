@@ -8,12 +8,11 @@ namespace ShapeCrawler.DevTests;
 public class SmartArtTests : SCTest
 {
     [Test]
-    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/911")]
     public void AddSmartArt_CreatesBasicBlockList_WhenCalled()
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0]; // First slide
+        var slide = pres.Slide(1);
         const int x = 50;
         const int y = 50;
         const int width = 400;
@@ -21,16 +20,15 @@ public class SmartArtTests : SCTest
         
         // Act
         var smartArt = slide.Shapes.AddSmartArt(x, y, width, height, SmartArtType.BasicBlockList);
+        pres.Save(@"c:\temp\output.pptx");
         
         // Assert
-        smartArt.Should().NotBeNull();
+        pres.Validate();
         smartArt.Should().BeOfType<SmartArt>();
         smartArt.X.Should().Be(x);
         smartArt.Y.Should().Be(y);
         smartArt.Width.Should().Be(width);
         smartArt.Height.Should().Be(height);
-        
-        pres.Validate();
     }
     
     [Test]

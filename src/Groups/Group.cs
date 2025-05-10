@@ -19,6 +19,16 @@ public interface IGroup : IShape
     ///     Gets grouped shape collection.
     /// </summary>
     IShapeCollection Shapes { get; }
+
+    /// <summary>
+    ///     Gets a shape by name.
+    /// </summary>
+    /// <param name="groupedShapeName"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    T Shape<T>(string groupedShapeName);
+    
+    IShape Shape(string groupedShapeName);
 }
 
 internal sealed class Group : IGroup
@@ -37,6 +47,9 @@ internal sealed class Group : IGroup
     }
 
     public IShapeCollection Shapes { get; }
+
+    public T Shape<T>(string groupedShapeName) =>
+        (T)this.Shapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);
 
     public Geometry GeometryType
     {
