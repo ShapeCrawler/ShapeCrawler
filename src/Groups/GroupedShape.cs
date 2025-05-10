@@ -12,15 +12,36 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
     {
         get
         {
-            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
-            var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
-            var aOffset = aTransformGroup.Offset!;
+            // Get all ancestor group shapes to account for nested groups
+            var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
+            if (pGroupShapes.Count == 0)
+                return shape.X;
 
-            var xGroupShapePt = new Emus(aOffset.X!).AsPoints();
-            var groupShapeChildXPt = new Emus(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value).AsPoints();
-            var groupedShapeXPt = shape.X;
-
-            return xGroupShapePt - (groupShapeChildXPt - groupedShapeXPt);
+            // Start with the shape's relative X coordinate
+            decimal absoluteX = shape.X;
+            
+            // Apply the formula for each parent group in the hierarchy, from innermost to outermost
+            foreach (var pGroupShape in pGroupShapes)
+            {
+                var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+                var childOffset = transformGroup.ChildOffset!;
+                var childExtents = transformGroup.ChildExtents!;
+                var offset = transformGroup.Offset!;
+                var extents = transformGroup.Extents!;
+                
+                // Calculate scale factor (ratio of group extents to child extents)
+                decimal scaleFactor = 1.0m;
+                if (childExtents.Cx!.Value != 0) // Avoid division by zero
+                {
+                    scaleFactor = (decimal)extents.Cx!.Value / childExtents.Cx!.Value;
+                }
+                
+                // Apply the formula: (childOffset - groupChildOffset) * scaleFactor + groupOffset
+                var childOffsetX = new Emus(childOffset.X!.Value).AsPoints();
+                absoluteX = (absoluteX - childOffsetX) * scaleFactor + new Emus(offset.X!.Value).AsPoints();
+            }
+            
+            return absoluteX;
         }
 
         set

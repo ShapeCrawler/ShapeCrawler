@@ -154,7 +154,7 @@ public class GroupTests : SCTest
     }
 
     [Test]
-    public void GroupedShape_Width_and_Height()
+    public void GroupedShape_Width()
     {
         // Arrange
         using var pres = new Presentation(@"c:\temp\grouped shape.pptx");
@@ -185,5 +185,22 @@ public class GroupTests : SCTest
         
         // Act & Assert
         groupedShape.X.Should().BeApproximately(607, 1m);
+    }
+    
+    [Test]
+    public void GroupedShape_Y_Setter_returns_absolute_y_coordinate()
+    {
+        // Arrange
+        using var pres = new Presentation(@"c:\temp\grouped shape.pptx");
+        // var testShape = pres.Slide(2).Shape("Test X");
+        var groupedShape = pres.Slide(1)
+            .Shape<IGroup>("Group 19")
+            .Shape<IGroup>("Group 86")
+            .Shape<IGroup>("Group 1")
+            .Shape<IGroup>("Group 3")
+            .Shape("Rectangle 4");
+        
+        // Act & Assert
+        groupedShape.Y.Should().BeApproximately(125, 1m);
     }
 }
