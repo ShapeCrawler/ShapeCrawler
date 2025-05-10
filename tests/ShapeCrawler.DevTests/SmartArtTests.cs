@@ -20,7 +20,6 @@ public class SmartArtTests : SCTest
         
         // Act
         var smartArt = slide.Shapes.AddSmartArt(x, y, width, height, SmartArtType.BasicBlockList);
-        pres.Save(@"c:\temp\output.pptx");
         
         // Assert
         pres.Validate();
