@@ -1,24 +1,23 @@
 ﻿#pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a color format.
+///     Represents a font color format.
 /// </summary>
 public interface IFontColor
 {
     /// <summary>
-    ///     Gets color type.
+    ///     Gets the color type.
     /// </summary>
     ColorType Type { get; }
 
     /// <summary>
-    ///     Gets color hexadecimal representation.
+    ///     Gets the color hexadecimal representation.
     /// </summary>
     string Hex { get; }
 
     /// <summary>
-    ///     Updates color with specified hexadecimal representation.
+    ///     Updates the color with the specified color in the hexadecimal representation.
     /// </summary>
     void Update(string hex);
 }

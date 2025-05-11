@@ -33,7 +33,8 @@ internal sealed class FontColor(A.Text aText): IFontColor
             }
 
             // From Shape
-            var shapeColor = new ShapeColor(openXmlPart, aText);
+            var pShape = aText.Ancestors<P.Shape>().First();
+            var shapeColor = new ShapeColor(new PresentationColor(openXmlPart), pShape);
             var type = shapeColor.TypeOrNull();
             
             return type.HasValue ? (ColorType)type : ColorType.RGB;

@@ -5,30 +5,16 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Colors;
 
-internal readonly ref struct ShapeColor
+internal readonly ref struct ShapeColor(PresentationColor presColor, P.Shape pShape)
 {
-    private readonly P.Shape pShape;
-    private readonly PresentationColor presColor;
-
-    internal ShapeColor(OpenXmlPart openXmlPart, A.Text aText)
-        : this(new PresentationColor(openXmlPart), aText.Ancestors<P.Shape>().First())
-    {
-    }
-
-    internal ShapeColor(PresentationColor presColor, P.Shape pShape)
-    {
-        this.pShape = pShape;
-        this.presColor = presColor;
-    }
-
     internal string? HexOrNull()
     {
-        if (this.pShape.ShapeStyle == null)
+        if (pShape.ShapeStyle == null)
         {
             return null;
         }
 
-        var sdkAFontReference = this.pShape.ShapeStyle.FontReference!;
+        var sdkAFontReference = pShape.ShapeStyle.FontReference!;
         if (sdkAFontReference.RgbColorModelHex != null)
         {
             return sdkAFontReference.RgbColorModelHex.Val;
@@ -36,7 +22,7 @@ internal readonly ref struct ShapeColor
 
         if (sdkAFontReference.SchemeColor != null)
         {
-            return this.presColor.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
+            return presColor.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
         }
 
         if (sdkAFontReference.PresetColor != null)
@@ -51,12 +37,12 @@ internal readonly ref struct ShapeColor
 
     internal ColorType? TypeOrNull()
     {
-        if (this.pShape.ShapeStyle == null)
+        if (pShape.ShapeStyle == null)
         {
             return null;
         }
         
-        var aFontReference = this.pShape.ShapeStyle.FontReference!;
+        var aFontReference = pShape.ShapeStyle.FontReference!;
         if (aFontReference.RgbColorModelHex != null)
         {
             return ColorType.RGB;
