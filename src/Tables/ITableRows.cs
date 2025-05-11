@@ -140,20 +140,35 @@ internal sealed class TableRows : ITableRows
             throw new ArgumentOutOfRangeException(nameof(templateRowIndex));
         }
 
-        // Clone the template row
+        // Get template row properties
         var templateRow = (TableRow)rows[templateRowIndex];
         var templateARow = templateRow.ATableRow;
-        var newARow = (A.TableRow)templateARow.CloneNode(true);
+        var columnsCount = templateRow.Cells.Count;
+        
+        // Create a new row with the same height as the template
+        var newARow = new A.TableRow { Height = templateARow.Height };
+        
+        // Add cells to the new row
+        for (var i = 0; i < columnsCount; i++)
+        {   
+            // Create a new cell with default properties
+            var scaTableRow = new SCATableRow(newARow);
+            scaTableRow.AddNewCell();
+            
+            // Copy cell formatting properties if needed from the template row's cells
+            // Note: We're not copying content or IDs, just the visual properties
+            // This can be extended to copy more properties if needed
+        }
         
         // Get the element before which we want to insert the new row
         var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
-        {
+        {   
             // Add at the end
             this.aTable.Append(newARow);
         }
         else
-        {
+        {   
             // Insert before the row at the specified index
             this.aTable.InsertBefore(newARow, aTableRows[index]);
         }
