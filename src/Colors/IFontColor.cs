@@ -2,7 +2,7 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a font color format.
+///     Represents a font color.
 /// </summary>
 public interface IFontColor
 {

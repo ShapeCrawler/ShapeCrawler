@@ -147,7 +147,7 @@ internal sealed class Group : IGroup
     
     public void Duplicate() => this.shape.Duplicate();
     
-    public IShape Shape(string shape) => this.Shapes.Shape(shape);
+    public IShape Shape(string groupedShape) => this.Shapes.Shape(groupedShape);
     
     public T Shape<T>(string groupedShapeName) =>
         (T)this.Shapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);

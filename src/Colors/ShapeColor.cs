@@ -24,9 +24,9 @@ internal readonly ref struct ShapeColor(PresentationColor presColor, P.Shape pSh
 
         if (aFontReference.PresetColor != null)
         {
-            var coloName = aFontReference.PresetColor.Val!.Value.ToString();
+            var colorName = aFontReference.PresetColor.Val!.Value.ToString();
             
-            return ColorTranslator.HexFromName(coloName);
+            return ColorTranslator.HexFromName(colorName);
         }
 
         return null;

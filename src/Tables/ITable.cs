@@ -293,31 +293,46 @@ internal sealed class Table : Shape, ITable
             var sameGridSpan = nextBottomColumnCells.All(c => c.GridSpan?.Value == topColumnCellSpan);
             if (topColumnCellSpan > 1 && sameGridSpan)
             {
-                var deleteColumnCount = topColumnCellSpan.Value - 1;
-
-                // Delete a:gridCol elements and append width of deleting column to merged column
-                for (int i = 0; i < deleteColumnCount; i++)
-                {
-                    var column = (Column)this.Columns[colIdx + 1 + i];
-                    column.AGridColumn.Remove();
-                    this.Columns[colIdx].Width += column.Width;
-                }
-
-                // Delete a:tc elements
-                foreach (var aTblRow in aTableRows)
-                {
-                    var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx + 1).Take(deleteColumnCount).ToList();
-                    foreach (var aTblCell in removeCells)
-                    {
-                        aTblCell.Remove();
-                    }
-                }
-
-                colIdx += topColumnCellSpan.Value;
+                colIdx += this.ProcessColumnsWithSameGridSpan(colIdx, topColumnCellSpan.Value, aTableRows);
             }
             else
             {
                 colIdx++;
+            }
+        }
+    }
+
+    private int ProcessColumnsWithSameGridSpan(int colIdx, int topColumnCellSpan, List<A.TableRow> aTableRows)
+    {
+        var deleteColumnCount = topColumnCellSpan - 1;
+
+        // Delete a:gridCol elements and append width of deleting column to merged column
+        this.DeleteAndUpdateGridColumns(colIdx, deleteColumnCount);
+
+        // Delete a:tc elements
+        this.DeleteTableCells(colIdx, deleteColumnCount, aTableRows);
+
+        return topColumnCellSpan;
+    }
+
+    private void DeleteAndUpdateGridColumns(int colIdx, int deleteColumnCount)
+    {
+        for (int i = 0; i < deleteColumnCount; i++)
+        {
+            var column = (Column)this.Columns[colIdx + 1 + i];
+            column.AGridColumn.Remove();
+            this.Columns[colIdx].Width += column.Width;
+        }
+    }
+
+    private void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
+    {
+        foreach (var aTblRow in aTableRows)
+        {
+            var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx + 1).Take(deleteColumnCount).ToList();
+            foreach (var aTblCell in removeCells)
+            {
+                aTblCell.Remove();
             }
         }
     }

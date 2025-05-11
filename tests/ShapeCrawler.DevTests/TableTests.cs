@@ -1273,7 +1273,7 @@ public class TableTests : SCTest
     }
 
     [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/922")]
-    public void Rows_Add_adds_a_new_row_the_specified_template_font_color()
+    public void Rows_Add_adds_a_new_row_with_template_font_color()
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
