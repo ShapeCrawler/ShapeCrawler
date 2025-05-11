@@ -14,20 +14,20 @@ internal readonly ref struct ShapeColor(PresentationColor presColor, P.Shape pSh
             return null;
         }
 
-        var sdkAFontReference = pShape.ShapeStyle.FontReference!;
-        if (sdkAFontReference.RgbColorModelHex != null)
+        var aFontReference = pShape.ShapeStyle.FontReference!;
+        if (aFontReference.RgbColorModelHex != null)
         {
-            return sdkAFontReference.RgbColorModelHex.Val;
+            return aFontReference.RgbColorModelHex.Val;
         }
 
-        if (sdkAFontReference.SchemeColor != null)
+        if (aFontReference.SchemeColor != null)
         {
-            return presColor.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
+            return presColor.ThemeColorHex(aFontReference.SchemeColor.Val!);
         }
 
-        if (sdkAFontReference.PresetColor != null)
+        if (aFontReference.PresetColor != null)
         {
-            var coloName = sdkAFontReference.PresetColor.Val!.Value.ToString();
+            var coloName = aFontReference.PresetColor.Val!.Value.ToString();
             
             return ColorTranslator.HexFromName(coloName);
         }
