@@ -10,164 +10,164 @@ namespace ShapeCrawler.DevTests;
 
 public class TableTests : SCTest
 {
-	[Test]
-	public void TableStyle_Getter_return_style_of_table()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("009_table.pptx"));
+    [Test]
+    public void TableStyle_Getter_return_style_of_table()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("009_table.pptx"));
         var table = pres.Slide(3).Table("Таблица 4");
 
-		// Act 
-		var tableStyle = table.TableStyle;
+        // Act 
+        var tableStyle = table.TableStyle;
 
-		// Assert
-		tableStyle.Should().BeEquivalentTo(CommonTableStyles.MediumStyle2Accent1);
-		pres.Validate();
-	}
+        // Assert
+        tableStyle.Should().BeEquivalentTo(CommonTableStyles.MediumStyle2Accent1);
+        pres.Validate();
+    }
 
-	[Test]
-	public void TableStyle_Setter_sets_style()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("009_table.pptx"));
-		var table = pres.Slide(3).Table("Таблица 4");
-		var mStream = new MemoryStream();
+    [Test]
+    public void TableStyle_Setter_sets_style()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("009_table.pptx"));
+        var table = pres.Slide(3).Table("Таблица 4");
+        var mStream = new MemoryStream();
 
-		// Act
-		table.TableStyle = CommonTableStyles.ThemedStyle1Accent4;
+        // Act
+        table.TableStyle = CommonTableStyles.ThemedStyle1Accent4;
 
-		// Assert
-		table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
-		pres.Save(mStream);
-		pres = new Presentation(mStream);
+        // Assert
+        table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
         table = pres.Slide(3).Table("Таблица 4");
-		table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
-		pres.Validate();
-	}
+        table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
+        pres.Validate();
+    }
 
-	[Test]
-	public void CellBorder_Getter_return_bottom_border_color()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("table-case004.pptx"));
+    [Test]
+    public void CellBorder_Getter_return_bottom_border_color()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case004.pptx"));
         var table = pres.Slide(1).Table("Table 1");
 
-		// Act 
-		var tableCell = table[1, 2];
+        // Act 
+        var tableCell = table[1, 2];
 
         // Assert
         tableCell.BottomBorder.Color.Should().Be("FF0000");
-	}
+    }
 
-	[Test]
-	public void CellBorder_Setter_right_border_color()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("table-case004.pptx"));
-		var table = pres.Slide(1).Table("Table 1");
-		var mStream = new MemoryStream();
+    [Test]
+    public void CellBorder_Setter_right_border_color()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case004.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+        var mStream = new MemoryStream();
 
         // Act
         table[1, 2].RightBorder.Color = "00FF00";
 
-		// Assert
-		table[1, 2].RightBorder.Color.Should().Be("00FF00");
-		pres.Save(mStream);
+        // Assert
+        table[1, 2].RightBorder.Color.Should().Be("00FF00");
+        pres.Save(mStream);
 
-		pres = new Presentation(mStream);
+        pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 1");
-		table[1, 2].RightBorder.Color.Should().Be("00FF00");
-		pres.Validate();
-	}
+        table[1, 2].RightBorder.Color.Should().Be("00FF00");
+        pres.Validate();
+    }
 
     [Test]
-	public void CellMargins_Getter_return_cell_margin()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("table-case004.pptx"));
+    public void CellMargins_Getter_return_cell_margin()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case004.pptx"));
         var table = pres.Slide(1).Table("Table 2");
-        
+
         // Assert
-		var tableCell = table[0, 0];
+        var tableCell = table[0, 0];
         tableCell.TextBox.TopMargin.Should().BeApproximately(28.34m, 0.01m);
         tableCell.TextBox.RightMargin.Should().BeApproximately(28.34m, 0.01m);
         tableCell.TextBox.LeftMargin.Should().BeApproximately(28.34m, 0.01m);
         tableCell.TextBox.BottomMargin.Should().BeApproximately(28.34m, 0.01m);
-	}
+    }
 
-	[Test]
-	public void CellMargins_Setter_cell_margin()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("table-case004.pptx"));
-		var table = pres.Slide(1).Table("Table 2");
-		var mStream = new MemoryStream();
+    [Test]
+    public void CellMargins_Setter_cell_margin()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case004.pptx"));
+        var table = pres.Slide(1).Table("Table 2");
+        var mStream = new MemoryStream();
 
         // Act
-		var tableCell = table[0, 0];
+        var tableCell = table[0, 0];
         tableCell.TextBox.LeftMargin = 10m;
         tableCell.TextBox.RightMargin = 10m;
-        tableCell.TextBox.TopMargin = 20m;		
-		tableCell.TextBox.BottomMargin = 20m;
+        tableCell.TextBox.TopMargin = 20m;
+        tableCell.TextBox.BottomMargin = 20m;
 
-		// Assert
-		tableCell.TextBox.TopMargin.Should().Be(20m);
-		pres.Save(mStream);
+        // Assert
+        tableCell.TextBox.TopMargin.Should().Be(20m);
+        pres.Save(mStream);
 
-		pres = new Presentation(mStream);
+        pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 2");
-		
+
         tableCell = table[0, 0];
         tableCell.TextBox.LeftMargin.Should().Be(10m);
         tableCell.TextBox.RightMargin.Should().Be(10m);
         tableCell.TextBox.TopMargin.Should().Be(20m);
-		tableCell.TextBox.BottomMargin.Should().Be(20m);
+        tableCell.TextBox.BottomMargin.Should().Be(20m);
 
-		pres.Validate();
-	}
-    
+        pres.Validate();
+    }
+
     [Test]
-	public void CellTextAlignment_Getter_return_cell_alignment()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("table-case004.pptx"));
+    public void CellTextAlignment_Getter_return_cell_alignment()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case004.pptx"));
         var table = pres.Slide(1).Table("Table 2");
-        
+
         // Assert
-		var tableCell = table[3, 2];
+        var tableCell = table[3, 2];
         tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
         tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
-	}
+    }
 
-	[Test]
-	public void CellTextAlignment_Setter_cell_alignment()
-	{
-		// Arrange
-		var pres = new Presentation(TestAsset("table-case004.pptx"));
-		var table = pres.Slide(1).Table("Table 2");
-		var mStream = new MemoryStream();
+    [Test]
+    public void CellTextAlignment_Setter_cell_alignment()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case004.pptx"));
+        var table = pres.Slide(1).Table("Table 2");
+        var mStream = new MemoryStream();
 
         // Act
-		var tableCell = table[1, 1];
-		tableCell.TextBox.VerticalAlignment = TextVerticalAlignment.Middle;
-		tableCell.TextBox.Paragraphs[0].HorizontalAlignment = TextHorizontalAlignment.Center;
+        var tableCell = table[1, 1];
+        tableCell.TextBox.VerticalAlignment = TextVerticalAlignment.Middle;
+        tableCell.TextBox.Paragraphs[0].HorizontalAlignment = TextHorizontalAlignment.Center;
 
         // Assert
-		tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
+        tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
         tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
-		pres.Save(mStream);
+        pres.Save(mStream);
 
-		pres = new Presentation(mStream);
+        pres = new Presentation(mStream);
         table = pres.Slide(1).Table("Table 2");
-		
-        tableCell = table[1, 1];
-		tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
-        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
-		
-		pres.Validate();
-	}
 
-	[Test]
+        tableCell = table[1, 1];
+        tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
+        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
+
+        pres.Validate();
+    }
+
+    [Test]
     public void RemoveColumnAt_removes_column_by_specified_index()
     {
         // Arrange
@@ -188,7 +188,7 @@ public class TableTests : SCTest
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Validate();
     }
-    
+
     [Test]
     public void AddColumn_adds_column()
     {
@@ -204,7 +204,7 @@ public class TableTests : SCTest
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Validate();
     }
-    
+
     [Test]
     public void Columns_Add_sets_width_of_all_columns_proportionally()
     {
@@ -215,16 +215,16 @@ public class TableTests : SCTest
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
         var newTotalWidth = totalWidthBefore + table.Columns[columnsCountBefore - 1].Width;
-        
+
         // Act
         table.Columns.Add();
 
         // Assert
         var widthRatio = totalWidthBefore / newTotalWidth;
         table.Columns.Select(column => (int)column.Width).ToList().Take(columnsCountBefore).Should()
-              .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
+            .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
     }
-    
+
     [Test]
     public void InsertColumnAfter_inserts_column_after_the_specified_column_number()
     {
@@ -240,7 +240,7 @@ public class TableTests : SCTest
         cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
         pres.Validate();
     }
-    
+
     [Test]
     public void Columns_InsertAfter_sets_width_of_all_columns_proportionally()
     {
@@ -252,7 +252,7 @@ public class TableTests : SCTest
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
         var newTotalWidth = totalWidthBefore + table.Columns[2].Width;
-        
+
         // Act
         table.Columns.InsertAfter(3);
 
@@ -261,7 +261,7 @@ public class TableTests : SCTest
         table.Columns.Select(c => (int)c.Width).ToList().Take(columnsCountBefore).Should()
             .BeEquivalentTo(columnWidthBefore.Select(w => (int)(w * widthRatio)));
     }
-    
+
     [Test]
     public void Columns_Duplicate_increases_column_count_by_one()
     {
@@ -274,12 +274,12 @@ public class TableTests : SCTest
 
         // Act
         column.Duplicate();
-        
+
         // Assert
         table.Columns.Should().HaveCount(columnsCountBefore + 1);
         pres.Validate();
     }
-    
+
     [Test]
     public void Columns_Duplicate_copies_column_with_all_its_cells()
     {
@@ -291,7 +291,7 @@ public class TableTests : SCTest
 
         // Act
         column.Duplicate();
-        
+
         // Assert
         foreach (var row in table.Rows)
         {
@@ -299,7 +299,7 @@ public class TableTests : SCTest
             row.Cells[0].TextBox.Text.Should().Be(row.Cells[table.Columns.Count - 1].TextBox.Text);
         }
     }
-    
+
     [Test]
     public void Columns_Duplicate_copies_middle_column_with_all_its_cells()
     {
@@ -311,7 +311,7 @@ public class TableTests : SCTest
 
         // Act
         column.Duplicate();
-        
+
         // Assert
         foreach (var row in table.Rows)
         {
@@ -319,7 +319,7 @@ public class TableTests : SCTest
             row.Cells[1].TextBox.Text.Should().Be(row.Cells[table.Columns.Count - 1].TextBox.Text);
         }
     }
-    
+
     [Test]
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
@@ -351,7 +351,7 @@ public class TableTests : SCTest
         var columWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
         var newTotalWidth = totalWidthBefore + column.Width;
-        
+
         // Act
         column.Duplicate();
 
@@ -360,7 +360,7 @@ public class TableTests : SCTest
         table.Columns.Select(c => (int)c.Width).ToList().Take(columWidthBefore.Count).Should()
             .BeEquivalentTo(columWidthBefore.Select(w => (int)(w * widthRatio)));
     }
-    
+
     [Test]
     public void Rows_Add_adds_row()
     {
@@ -465,13 +465,13 @@ public class TableTests : SCTest
         // Act-Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        
-        var cell1 = (TableCell) cell1X0;
+
+        var cell1 = (TableCell)cell1X0;
         var cell2 = (TableCell)cell1X1;
         cell1.RowIndex.Should().Be(cell2.RowIndex);
         cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
     }
-    
+
     [Test]
     public void Row_Cell_TopBorder_Width_Setter_sets_top_border_width_in_points()
     {
@@ -481,28 +481,28 @@ public class TableTests : SCTest
         slide.Shapes.AddTable(40, 40, 2, 1);
         var table = (ITable)slide.Shapes.Last();
         var cell = table[0, 1];
-        
+
         // Act
         cell.TopBorder.Width = 2;
-        
+
         // Assert
         cell.TopBorder.Width.Should().Be(2);
     }
-    
+
     [Test]
     public void Row_Cell_LeftBorder_Width_Setter_sets_left_border_width_in_points()
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
         var cell = pres.Slides[0].Table("Table 1")[0, 0];
-        
+
         // Act
-        cell.LeftBorder.Width = 2;  
-        
+        cell.LeftBorder.Width = 2;
+
         // Assert
         cell.LeftBorder.Width.Should().Be(2);
     }
-    
+
     [Test]
     public void Row_Cell_TopBorder_Width_Getter_returns_top_border_width_in_points()
     {
@@ -512,11 +512,11 @@ public class TableTests : SCTest
         slide.Shapes.AddTable(40, 40, 2, 1);
         var table = (ITable)slide.Shapes.Last();
         var cell = table[0, 1];
-        
+
         // Act-Assert
         cell.TopBorder.Width.Should().Be(1);
     }
-    
+
     [Test]
     public void Row_Clone_cloning_row_increases_row_count_by_one()
     {
@@ -777,12 +777,12 @@ public class TableTests : SCTest
         // Assert
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-        
-        var cell1 = (TableCell) table[1, 1];
+
+        var cell1 = (TableCell)table[1, 1];
         var cell2 = (TableCell)table[1, 2];
         cell1.RowIndex.Should().Be(cell2.RowIndex);
         cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
-        
+
         table[3, 2].IsMergedCell.Should().BeFalse();
 
         presentation.Save(mStream);
@@ -790,12 +790,12 @@ public class TableTests : SCTest
         table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 5);
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-        
-        cell1 = (TableCell) table[1, 1];
+
+        cell1 = (TableCell)table[1, 1];
         cell2 = (TableCell)table[1, 2];
         cell1.RowIndex.Should().Be(cell2.RowIndex);
         cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
-        
+
         table[3, 2].IsMergedCell.Should().BeFalse();
     }
 
@@ -815,12 +815,12 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
         table[1, 1].IsMergedCell.Should().BeTrue();
-        
+
         var cell_0_0 = (TableCell)table[0, 0];
         var cell_1_1 = (TableCell)table[1, 1];
         cell_0_0.RowIndex.Should().Be(cell_1_1.RowIndex);
         cell_0_0.ColumnIndex.Should().Be(cell_1_1.ColumnIndex);
-        
+
         table[0, 2].IsMergedCell.Should().BeFalse();
         pres.Save(mStream);
         pres = new Presentation(mStream);
@@ -988,14 +988,14 @@ public class TableTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
         var table = slide.Shapes.Last() as ITable;
-        
+
         // Act
         table.MergeCells(table[0, 2], table[1, 2]);
 
         // Assert
         table[0, 1].Should().NotBeSameAs(table[1, 1]);
     }
-    
+
     [Test]
     public void MergeCells_merges_0x0_and_0x1_then_1x1_and_1x2_cells()
     {
@@ -1004,13 +1004,13 @@ public class TableTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 4, 2);
         var table = slide.Shapes.Last() as ITable;
-        
+
         // Act
         table.MergeCells(table[0, 0], table[0, 1]);
         table.MergeCells(table[1, 1], table[1, 2]);
-        
+
         // Assert
-        var cell1 = (TableCell) table[1, 1];
+        var cell1 = (TableCell)table[1, 1];
         var cell2 = (TableCell)table[1, 2];
         cell1.RowIndex.Should().Be(cell2.RowIndex);
         cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
@@ -1024,7 +1024,7 @@ public class TableTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 4, 2);
         var table = (ITable)slide.Shapes.Last();
-        
+
         // Act
         table.MergeCells(table[0, 1], table[1, 1]);
 
@@ -1032,7 +1032,7 @@ public class TableTests : SCTest
         var aTableRow = (TableRow)table.Rows[0];
         aTableRow.ATableRow.Elements<A.TableCell>().ToList()[2].RowSpan.Should().BeNull();
     }
-    
+
     [Test]
     [SlideShape("009_table.pptx", 3, 3, 3)]
     [SlideShape("001.pptx", 2, 5, 4)]
@@ -1064,8 +1064,8 @@ public class TableTests : SCTest
         // Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        var internalCell1 = (TableCell) cell1;
-        var internalCell2 = (TableCell) cell2;
+        var internalCell1 = (TableCell)cell1;
+        var internalCell2 = (TableCell)cell2;
         internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
         internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
@@ -1086,8 +1086,8 @@ public class TableTests : SCTest
         // Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        var internalCell1 = (TableCell) cell1;
-        var internalCell2 = (TableCell) cell2;
+        var internalCell1 = (TableCell)cell1;
+        var internalCell2 = (TableCell)cell2;
         internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
         internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
@@ -1108,12 +1108,12 @@ public class TableTests : SCTest
         // Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        var internalCell1 = (TableCell) cell1;
-        var internalCell2 = (TableCell) cell2;
+        var internalCell1 = (TableCell)cell1;
+        var internalCell2 = (TableCell)cell2;
         internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
         internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
-    
+
     [Test]
     [TestCase(0, 0, 0, 1)]
     [TestCase(0, 1, 0, 0)]
@@ -1137,7 +1137,7 @@ public class TableTests : SCTest
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
     }
-    
+
     [Test]
     public void AltText_Setter_sets_alternative_text()
     {
@@ -1152,7 +1152,7 @@ public class TableTests : SCTest
         table.AltText.Should().Be("Alt text");
         pres.Validate();
     }
-    
+
     [Test]
     [TestCase(true, false, false, false, false, false)]
     [TestCase(false, true, false, false, false, false)]
@@ -1161,11 +1161,11 @@ public class TableTests : SCTest
     [TestCase(false, false, false, false, true, false)]
     [TestCase(false, false, false, false, false, true)]
     public void TableStyleOptions_property_setters_set_table_style_options(
-        bool hasHeaderRow, 
-        bool hasTotalRow, 
-        bool hasBandedRows, 
-        bool hasFirstColumn, 
-        bool hasLastColumn, 
+        bool hasHeaderRow,
+        bool hasTotalRow,
+        bool hasBandedRows,
+        bool hasFirstColumn,
+        bool hasLastColumn,
         bool hasBandedColumns)
     {
         // Arrange
@@ -1194,7 +1194,7 @@ public class TableTests : SCTest
         table.TableStyleOptions.HasLastColumn.Should().Be(hasLastColumn);
         table.TableStyleOptions.HasBandedColumns.Should().Be(hasBandedColumns);
     }
-    
+
     [Test]
     public void TableStyleOptions_property_getters_return_table_style_options()
     {
@@ -1215,7 +1215,7 @@ public class TableTests : SCTest
         options.HasLastColumn.Should().BeFalse();
         options.HasBandedColumns.Should().BeFalse();
     }
-    
+
     [Test]
     public void Height_Setter_should_proportionally_increase_the_row_heights_When_the_new_table_height_is_bigger()
     {
@@ -1223,13 +1223,69 @@ public class TableTests : SCTest
         var pres = new Presentation();
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
         var addedTable = pres.Slide(1).Shapes.Last<ITable>();
-        
+
         // Act
         addedTable.Height *= 1.5m;
-        
+
         // Assert
         addedTable.Rows[0].Height.Should().BeApproximately(43, 0.01m);
         addedTable.Rows[1].Height.Should().Be(43);
         pres.Validate();
+    }
+
+    [Test]
+    public void Rows_Add_adds_row_at_the_specified_index()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+        var rowsCountBefore = table.Rows.Count;
+
+        // Act
+        table.Rows.Add(1);
+
+        // Assert
+        table.Rows.Should().HaveCount(rowsCountBefore + 1);
+        table.Rows[1].Cells[0].TextBox.Text.Should().BeEmpty();
+        pres = SaveAndOpenPresentation(pres);
+        table = pres.Slide(1).Table("Table 1");
+        table.Rows.Should().HaveCount(rowsCountBefore + 1);
+        pres.Validate();
+    }
+
+    [Test]
+    public void Rows_Add_adds_a_new_row_at_the_specified_index_with_the_template_height()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+        var templateRowIndex = 0;
+        var templateRowHeight = table.Rows[templateRowIndex].Height;
+
+        // Act
+        table.Rows.Add(1, templateRowIndex);
+
+        // Assert
+        pres = SaveAndOpenPresentation(pres);
+        table = pres.Slide(1).Table("Table 1");
+        table.Rows[1].Height.Should().Be(templateRowHeight);
+        pres.Validate();
+    }
+
+    [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/922")]
+    public void Rows_Add_adds_a_new_row_with_template_font_color()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case001.pptx"));
+        var table = pres.Slide(1).Table("Table 1");
+        var templateRowIndex = 0;
+        var templateFontColor = table.Rows[templateRowIndex].Cells[0].TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex;
+
+        // Act
+        table.Rows.Add(1, templateRowIndex);
+
+        // Assert
+        pres = SaveAndOpenPresentation(pres);
+        pres.Slide(1).Table("Table 1").Rows[1].Cells[0].Fill.Color.Should().Be(templateFontColor);
     }
 }

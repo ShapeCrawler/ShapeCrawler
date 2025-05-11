@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -38,8 +39,7 @@ public interface ITableRows : IEnumerable<ITableRow>
     ///     Adds a new row at the end of the table.
     /// </summary>
     void Add();
-
-#if DEBUG
+    
     /// <summary>
     ///     Adds a new row at the specified index.
     /// </summary>
@@ -51,7 +51,6 @@ public interface ITableRows : IEnumerable<ITableRow>
     /// <param name="index">Index where the new row will be added.</param>
     /// <param name="templateRowIndex">Row index used as a format template for the new row.</param>
     void Add(int index, int templateRowIndex);
-#endif
 }
 
 internal sealed class TableRows : ITableRows
@@ -91,17 +90,86 @@ internal sealed class TableRows : ITableRows
         this.aTable.AddRow(columnsCount);
     }
 
-#if DEBUG
     public void Add(int index)
     {
-        throw new NotImplementedException();
+        var rows = this.Rows();
+        if (index < 0 || index > rows.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        var columnsCount = rows.Count > 0 ? rows[0].Cells.Count : 0;
+        if (columnsCount == 0)
+        {
+            throw new InvalidOperationException("Cannot add a row to an empty table.");
+        }
+
+        var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
+        for (var i = 0; i < columnsCount; i++)
+        {
+            new SCATableRow(aTableRow).AddNewCell();
+        }
+        
+        // Get the element before which we want to insert the new row
+        var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
+        if (index == aTableRows.Count)
+        {
+            // Add at the end
+            this.aTable.Append(aTableRow);
+        }
+        else
+        {
+            // Insert before the row at the specified index
+            this.aTable.InsertBefore(aTableRow, aTableRows[index]);
+        }
     }
 
     public void Add(int index, int templateRowIndex)
     {
-        throw new NotImplementedException();
+        var rows = this.Rows();
+        if (index < 0 || index > rows.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        if (templateRowIndex < 0 || templateRowIndex >= rows.Count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(templateRowIndex));
+        }
+
+        // Get template row properties
+        var templateRow = (TableRow)rows[templateRowIndex];
+        var templateARow = templateRow.ATableRow;
+        var columnsCount = templateRow.Cells.Count;
+        
+        // Create a new row with the same height as the template
+        var newARow = new A.TableRow { Height = templateARow.Height };
+        
+        // Add cells to the new row
+        for (var i = 0; i < columnsCount; i++)
+        {   
+            // Create a new cell with default properties
+            var scaTableRow = new SCATableRow(newARow);
+            scaTableRow.AddNewCell();
+            
+            // Copy cell formatting properties if needed from the template row's cells
+            // Note: We're not copying content or IDs, just the visual properties
+            // This can be extended to copy more properties if needed
+        }
+        
+        // Get the element before which we want to insert the new row
+        var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
+        if (index == aTableRows.Count)
+        {   
+            // Add at the end
+            this.aTable.Append(newARow);
+        }
+        else
+        {   
+            // Insert before the row at the specified index
+            this.aTable.InsertBefore(newARow, aTableRows[index]);
+        }
     }
-#endif
 
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
 

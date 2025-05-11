@@ -1,49 +1,32 @@
-using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Colors;
 
-internal readonly ref struct ShapeColor
+internal readonly ref struct ShapeColor(PresentationColor presColor, P.Shape pShape)
 {
-    private readonly P.Shape pShape;
-    private readonly PresentationColor presColor;
-
-    internal ShapeColor(OpenXmlPart openXmlPart, A.Text aText)
-        : this(new PresentationColor(openXmlPart), aText.Ancestors<P.Shape>().First())
-    {
-    }
-
-    internal ShapeColor(PresentationColor presColor, P.Shape pShape)
-    {
-        this.pShape = pShape;
-        this.presColor = presColor;
-    }
-
     internal string? HexOrNull()
     {
-        if (this.pShape.ShapeStyle == null)
+        if (pShape.ShapeStyle == null)
         {
             return null;
         }
 
-        var sdkAFontReference = this.pShape.ShapeStyle.FontReference!;
-        if (sdkAFontReference.RgbColorModelHex != null)
+        var aFontReference = pShape.ShapeStyle.FontReference!;
+        if (aFontReference.RgbColorModelHex != null)
         {
-            return sdkAFontReference.RgbColorModelHex.Val;
+            return aFontReference.RgbColorModelHex.Val;
         }
 
-        if (sdkAFontReference.SchemeColor != null)
+        if (aFontReference.SchemeColor != null)
         {
-            return this.presColor.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
+            return presColor.ThemeColorHex(aFontReference.SchemeColor.Val!);
         }
 
-        if (sdkAFontReference.PresetColor != null)
+        if (aFontReference.PresetColor != null)
         {
-            var coloName = sdkAFontReference.PresetColor.Val!.Value.ToString();
+            var colorName = aFontReference.PresetColor.Val!.Value.ToString();
             
-            return ColorTranslator.HexFromName(coloName);
+            return ColorTranslator.HexFromName(colorName);
         }
 
         return null;
@@ -51,12 +34,12 @@ internal readonly ref struct ShapeColor
 
     internal ColorType? TypeOrNull()
     {
-        if (this.pShape.ShapeStyle == null)
+        if (pShape.ShapeStyle == null)
         {
             return null;
         }
         
-        var aFontReference = this.pShape.ShapeStyle.FontReference!;
+        var aFontReference = pShape.ShapeStyle.FontReference!;
         if (aFontReference.RgbColorModelHex != null)
         {
             return ColorType.RGB;
