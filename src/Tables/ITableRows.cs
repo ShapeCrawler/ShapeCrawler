@@ -39,8 +39,7 @@ public interface ITableRows : IEnumerable<ITableRow>
     ///     Adds a new row at the end of the table.
     /// </summary>
     void Add();
-
-#if DEBUG
+    
     /// <summary>
     ///     Adds a new row at the specified index.
     /// </summary>
@@ -52,7 +51,6 @@ public interface ITableRows : IEnumerable<ITableRow>
     /// <param name="index">Index where the new row will be added.</param>
     /// <param name="templateRowIndex">Row index used as a format template for the new row.</param>
     void Add(int index, int templateRowIndex);
-#endif
 }
 
 internal sealed class TableRows : ITableRows
@@ -92,7 +90,6 @@ internal sealed class TableRows : ITableRows
         this.aTable.AddRow(columnsCount);
     }
 
-#if DEBUG
     public void Add(int index)
     {
         var rows = this.Rows();
@@ -173,7 +170,6 @@ internal sealed class TableRows : ITableRows
             this.aTable.InsertBefore(newARow, aTableRows[index]);
         }
     }
-#endif
 
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
 
