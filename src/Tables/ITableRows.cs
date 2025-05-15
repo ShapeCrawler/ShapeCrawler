@@ -138,10 +138,9 @@ internal sealed class TableRows : ITableRows
         }
 
         // Get template row properties
-        var templateRow = (TableRow)rows[templateRowIndex];
+        var templateRow = rows[templateRowIndex];
         var templateARow = templateRow.ATableRow;
-        var columnsCount = templateRow.Cells.Count;
-        
+
         // Create a new row with the same height as the template
         var newARow = new A.TableRow { Height = templateARow.Height };
         
