@@ -432,20 +432,19 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit("Should be fixed")]
-    public void AddPicture_should_not_duplicate_the_image_source_When_slide_is_copied()
+    public void AddPicture_doesnt_duplicate_image_part()
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMaster(0).SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
         pres.Slides.Add(layout.Number);
-        var slide = pres.Slides[0];
-        var shapes = slide.Shapes;
+        var slide1 = pres.Slide(1);
+        var slide1Shapes = slide1.Shapes;
         var image = TestAsset("09 png image.png");
-        shapes.AddPicture(image);
+        slide1Shapes.AddPicture(image);
 
         // Act
-        pres.Slides.Add(slide);
+        pres.Slides.Add(slide1);
 
         // Assert
         var sdkPres = SaveAndOpenPresentationAsSdk(pres);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Presentations;
@@ -142,6 +143,20 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         AddNewSlideId(targetPresDocument, addedSlidePart);
         var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(targetPresDocument, masterId);
+
+        // Build a map of existing image parts in the target presentation keyed by the SHA512 hash of their content.
+        var existingImagePartsByHash = new Dictionary<string, ImagePart>();
+        foreach (var existingImagePart in targetPresPart.SlideParts.SelectMany(sp => sp.ImageParts))
+        {
+            var hash = ComputeHash(existingImagePart);
+            if (!existingImagePartsByHash.ContainsKey(hash))
+            {
+                existingImagePartsByHash.Add(hash, existingImagePart);
+            }
+        }
+
+        // After the slide part has been added, deduplicate any image parts that are identical to existing ones.
+        DeduplicateImageParts(addedSlidePart, existingImagePartsByHash);
     }
     
     private static void CopySlideContent(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
@@ -373,5 +388,33 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         }
         
         return null;
+    }
+
+    private static string ComputeHash(OpenXmlPart part)
+    {
+        using var sha512 = SHA512.Create();
+        using var stream = part.GetStream();
+        stream.Position = 0;
+        var hash = sha512.ComputeHash(stream);
+        stream.Position = 0;
+        return Convert.ToBase64String(hash);
+    }
+
+    private static void DeduplicateImageParts(SlidePart addedSlidePart, IDictionary<string, ImagePart> existingImagePartsByHash)
+    {
+        foreach (var imagePart in addedSlidePart.ImageParts.ToList())
+        {
+            var hash = ComputeHash(imagePart);
+            if (existingImagePartsByHash.TryGetValue(hash, out var existingPart) && !ReferenceEquals(existingPart, imagePart))
+            {
+                var relId = addedSlidePart.GetIdOfPart(imagePart);
+                addedSlidePart.DeletePart(imagePart);
+                addedSlidePart.AddPart(existingPart, relId);
+            }
+            else
+            {
+                existingImagePartsByHash[hash] = imagePart;
+            }
+        }
     }
 }

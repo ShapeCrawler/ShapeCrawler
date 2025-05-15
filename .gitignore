@@ -348,4 +348,4 @@ coverage/
 /scripts/Output/
 
 # windsurf rules
-.windsurfrules
+.windsurf/
