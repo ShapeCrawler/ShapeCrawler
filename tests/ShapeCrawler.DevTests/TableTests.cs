@@ -1272,7 +1272,7 @@ public class TableTests : SCTest
         pres.Validate();
     }
 
-    [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/922")]
+    [Test]
     public void Rows_Add_adds_a_new_row_with_template_font_color()
     {
         // Arrange

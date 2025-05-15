@@ -33,11 +33,16 @@ internal sealed class FontColor(A.Text aText): IFontColor
             }
 
             // From Shape
-            var pShape = aText.Ancestors<P.Shape>().First();
-            var shapeColor = new ShapeColor(new PresentationColor(openXmlPart), pShape);
-            var type = shapeColor.TypeOrNull();
-            
-            return type.HasValue ? (ColorType)type : ColorType.RGB;
+            var pShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+            if (pShape != null)
+            {
+                var shapeColor = new ShapeColor(new PresentationColor(openXmlPart), pShape);
+                var type = shapeColor.TypeOrNull();
+                
+                return type.HasValue ? (ColorType)type : ColorType.RGB;
+            }
+
+            return ColorType.RGB;
         }
     }
 
@@ -126,8 +131,21 @@ internal sealed class FontColor(A.Text aText): IFontColor
 
     private string? GetTextBodyHex(int indentLevel)
     {
-        var pTextBody = aText.Ancestors<P.TextBody>().First();
-        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>() !).FontOrNull(indentLevel);
+        var textBody = aText.Ancestors<P.TextBody>().FirstOrDefault() as OpenXmlCompositeElement
+                       ?? aText.Ancestors<A.TextBody>().FirstOrDefault();
+
+        if (textBody == null)
+        {
+            return null;
+        }
+
+        var listStyle = textBody.GetFirstChild<A.ListStyle>();
+        if (listStyle == null)
+        {
+            return null;
+        }
+
+        var textBodyStyleFont = new IndentFonts(listStyle).FontOrNull(indentLevel);
         
         if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
         {
@@ -139,15 +157,18 @@ internal sealed class FontColor(A.Text aText): IFontColor
 
     private string? GetShapeHex(OpenXmlPart openXmlPart)
     {
-        // From Shape
-        var pShape = aText.Ancestors<P.Shape>().First();
-        var sdkSlidePShapeWrap = new ShapeColor(new PresentationColor(openXmlPart), pShape);
-        string? shapeFontColorHex = sdkSlidePShapeWrap.HexOrNull();
-        if (shapeFontColorHex != null)
+        // From Shape (table cell text may not be inside a P.Shape)
+        var pShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape != null)
         {
-            return shapeFontColorHex;
+            var sdkSlidePShapeWrap = new ShapeColor(new PresentationColor(openXmlPart), pShape);
+            string? shapeFontColorHex = sdkSlidePShapeWrap.HexOrNull();
+            if (shapeFontColorHex != null)
+            {
+                return shapeFontColorHex;
+            }
         }
-
+        
         // From Referenced Shape
         if (openXmlPart is not SlideMasterPart)
         {
@@ -187,9 +208,21 @@ internal sealed class FontColor(A.Text aText): IFontColor
     {
         var aParagraph = aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-        var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
-        var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
-        var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
+        var textBody = aParagraph.Ancestors<P.TextBody>().FirstOrDefault() as OpenXmlCompositeElement
+                        ?? aParagraph.Ancestors<A.TextBody>().FirstOrDefault();
+
+        if (textBody == null)
+        {
+            return null;
+        }
+
+        var listStyle = textBody.GetFirstChild<A.ListStyle>();
+        if (listStyle == null)
+        {
+            return null;
+        }
+
+        var textBodyStyleFont = new IndentFonts(listStyle).FontOrNull(indentLevel);
         
         if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
         {

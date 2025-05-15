@@ -178,7 +178,13 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
 
     private string? LayoutColorHexOrNull()
     {
-        var pShape = aText.Ancestors<P.Shape>().First();
+        var pShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape == null)
+        {
+            // Text may belong to a table cell or other element not contained in a P.Shape.
+            return null;
+        }
+
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholderShape == null)
@@ -233,7 +239,13 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
     private string? SlideColorHexOrNull()
     {
         // Get basic shape and placeholder information
-        var pShape = aText.Ancestors<P.Shape>().First();
+        var pShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape == null)
+        {
+            // Text may belong to a table cell or other element not contained in a P.Shape.
+            return null;
+        }
+
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
 
@@ -366,7 +378,12 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
     {
         var aParagraph = aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-        var slidePShape = aText.Ancestors<P.Shape>().First();
+        var slidePShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (slidePShape == null)
+        {
+            return null;
+        }
+
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (slidePh == null)
