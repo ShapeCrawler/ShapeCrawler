@@ -1,4 +1,8 @@
 # Changelog  
+
+## Version 0.69.0 - Unreleased
+🍀Added support adding table row with template [#922](https://github.com/ShapeCrawler/ShapeCrawler/issues/922)    
+
 ## Version 0.68.1 - 2025-05-15
 🐞Fix grouped shape X, Y, Width and Height [#599](https://github.com/ShapeCrawler/ShapeCrawler/issues/599)  
 
