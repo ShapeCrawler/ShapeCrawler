@@ -1,5 +1,5 @@
 # Changelog  
-## Version 0.68.1 - Unreleased
+## Version 0.68.1 - 2025-05-15
 🐞Fix grouped shape X, Y, Width and Height [#599](https://github.com/ShapeCrawler/ShapeCrawler/issues/599)  
 
 ## Version 0.68.0 - 2025-05-08

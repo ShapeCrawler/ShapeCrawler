@@ -103,11 +103,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.68.0 - 2025-05-08
-🍀Added support adding Scatter Chart [#65](https://github.com/ShapeCrawler/ShapeCrawler/issues/65)    
-🍀Added support adding Stacked Column Chart [#221](https://github.com/ShapeCrawler/ShapeCrawler/issues/221)    
-🐞Fixed adding slide with a certain layout [#933](https://github.com/ShapeCrawler/ShapeCrawler/issues/933)  
-🐞Fixed adding slide [#956](https://github.com/ShapeCrawler/ShapeCrawler/issues/956)  
-🐞Fixed adding picture [#935](https://github.com/ShapeCrawler/ShapeCrawler/issues/935)  
+### Version 0.68.1 - 2025-05-15
+🐞Fix grouped shape X, Y, Width and Height [#599](https://github.com/ShapeCrawler/ShapeCrawler/issues/599)  
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.

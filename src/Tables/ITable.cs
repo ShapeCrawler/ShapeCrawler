@@ -162,7 +162,19 @@ internal sealed class Table : Shape, ITable
     {
         base.Height = value;
     }
-
+    
+    private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
+    {
+        foreach (var aTblRow in aTableRows)
+        {
+            var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx + 1).Take(deleteColumnCount).ToList();
+            foreach (var aTblCell in removeCells)
+            {
+                aTblCell.Remove();
+            }
+        }
+    }
+    
     private void SetTableStyle(ITableStyle style)
     {
         this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = ((TableStyle)style).Guid;
@@ -310,7 +322,7 @@ internal sealed class Table : Shape, ITable
         this.DeleteAndUpdateGridColumns(colIdx, deleteColumnCount);
 
         // Delete a:tc elements
-        this.DeleteTableCells(colIdx, deleteColumnCount, aTableRows);
+        DeleteTableCells(colIdx, deleteColumnCount, aTableRows);
 
         return topColumnCellSpan;
     }
@@ -322,18 +334,6 @@ internal sealed class Table : Shape, ITable
             var column = (Column)this.Columns[colIdx + 1 + i];
             column.AGridColumn.Remove();
             this.Columns[colIdx].Width += column.Width;
-        }
-    }
-
-    private void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
-    {
-        foreach (var aTblRow in aTableRows)
-        {
-            var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx + 1).Take(deleteColumnCount).ToList();
-            foreach (var aTblCell in removeCells)
-            {
-                aTblCell.Remove();
-            }
         }
     }
 }
