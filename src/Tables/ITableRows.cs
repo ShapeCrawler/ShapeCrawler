@@ -138,23 +138,52 @@ internal sealed class TableRows : ITableRows
         }
 
         // Get template row properties
-        var templateRow = (TableRow)rows[templateRowIndex];
+        var templateRow = rows[templateRowIndex];
         var templateARow = templateRow.ATableRow;
-        var columnsCount = templateRow.Cells.Count;
-        
+
         // Create a new row with the same height as the template
         var newARow = new A.TableRow { Height = templateARow.Height };
         
-        // Add cells to the new row
-        for (var i = 0; i < columnsCount; i++)
-        {   
-            // Create a new cell with default properties
-            var scaTableRow = new SCATableRow(newARow);
-            scaTableRow.AddNewCell();
+        var templateACells = templateARow.Elements<A.TableCell>().ToList();
+        
+        // Build each cell of the new row based on the template cell formatting (fill, borders, etc.)
+        foreach (var (templateACell, columnIndex) in templateACells.Select((c, i) => (c, i)))
+        {
+            // Create a brand-new table cell with an empty text body
+            var newACell = new A.TableCell();
+            var textBody = new A.TextBody(
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" }));
+            newACell.Append(textBody);
             
-            // Copy cell formatting properties if needed from the template row's cells
-            // Note: We're not copying content or IDs, just the visual properties
-            // This can be extended to copy more properties if needed
+            // Determine template cell properties and font color
+            var templateCell = templateRow.Cells[columnIndex];
+            var templateFontColor = templateCell.TextBox.Paragraphs.FirstOrDefault()?.Portions.FirstOrDefault()?.Font?.Color.Hex;
+            
+            A.TableCellProperties newTcPr;
+            if (templateACell.TableCellProperties is not null)
+            {
+                // Clone existing TableCellProperties from template
+                newTcPr = (A.TableCellProperties)templateACell.TableCellProperties.CloneNode(true);
+            }
+            else
+            {
+                newTcPr = new A.TableCellProperties();
+            }
+            
+            if (!string.IsNullOrEmpty(templateFontColor))
+            {
+                newTcPr.AddSolidFill(templateFontColor!);
+            }
+            else
+            {
+                newTcPr.AddSolidFill("000000"); // default color
+            }
+
+            newACell.Append(newTcPr);
+            
+            newARow.Append(newACell);
         }
         
         // Get the element before which we want to insert the new row
