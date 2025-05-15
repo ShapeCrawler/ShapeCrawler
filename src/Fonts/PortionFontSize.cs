@@ -52,7 +52,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
             if (parentShape?.PlaceholderType != null)
             {
-                var bodyStyleFontSize = this.GetFontSizeFromBodyStyle(slideMasterPart, indentLevel);
+                var bodyStyleFontSize = GetFontSizeFromBodyStyle(slideMasterPart, indentLevel);
                 if (bodyStyleFontSize.HasValue)
                 {
                     return bodyStyleFontSize.Value;
@@ -77,7 +77,14 @@ internal class PortionFontSize(A.Text aText): IFontSize
             aRunPr.FontSize = (int)(value * 100);
         }
     }
-
+    
+    private static decimal? GetFontSizeFromBodyStyle(SlideMasterPart slideMasterPart, int indentLevel)
+    {
+        var indentFonts = new IndentFonts(slideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
+        var indentFont = indentFonts.FontOrNull(indentLevel);
+        return indentFont?.Size != null ? indentFont.Value.Size!.Value / 100m : null;
+    }
+    
     private static decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
     {
         if (shape.PlaceholderType == null)
@@ -163,14 +170,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
         return null;
     }
-
-    private decimal? GetFontSizeFromBodyStyle(SlideMasterPart slideMasterPart, int indentLevel)
-    {
-        var indentFonts = new IndentFonts(slideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
-        var indentFont = indentFonts.FontOrNull(indentLevel);
-        return indentFont?.Size != null ? indentFont.Value.Size!.Value / 100m : null;
-    }
-
+    
     private decimal? GetFontSizeFromThemeDefaults(int indentLevel)
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;

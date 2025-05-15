@@ -209,7 +209,7 @@ internal sealed class TextBox: ITextBox
     public void SetMarkdownText(string text)
     {
         var lines = Regex.Split(text, "\r\n|\r|\n", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
-        if (this.IsList(lines))
+        if (IsList(lines))
         {
             this.RenderList(lines);
         }
@@ -294,6 +294,12 @@ internal sealed class TextBox: ITextBox
             this.UpdateShapeWidth();
         }
     }
+    
+    // Detect if the text represents a markdown list
+    private static bool IsList(string[] lines)
+    {
+        return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
+    }
 
     private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
     {
@@ -362,12 +368,6 @@ internal sealed class TextBox: ITextBox
         var position = new Position(parentShape);
         var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
         position.Y -= yOffset;
-    }
-
-    // Detect if the text represents a markdown list
-    private bool IsList(string[] lines)
-    {
-        return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
     }
 
     // Render markdown list items as bullet paragraphs

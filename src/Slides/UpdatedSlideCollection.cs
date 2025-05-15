@@ -110,7 +110,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
         CopySlideContent(sourceSlidePart, clonedSlidePart);
         CopyCustomXmlParts(sourceSlidePart, clonedSlidePart);
-        this.LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
+        LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, number);
         
         // Save changes
@@ -294,7 +294,28 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         };
         targetSdkPresDoc.PresentationPart!.Presentation.SlideIdList!.Append(slideId);
     }
-
+    
+    private static bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
+    {
+        // Compare by type if available
+        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
+        {
+            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
+        }
+        
+        // Otherwise compare by name
+        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
+        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
+        
+        if (name1 != null && name2 != null)
+        {
+            return name1 == name2;
+        }
+        
+        // If no reliable way to compare, just return false to be safe
+        return false;
+    }
+    
     private static uint CreateId(P.SlideIdList slideIdList)
     {
         uint currentId = 0;
@@ -324,7 +345,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         return currentId + 1;
     }
     
-    private void LinkToLayoutPart(SlidePart sourceSlidePart, SlidePart clonedSlidePart, PresentationPart presentationPart)
+    private static void LinkToLayoutPart(SlidePart sourceSlidePart, SlidePart clonedSlidePart, PresentationPart presentationPart)
     {
         var sourceLayoutPart = sourceSlidePart.SlideLayoutPart;
         if (sourceLayoutPart == null)
@@ -332,19 +353,19 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             return;
         }
 
-        var targetLayoutPart = this.FindMatchingLayout(presentationPart, sourceLayoutPart) ?? CreateNewLayout(presentationPart, sourceLayoutPart);
+        var targetLayoutPart = FindMatchingLayout(presentationPart, sourceLayoutPart) ?? CreateNewLayout(presentationPart, sourceLayoutPart);
 
         // Link the new slide to the layout
         clonedSlidePart.AddPart(targetLayoutPart);
     }
 
-    private SlideLayoutPart? FindMatchingLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
+    private static SlideLayoutPart? FindMatchingLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
     {
         foreach (var masterPart in presentationPart.SlideMasterParts)
         {
             foreach (var layoutPart in masterPart.SlideLayoutParts)
             {
-                if (this.LayoutsMatch(layoutPart, sourceLayoutPart))
+                if (LayoutsMatch(layoutPart, sourceLayoutPart))
                 {
                     return layoutPart;
                 }
@@ -352,26 +373,5 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         }
         
         return null;
-    }
-    
-    private bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
-    {
-        // Compare by type if available
-        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
-        {
-            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
-        }
-        
-        // Otherwise compare by name
-        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
-        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
-        
-        if (name1 != null && name2 != null)
-        {
-            return name1 == name2;
-        }
-        
-        // If no reliable way to compare, just return false to be safe
-        return false;
     }
 }
