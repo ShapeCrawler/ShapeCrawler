@@ -174,10 +174,7 @@ internal sealed class TableRows : ITableRows
             
             if (!string.IsNullOrEmpty(templateFontColor))
             {
-                if (templateFontColor != null)
-                {
-                    newTcPr.AddSolidFill(templateFontColor);
-                }
+                newTcPr.AddSolidFill(templateFontColor!);
             }
             else
             {
