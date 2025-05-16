@@ -452,6 +452,22 @@ namespace ShapeCrawler.DevTests
             cellTextBox.Paragraphs[0].Text.Should().BeEquivalentTo("Text 1");
             cellTextBox.Paragraphs[1].Text.Should().BeEquivalentTo("Text 2");
         }
+        
+        [Test]
+        [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
+        public void SetText_preserves_new_lines(IShape shape)
+        {
+            // Arrange
+            var expectedText = "Hello" + Environment.NewLine + Environment.NewLine + "World";
+            var textBox = shape.TextBox!;
+        
+            // Act
+            var newText = textBox.Text.Replace("World", "Earth");
+            textBox.SetText(newText);
+
+            // Assert
+            textBox.Text.Should().Be(expectedText);
+        }
 
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 6", false)]
@@ -570,7 +586,7 @@ namespace ShapeCrawler.DevTests
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox;
+            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
             var mStream = new MemoryStream();
 
             // Act
@@ -581,14 +597,14 @@ namespace ShapeCrawler.DevTests
 
             pres.Save(mStream);
             pres = new Presentation(mStream);
-            textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox;
+            textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
             textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
         }
 
         [Test]
         [TestCase("054_get_shape_xpath.pptx", 1, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
         [TestCase("054_get_shape_xpath.pptx", 2, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
-        public void SDKXPath_returns_xpath_of_undelying_txBody_element(string presentationName, int slideNumber,
+        public void SDKXPath_returns_xpath_of_underlying_txBody_element(string presentationName, int slideNumber,
             string expectedXPath)
         {
             // Arrange
