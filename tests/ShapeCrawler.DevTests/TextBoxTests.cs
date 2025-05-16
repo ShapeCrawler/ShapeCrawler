@@ -93,15 +93,15 @@ namespace ShapeCrawler.DevTests
             shapes.AddShape(100, 100, 200, 200);
             var shape = shapes.Last();
             var textBox = shape.TextBox!;
-            
+
             // Act
             textBox.SetMarkdownText("**Hello** World!");
-            
+
             // Assert
             textBox.Paragraphs[0].Portions[0].Font!.IsBold.Should().BeTrue();
             textBox.Paragraphs[0].Portions[1].Font!.IsBold.Should().BeFalse();
         }
-        
+
         [Test]
         public void SetMarkdownText_sets_list()
         {
@@ -117,12 +117,12 @@ namespace ShapeCrawler.DevTests
                        """;
             // Act
             textBox.SetMarkdownText(list);
-            
+
             // Assert
             textBox.Paragraphs[0].Bullet.Type.Should().NotBe(BulletType.None);
             pres.Validate();
         }
-        
+
         [Test]
         [Platform(Exclude = "Linux", Reason = "Test fails on ubuntu-latest")]
         public void SetText_resizes_shape_to_fit_text()
@@ -157,7 +157,7 @@ namespace ShapeCrawler.DevTests
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
             textBox.Paragraphs.Add();
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
-            
+
             // Assert
             shape.Height.Should().BeApproximately(95m, 1m);
         }
@@ -366,8 +366,9 @@ namespace ShapeCrawler.DevTests
         }
 
         [Test]
-		[SlideShape("014.pptx", 2, 5, TextVerticalAlignment.Middle)] 
-		public void VerticalAlignment_Getter_returns_vertical_alignment(IShape shape, TextVerticalAlignment expectedVAlignment)
+        [SlideShape("014.pptx", 2, 5, TextVerticalAlignment.Middle)]
+        public void VerticalAlignment_Getter_returns_vertical_alignment(IShape shape,
+            TextVerticalAlignment expectedVAlignment)
         {
             // Arrange
             var textBox = shape.TextBox;
@@ -433,6 +434,23 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             textBox.Text.Should().BeEquivalentTo("some text");
+        }
+
+        [Test]
+        public void SetText_adds_two_paragraphs_in_the_table_cell()
+        {
+            // Arrange
+            var pres = new Presentation();
+            var shapes = pres.Slide(1).Shapes;
+            shapes.AddTable(50, 50, 2, 2);
+            var cellTextBox = pres.Slide(1).First<ITable>()[0, 0].TextBox!;
+
+            // Act
+            cellTextBox.SetText($"Text 1{Environment.NewLine}Text 2");
+
+            // Assert
+            cellTextBox.Paragraphs[0].Text.Should().BeEquivalentTo("Text 1");
+            cellTextBox.Paragraphs[1].Text.Should().BeEquivalentTo("Text 2");
         }
 
         [Test]
@@ -516,7 +534,7 @@ namespace ShapeCrawler.DevTests
         {
             // Arrange
             var expectedMarginDecimal = (decimal)expectedMargin;
-            
+
             // Act & Assert
             shape.TextBox.RightMargin.Should().Be(expectedMarginDecimal);
         }
@@ -524,7 +542,8 @@ namespace ShapeCrawler.DevTests
         [Test]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 2", 3.69)]
         [SlideShape("autoshape-case003.pptx", 1, "AutoShape 3", 3.96)]
-        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape,
+            double expectedMargin)
         {
             // Arrange
             var expectedMarginDecimal = (decimal)expectedMargin;
@@ -544,31 +563,33 @@ namespace ShapeCrawler.DevTests
             shape.TextBox.BottomMargin.Should().Be(expectedMarginDecimal);
         }
 
-		[Test]
-		[TestCase("001.pptx", 1, "TextBox 4")]
-		public void VerticalAlignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber, string shapeName)
-		{
-			// Arrange
-			var pres = new Presentation(TestAsset(presName));
-			var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox;
-			var mStream = new MemoryStream();
+        [Test]
+        [TestCase("001.pptx", 1, "TextBox 4")]
+        public void VerticalAlignment_Setter_updates_text_vertical_alignment(string presName, int slideNumber,
+            string shapeName)
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset(presName));
+            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox;
+            var mStream = new MemoryStream();
 
-			// Act
-			textbox.VerticalAlignment = TextVerticalAlignment.Bottom;
+            // Act
+            textbox.VerticalAlignment = TextVerticalAlignment.Bottom;
 
-			// Assert
-			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+            // Assert
+            textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
 
-			pres.Save(mStream);
-			pres = new Presentation(mStream);
-			textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox;
-			textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
-		}
+            pres.Save(mStream);
+            pres = new Presentation(mStream);
+            textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox;
+            textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+        }
 
-		[Test]
+        [Test]
         [TestCase("054_get_shape_xpath.pptx", 1, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
         [TestCase("054_get_shape_xpath.pptx", 2, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
-        public void SDKXPath_returns_xpath_of_undelying_txBody_element(string presentationName, int slideNumber, string expectedXPath)
+        public void SDKXPath_returns_xpath_of_undelying_txBody_element(string presentationName, int slideNumber,
+            string expectedXPath)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presentationName));

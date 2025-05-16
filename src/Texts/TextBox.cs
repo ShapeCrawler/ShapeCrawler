@@ -223,27 +223,50 @@ internal sealed class TextBox: ITextBox
     
     public void SetText(string text)
     {
+        // Split text by newlines to handle multiple paragraphs
+        var textLines = text.Split([Environment.NewLine, "\n"], StringSplitOptions.None);
+        
+        // Clear existing paragraphs except the first one
         var paragraphs = this.Paragraphs.ToList();
-        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
-        if (portionPara == null)
+        var firstParagraph = paragraphs.FirstOrDefault();
+        
+        if (firstParagraph == null)
         {
-            portionPara = paragraphs.First();
-            portionPara.Portions.AddText(text);
+            // If no paragraphs exist, create one
+            this.Paragraphs.Add();
+            firstParagraph = this.Paragraphs[0];
         }
         else
         {
-            var removingParagraphs = paragraphs.Where(p => p != portionPara);
-            foreach (var p in removingParagraphs)
+            // Remove all but the first paragraph
+            foreach (var p in paragraphs.Skip(1))
             {
                 p.Remove();
             }
-
-            portionPara.Text = text;
+            
+            // Clear portions in the first paragraph
+            foreach (var portion in firstParagraph.Portions.ToList())
+            {
+                portion.Remove();
+            }
+        }
+        
+        // Add the first line to the first paragraph
+        if (textLines.Length > 0)
+        {
+            firstParagraph.Portions.AddText(textLines[0]);
+        }
+        
+        // Add additional paragraphs for each remaining line
+        for (int i = 1; i < textLines.Length; i++)
+        {
+            this.Paragraphs.Add();
+            this.Paragraphs[i].Portions.AddText(textLines[i]);
         }
 
         if (this.AutofitType == AutofitType.Shrink)
         {
-            this.ShrinkText(text, portionPara);
+            this.ShrinkText(text, firstParagraph);
         }
 
         this.ResizeParentShapeOnDemand();
