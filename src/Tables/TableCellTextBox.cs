@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
@@ -136,22 +136,58 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
     public void SetText(string text)
     {
-        var paragraphs = this.Paragraphs.ToList();
-        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Count != 0);
-        if (portionPara == null)
+        // Split text by newlines to handle multiple paragraphs
+        var textLines = text.Split([Environment.NewLine, "\n"], StringSplitOptions.None);
+        
+        // Clear all existing paragraphs
+        var existingParagraphs = this.Paragraphs.ToList();
+        var firstParagraph = existingParagraphs.FirstOrDefault();
+        
+        // Keep only the first paragraph and clear all its portions
+        if (firstParagraph == null)
         {
-            portionPara = paragraphs.First();
-            portionPara.Portions.AddText(text);
+            // Create a paragraph if none exists
+            this.Paragraphs.Add();
+            firstParagraph = this.Paragraphs[0];
         }
         else
         {
-            var removingParagraphs = paragraphs.Where(p => p != portionPara);
-            foreach (var removingParagraph in removingParagraphs)
+            // Remove all paragraphs after the first one
+            foreach (var p in existingParagraphs.Skip(1))
             {
-                removingParagraph.Remove();
+                p.Remove();
             }
-
-            portionPara.Text = text;
+            
+            // Clear all portions in the first paragraph
+            foreach (var portion in firstParagraph.Portions.ToList())
+            {
+                portion.Remove();
+            }
+        }
+        
+        // Add the first line of text to the first paragraph
+        if (textLines.Length > 0)
+        {
+            firstParagraph.Portions.AddText(textLines[0]);
+        }
+        
+        // Create a new paragraph for each additional line
+        for (int i = 1; i < textLines.Length; i++)
+        {
+            // Add a new paragraph
+            this.Paragraphs.Add();
+            
+            // Get the newly created paragraph
+            var newParagraph = this.Paragraphs[i];
+            
+            // Clear any existing portions (since it was cloned from the previous paragraph)
+            foreach (var portion in newParagraph.Portions.ToList())
+            {
+                portion.Remove();
+            }
+            
+            // Add the text for this line
+            newParagraph.Portions.AddText(textLines[i]);
         }
     }
 }

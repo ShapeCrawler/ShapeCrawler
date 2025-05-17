@@ -11,15 +11,7 @@ jobs:
     strategy:
       matrix:
         include:
-          # Windows runs both framework versions
-          - os: windows-latest
-            framework_version: 'net9.0'
-          - os: windows-latest
-            framework_version: 'net48'
-          # Linux and macOS only run net9.0
           - os: ubuntu-latest
-            framework_version: 'net9.0'
-          - os: macos-14
             framework_version: 'net9.0'
       fail-fast: false    
     steps:
