@@ -54,6 +54,11 @@ public interface IParagraph
     ///     Removes paragraph.
     /// </summary>
     void Remove();
+
+    /// <summary>
+    ///     Sets font size in points.
+    /// </summary>
+    void SetFontSize(int fontSize);
 }
 
 internal sealed class Paragraph : IParagraph

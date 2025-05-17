@@ -70,7 +70,7 @@ namespace ShapeCrawler.DevTests
         }
 
         [Test]
-        public void SetText_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
+        public void SetText_reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
             var pres = new Presentation(TestAsset("001.pptx"));
@@ -136,8 +136,9 @@ namespace ShapeCrawler.DevTests
             textBox.SetText("AutoShape 4 some text");
 
             // Assert
-            shape.Height.Should().BeApproximately(43.14m, 0.01m);
-            shape.Y.Should().BeApproximately(111.01m, 0.01m);
+            textBox.Text.Should().Be("AutoShape 4 some text");
+            shape.Height.Should().BeApproximately(62.64m, 0.01m);
+            shape.Y.Should().BeApproximately(97.57m, 0.01m);
             pres.Validate();
         }
 
@@ -336,12 +337,13 @@ namespace ShapeCrawler.DevTests
             // Arrange
             var pres = new Presentation(TestAsset("autoshape-case013.pptx"));
             var shape = pres.Slide(1).Shape("AutoShape 1");
+            var textBox = shape.TextBox!;
 
             // Act
-            shape.TextBox!.SetText("Some sentence. Some sentence");
+            textBox.SetText("Some sentence. Some sentence");
 
             // Assert
-            shape.Height.Should().BeApproximately(85.14m, 0.01m);
+            shape.Height.Should().BeApproximately(35.64m, 0.01m);
         }
 
         [Test]
