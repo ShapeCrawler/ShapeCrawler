@@ -83,7 +83,22 @@ namespace ShapeCrawler.DevTests
             textBox.Text.Should().BeEquivalentTo("Shrink text on overflow");
             textBox.Paragraphs[0].Portions[0].Font!.Size.Should().BeApproximately(8, 1);
         }
+        
+        [Test]
+        public void SetText_preserves_font()
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset("001.pptx"));
+            var textBox = pres.Slide(1).Shape("TextBox 8").TextBox!;
+            var expectedFont = textBox.Paragraphs[0].Portions[0].Font!.LatinName;
 
+            // Act
+            textBox.SetText("Shrink text on overflow");
+
+            // Assert
+            textBox.Paragraphs[0].Portions[0].Font!.LatinName.Should().BeEquivalentTo(expectedFont);
+        }
+        
         [Test]
         public void SetMarkdownText()
         {

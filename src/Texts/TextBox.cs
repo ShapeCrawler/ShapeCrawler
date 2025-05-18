@@ -258,7 +258,7 @@ internal sealed class TextBox: ITextBox
 
         if (this.AutofitType == AutofitType.Shrink)
         {
-            this.ShrinkText(text);
+            this.ShrinkFont(text);
         }
 
         this.ResizeParentShapeOnDemand();
@@ -335,7 +335,7 @@ internal sealed class TextBox: ITextBox
         this.vAlignment = alignmentValue;
     }
 
-    private void ShrinkText(string newText)
+    private void ShrinkFont(string newText)
     {
         var firstParagraph = this.Paragraphs.First();
         var popularFont = firstParagraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
@@ -469,7 +469,7 @@ internal sealed class TextBox: ITextBox
 
         if (this.AutofitType == AutofitType.Shrink)
         {
-            this.ShrinkText(text);
+            this.ShrinkFont(text);
         }
     }
 }
