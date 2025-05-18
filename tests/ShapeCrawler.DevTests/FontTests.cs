@@ -74,17 +74,14 @@ public class FontTests : SCTest
     [SlideShape("014.pptx", 5, 4, 12)]
     [SlideShape("014.pptx", 6, 52, 27)]
     [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
+    [SlideShape("001.pptx", 1, "TextBox 8", 11)]
     public void Size_Getter_returns_font_size(IShape shape, double expectedSize)
     {
         // Arrange
-        var autoShape =  shape;
-        var font = autoShape.TextBox!.Paragraphs[0].Portions[0].Font;
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
         
-        // Act
-        var fontSize = font!.Size;
-        
-        // Assert
-        fontSize.Should().Be((decimal)expectedSize);
+        // Act & Assert
+        font!.Size.Should().Be((decimal)expectedSize);
     }
     
     [Test]
@@ -296,14 +293,10 @@ public class FontTests : SCTest
     public void LatinName_Getter_returns_font_for_Latin_characters(IShape shape, string expectedFontName)
     {
         // Arrange
-        var autoShape = shape;
-        var font = autoShape.TextBox!.Paragraphs[0].Portions[0].Font;
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
 
-        // Act
-        var fontName = font.LatinName;
-
-        // Assert
-        fontName.Should().Be(expectedFontName);
+        // Act & Assert
+        font.LatinName.Should().Be(expectedFontName);
     }
     
     [Test]

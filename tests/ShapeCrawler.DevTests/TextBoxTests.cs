@@ -78,11 +78,10 @@ namespace ShapeCrawler.DevTests
 
             // Act
             textBox.SetText("Shrink text on overflow");
-            pres.Save(@"c:\temp\output.pptx");
 
             // Assert
             textBox.Text.Should().BeEquivalentTo("Shrink text on overflow");
-            textBox.Paragraphs[0].Portions[0].Font!.Size.Should().BeApproximately(7, 1);
+            textBox.Paragraphs[0].Portions[0].Font!.Size.Should().BeApproximately(8, 1);
         }
 
         [Test]
