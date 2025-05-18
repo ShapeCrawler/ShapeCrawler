@@ -67,6 +67,7 @@ public sealed class Presentation : IPresentation
             this.presDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
+        this.Protection = new Protection.Protection(this);
     }
 
     /// <inheritdoc />
@@ -97,6 +98,9 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public IPresentationProperties Properties { get; }
+    
+    /// <inheritdoc />
+    public IPresentationProtection Protection { get; }
 
     /// <inheritdoc />
     public ISlide Slide(int number) => this.Slides[number - 1];

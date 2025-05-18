@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -45,6 +45,11 @@ public interface IPresentation : IDisposable
     ///     Gets presentation properties.
     /// </summary>
     IPresentationProperties Properties { get; }
+    
+    /// <summary>
+    ///     Gets the protection features for the presentation.
+    /// </summary>
+    IPresentationProtection Protection { get; }
     
     /// <summary>
     ///     Gets slide by number.

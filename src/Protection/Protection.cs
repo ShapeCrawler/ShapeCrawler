@@ -37,8 +37,8 @@ internal class Protection : IPresentationProtection
         }
         
         // TODO: Implement encryption logic in future tasks
-        
-        this.IsEncrypted = true;
+        // IsEncrypted will be set to true when actual encryption is implemented
+        // this.IsEncrypted = true;
     }
     
     /// <summary>
