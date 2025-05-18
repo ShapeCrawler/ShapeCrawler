@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <None Remove="stylecop.json" />
-    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
