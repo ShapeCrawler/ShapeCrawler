@@ -223,8 +223,6 @@ internal sealed class TextBox: ITextBox
     
     public void SetText(string text)
     {
-        
-        // Clear existing paragraphs except the first one
         var paragraphs = this.Paragraphs.ToList();
         var firstParagraph = paragraphs.FirstOrDefault();
         
@@ -246,14 +244,12 @@ internal sealed class TextBox: ITextBox
             }
         }
         
-        // Add the first line to the first paragraph
         var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
         if (paragraphLines.Length > 0)
         {
             firstParagraph.Portions.AddText(paragraphLines[0]);
         }
         
-        // Add additional paragraphs for each remaining line
         for (int i = 1; i < paragraphLines.Length; i++)
         {
             this.Paragraphs.Add();
