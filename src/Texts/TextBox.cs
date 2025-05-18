@@ -223,9 +223,23 @@ internal sealed class TextBox: ITextBox
     
     public void SetText(string text)
     {
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
         var paragraphs = this.Paragraphs.ToList();
         var firstParagraph = paragraphs.FirstOrDefault();
         
+        // Store LatinName from first portion if available
+        string? latinNameToPreserve = null;
+        var firstPortion = firstParagraph?.Portions.FirstOrDefault();
+        if (firstPortion?.Font != null && firstPortion.Font.LatinName != null)
+        {
+            latinNameToPreserve = firstPortion.Font.LatinName;
+        }
+        
+        // Clear existing content
         if (firstParagraph == null)
         {
             this.Paragraphs.Add();
@@ -237,23 +251,34 @@ internal sealed class TextBox: ITextBox
             {
                 paragraph.Remove();
             }
-            
+        
             foreach (var portion in firstParagraph.Portions.ToList())
             {
                 portion.Remove();
             }
         }
         
+        // Add new text with preserved font
         var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
         if (paragraphLines.Length > 0)
         {
-            firstParagraph.Portions.AddText(paragraphLines[0]);
+            firstParagraph!.Portions.AddText(paragraphLines[0]);
+            var newPortion = firstParagraph.Portions.Last();
+            if (latinNameToPreserve != null && newPortion.Font != null)
+            {
+                newPortion.Font.LatinName = latinNameToPreserve;
+            }
         }
         
         for (int i = 1; i < paragraphLines.Length; i++)
         {
             this.Paragraphs.Add();
             this.Paragraphs[i].Portions.AddText(paragraphLines[i]);
+            var portion = this.Paragraphs[i].Portions.Last();
+            if (latinNameToPreserve != null && portion.Font != null)
+            {
+                portion.Font.LatinName = latinNameToPreserve;
+            }
         }
 
         if (this.AutofitType == AutofitType.Shrink)
