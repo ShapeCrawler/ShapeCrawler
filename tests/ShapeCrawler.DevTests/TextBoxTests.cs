@@ -462,7 +462,7 @@ namespace ShapeCrawler.DevTests
         public void SetText_preserves_new_lines(IShape shape)
         {
             // Arrange
-            var expectedText = "Hello" + Environment.NewLine + Environment.NewLine + "World";
+            var expectedText = "Hello" + Environment.NewLine + Environment.NewLine + "Earth";
             var textBox = shape.TextBox!;
         
             // Act
