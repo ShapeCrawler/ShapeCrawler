@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -18,7 +19,23 @@ internal class PortionFontSize(A.Text aText): IFontSize
             var runPropertiesFontSize = this.GetRunPropertiesFontSizeOrNull();
             if (runPropertiesFontSize.HasValue)
             {
-                return runPropertiesFontSize.Value;
+                decimal size = runPropertiesFontSize.Value;
+                
+                // Check if there's a normAutofit scaling applied
+                var bodyPr = aText.Ancestors<A.Paragraph>().First().Ancestors<P.TextBody>().FirstOrDefault()?.GetFirstChild<A.BodyProperties>();
+                var normAutofit = bodyPr?.GetFirstChild<A.NormalAutoFit>();
+                if (normAutofit?.FontScale != null)
+                {
+                    // Apply the fontScale (in percentage) to the font size
+                    // FontScale is stored as percentage * 1000 (e.g., 77500 for 77.5%)
+                    decimal fontScale = normAutofit.FontScale.Value / 100000m;
+                    
+                    // Calculate the scaled size and round to the nearest integer
+                    // This matches PowerPoint's behavior with font scaling
+                    size = Math.Round(size * fontScale, MidpointRounding.AwayFromZero);
+                }
+                
+                return size;
             }
 
             // Try getting font size from referenced indent level

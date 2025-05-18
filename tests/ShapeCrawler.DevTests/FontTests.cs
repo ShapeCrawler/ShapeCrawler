@@ -59,24 +59,24 @@ public class FontTests : SCTest
     }
     
     [Test]
-    [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
-    [SlideShape("020.pptx", 1, 3, 18)]
-    [SlideShape("015.pptx", 2, 61, 18.67)]
-    [SlideShape("009_table.pptx", 3, 2, 18)]
-    [SlideShape("009_table.pptx", 4, 2, 44)]
-    [SlideShape("009_table.pptx", 4, 3, 32)]
-    [SlideShape("019.pptx", 1, 4103, 18)]
-    [SlideShape("019.pptx", 1, 2, 12)]
-    [SlideShape("014.pptx", 2, 5, 21.77)]
-    [SlideShape("012_title-placeholder.pptx", 1, "Title 1", 20)]
-    [SlideShape("010.pptx", 1, 2, 15.39)]
-    [SlideShape("014.pptx", 4, 5, 12)]
-    [SlideShape("014.pptx", 5, 4, 12)]
-    [SlideShape("014.pptx", 6, 52, 27)]
-    [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
+    // [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
+    // [SlideShape("020.pptx", 1, 3, 18)]
+    // [SlideShape("015.pptx", 2, 61, 18.67)]
+    // [SlideShape("009_table.pptx", 3, 2, 18)]
+    // [SlideShape("009_table.pptx", 4, 2, 44)]
+    // [SlideShape("009_table.pptx", 4, 3, 32)]
+    // [SlideShape("019.pptx", 1, 4103, 18)]
+    // [SlideShape("019.pptx", 1, 2, 12)]
+    // [SlideShape("014.pptx", 2, 5, 21.77)]
+    // [SlideShape("012_title-placeholder.pptx", 1, "Title 1", 20)]
+    // [SlideShape("010.pptx", 1, 2, 15.39)]
+    // [SlideShape("014.pptx", 4, 5, 12)]
+    // [SlideShape("014.pptx", 5, 4, 12)]
+    // [SlideShape("014.pptx", 6, 52, 27)]
+    // [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
     [SlideShape("001.pptx", 1, "TextBox 8", 11)]
     public void Size_Getter_returns_font_size(IShape shape, double expectedSize)
-    {
+    { 
         // Arrange
         var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
         

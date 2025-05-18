@@ -158,7 +158,6 @@ namespace ShapeCrawler.DevTests
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
             textBox.Paragraphs.Add();
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
-            // pres.Save(@"c:\temp\output.pptx");
 
             // Assert
             shape.Height.Should().BeApproximately(95m, 1m);
