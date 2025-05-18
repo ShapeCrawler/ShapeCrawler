@@ -135,7 +135,6 @@ internal sealed class Paragraph : IParagraph
                 }
             }
 
-            // Resize
             var textBody = this.aParagraph.Parent!;
             var textBox = new TextBox(textBody);
             textBox.ResizeParentShapeOnDemand();
@@ -215,7 +214,7 @@ internal sealed class Paragraph : IParagraph
 
     public void Remove() => this.aParagraph.Remove();
 
-    internal void SetFontSize(int fontSize)
+    public void SetFontSize(int fontSize)
     {
         foreach (var portion in this.portions)
         {

@@ -25,6 +25,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <IsTrimmable Condition="'$(TargetFramework)' == 'net9.0'">true</IsTrimmable> 
     <Copyright>Copyright (c) 2019-2025 Adam Shakhabov</Copyright> 
     <PackageIcon>package icon.jpg</PackageIcon> 
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
    <ItemGroup>

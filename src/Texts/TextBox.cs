@@ -473,7 +473,7 @@ internal sealed class TextBox: ITextBox
 
         if (this.AutofitType == AutofitType.Shrink)
         {
-            this.ShrinkText(text, portionPara);
+            this.ShrinkText(text);
         }
     }
 }

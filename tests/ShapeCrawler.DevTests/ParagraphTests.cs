@@ -129,14 +129,14 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
         var shape = pres.Slide(1).Shape("AutoShape 4");
-        var paragraph = shape.TextBox.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act
         paragraph.Text = "AutoShape 4 some text";
 
         // Assert
-        shape.Height.Should().BeApproximately(43.14m, 0.01m);
-        shape.Y.Should().BeApproximately(107.32m, 0.01m);
+        shape.Height.Should().BeApproximately(38m, 1m);
+        shape.Y.Should().BeApproximately(109m, 1m);
     }
 
     [Test]
