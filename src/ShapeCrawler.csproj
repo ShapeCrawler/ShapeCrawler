@@ -24,7 +24,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <NoWarn>OOXML0001</NoWarn>
     <IsTrimmable Condition="'$(TargetFramework)' == 'net9.0'">true</IsTrimmable> 
     <Copyright>Copyright (c) 2019-2025 Adam Shakhabov</Copyright> 
-    <PackageIcon>package icon.jpg</PackageIcon> 
+    <PackageIcon>package icon.jpg</PackageIcon>
+    <TargetFrameworks Condition="'$(Configuration)' == 'Release'">net9.0;netstandard2.0</TargetFrameworks>
+    <TargetFramework Condition="'$(Configuration)' == 'Debug'">net9.0</TargetFramework>
   </PropertyGroup>
 
    <ItemGroup>
@@ -35,14 +37,12 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\ShapeCrawler.xml</DocumentationFile>
-    <TargetFramework>net9.0</TargetFramework>
     <RunAnalyzers>false</RunAnalyzers>
     <NoWarn>CS0219</NoWarn>
   </PropertyGroup>  
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
-    <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -99,6 +99,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="AgileCrypto\ShapeCrawler.AgileCrypto.csproj" />
   </ItemGroup>
 
 </Project>

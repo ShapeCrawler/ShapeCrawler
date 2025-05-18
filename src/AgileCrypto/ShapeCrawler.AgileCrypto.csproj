@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ShapeCrawler.AgileCrypto</AssemblyName>
+    <RootNamespace>ShapeCrawler.AgileCrypto</RootNamespace>
+    <Authors>Adam Shakhabov</Authors>
+    <Company>ShapeCrawler</Company>
+    <Description>Cross-platform ECMA-376 Agile encryption implementation for ShapeCrawler</Description>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>latest</LangVersion>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Copyright>Copyright (c) 2019-2025 Adam Shakhabov</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\ShapeCrawler.AgileCrypto.xml</DocumentationFile>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>  
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DocumentationFile>bin\Release\ShapeCrawler.AgileCrypto.xml</DocumentationFile>
+    <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="stylecop.json" />
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.IO.Packaging" Version="9.0.5" />
+  </ItemGroup>
+
+</Project>
