@@ -3,13 +3,14 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Paragraphs;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal class PortionFontSize(A.Text aText): IFontSize
+internal class PortionFontSize(A.Text aText) : IFontSize
 {
     decimal IFontSize.Size
     {
@@ -20,21 +21,22 @@ internal class PortionFontSize(A.Text aText): IFontSize
             if (runPropertiesFontSize.HasValue)
             {
                 decimal size = runPropertiesFontSize.Value;
-                
+
                 // Check if there's a normAutofit scaling applied
-                var bodyPr = aText.Ancestors<A.Paragraph>().First().Ancestors<P.TextBody>().FirstOrDefault()?.GetFirstChild<A.BodyProperties>();
+                var bodyPr = aText.Ancestors<A.Paragraph>().First().Ancestors<P.TextBody>().FirstOrDefault()
+                    ?.GetFirstChild<A.BodyProperties>();
                 var normAutofit = bodyPr?.GetFirstChild<A.NormalAutoFit>();
                 if (normAutofit?.FontScale != null)
                 {
                     // Apply the fontScale (in percentage) to the font size
                     // FontScale is stored as percentage * 1000 (e.g., 77500 for 77.5%)
                     decimal fontScale = normAutofit.FontScale.Value / 100000m;
-                    
+
                     // Calculate the scaled size and round to the nearest integer
                     // This matches PowerPoint's behavior with font scaling
                     size = Math.Round(size * fontScale, MidpointRounding.AwayFromZero);
                 }
-                
+
                 return size;
             }
 
@@ -48,7 +50,7 @@ internal class PortionFontSize(A.Text aText): IFontSize
             // Try getting font size from slide master and shapes
             var indentLevel = new SCAParagraph(aText.Ancestors<A.Paragraph>().First()).GetIndentLevel();
             var slideMasterPart = this.GetSlideMasterPart();
-            
+
             // Try placeholder shapes
             var parentShape = this.GetParentShapeOrNull();
             if (parentShape != null)
@@ -89,24 +91,24 @@ internal class PortionFontSize(A.Text aText): IFontSize
         set
         {
             var parent = aText.Parent!;
-            var aRunPr = parent.GetFirstChild<A.RunProperties>() ?? 
-                parent.InsertAt(new A.RunProperties { Language = "en-US", Dirty = false }, 0);
+            var aRunPr = parent.GetFirstChild<A.RunProperties>() ??
+                         parent.InsertAt(new A.RunProperties { Language = "en-US", Dirty = false }, 0);
             aRunPr.FontSize = (int)(value * 100);
         }
     }
-    
+
     private static decimal? GetFontSizeFromBodyStyle(SlideMasterPart slideMasterPart, int indentLevel)
     {
         var indentFonts = new IndentFonts(slideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
         var indentFont = indentFonts.FontOrNull(indentLevel);
         return indentFont?.Size != null ? indentFont.Value.Size!.Value / 100m : null;
     }
-    
+
     private static decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
     {
         if (shape.PlaceholderType == null)
         {
-            return null;   
+            return null;
         }
 
         // Check if it's a title placeholder
@@ -129,18 +131,18 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
         return null;
     }
-    
+
     private decimal? GetRunPropertiesFontSizeOrNull()
     {
         var hundredsPoints = aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
-        
+
         return hundredsPoints / 100m;
     }
 
     private SlideMasterPart GetSlideMasterPart()
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        
+
         return openXmlPart as SlideMasterPart ?? ((SlidePart)openXmlPart).SlideLayoutPart!.SlideMasterPart!;
     }
 
@@ -151,15 +153,17 @@ internal class PortionFontSize(A.Text aText): IFontSize
         {
             return null;
         }
-        
-        return new Shape(aText.Ancestors<P.Shape>().First());
+
+        var pShape = aText.Ancestors<P.Shape>().First();
+
+        return new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
     }
-    
+
     private decimal? GetFontSizeFromPresentationDefaults(int indentLevel)
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var pPresentation = ((PresentationDocument)openXmlPart.OpenXmlPackage).PresentationPart!.Presentation;
-        
+
         if (pPresentation.DefaultTextStyle == null)
         {
             return null;
@@ -187,18 +191,18 @@ internal class PortionFontSize(A.Text aText): IFontSize
 
         return null;
     }
-    
+
     private decimal? GetFontSizeFromThemeDefaults(int indentLevel)
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var pPresentation = ((PresentationDocument)openXmlPart.OpenXmlPackage).PresentationPart!;
         var aTextDefault = pPresentation.ThemePart!.Theme.ObjectDefaults!.TextDefault;
-        
+
         if (aTextDefault?.ListStyle == null)
         {
             return null;
         }
-        
+
         var listStyleFonts = new IndentFonts(aTextDefault.ListStyle);
         var listStyleFont = listStyleFonts.FontOrNull(indentLevel);
         return listStyleFont?.Size != null ? listStyleFont.Value.Size!.Value / 100m : null;

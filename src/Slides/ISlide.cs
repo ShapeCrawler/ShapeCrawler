@@ -44,7 +44,7 @@ public interface ISlide
     /// <summary>
     ///     Gets the shape collection.
     /// </summary>
-    ISlideShapeCollection Shapes { get; }
+    ISlideShapeCollection Elements { get; }
 
     /// <summary>
     ///     Gets the slide notes.
@@ -80,6 +80,11 @@ public interface ISlide
     ///     Gets picture by name.
     /// </summary>
     IPicture Picture(string name);
+    
+    /// <summary>
+    ///     Gets picture by ID.
+    /// </summary>
+    IPicture Picture(int id);
 
     /// <summary>
     ///     Adds specified lines to the slide notes.
@@ -87,17 +92,21 @@ public interface ISlide
     void AddNotes(IEnumerable<string> lines);
 
     /// <summary>
-    ///     Gets shape by name.
+    ///     Gets element by name.
     /// </summary>
-    /// <param name="name">Shape name.</param>
-    /// <returns> An instance of <see cref="IShape"/>.</returns>
-    IShape Shape(string name);
+    /// <param name="name">element name.</param>
+    IShape Element(string name);
+    
+    /// <summary>
+    ///     Gets element by ID.
+    /// </summary>
+    IShape Element(int id);
 
     /// <summary>
     ///     Gets shape by name.
     /// </summary>
     /// <typeparam name="T">Shape type.</typeparam>
-    T Shape<T>(string name)
+    T Element<T>(string name)
         where T : IShape;
 
     /// <summary>
@@ -142,12 +151,12 @@ internal sealed class Slide : ISlide
         this.slidePart = slidePart;
         this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapeCollection(new ShapeCollection(slidePart), this.slidePart, mediaCollection);
+        this.Elements = new SlideShapeCollection(new ShapeCollection(slidePart), this.slidePart, mediaCollection);
     }
 
     public ISlideLayout SlideLayout { get; }
 
-    public ISlideShapeCollection Shapes { get; }
+    public ISlideShapeCollection Elements { get; }
 
     public int Number
     {
@@ -248,15 +257,17 @@ internal sealed class Slide : ISlide
         }
     }
 
-    public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
+    public ITable Table(string name) => this.Elements.Shape<ITable>(name);
 
-    public IPicture Picture(string name) => this.Shapes.Shape<IPicture>(name);
+    public IPicture Picture(string name) => this.Elements.Shape<IPicture>(name);
+    public IPicture Picture(int id) => this.Elements.GetById<IPicture>(id);
 
-    public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
+    public IShape Element(string name) => this.Elements.Shape<IShape>(name);
+    public IShape Element(int id) => this.Elements.GetById<IShape>(id);
 
-    public T Shape<T>(string name)
+    public T Element<T>(string name)
         where T : IShape
-        => this.Shapes.Shape<T>(name);
+        => this.Elements.Shape<T>(name);
 
     public void Remove()
     {
@@ -296,9 +307,9 @@ internal sealed class Slide : ISlide
         presPart.Presentation.Save();
     }
 
-    public IChart Chart(string name) => this.Shapes.Shape<IChart>(name);
+    public IChart Chart(string name) => this.Elements.Shape<IChart>(name);
 
-    public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
+    public IChart Chart(int id) => this.Elements.GetById<IChart>(id);
 
     public PresentationPart GetSDKPresentationPart()
     {
@@ -307,20 +318,20 @@ internal sealed class Slide : ISlide
         return presDocument.Clone().PresentationPart!;
     }
 
-    public T First<T>() => (T)this.Shapes.First(shape => shape is T);
+    public T First<T>() => (T)this.Elements.First(shape => shape is T);
 
     public IList<ITextBox> GetTextBoxes()
     {
-        var textBoxes = this.Shapes
+        var textBoxes = this.Elements
             .Where(shape => shape.TextBox is not null)
             .Select(shape => shape.TextBox!)
             .ToList();
 
-        var tableTextboxes = this.Shapes.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
+        var tableTextboxes = this.Elements.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
             .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
         textBoxes.AddRange(tableTextboxes);
 
-        var groupShapes = this.Shapes.OfType<Group>().ToList();
+        var groupShapes = this.Elements.OfType<Group>().ToList();
         foreach (var groupShape in groupShapes)
         {
             this.AddGroupTextBoxes(groupShape, textBoxes);

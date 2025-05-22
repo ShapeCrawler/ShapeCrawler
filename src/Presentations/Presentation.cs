@@ -143,7 +143,7 @@ public sealed class Presentation : IPresentation
         foreach (var slide in this.Slides)
         {
             markdown.AppendLine($"# Slide {slide.Number}");
-            var textShapes = slide.Shapes.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
+            var textShapes = slide.Elements.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
                 && shape.PlaceholderType != PlaceholderType.SlideNumber);
             var titleShape = textShapes.FirstOrDefault(shape =>
                 shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
@@ -167,6 +167,15 @@ public sealed class Presentation : IPresentation
 
         return markdown.ToString();
     }
+    
+    /// <inheritdoc />
+    public string AsBase64()
+    {
+        using var stream = new MemoryStream();
+        this.Save(stream);
+        
+        return Convert.ToBase64String(stream.ToArray());
+    }
 
     /// <inheritdoc />
     public PresentationDocument GetSDKPresentationDocument() => this.presDocument.Clone();
@@ -175,6 +184,17 @@ public sealed class Presentation : IPresentation
     ///     Releases all resources used by the presentation.
     /// </summary>
     public void Dispose() => this.presDocument.Dispose();
+    
+    /// <summary>
+    ///     Opens presentation from the specified base64 string.
+    /// </summary>
+    public static IPresentation FromBase64(string presBase64)
+    {
+        var bytes = Convert.FromBase64String(presBase64);
+        using var stream = new MemoryStream(bytes);
+        
+        return new Presentation(stream);
+    }
 
     internal void Validate()
     {
@@ -282,4 +302,5 @@ public sealed class Presentation : IPresentation
             }
         }
     }
+    
 }

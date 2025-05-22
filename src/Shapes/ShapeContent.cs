@@ -7,7 +7,7 @@ namespace ShapeCrawler;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Shape content.
+///     Main shape content.
 /// </summary>
 public enum ShapeContent
 {
@@ -32,9 +32,9 @@ public enum ShapeContent
     Line,
 
     /// <summary>
-    ///     Group.
+    ///     Grouped elements.
     /// </summary>
-    Group,
+    GroupedElement,
 
     /// <summary>
     ///     OLE Object.
@@ -42,9 +42,9 @@ public enum ShapeContent
     OLEObject,
 
     /// <summary>
-    ///     Picture.
+    ///     Image.
     /// </summary>
-    Picture,
+    Image,
 
     /// <summary>
     ///     Video.

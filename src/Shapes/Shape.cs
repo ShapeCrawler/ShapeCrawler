@@ -5,88 +5,65 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Slides;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
 
-internal class Shape : IShape
+internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, OpenXmlElement pShapeTreeElement)
+    : IShape
 {
-    private readonly OpenXmlElement pShapeTreeElement;
-    private readonly Position position;
-    private readonly ShapeSize size;
-    private readonly ShapeId shapeId;
-
-    internal Shape(OpenXmlElement pShapeTreeElement)
+    public decimal X
     {
-        this.pShapeTreeElement = pShapeTreeElement;
-        this.position = new Position(pShapeTreeElement);
-        this.size = new ShapeSize(pShapeTreeElement);
-        this.shapeId = new ShapeId(pShapeTreeElement);
+        get => position.X;
+        set => position.X = value;
     }
 
-    internal Shape(P.Shape pShape, TextBox textBox)
-        : this(pShape)
+    public decimal Y
     {
-        this.pShapeTreeElement = pShape;
-        this.position = new Position(pShape);
-        this.size = new ShapeSize(pShape);
-        this.shapeId = new ShapeId(pShape);
-        this.TextBox = textBox;
-    }
-
-    public virtual decimal X
-    {
-        get => this.position.X;
-        set => this.position.X = value;
-    }
-
-    public virtual decimal Y
-    {
-        get => this.position.Y;
-        set => this.position.Y = value;
+        get => position.Y;
+        set => position.Y = value;
     }
 
     public decimal Width
     {
-        get => this.size.Width;
-        set => this.size.Width = value;
+        get => size.Width;
+        set => size.Width = value;
     }
 
     public decimal Height
     {
-        get => this.size.Height;
-        set => this.size.Height = value;
+        get => size.Height;
+        set => size.Height = value;
     }
 
-    public IPresentation Presentation => new Presentation(new SCOpenXmlElement(this.pShapeTreeElement).PresentationDocument);
+    public IPresentation Presentation => new Presentation(new SCOpenXmlElement(pShapeTreeElement).PresentationDocument);
 
     public bool IsGroup => false;
-    
+
     public int Id
     {
-        get => this.shapeId.Value();
-        internal set => this.shapeId.Update(value);
+        get => shapeId.Value();
+        internal set => shapeId.Update(value);
     }
 
     public string Name
     {
-        get => this.pShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
-        set => this.pShapeTreeElement.NonVisualDrawingProperties().Name = new StringValue(value);
+        get => pShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
+        set => pShapeTreeElement.NonVisualDrawingProperties().Name = new StringValue(value);
     }
 
     public string AltText
     {
-        get => this.pShapeTreeElement.NonVisualDrawingProperties().Description?.Value ?? string.Empty;
-        set => this.pShapeTreeElement.NonVisualDrawingProperties().Description = new StringValue(value);
+        get => pShapeTreeElement.NonVisualDrawingProperties().Description?.Value ?? string.Empty;
+        set => pShapeTreeElement.NonVisualDrawingProperties().Description = new StringValue(value);
     }
 
     public bool Hidden
     {
         get
         {
-            var parsedHiddenValue = this.pShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
+            var parsedHiddenValue = pShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue is true;
         }
     }
@@ -95,14 +72,14 @@ internal class Shape : IShape
     {
         get
         {
-            var pPlaceholderShape = this.pShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
+            var pPlaceholderShape = pShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
             if (pPlaceholderShape == null)
             {
                 return null;
             }
 
             var pPlaceholderValue = pPlaceholderShape.Type;
-            
+
             // Return default value if placeholder type is null
             if (pPlaceholderValue == null)
             {
@@ -110,14 +87,15 @@ internal class Shape : IShape
             }
 
             // Handle direct enum value mappings
-            var placeholderValueMappings = new System.Collections.Generic.Dictionary<P.PlaceholderValues, PlaceholderType>
-            {
-                { P.PlaceholderValues.Title, ShapeCrawler.PlaceholderType.Title },
-                { P.PlaceholderValues.CenteredTitle, ShapeCrawler.PlaceholderType.CenteredTitle },
-                { P.PlaceholderValues.Body, ShapeCrawler.PlaceholderType.Text },
-                { P.PlaceholderValues.Diagram, ShapeCrawler.PlaceholderType.SmartArt },
-                { P.PlaceholderValues.ClipArt, ShapeCrawler.PlaceholderType.OnlineImage }
-            };
+            var placeholderValueMappings =
+                new System.Collections.Generic.Dictionary<P.PlaceholderValues, PlaceholderType>
+                {
+                    { P.PlaceholderValues.Title, ShapeCrawler.PlaceholderType.Title },
+                    { P.PlaceholderValues.CenteredTitle, ShapeCrawler.PlaceholderType.CenteredTitle },
+                    { P.PlaceholderValues.Body, ShapeCrawler.PlaceholderType.Text },
+                    { P.PlaceholderValues.Diagram, ShapeCrawler.PlaceholderType.SmartArt },
+                    { P.PlaceholderValues.ClipArt, ShapeCrawler.PlaceholderType.OnlineImage }
+                };
 
             if (placeholderValueMappings.TryGetValue(pPlaceholderValue, out var mappedType))
             {
@@ -126,15 +104,16 @@ internal class Shape : IShape
 
             // Handle string-based values
             var value = pPlaceholderValue.ToString()!;
-            var stringValueMappings = new System.Collections.Generic.Dictionary<string, PlaceholderType>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "dt", ShapeCrawler.PlaceholderType.DateAndTime },
-                { "ftr", ShapeCrawler.PlaceholderType.Footer },
-                { "sldNum", ShapeCrawler.PlaceholderType.SlideNumber },
-                { "pic", ShapeCrawler.PlaceholderType.Picture },
-                { "tbl", ShapeCrawler.PlaceholderType.Table },
-                { "sldImg", ShapeCrawler.PlaceholderType.SlideImage }
-            };
+            var stringValueMappings =
+                new System.Collections.Generic.Dictionary<string, PlaceholderType>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { "dt", ShapeCrawler.PlaceholderType.DateAndTime },
+                    { "ftr", ShapeCrawler.PlaceholderType.Footer },
+                    { "sldNum", ShapeCrawler.PlaceholderType.SlideNumber },
+                    { "pic", ShapeCrawler.PlaceholderType.Picture },
+                    { "tbl", ShapeCrawler.PlaceholderType.Table },
+                    { "sldImg", ShapeCrawler.PlaceholderType.SlideImage }
+                };
 
             if (stringValueMappings.TryGetValue(value, out var stringMappedType))
             {
@@ -146,47 +125,47 @@ internal class Shape : IShape
         }
     }
 
-    public virtual Geometry GeometryType
+    public Geometry GeometryType
     {
         get
         {
-            var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeGeometry(shapeProperties).GeometryType;
         }
 
         set
         {
-            var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             new ShapeGeometry(shapeProperties).GeometryType = value;
         }
     }
 
-    public virtual decimal CornerSize
+    public decimal CornerSize
     {
         get
         {
-            var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeGeometry(shapeProperties).CornerSize;
         }
 
         set
         {
-            var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             new ShapeGeometry(shapeProperties).CornerSize = value;
         }
     }
 
-    public virtual decimal[] Adjustments
+    public decimal[] Adjustments
     {
         get
         {
-            var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeGeometry(shapeProperties).Adjustments;
         }
 
         set
         {
-            var shapeProperties = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var shapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             new ShapeGeometry(shapeProperties).Adjustments = value;
         }
     }
@@ -203,7 +182,7 @@ internal class Shape : IShape
             var regex = new Regex(pattern, RegexOptions.NonBacktracking);
 #endif
 
-            var elementText = regex.Match(this.pShapeTreeElement.InnerXml).Groups[1];
+            var elementText = regex.Match(pShapeTreeElement.InnerXml).Groups[1];
             if (elementText.Value.Length == 0)
             {
                 return null;
@@ -216,45 +195,45 @@ internal class Shape : IShape
         {
             var customDataElement =
                 $@"<{"ctd"}>{value}</{"ctd"}>";
-            this.pShapeTreeElement.InnerXml += customDataElement;
+            pShapeTreeElement.InnerXml += customDataElement;
         }
     }
 
-    public virtual ShapeContent ShapeContent => ShapeContent.Shape;
+    public ShapeContent ShapeContent => ShapeContent.Shape;
 
-    public virtual bool HasOutline => false;
+    public bool HasOutline => false;
 
-    public virtual IShapeOutline Outline
+    public IShapeOutline Outline
     {
         get
         {
-            var pShapeProperties = this.pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pShapeProperties = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
             return new SlideShapeOutline(pShapeProperties);
         }
     }
 
-    public virtual bool HasFill => false;
+    public bool HasFill => false;
 
-    public virtual IShapeFill Fill
+    public IShapeFill Fill
     {
         get
         {
-            var pShapeProperties = this.pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pShapeProperties = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
             return new ShapeFill(pShapeProperties);
         }
     }
 
-    public ITextBox? TextBox { get; }
+    public ITextBox? TextBox => null;
 
-    public virtual double Rotation
+    public double Rotation
     {
         get
         {
-            var pSpPr = this.pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pSpPr = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
             var aTransform2D = pSpPr.Transform2D;
             if (aTransform2D == null)
             {
-                aTransform2D = new ReferencedPShape(this.pShapeTreeElement).ATransform2D();
+                aTransform2D = new ReferencedPShape(pShapeTreeElement).ATransform2D();
                 if (aTransform2D.Rotation is null)
                 {
                     return 0;
@@ -269,26 +248,32 @@ internal class Shape : IShape
         }
     }
 
-    public virtual bool Removable => false;
+    public bool Removable => false;
 
-    public string SDKXPath => new XmlPath(this.pShapeTreeElement).XPath;
+    public string SDKXPath => new XmlPath(pShapeTreeElement).XPath;
 
-    public OpenXmlElement SDKOpenXmlElement => this.pShapeTreeElement.CloneNode(true);
+    public OpenXmlElement SDKOpenXmlElement => pShapeTreeElement.CloneNode(true);
 
-    public virtual ITable AsTable() => throw new SCException(
+    public ITable AsTable() => throw new SCException(
         $"The shape is not a table. Use {nameof(IShape.ShapeContent)} property to check if the shape is a table.");
 
-    public virtual IMediaShape AsMedia() =>
+    public IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a media (audio, video, etc.");
 
     public void Duplicate()
     {
-        var pShapeTree = (P.ShapeTree)this.pShapeTreeElement.Parent!;
-        new SCPShapeTree(pShapeTree).Add(this.pShapeTreeElement);
+        var pShapeTree = (P.ShapeTree)pShapeTreeElement.Parent!;
+        new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
     }
 
-    public virtual void Remove() => this.pShapeTreeElement.Remove();
+    public void SetText(string text) => throw new SCException(
+        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
 
-    public void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(this.pShapeTreeElement);
+    public void SetImage(string imagePath) => throw new SCException(
+        $"The shape is not an image shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is an image shape.");
+
+    public void Remove() => pShapeTreeElement.Remove();
+
+    public void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
 }

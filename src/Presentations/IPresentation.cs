@@ -76,4 +76,10 @@ public interface IPresentation : IDisposable
     /// </summary>
     // ReSharper disable once InconsistentNaming
     PresentationDocument GetSDKPresentationDocument();
+
+    /// <summary>
+    ///     Returns the presentation as a base64 string.
+    /// </summary>
+    /// <returns></returns>
+    string AsBase64();
 }

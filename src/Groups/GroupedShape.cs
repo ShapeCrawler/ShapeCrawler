@@ -6,7 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Groups;
 
-internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
+internal sealed class GroupedShape(IShape shape, P.Shape pShape) : IShape
 {
     public decimal X
     {
@@ -19,7 +19,6 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
                 return shape.X;
             }
 
-            // Start with the shape's relative X coordinate
             decimal absoluteX = shape.X;
             
             // Apply the formula for each parent group in the hierarchy, from innermost to outermost
@@ -250,6 +249,8 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
         set => shape.Height = value;
     }
 
+    #region Composition Properties
+    
     public int Id => shape.Id;
 
     public string Name
@@ -315,12 +316,22 @@ internal sealed class GroupedShape(P.Shape pShape, Shape shape) : IShape
     public IPresentation Presentation => shape.Presentation;
 
     public bool IsGroup => shape.IsGroup;
+    
+    #endregion Composition Properties
 
+    public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
+    
+    #region  Composition Methods
+    
     public void Remove() => shape.Remove();
 
     public ITable AsTable() => shape.AsTable();
 
     public IMediaShape AsMedia() => shape.AsMedia();
+    
+    public void SetText(string text) => shape.SetText(text);
 
-    public void Duplicate() => throw new SCException("Duplicating grouped shape is not supported");
+    public void SetImage(string imagePath) => shape.SetImage(imagePath);
+
+    #endregion Composition Methods
 }

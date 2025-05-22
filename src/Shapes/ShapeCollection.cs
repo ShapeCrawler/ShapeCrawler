@@ -168,7 +168,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
         if (IsOLEObject(aGraphicData))
         {
-            yield return new OleObject(pGraphicFrame);
+            yield return new OLEObject(pGraphicFrame);
             yield break;
         }
 

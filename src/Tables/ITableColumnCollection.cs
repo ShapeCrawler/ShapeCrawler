@@ -9,7 +9,7 @@ namespace ShapeCrawler.Tables;
 /// <summary>
 ///    Represents a table column collection.
 /// </summary>
-public interface ITableColumns : IEnumerable<IColumn>
+public interface ITableColumnCollection : IEnumerable<IColumn>
 {
     /// <summary>
     ///     Gets number of columns.
@@ -43,11 +43,11 @@ public interface ITableColumns : IEnumerable<IColumn>
     void InsertAfter(int columnNumber);
 }
 
-internal sealed class TableColumns : ITableColumns
+internal sealed class TableColumnCollection : ITableColumnCollection
 {
     private readonly DocumentFormat.OpenXml.Drawing.Table aTable;
 
-    internal TableColumns(DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame)
+    internal TableColumnCollection(DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame)
     {
         this.aTable = pGraphicFrame.GetFirstChild<DocumentFormat.OpenXml.Drawing.Graphic>() !.GraphicData!.GetFirstChild<DocumentFormat.OpenXml.Drawing.Table>() !;
     }

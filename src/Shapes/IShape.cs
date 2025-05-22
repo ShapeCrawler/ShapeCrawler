@@ -3,10 +3,9 @@
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a shape.
+///     Represents a slide element.
 /// </summary>
 public interface IShape : IPosition, IShapeGeometry
 {
@@ -66,7 +65,7 @@ public interface IShape : IPosition, IShapeGeometry
     IShapeFill? Fill { get; }
 
     /// <summary>
-    ///     Gets Text Box. Returns <see langword="null"/> if the shape is not a text holder.
+    ///     Gets Text Box. Returns <c>null</c> if the slide element doesn't contain text content. Use <see cref="ShapeContent"/> property to check content type.
     /// </summary>
     ITextBox? TextBox { get; }
     
@@ -110,4 +109,17 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Duplicates the shape.
     /// </summary>
     void Duplicate();
+
+    /// <summary>
+    ///     Sets the text content. Throws <see cref="SCException"/> if text content cannot be set for this element.
+    ///     Use <see cref="ShapeContent"/> property to check element content type.
+    /// </summary>
+    /// <remarks></remarks>
+    void SetText(string text);
+
+    /// <summary>
+    ///     Sets the image content. Throws <see cref="SCException"/> if image content cannot be set for this element.
+    ///     Use <see cref="ShapeContent"/> property to check element content type.
+    /// </summary>
+    void SetImage(string imagePath);
 }

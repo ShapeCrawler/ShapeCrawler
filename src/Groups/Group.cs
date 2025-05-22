@@ -57,7 +57,7 @@ internal sealed class Group : IGroup
 
     public PlaceholderType? PlaceholderType => null;
 
-    public ShapeContent ShapeContent => ShapeContent.Group;
+    public ShapeContent ShapeContent => ShapeContent.GroupedElement;
 
     public bool HasOutline => true;
 
@@ -146,7 +146,13 @@ internal sealed class Group : IGroup
     public IPresentation Presentation => this.shape.Presentation;
     
     public void Duplicate() => this.shape.Duplicate();
-    
+    public void SetText(string text) => throw new SCException($"Text content is not supported for group elements. Use {nameof(Shapes)} property to access grouped shapes.");
+
+    public void SetImage(string imagePath)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public IShape Shape(string groupedShapeName) => this.Shapes.Shape(groupedShapeName);
     
     public T Shape<T>(string groupedShapeName) =>

@@ -13,7 +13,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a table row collection.
 /// </summary>
-public interface ITableRows : IEnumerable<ITableRow>
+public interface ITableRowCollection : IEnumerable<ITableRow>
 {
     /// <summary>
     ///     Gets number of rows.
@@ -53,11 +53,11 @@ public interface ITableRows : IEnumerable<ITableRow>
     void Add(int index, int templateRowIndex);
 }
 
-internal sealed class TableRows : ITableRows
+internal sealed class TableRowCollection : ITableRowCollection
 {
     private readonly A.Table aTable;
 
-    internal TableRows(P.GraphicFrame pGraphicFrame)
+    internal TableRowCollection(P.GraphicFrame pGraphicFrame)
     {
         this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
     }

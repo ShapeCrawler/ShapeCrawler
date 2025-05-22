@@ -19,12 +19,12 @@ public interface ITable : IShape
     /// <summary>
     ///     Gets table columns.
     /// </summary>
-    ITableColumns Columns { get; }
+    ITableColumnCollection Columns { get; }
 
     /// <summary>
     ///     Gets table rows.
     /// </summary>
-    ITableRows Rows { get; }
+    ITableRowCollection Rows { get; }
 
     /// <summary>
     ///     Gets or sets the table style.
@@ -34,7 +34,7 @@ public interface ITable : IShape
     /// <summary>
     ///    Gets the table style options.
     /// </summary>
-    ITableStyleOptions TableStyleOptions { get; }
+    ITableStyleOptions StyleOptions { get; }
 
     /// <summary>
     ///     Gets cell by row and column indexes.
@@ -57,25 +57,32 @@ public interface ITable : IShape
     ITableCell Cell(int rowNumber, int columnNumber);
 }
 
-internal sealed class Table : Shape, ITable
+internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCollection columns, TableStyleOptions styleOptions, P.GraphicFrame pGraphicFrame) : ITable
 {
-    private readonly P.GraphicFrame pGraphicFrame;
+    // private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
 
-    internal Table(OpenXmlCompositeElement pShapeTreeElement)
-        : base(pShapeTreeElement)
-    {
-        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-        this.Rows = new TableRows(this.pGraphicFrame);
-        this.Columns = new TableColumns(this.pGraphicFrame);
-        this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
-    }
+    // internal Table(OpenXmlCompositeElement pShapeTreeElement)
+    //     : base(pShapeTreeElement)
+    // {
+    //     pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
+    //     this.Rows = new TableRows(pGraphicFrame);
+    //     this.Columns = new TableColumns(pGraphicFrame);
+    //     this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
+    // }
 
-    public override ShapeContent ShapeContent => ShapeContent.Table;
+    public ShapeContent ShapeContent => ShapeContent.Table;
+    public IShapeOutline Outline => shape.Outline;
+    public IShapeFill Fill => shape.Fill;
+    public ITextBox? TextBox => shape.TextBox;
+    public double Rotation => shape.Rotation;
+    public string SDKXPath => shape.SDKXPath;
+    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
+    public IPresentation Presentation => shape.Presentation;
 
-    public ITableColumns Columns { get; }
+    public ITableColumnCollection Columns => columns;
 
-    public ITableRows Rows { get; }
+    public ITableRowCollection Rows => rows;
 
     public ITableStyle TableStyle
     {
@@ -83,14 +90,16 @@ internal sealed class Table : Shape, ITable
         set => this.SetTableStyle(value);
     }
 
-    public new decimal Height
+    public decimal Width { get; set; }
+
+    public decimal Height
     {
-        get => base.Height;
+        get => shape.Height;
         set
         {
-            var percentNewHeight = value / base.Height;
+            var percentNewHeight = value / shape.Height;
 
-            base.Height = value;
+            shape.Height = value;
 
             foreach (var tableRow in this.Rows)
             {
@@ -100,13 +109,51 @@ internal sealed class Table : Shape, ITable
         }
     }
 
-    public ITableStyleOptions TableStyleOptions { get; }
+    public int Id => shape.Id;
 
-    public override bool Removable => true;
+    public string Name
+    {
+        get=> shape.Name;
+        set=> shape.Name = value;
+    }
 
-    public override Geometry GeometryType => Geometry.Rectangle;
+    public string AltText
+    {
+        get=> shape.AltText;
+        set=> shape.AltText = value;
+    }
+    public bool Hidden => shape.Hidden;
+    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
-    private A.Table ATable => this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
+    public string? CustomData
+    {
+        get=> shape.CustomData;
+        set=> shape.CustomData = value;
+    }
+
+    public ITableStyleOptions StyleOptions => styleOptions;
+
+    public bool Removable => true;
+
+    public Geometry GeometryType
+    {
+        get=>Geometry.Rectangle;
+        set=> throw new SCException("Updating geometry is not supported for table.");
+    }
+
+    public decimal CornerSize
+    {
+        get => shape.CornerSize;
+        set=> shape.CornerSize = value;
+    }
+
+    public decimal[] Adjustments
+    {
+        get=> shape.Adjustments;
+        set=> shape.Adjustments = value;
+    }
+
+    private A.Table ATable => pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
 
     public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
@@ -154,14 +201,18 @@ internal sealed class Table : Shape, ITable
         this.RemoveRowOnDemand();
     }
 
-    public override void Remove() => this.pGraphicFrame.Remove();
+    public void Remove() => pGraphicFrame.Remove();
 
-    public override ITable AsTable() => this;
+    public ITable AsTable() => this;
+    public IMediaShape AsMedia() => shape.AsMedia();
 
-    internal void SetTableHeight(decimal value)
-    {
-        base.Height = value;
-    }
+    public void Duplicate() => shape.Duplicate();
+
+    public void SetText(string text)=> shape.SetText(text);
+
+    public void SetImage(string imagePath)=> shape.SetImage(imagePath);
+
+    internal void SetTableHeight(decimal value)=> shape.Height = value;
     
     private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
     {
@@ -336,4 +387,7 @@ internal sealed class Table : Shape, ITable
             this.Columns[colIdx].Width += column.Width;
         }
     }
+
+    public decimal X { get; set; }
+    public decimal Y { get; set; }
 }

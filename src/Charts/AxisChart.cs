@@ -113,6 +113,9 @@ internal class AxisChart : IChart
     public IMediaShape AsMedia() => this.chart.AsMedia();
 
     public void Duplicate() => this.chart.Duplicate();
+    public void SetText(string text) => this.chart.SetText(text);
+
+    public void SetImage(string imagePath) => this.chart.SetImage(imagePath);
 
     public byte[] GetWorksheetByteArray() => this.chart.GetWorksheetByteArray();
 }
