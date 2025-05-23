@@ -12,6 +12,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
@@ -143,24 +144,21 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         nonVisualGroupShapeProperties.Append(nonVisualGroupShapeDrawingProperties);
         nonVisualGroupShapeProperties.Append(applicationNonVisualDrawingProperties);
         
-        // Create group shape properties
         var groupShapeProperties = new P.GroupShapeProperties();
         
-        // Calculate the bounding box for all shapes
         decimal minX = decimal.MaxValue;
         decimal minY = decimal.MaxValue;
         decimal maxX = decimal.MinValue;
         decimal maxY = decimal.MinValue;
         
-        foreach (var shape in groupingShapes)
+        foreach (var groupingShape in groupingShapes)
         {
-            minX = Math.Min(minX, shape.X);
-            minY = Math.Min(minY, shape.Y);
-            maxX = Math.Max(maxX, shape.X + shape.Width);
-            maxY = Math.Max(maxY, shape.Y + shape.Height);
+            minX = Math.Min(minX, groupingShape.X);
+            minY = Math.Min(minY, groupingShape.Y);
+            maxX = Math.Max(maxX, groupingShape.X + groupingShape.Width);
+            maxY = Math.Max(maxY, groupingShape.Y + groupingShape.Height);
         }
         
-        // Create transform group
         var transformGroup = new A.TransformGroup();
         var offset = new A.Offset 
         { 
@@ -182,15 +180,13 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         
         groupShapeProperties.Append(transformGroup);
         
-        // Add properties to the group shape
         groupShape.Append(nonVisualGroupShapeProperties);
         groupShape.Append(groupShapeProperties);
         
-        // Move each shape to the group
-        foreach (var shape in groupingShapes)
+        foreach (var groupingShape in groupingShapes)
         {
             // Get the OpenXml element for the shape
-            var openXmlElement = shape.SDKOpenXmlElement;
+            var openXmlElement = groupingShape.SDKOpenXmlElement;
             
             // Remove the shape from its current parent
             if (openXmlElement.Parent is not null)
@@ -202,18 +198,21 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             groupShape.Append(openXmlElement);
         }
         
-        // Add the group shape to the slide
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(groupShape);
-        
-        // Create and return the group object
-        var shapeObj = new Shape(groupShape);
 
         foreach (var grouping in groupingShapes)
         {
             grouping.Remove();
         }
         
-        return new Group(shapeObj, groupShape);
+        return new Group(
+            new Shape(
+                new Position(groupShape),
+                new ShapeSize(groupShape),
+                new ShapeId(groupShape),
+                groupShape
+            ),
+            groupShape);
     }
 
     public void AddVideo(int x, int y, Stream stream)

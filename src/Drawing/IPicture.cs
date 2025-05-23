@@ -45,7 +45,7 @@ public interface IPicture : IShape
     void SendToBack();
 }
 
-internal sealed class Picture(Shape shape, SlideShapeOutline outline, ShapeFill fill, P.Picture pPicture, A.Blip aBlip): IPicture
+internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IPicture
 {
     public IImage Image => new SlidePictureImage(aBlip);
 
@@ -57,11 +57,11 @@ internal sealed class Picture(Shape shape, SlideShapeOutline outline, ShapeFill 
     
     public bool Removable => true;
 
-    public IShapeOutline Outline => outline;
+    public IShapeOutline Outline => shape.Outline;
 
     public bool HasFill => true;
 
-    public IShapeFill Fill => fill;
+    public IShapeFill Fill => shape.Fill;
 
     public ITextBox? TextBox => null;
     

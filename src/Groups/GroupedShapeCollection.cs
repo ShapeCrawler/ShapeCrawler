@@ -73,8 +73,6 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                         {
                             shape = new Picture(
                                 new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                                new SlideShapeOutline(pPicture.ShapeProperties),
-                                new ShapeFill(pPicture.ShapeProperties),
                                 pPicture,
                                 aBlip!
                             );

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ShapeCrawler.Positions;
+using ShapeCrawler.Shapes;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -50,7 +53,19 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
                 else if (aTc.VerticalMerge is not null)
                 {
                     var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-                    var table = new Table(pGraphicFrame);
+                    var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
+                    var table = new Table(
+                        new Shape(
+                            new Position(pGraphicFrame),
+                            new ShapeSize(pGraphicFrame),
+                            new ShapeId(pGraphicFrame),
+                            pGraphicFrame
+                        ),
+                        new TableRowCollection(pGraphicFrame),
+                        new TableColumnCollection(pGraphicFrame),
+                        new TableStyleOptions(aTable.TableProperties!),
+                        pGraphicFrame
+                    );
                     var upRowIdx = index - 1;
                     var upNeighborCell = (TableCell)table[upRowIdx, columnIdx];
                     cells.Add(upNeighborCell);
@@ -82,9 +97,21 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
 
             var newEmu = new Points(value).AsEmus();
             this.ATableRow.Height!.Value = newEmu;
+            var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
+            var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
+            var parentTable = new Table(
+                new Shape(
+                    new Position(pGraphicFrame),
+                    new ShapeSize(pGraphicFrame),
+                    new ShapeId(pGraphicFrame),
+                    pGraphicFrame
+                ),
+                new TableRowCollection(pGraphicFrame),
+                new TableColumnCollection(pGraphicFrame),
+                new TableStyleOptions(aTable.TableProperties!),
+                pGraphicFrame
+            );
 
-            var pGraphicalFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-            var parentTable = new Table(pGraphicalFrame);
             if (value > currentPoints)
             {
                 var diffPoints = value - currentPoints;

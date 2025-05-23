@@ -32,9 +32,9 @@ public enum ShapeContent
     Line,
 
     /// <summary>
-    ///     Grouped elements.
+    ///     Grouped shapes.
     /// </summary>
-    GroupedElement,
+    GroupedShapes,
 
     /// <summary>
     ///     OLE Object.

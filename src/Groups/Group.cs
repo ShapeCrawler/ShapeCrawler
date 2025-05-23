@@ -57,7 +57,7 @@ internal sealed class Group : IGroup
 
     public PlaceholderType? PlaceholderType => null;
 
-    public ShapeContent ShapeContent => ShapeContent.GroupedElement;
+    public ShapeContent ShapeContent => ShapeContent.GroupedShapes;
 
     public bool HasOutline => true;
 

@@ -143,7 +143,7 @@ public sealed class Presentation : IPresentation
         foreach (var slide in this.Slides)
         {
             markdown.AppendLine($"# Slide {slide.Number}");
-            var textShapes = slide.Elements.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
+            var textShapes = slide.Shapes.Where(shape => shape.TextBox is not null && shape.TextBox.Text != string.Empty
                 && shape.PlaceholderType != PlaceholderType.SlideNumber);
             var titleShape = textShapes.FirstOrDefault(shape =>
                 shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));

@@ -140,8 +140,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         {
             yield return new Picture(
                 new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                new SlideShapeOutline(pPicture.ShapeProperties!),
-                new ShapeFill(pPicture.ShapeProperties!),
                 pPicture,
                 aBlip
             );
@@ -211,8 +209,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             {
                 yield return new Picture(
                     new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                    new SlideShapeOutline(pPicture.ShapeProperties!),
-                    new ShapeFill(pPicture.ShapeProperties!),
                     pPicture,
                     aBlip
                 );

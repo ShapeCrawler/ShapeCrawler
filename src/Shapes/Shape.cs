@@ -39,8 +39,6 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
 
     public IPresentation Presentation => new Presentation(new SCOpenXmlElement(pShapeTreeElement).PresentationDocument);
 
-    public bool IsGroup => false;
-
     public int Id
     {
         get => shapeId.Value();
@@ -201,8 +199,6 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
 
     public ShapeContent ShapeContent => ShapeContent.Shape;
 
-    public bool HasOutline => false;
-
     public IShapeOutline Outline
     {
         get
@@ -211,8 +207,6 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
             return new SlideShapeOutline(pShapeProperties);
         }
     }
-
-    public bool HasFill => false;
 
     public IShapeFill Fill
     {
