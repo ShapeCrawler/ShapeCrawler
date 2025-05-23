@@ -295,27 +295,19 @@ internal sealed class GroupedShape(IShape shape, P.Shape pShape) : IShape
 
     public ShapeContent ShapeContent => shape.ShapeContent;
 
-    public bool HasOutline => shape.HasOutline;
+    public IShapeOutline? Outline => shape.Outline;
 
-    public IShapeOutline Outline => shape.Outline;
-
-    public bool HasFill => shape.HasFill;
-
-    public IShapeFill Fill => shape.Fill;
+    public IShapeFill? Fill => shape.Fill;
 
     public ITextBox? TextBox => shape.TextBox;
 
     public double Rotation => shape.Rotation;
-
-    public bool Removable => shape.Removable;
 
     public string SDKXPath => shape.SDKXPath;
 
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
 
     public IPresentation Presentation => shape.Presentation;
-
-    public bool IsGroup => shape.IsGroup;
     
     #endregion Composition Properties
 

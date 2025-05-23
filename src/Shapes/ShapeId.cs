@@ -4,7 +4,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal class ShapeId(OpenXmlElement pShapeTreeElement)
+internal sealed class ShapeId(OpenXmlElement pShapeTreeElement)
 {
     internal int Value()
     {

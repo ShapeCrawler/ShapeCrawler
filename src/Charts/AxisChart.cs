@@ -4,118 +4,118 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts;
 
-internal class AxisChart : IChart
+internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
 {
-    private readonly IChart chart;
+    // private readonly IChart chart;
 
-    internal AxisChart(IChart chart, ChartPart chartPart)
-    {
-        this.chart = chart;
-        this.XAxis = new XAxis(chartPart);
-    }
+    // internal AxisChart(IChart chart, ChartPart chartPart)
+    // {
+    //     chart = chart;
+    //     this.XAxis = new XAxis(chartPart);
+    // }
 
-    public IXAxis? XAxis { get; }
+    public IXAxis XAxis => xAxis;
 
     public decimal X
     {
-        get => this.chart.X;
-        set => this.chart.X = value;
+        get => chart.X;
+        set => chart.X = value;
     }
 
     public decimal Y
     {
-        get => this.chart.Y;
-        set => this.chart.Y = value;
+        get => chart.Y;
+        set => chart.Y = value;
     }
 
     public Geometry GeometryType
     {
-        get => this.chart.GeometryType;
-        set => this.chart.GeometryType = value;
+        get => chart.GeometryType;
+        set => chart.GeometryType = value;
     }
 
     public decimal CornerSize
     {
-        get => this.chart.CornerSize;
-        set => this.chart.CornerSize = value;
+        get => chart.CornerSize;
+        set => chart.CornerSize = value;
     }
 
     public decimal[] Adjustments
     {
-        get => this.chart.Adjustments;
-        set => this.chart.Adjustments = value;
+        get => chart.Adjustments;
+        set => chart.Adjustments = value;
     }
 
     public decimal Width
     {
-        get => this.chart.Width;
-        set => this.chart.Width = value;
+        get => chart.Width;
+        set => chart.Width = value;
     }
 
     public decimal Height
     {
-        get => this.chart.Height;
-        set => this.chart.Height = value;
+        get => chart.Height;
+        set => chart.Height = value;
     }
 
-    public int Id => this.chart.Id;
+    public int Id => chart.Id;
 
     public string Name
     {
-        get => this.chart.Name;
-        set => this.chart.Name = value;
+        get => chart.Name;
+        set => chart.Name = value;
     }
 
     public string AltText
     {
-        get => this.chart.AltText;
-        set => this.chart.AltText = value;
+        get => chart.AltText;
+        set => chart.AltText = value;
     }
 
-    public bool Hidden => this.chart.Hidden;
+    public bool Hidden => chart.Hidden;
 
-    public PlaceholderType? PlaceholderType => this.chart.PlaceholderType;
+    public PlaceholderType? PlaceholderType => chart.PlaceholderType;
 
     public string? CustomData
     {
-        get => this.chart.CustomData;
-        set => this.chart.CustomData = value;
+        get => chart.CustomData;
+        set => chart.CustomData = value;
     }
 
-    public ShapeContent ShapeContent => this.chart.ShapeContent;
+    public ShapeContent ShapeContent => chart.ShapeContent;
 
-    public IShapeOutline? Outline => this.chart.Outline;
+    public IShapeOutline? Outline => chart.Outline;
 
-    public IShapeFill? Fill => this.chart.Fill;
+    public IShapeFill? Fill => chart.Fill;
 
-    public ITextBox? TextBox => this.chart.TextBox;
+    public ITextBox? TextBox => chart.TextBox;
 
-    public double Rotation => this.chart.Rotation;
+    public double Rotation => chart.Rotation;
 
-    public string SDKXPath => this.chart.SDKXPath;
+    public string SDKXPath => chart.SDKXPath;
 
-    public OpenXmlElement SDKOpenXmlElement => this.chart.SDKOpenXmlElement;
+    public OpenXmlElement SDKOpenXmlElement => chart.SDKOpenXmlElement;
 
-    public IPresentation Presentation => this.chart.Presentation;
+    public IPresentation Presentation => chart.Presentation;
     
-    public ChartType Type => this.chart.Type;
+    public ChartType Type => chart.Type;
 
-    public string? Title => this.chart.Title;
+    public string? Title => chart.Title;
     
-    public IReadOnlyList<ICategory>? Categories => this.chart.Categories;
+    public IReadOnlyList<ICategory>? Categories => chart.Categories;
 
-    public ISeriesCollection SeriesCollection => this.chart.SeriesCollection;
+    public ISeriesCollection SeriesCollection => chart.SeriesCollection;
 
-    public void Remove() => this.chart.Remove();
+    public void Remove() => chart.Remove();
 
-    public ITable AsTable() => this.chart.AsTable();
+    public ITable AsTable() => chart.AsTable();
 
-    public IMediaShape AsMedia() => this.chart.AsMedia();
+    public IMediaShape AsMedia() => chart.AsMedia();
 
-    public void Duplicate() => this.chart.Duplicate();
-    public void SetText(string text) => this.chart.SetText(text);
+    public void Duplicate() => chart.Duplicate();
+    public void SetText(string text) => chart.SetText(text);
 
-    public void SetImage(string imagePath) => this.chart.SetImage(imagePath);
+    public void SetImage(string imagePath) => chart.SetImage(imagePath);
 
-    public byte[] GetWorksheetByteArray() => this.chart.GetWorksheetByteArray();
+    public byte[] GetWorksheetByteArray() => chart.GetWorksheetByteArray();
 }

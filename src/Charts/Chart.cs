@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Chart(Shape shape, SlideShapeOutline outline, SeriesCollection seriesCollection, ShapeFill fill, ChartPart chartPart) : IChart
+internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, SlideShapeOutline outline, ShapeFill fill, ChartPart chartPart) : IChart
 {
     private string? chartTitle;
 

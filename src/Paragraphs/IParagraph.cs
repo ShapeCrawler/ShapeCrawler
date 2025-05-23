@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Paragraphs;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -157,7 +158,8 @@ internal sealed class Paragraph : IParagraph
             var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new Shape(this.aParagraph.Ancestors<P.Shape>().First());
+                var pShape = this.aParagraph.Ancestors<P.Shape>().First();
+                var parentShape = new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextHorizontalAlignment.Center;
