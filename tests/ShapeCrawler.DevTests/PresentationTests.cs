@@ -173,7 +173,7 @@ public class PresentationTests : SCTest
         pres.Slides.Count.Should().Be(1);
         pres.Validate();
     }
-    
+
     [Test]
     public void Slides_Add_adds_a_new_slide_using_blank_layout()
     {
@@ -189,7 +189,7 @@ public class PresentationTests : SCTest
         pres.Save(stream);
         new Presentation(stream).Slide(2).Shapes.Should().BeEmpty();
     }
-    
+
     [Test]
     public void Slides_Add_adds_a_new_slide_using_layout_with_one_shape()
     {
@@ -205,7 +205,7 @@ public class PresentationTests : SCTest
         pres.Save(stream);
         new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
     }
-    
+
     [Test]
     [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/864")]
     public void Slides_Add_should_not_break_hyperlink()
@@ -221,7 +221,7 @@ public class PresentationTests : SCTest
         pres.Validate();
         // TODO: Add assertion
     }
-    
+
 #if DEBUG
     [Test]
     [Explicit]
@@ -556,11 +556,11 @@ public class PresentationTests : SCTest
 
         // Act
         var actualMarkdown = pres.AsMarkdown();
-        
+
         // Assert
         actualMarkdown.Should().BeEquivalentTo(expectedMarkdown);
     }
-    
+
     [Test]
     public void Save_does_not_throw_exception_When_stream_is_a_File_stream()
     {
@@ -568,13 +568,13 @@ public class PresentationTests : SCTest
         var pres = new Presentation();
         var file = Path.GetTempFileName();
         using var stream = File.OpenWrite(file);
-        
+
         // Act
         var saving = () => pres.Save(stream);
-        
+
         // Assert
         saving.Should().NotThrow();
-        
+
         // Cleanup
         stream.Close();
         File.Delete(file);
@@ -586,15 +586,25 @@ public class PresentationTests : SCTest
         // Arrange
         var sourceSlide = new Presentation(TestAsset("001.pptx")).Slide(1);
         var destPres = new Presentation(TestAsset("001.pptx"));
-        
+
         // Act
         destPres.Slide(2).Remove();
         destPres.Slides.Add(sourceSlide, 1);
-        
+
         // Assert
         var slideIdRelationshipIdList =
             destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    public void WIP()
+    {
+        using var pres = new Presentation(@"c:\temp\mcp.pptx");
+        
+        pres.Slide(1).Fill.SetColor("00ff00");
+        
+        // pres.Save();
     }
 }
