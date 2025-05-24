@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using ShapeCrawler.Units;
 using SkiaSharp;
 
 namespace ShapeCrawler.Texts;
@@ -8,7 +7,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
 {
     internal decimal FontSize => font.Size;
 
-    internal decimal WidthPx
+    internal decimal Width
     {
         get
         {
@@ -17,7 +16,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
                 : font.LatinName;
             var skFont = new SKFont
             {
-                Size = new Points(font.Size).AsPixels(), Typeface = SKTypeface.FromFamilyName(fontFamily)
+                Size = (float)font.Size, Typeface = SKTypeface.FromFamilyName(fontFamily)
             };
 
             return (decimal)skFont.MeasureText(content);

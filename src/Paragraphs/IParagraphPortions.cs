@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,12 +45,6 @@ internal sealed class ParagraphPortions(A.Paragraph aParagraph): IParagraphPorti
 
     public void AddText(string text)
     {
-        if (text.Contains(Environment.NewLine))
-        {
-            throw new SCException(
-                $"The adding text should not contain symbol New Line. Use {nameof(IParagraphPortions.AddLineBreak)} to add Line Break.");
-        }
-
         var lastRunOrBreak = aParagraph.LastOrDefault(p => p is A.Run or A.Break);
         var textPortions = this.GetPortions().OfType<TextParagraphPortion>();
         var aTextParent = textPortions.LastOrDefault()?.AText.Parent;

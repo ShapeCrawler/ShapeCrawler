@@ -80,6 +80,11 @@ public interface ISlide
     ///     Gets picture by name.
     /// </summary>
     IPicture Picture(string name);
+    
+    /// <summary>
+    ///     Gets picture by ID.
+    /// </summary>
+    IPicture Picture(int id);
 
     /// <summary>
     ///     Adds specified lines to the slide notes.
@@ -87,11 +92,15 @@ public interface ISlide
     void AddNotes(IEnumerable<string> lines);
 
     /// <summary>
-    ///     Gets shape by name.
+    ///     Gets element by name.
     /// </summary>
-    /// <param name="name">Shape name.</param>
-    /// <returns> An instance of <see cref="IShape"/>.</returns>
+    /// <param name="name">element name.</param>
     IShape Shape(string name);
+    
+    /// <summary>
+    ///     Gets element by ID.
+    /// </summary>
+    IShape Shape(int id);
 
     /// <summary>
     ///     Gets shape by name.
@@ -252,7 +261,11 @@ internal sealed class Slide : ISlide
 
     public IPicture Picture(string name) => this.Shapes.Shape<IPicture>(name);
 
+    public IPicture Picture(int id) => this.Shapes.GetById<IPicture>(id);
+
     public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
+
+    public IShape Shape(int id) => this.Shapes.GetById<IShape>(id);
 
     public T Shape<T>(string name)
         where T : IShape

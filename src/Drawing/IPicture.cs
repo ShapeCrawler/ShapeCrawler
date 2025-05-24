@@ -7,7 +7,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -20,12 +19,12 @@ namespace ShapeCrawler;
 public interface IPicture : IShape
 {
     /// <summary>
-    ///     Gets image. Returns <see langword="null"/> if the picture is not binary picture. 
+    ///     Gets image. Returns <see langword="null"/> if the content of the picture element is not a binary image. 
     /// </summary>
     IImage? Image { get; }
 
     /// <summary>
-    ///     Gets SVG content. Returns <see langword="null"/> if the picture is not SVG graphic.
+    ///     Gets SVG content. Returns <see langword="null"/> if the content of the picture element is not an SVG graphic.
     /// </summary>
     string? SvgContent { get; }
 
@@ -45,36 +44,23 @@ public interface IPicture : IShape
     void SendToBack();
 }
 
-internal sealed class Picture : IPicture
+internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IPicture
 {
-    private readonly Shape shape;
-    private readonly P.Picture pPicture;
-    private readonly A.Blip aBlip;
-
-    internal Picture(P.Picture pPicture, A.Blip aBlip)
-    {
-        this.shape = new Shape(pPicture);
-        this.pPicture = pPicture;
-        this.aBlip = aBlip;
-        this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
-        this.Fill = new ShapeFill(pPicture.ShapeProperties!);
-    }
-
-    public IImage Image => new SlidePictureImage(this.aBlip);
+    public IImage Image => new SlidePictureImage(aBlip);
 
     public string? SvgContent => this.GetSvgContent();
     
-    public ShapeContent ShapeContent => ShapeContent.Picture;
+    public ShapeContent ShapeContent => ShapeContent.Image;
     
     public bool HasOutline => true;
     
     public bool Removable => true;
 
-    public IShapeOutline Outline { get; }
+    public IShapeOutline Outline => shape.Outline;
 
     public bool HasFill => true;
 
-    public IShapeFill Fill { get; }
+    public IShapeFill Fill => shape.Fill;
 
     public ITextBox? TextBox => null;
     
@@ -82,7 +68,7 @@ internal sealed class Picture : IPicture
     {
         get
         {
-            var pic = this.pPicture;
+            var pic = pPicture;
             var aBlipFill = pic.BlipFill
                             ?? throw new SCException("Malformed image has no blip fill");
 
@@ -93,12 +79,12 @@ internal sealed class Picture : IPicture
 
         set
         {
-            var pic = this.pPicture;
+            var pic = pPicture;
             var aBlipFill = pic.BlipFill
                             ?? throw new SCException("Malformed image has no blip fill");
 
             var aSrcRect = aBlipFill.GetFirstChild<A.SourceRectangle>()
-                           ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), this.aBlip)
+                           ?? aBlipFill.InsertAfter<A.SourceRectangle>(new(), aBlip)
                            ?? throw new SCException("Failed to add source rectangle");
 
             ApplyCropToSourceRectangle(value, aSrcRect);
@@ -109,7 +95,7 @@ internal sealed class Picture : IPicture
     {
         get
         {
-            var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>();
+            var aAlphaModFix = aBlip.GetFirstChild<A.AlphaModulationFixed>();
             var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
 
             return 100m - (amount / 1000m); // value is stored in Open XML as thousandths of a percent
@@ -117,8 +103,8 @@ internal sealed class Picture : IPicture
 
         set
         {
-            var aAlphaModFix = this.aBlip.GetFirstChild<A.AlphaModulationFixed>()
-                               ?? this.aBlip.InsertAt<A.AlphaModulationFixed>(new(), 0)
+            var aAlphaModFix = aBlip.GetFirstChild<A.AlphaModulationFixed>()
+                               ?? aBlip.InsertAt<A.AlphaModulationFixed>(new(), 0)
                                ?? throw new SCException("Failed to add AlphaModFix");
 
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
@@ -129,79 +115,79 @@ internal sealed class Picture : IPicture
 
     public Geometry GeometryType
     {
-        get => this.shape.GeometryType;
-        set => this.shape.GeometryType = value;
+        get => shape.GeometryType;
+        set => shape.GeometryType = value;
     }
 
     public decimal CornerSize
     {
-        get => this.shape.CornerSize;
-        set => this.shape.CornerSize = value;
+        get => shape.CornerSize;
+        set => shape.CornerSize = value;
     }
 
     public decimal[] Adjustments
     {
-        get => this.shape.Adjustments;
-        set => this.shape.Adjustments = value;
+        get => shape.Adjustments;
+        set => shape.Adjustments = value;
     }
 
     public decimal Width
     {
-        get => this.shape.Width;
-        set => this.shape.Width = value;
+        get => shape.Width;
+        set => shape.Width = value;
     }
 
     public decimal Height
     {
-        get => this.shape.Height;
-        set => this.shape.Height = value;
+        get => shape.Height;
+        set => shape.Height = value;
     }
     
     public decimal X
     {
-        get => this.shape.X;
-        set => this.shape.X = value;
+        get => shape.X;
+        set => shape.X = value;
     }
 
     public decimal Y
     {
-        get => this.shape.Y;
-        set => this.shape.Y = value;
+        get => shape.Y;
+        set => shape.Y = value;
     }
 
-    public int Id => this.shape.Id;
+    public int Id => shape.Id;
 
     public string Name
     {
-        get => this.shape.Name;
-        set => this.shape.Name = value;
+        get => shape.Name;
+        set => shape.Name = value;
     }
 
     public string AltText
     {
-        get => this.shape.AltText;
-        set => this.shape.AltText = value;
+        get => shape.AltText;
+        set => shape.AltText = value;
     }
 
-    public bool Hidden => this.shape.Hidden;
+    public bool Hidden => shape.Hidden;
 
-    public PlaceholderType? PlaceholderType => this.shape.PlaceholderType;
+    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public string? CustomData
     {
-        get => this.shape.CustomData;
-        set => this.shape.CustomData = value;
+        get => shape.CustomData;
+        set => shape.CustomData = value;
     }
 
-    public double Rotation => this.shape.Rotation;
+    public double Rotation => shape.Rotation;
 
-    public string SDKXPath => this.shape.SDKXPath;
+    public string SDKXPath => shape.SDKXPath;
 
-    public OpenXmlElement SDKOpenXmlElement => this.shape.SDKOpenXmlElement;
+    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
 
     public IShapeCollection GroupedShapes => throw new SCException($"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
 
-    public IPresentation Presentation => this.shape.Presentation;
+    public IPresentation Presentation => shape.Presentation;
 
     public void Remove()
     {
@@ -220,22 +206,33 @@ internal sealed class Picture : IPicture
         throw new NotImplementedException();
     }
 
+    public void SetText(string text)
+    {
+        throw new NotImplementedException();
+    }
+
     public void SendToBack()
     {
-        var parentPShapeTree = this.pPicture.Parent!;
-        parentPShapeTree.RemoveChild(this.pPicture);
+        var parentPShapeTree = pPicture.Parent!;
+        parentPShapeTree.RemoveChild(pPicture);
         var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
-        pGrpSpPr.InsertAfterSelf(this.pPicture);
+        pGrpSpPr.InsertAfterSelf(pPicture);
+    }
+
+    public void SetImage(string imagePath)
+    {
+        using var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+        this.Image.Update(imageStream);
     }
 
     internal void CopyTo(P.ShapeTree pShapeTree)
     {
         // Clone the picture and add it to the target shape tree
-        new SCPShapeTree(pShapeTree).Add(this.pPicture);
+        new SCPShapeTree(pShapeTree).Add(pPicture);
         
         // Get the source slide part and target slide part
-        var sourceOpenXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var sourceImagePart = (ImagePart)sourceOpenXmlPart.GetPartById(this.aBlip.Embed!.Value!);
+        var sourceOpenXmlPart = pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var sourceImagePart = (ImagePart)sourceOpenXmlPart.GetPartById(aBlip.Embed!.Value!);
         var targetOpenXmlPart = pShapeTree.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         
         // If source and target parts are the same, no need to create a new relationship
@@ -311,8 +308,8 @@ internal sealed class Picture : IPicture
 
     private string? GetSvgContent()
     {
-        var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
+        var openXmlPart = pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var bel = aBlip.GetFirstChild<A.BlipExtensionList>();
         var svgBlipList = bel?.Descendants<SVGBlip>();
         if (svgBlipList == null)
         {

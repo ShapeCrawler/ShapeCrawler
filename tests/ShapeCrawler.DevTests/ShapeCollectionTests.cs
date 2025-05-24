@@ -72,9 +72,9 @@ public class ShapeCollectionTests : SCTest
 
         // Act & Assert
         shapes.Count(sp => sp.ShapeContent == ShapeContent.Chart).Should().Be(1);
-        shapes.Count(sp => sp.ShapeContent == ShapeContent.Picture).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.Image).Should().Be(1);
         shapes.Count(sp => sp.ShapeContent == ShapeContent.Table).Should().Be(1);
-        shapes.Count(sp => sp.ShapeContent == ShapeContent.Group).Should().Be(1);
+        shapes.Count(sp => sp.ShapeContent == ShapeContent.GroupedShapes).Should().Be(1);
     }
 
     [Test]
@@ -377,7 +377,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeContent.Should().Be(ShapeContent.Picture);
+        picture.ShapeContent.Should().Be(ShapeContent.Image);
         picture.Height.Should().Be(75);
         picture.Width.Should().Be(75);
         pres.Validate();

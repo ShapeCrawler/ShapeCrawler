@@ -5,7 +5,7 @@ namespace ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once InconsistentNaming
-internal sealed class SCAText(A.Text aText)
+internal readonly ref struct SCAText(A.Text aText)
 {
     internal string EastAsianName()
     {

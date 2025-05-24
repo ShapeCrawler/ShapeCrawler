@@ -21,10 +21,12 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
     <Nullable>enable</Nullable>
-    <NoWarn>OOXML0001</NoWarn>
     <IsTrimmable Condition="'$(TargetFramework)' == 'net9.0'">true</IsTrimmable> 
     <Copyright>Copyright (c) 2019-2025 Adam Shakhabov</Copyright> 
     <PackageIcon>package icon.jpg</PackageIcon> 
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <NoWarn>OOXML0001</NoWarn>
   </PropertyGroup>
 
    <ItemGroup>

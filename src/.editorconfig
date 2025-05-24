@@ -56,7 +56,7 @@ dotnet_diagnostic.SA1018.severity = error
 dotnet_diagnostic.SA1024.severity = none
 dotnet_diagnostic.SA1101.severity = error
 dotnet_diagnostic.SA1108.severity = error
-dotnet_diagnostic.SA1111.severity = error
+dotnet_diagnostic.SA1111.severity = none
 dotnet_diagnostic.SA1118.severity = error
 dotnet_diagnostic.SA1119.severity = error
 dotnet_diagnostic.SA1121.severity = error
@@ -94,6 +94,7 @@ dotnet_diagnostic.SA1615.severity = none
 dotnet_diagnostic.SA1616.severity = error
 dotnet_diagnostic.SA1618.severity = error
 dotnet_diagnostic.SA1623.severity = error
+dotnet_diagnostic.SA1627.severity = error
 dotnet_diagnostic.SA1629.severity = error
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1642.severity = none
@@ -117,6 +118,7 @@ dotnet_diagnostic.CS8632.severity = error
 dotnet_diagnostic.CS8764.severity = error
 dotnet_diagnostic.CS8766.severity = error
 dotnet_diagnostic.CS8767.severity = error
+dotnet_diagnostic.CS9113.severity = error
 
 #### Core EditorConfig Options ####
 

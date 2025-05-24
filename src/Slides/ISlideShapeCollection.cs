@@ -14,7 +14,7 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds the specified shape.
     /// </summary>
-    void Add(IShape shape);
+    void Add(IShape addingShape);
 
     /// <summary>
     ///     Adds a new audio shape.

@@ -1176,23 +1176,23 @@ public class TableTests : SCTest
         var table = slide.Shapes.Last<ITable>();
 
         // Act
-        table.TableStyleOptions.HasHeaderRow = hasHeaderRow;
-        table.TableStyleOptions.HasTotalRow = hasTotalRow;
-        table.TableStyleOptions.HasBandedRows = hasBandedRows;
-        table.TableStyleOptions.HasFirstColumn = hasFirstColumn;
-        table.TableStyleOptions.HasLastColumn = hasLastColumn;
-        table.TableStyleOptions.HasBandedColumns = hasBandedColumns;
+        table.StyleOptions.HasHeaderRow = hasHeaderRow;
+        table.StyleOptions.HasTotalRow = hasTotalRow;
+        table.StyleOptions.HasBandedRows = hasBandedRows;
+        table.StyleOptions.HasFirstColumn = hasFirstColumn;
+        table.StyleOptions.HasLastColumn = hasLastColumn;
+        table.StyleOptions.HasBandedColumns = hasBandedColumns;
 
         // Assert
         pres.Save(mStream);
         pres = new Presentation(mStream);
         table = pres.Slides[0].Shapes.Last<ITable>();
-        table.TableStyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);
-        table.TableStyleOptions.HasTotalRow.Should().Be(hasTotalRow);
-        table.TableStyleOptions.HasBandedRows.Should().Be(hasBandedRows);
-        table.TableStyleOptions.HasFirstColumn.Should().Be(hasFirstColumn);
-        table.TableStyleOptions.HasLastColumn.Should().Be(hasLastColumn);
-        table.TableStyleOptions.HasBandedColumns.Should().Be(hasBandedColumns);
+        table.StyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);
+        table.StyleOptions.HasTotalRow.Should().Be(hasTotalRow);
+        table.StyleOptions.HasBandedRows.Should().Be(hasBandedRows);
+        table.StyleOptions.HasFirstColumn.Should().Be(hasFirstColumn);
+        table.StyleOptions.HasLastColumn.Should().Be(hasLastColumn);
+        table.StyleOptions.HasBandedColumns.Should().Be(hasBandedColumns);
     }
 
     [Test]
@@ -1205,7 +1205,7 @@ public class TableTests : SCTest
         var table = slide.Shapes.Last<ITable>();
 
         // Act
-        var options = table.TableStyleOptions;
+        var options = table.StyleOptions;
 
         // Assert
         options.HasHeaderRow.Should().BeTrue();

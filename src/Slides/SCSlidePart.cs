@@ -10,6 +10,8 @@ using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
+using Position = ShapeCrawler.Positions.Position;
+using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.Slides;
 
@@ -73,8 +75,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     internal ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
     {
-        // Create a new GraphicFrame
-        var graphicFrame = new GraphicFrame();
+        var pGraphicFrame = new GraphicFrame();
 
         // Add ID and name properties
         var nvGraphicFrameProperties = new NonVisualGraphicFrameProperties();
@@ -88,16 +89,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         nvGraphicFrameProperties.Append(nonVisualDrawingProperties);
         nvGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
         nvGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
-        graphicFrame.Append(nvGraphicFrameProperties);
+        pGraphicFrame.Append(nvGraphicFrameProperties);
 
         // Add transform properties
         var transform = new Transform();
         transform.Append(new A.Offset { X = new Points(x).AsEmus(), Y = new Points(y).AsEmus() });
-        transform.Append(new A.Extents
-        {
-            Cx = new Points(width).AsEmus(), Cy = new Points(height).AsEmus()
-        });
-        graphicFrame.Append(transform);
+        transform.Append(new A.Extents { Cx = new Points(width).AsEmus(), Cy = new Points(height).AsEmus() });
+        pGraphicFrame.Append(transform);
 
         // Create the diagram graphic
         var graphic = new A.Graphic();
@@ -107,13 +105,19 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         // with just a GraphicData container that identifies as a diagram
         // This will create a valid empty SmartArt shell that can be modified later
         graphic.Append(graphicData);
-        graphicFrame.Append(graphic);
+        pGraphicFrame.Append(graphic);
 
-        // Add to slide
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGraphicFrame);
 
-        // Return a simplified SmartArt implementation for now
-        return new SmartArt(graphicFrame);
+        return
+            new SmartArt(
+                new Shape(
+                    new Position(pGraphicFrame),
+                    new ShapeSize(pGraphicFrame),
+                    new ShapeId(pGraphicFrame),
+                    pGraphicFrame),
+                new SmartArtNodeCollection()
+            );
     }
 
     private static void GeneratePieChartContent(
@@ -338,7 +342,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // --- X Values ---
         var pointsCount = UInt32Value.FromUInt32((uint)pointValues.Count);
-        
+
         var xValues = new XValues();
         var xNumberLiteral = new NumberLiteral
         {
@@ -382,7 +386,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // Create the scatter chart and add it to the plot area
         var plotArea = new PlotArea(
-            new Layout(), 
+            new Layout(),
             new ScatterChart(
                 new ScatterStyle { Val = ScatterStyleValues.LineMarker },
                 new VaryColors { Val = false },
@@ -473,7 +477,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // Create a list to store the categories for reuse
         var categories = categoryValues.Keys.ToList();
-        
+
         // Add series
         for (int i = 0; i < seriesNames.Count; i++)
         {
@@ -492,14 +496,14 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             stringReference.AppendChild(new Formula($"Sheet1!$A$2:$A${categories.Count + 1}"));
             var stringCache = new StringCache();
             stringCache.AppendChild(new PointCount { Val = (uint)categories.Count });
-            
+
             for (uint j = 0; j < categories.Count; j++)
             {
                 var point = new StringPoint { Index = j };
                 point.AppendChild(new NumericValue(categories[(int)j]));
                 stringCache.AppendChild(point);
             }
-            
+
             stringReference.AppendChild(stringCache);
             categoryAxisData.AppendChild(stringReference);
             series.AppendChild(categoryAxisData);
@@ -513,14 +517,15 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             var numberCache = new NumberingCache();
             numberCache.AppendChild(new FormatCode("General"));
             numberCache.AppendChild(new PointCount { Val = (uint)categories.Count });
-            
+
             for (uint j = 0; j < categories.Count; j++)
             {
                 var point = new NumericPoint { Index = j };
-                point.AppendChild(new NumericValue(categoryValues[categories[(int)j]][i].ToString(CultureInfo.InvariantCulture)));
+                point.AppendChild(new NumericValue(categoryValues[categories[(int)j]][i]
+                    .ToString(CultureInfo.InvariantCulture)));
                 numberCache.AppendChild(point);
             }
-            
+
             numberReference.AppendChild(numberCache);
             values.AppendChild(numberReference);
             series.AppendChild(values);
@@ -580,7 +585,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         chartSpace.AppendChild(chart);
 
         // Create embedded package part for data
-        var excelPackagePart = chartPart.AddNewPart<EmbeddedPackagePart>("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Microsoft_Excel_Sheet1");
+        var excelPackagePart = chartPart.AddNewPart<EmbeddedPackagePart>(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Microsoft_Excel_Sheet1");
         using (var stream = excelPackagePart.GetStream(FileMode.Create, FileAccess.Write))
         {
             // Just reserve a placeholder - the actual Excel file isn't needed

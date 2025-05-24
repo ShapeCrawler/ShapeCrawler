@@ -223,30 +223,25 @@ internal sealed class TextBox: ITextBox
     
     public void SetText(string text)
     {
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
         var paragraphs = this.Paragraphs.ToList();
-        var portionPara = paragraphs.FirstOrDefault(p => p.Portions.Any());
-        if (portionPara == null)
-        {
-            portionPara = paragraphs.First();
-            portionPara.Portions.AddText(text);
-        }
-        else
-        {
-            var removingParagraphs = paragraphs.Where(p => p != portionPara);
-            foreach (var p in removingParagraphs)
-            {
-                p.Remove();
-            }
+        var firstParagraph = paragraphs.FirstOrDefault();
+        
+        // Store LatinName from first portion if available
+        string? latinNameToPreserve = GetLatinNameToPreserve(firstParagraph);
+        
+        // Clear existing content and ensure we have a first paragraph
+        firstParagraph = this.PrepareTextContainer(firstParagraph, paragraphs);
+        
+        // Add new text with preserved font
+        var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
+        this.AddTextToParagraphs(paragraphLines, firstParagraph, latinNameToPreserve);
 
-            portionPara.Text = text;
-        }
-
-        if (this.AutofitType == AutofitType.Shrink)
-        {
-            this.ShrinkText(text, portionPara);
-        }
-
-        this.ResizeParentShapeOnDemand();
+        this.ApplyTextFormatting(text);
     }
     
     internal void ResizeParentShapeOnDemand()
@@ -256,11 +251,10 @@ internal sealed class TextBox: ITextBox
             return;
         }
 
-        var shapeWidthPtCapacity = this.shapeSize.Width - this.LeftMargin - this.RightMargin;
-        var shapeHeightPtCapacity = this.shapeSize.Height - this.TopMargin - this.BottomMargin;
+        var shapeWidthCapacity = this.shapeSize.Width - this.LeftMargin - this.RightMargin;
+        var shapeHeightCapacity = this.shapeSize.Height - this.TopMargin - this.BottomMargin;
 
         decimal textHeightPx = 0;
-        var shapeWidthPxCapacity = new Points(shapeWidthPtCapacity).AsPixels();
         foreach (var paragraph in this.Paragraphs)
         {
             var paragraphPortion = paragraph.Portions.OfType<TextParagraphPortion>();
@@ -275,9 +269,9 @@ internal sealed class TextBox: ITextBox
             var scFont = popularPortion.Font;
 
             var paragraphText = paragraph.Text.ToUpper();
-            var paragraphTextWidthPx = new Text(paragraphText, scFont).WidthPx;
-            var paragraphTextHeightPx = new Points(scFont.Size).AsPixels();
-            var requiredRowsCount = paragraphTextWidthPx / (decimal)shapeWidthPxCapacity;
+            var paragraphTextWidthPx = new Text(paragraphText, scFont).Width;
+            var paragraphTextHeightPx = scFont.Size;
+            var requiredRowsCount = paragraphTextWidthPx / shapeWidthCapacity;
             var intRequiredRowsCount = (int)requiredRowsCount;
             var fractionalPart = requiredRowsCount - intRequiredRowsCount;
             if (fractionalPart > 0)
@@ -288,17 +282,83 @@ internal sealed class TextBox: ITextBox
             textHeightPx += intRequiredRowsCount * (int)paragraphTextHeightPx;
         }
 
-        this.UpdateShapeHeight(textHeightPx, shapeHeightPtCapacity);
+        this.UpdateShapeHeight(textHeightPx, shapeHeightCapacity);
         if (!this.TextWrapped)
         {
             this.UpdateShapeWidth();
         }
     }
     
-    // Detect if the text represents a markdown list
     private static bool IsList(string[] lines)
     {
         return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
+    }
+    
+    private static void ApplyLatinNameIfNeeded(IParagraphPortion portion, string? latinNameToPreserve)
+    {
+        if (latinNameToPreserve != null && portion.Font != null)
+        {
+            portion.Font.LatinName = latinNameToPreserve;
+        }
+    }
+    
+    private static string? GetLatinNameToPreserve(IParagraph? firstParagraph)
+    {
+        var firstPortion = firstParagraph?.Portions.FirstOrDefault();
+        return firstPortion?.Font?.LatinName;
+    }
+    
+    private IParagraph PrepareTextContainer(IParagraph? firstParagraph, System.Collections.Generic.List<IParagraph> paragraphs)
+    {
+        if (firstParagraph == null)
+        {
+            this.Paragraphs.Add();
+            return this.Paragraphs.First();
+        }
+        
+        // Remove all paragraphs except the first one
+        foreach (var paragraph in paragraphs.Skip(1))
+        {
+            paragraph.Remove();
+        }
+    
+        // Clear the first paragraph
+        foreach (var portion in firstParagraph.Portions.ToList())
+        {
+            portion.Remove();
+        }
+        
+        return firstParagraph;
+    }
+    
+    private void AddTextToParagraphs(string[] paragraphLines, IParagraph firstParagraph, string? latinNameToPreserve)
+    {
+        if (paragraphLines.Length <= 0)
+        {
+            return;
+        }
+        
+        // Add first line to the first paragraph
+        firstParagraph.Portions.AddText(paragraphLines[0]);
+        ApplyLatinNameIfNeeded(firstParagraph.Portions.Last(), latinNameToPreserve);
+        
+        // Add remaining lines as new paragraphs
+        for (int i = 1; i < paragraphLines.Length; i++)
+        {
+            this.Paragraphs.Add();
+            this.Paragraphs[i].Portions.AddText(paragraphLines[i]);
+            ApplyLatinNameIfNeeded(this.Paragraphs[i].Portions.Last(), latinNameToPreserve);
+        }
+    }
+    
+    private void ApplyTextFormatting(string text)
+    {
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkFont(text);
+        }
+
+        this.ResizeParentShapeOnDemand();
     }
 
     private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
@@ -321,15 +381,15 @@ internal sealed class TextBox: ITextBox
         this.vAlignment = alignmentValue;
     }
 
-    private void ShrinkText(string newText, IParagraph paragraph)
+    private void ShrinkFont(string newText)
     {
-        var popularFont = paragraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
+        var firstParagraph = this.Paragraphs.First();
+        var popularFont = firstParagraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
             .OrderByDescending(x => x.Count())
             .First().First().Font!;
         var text = new Text(newText, popularFont);
         text.Fit(this.shapeSize.Width, this.shapeSize.Height);
-        var internalParagraph = (Paragraph)paragraph;
-        internalParagraph.SetFontSize((int)text.FontSize);
+        firstParagraph.SetFontSize((int)text.FontSize);
     }
 
     private void UpdateShapeWidth()
@@ -345,15 +405,12 @@ internal sealed class TextBox: ITextBox
             .First().First();
         var font = popularPortion.Font;
 
-        var textWidthPx = new Text(longerText, font).WidthPx;
-        var leftMarginPx = new Points(this.LeftMargin).AsPixels();
-        var rightMarginPx = new Points(this.RightMargin).AsPixels();
-        var newWidthPx =
-            (int)(textWidthPx *
-                  1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
-            + leftMarginPx + rightMarginPx;
-        var newWidthPt = new Pixels((decimal)newWidthPx).AsPoints();
-        this.shapeSize.Width = newWidthPt;
+        var textWidth = new Text(longerText, font).Width;
+        var leftMargin = this.LeftMargin;
+        var rightMargin = this.RightMargin;
+        var newWidth = (int)(textWidth * 1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
+                       + leftMargin + rightMargin;
+        this.shapeSize.Width = newWidth;
     }
 
     private void UpdateShapeHeight(decimal textHeightPx, decimal shapeHeightPtCapacity)
@@ -458,7 +515,7 @@ internal sealed class TextBox: ITextBox
 
         if (this.AutofitType == AutofitType.Shrink)
         {
-            this.ShrinkText(text, portionPara);
+            this.ShrinkFont(text);
         }
     }
 }

@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Colors;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,12 +18,19 @@ internal sealed class Field : IParagraphPortion
 
     internal Field(A.Field aField)
     {
-        this.aText = aField.GetFirstChild<A.Text>();
+        this.aText = aField.GetFirstChild<A.Text>()!;
         this.aField = aField;
         this.font = new Lazy<ITextPortionFont>(() =>
         {
             var textPortionSize = new PortionFontSize(this.aText!);
-            return new TextPortionFont(this.aText!, textPortionSize);
+            var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+            return
+                new TextPortionFont(
+                    textPortionSize,
+                    new Lazy<FontColor>(() => new FontColor(this.aText)),
+                    new ThemeFontScheme(openXmlPart),
+                    this.aText!
+                );
         });
         this.fieldPortionText = new FieldPortionText(this.aField);
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aField.RunProperties!));
@@ -72,7 +82,7 @@ internal sealed class Field : IParagraphPortion
     }
 
     private void UpdateTextHighlight(Color color)
-    {        
+    {
         var arPr = this.aText!.PreviousSibling<A.RunProperties>() ?? this.aText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight(color);

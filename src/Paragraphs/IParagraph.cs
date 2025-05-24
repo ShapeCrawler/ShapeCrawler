@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Paragraphs;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -54,6 +55,11 @@ public interface IParagraph
     ///     Removes paragraph.
     /// </summary>
     void Remove();
+
+    /// <summary>
+    ///     Sets font size in points.
+    /// </summary>
+    void SetFontSize(int fontSize);
 }
 
 internal sealed class Paragraph : IParagraph
@@ -130,7 +136,6 @@ internal sealed class Paragraph : IParagraph
                 }
             }
 
-            // Resize
             var textBody = this.aParagraph.Parent!;
             var textBox = new TextBox(textBody);
             textBox.ResizeParentShapeOnDemand();
@@ -153,7 +158,8 @@ internal sealed class Paragraph : IParagraph
             var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
             if (aTextAlignmentType == null)
             {
-                var parentShape = new Shape(this.aParagraph.Ancestors<P.Shape>().First());
+                var pShape = this.aParagraph.Ancestors<P.Shape>().First();
+                var parentShape = new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
                 if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
                 {
                     return TextHorizontalAlignment.Center;
@@ -210,7 +216,7 @@ internal sealed class Paragraph : IParagraph
 
     public void Remove() => this.aParagraph.Remove();
 
-    internal void SetFontSize(int fontSize)
+    public void SetFontSize(int fontSize)
     {
         foreach (var portion in this.portions)
         {

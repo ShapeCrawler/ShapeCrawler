@@ -8,58 +8,87 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Chart : Shape, IChart
+internal sealed class Chart(
+    Shape shape,
+    SeriesCollection seriesCollection,
+    SlideShapeOutline outline,
+    ShapeFill fill,
+    ChartPart chartPart) : IChart
 {
-    private readonly SeriesCollection seriesCollection;
-    private readonly P.GraphicFrame pGraphicFrame;
-    private readonly ChartPart chartPart;
-
-    // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
-    // then collection contains only single item.
-    private readonly IEnumerable<OpenXmlElement> cXCharts;
-
     private string? chartTitle;
-
-    internal Chart(ChartPart chartPart, P.GraphicFrame pGraphicFrame)
-        : base(pGraphicFrame)
-    {
-        this.chartPart = chartPart;
-        this.pGraphicFrame = pGraphicFrame;
-        var plotArea1 = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        this.cXCharts = plotArea1.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        var pShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-        this.Outline = new SlideShapeOutline(pShapeProperties);
-        this.Fill = new ShapeFill(pShapeProperties);
-        this.seriesCollection = new SeriesCollection(
-            chartPart,
-            plotArea1.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
-    }
 
     public ChartType Type
     {
         get
         {
-            if (this.cXCharts.Count() > 1)
+            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+            if (cXCharts.Count() > 1)
             {
                 return ChartType.Combination;
             }
 
-            var chartName = this.cXCharts.Single().LocalName;
+            var chartName = cXCharts.Single().LocalName;
             Enum.TryParse(chartName, true, out ChartType enumChartType);
 
             return enumChartType;
         }
     }
 
-    public override ShapeContent ShapeContent => ShapeContent.Chart;
+    public decimal Width
+    {
+        get => shape.Width;
+        set => shape.Width = value;
+    }
 
-    public override IShapeOutline Outline { get; }
+    public decimal Height
+    {
+        get => shape.Height;
+        set => shape.Height = value;
+    }
 
-    public override IShapeFill Fill { get; }
+    public int Id => shape.Id;
+
+    public string Name
+    {
+        get => shape.Name;
+        set => shape.Name = value;
+    }
+
+    public string AltText
+    {
+        get => shape.AltText;
+        set => shape.AltText = value;
+    }
+
+    public bool Hidden => shape.Hidden;
+
+    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
+
+    public string? CustomData
+    {
+        get => shape.CustomData;
+        set => shape.CustomData = value;
+    }
+
+    public ShapeContent ShapeContent => ShapeContent.Chart;
+
+    public IShapeOutline Outline => outline;
+
+    public IShapeFill Fill => fill;
+
+    public ITextBox? TextBox => shape.TextBox;
+
+    public double Rotation => shape.Rotation;
+
+    public string SDKXPath => shape.SDKXPath;
+
+    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
+
+    public IPresentation Presentation => shape.Presentation;
 
     public string? Title
     {
@@ -70,23 +99,61 @@ internal sealed class Chart : Shape, IChart
         }
     }
 
-    public IReadOnlyList<ICategory>? Categories { get; }
+    public IReadOnlyList<ICategory>? Categories => null;
 
-    public IXAxis? XAxis { get; }
+    public IXAxis? XAxis => null;
 
-    public ISeriesCollection SeriesCollection => this.seriesCollection;
+    public ISeriesCollection SeriesCollection => seriesCollection;
 
-    public override Geometry GeometryType => Geometry.Rectangle;
+    public Geometry GeometryType
+    {
+        get => Geometry.Rectangle;
+        set => throw new SCException("Unable to set geometry type for chart.");
+    }
 
-    public override bool Removable => true;
+    public decimal CornerSize
+    {
+        get => shape.CornerSize;
+        set => shape.CornerSize = value;
+    }
 
-    public byte[] GetWorksheetByteArray() => new Workbook(this.chartPart.EmbeddedPackagePart!).AsByteArray();
+    public decimal[] Adjustments
+    {
+        get => shape.Adjustments;
+        set => shape.Adjustments = value;
+    }
 
-    public override void Remove() => this.pGraphicFrame.Remove();
+    public bool Removable => true;
+    
+    public decimal X
+    {
+        get => shape.X;
+        set => shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get => shape.Y;
+        set => shape.Y = value;
+    }
+
+    public byte[] GetWorksheetByteArray() => new Workbook(chartPart.EmbeddedPackagePart!).AsByteArray();
+
+    public void Remove() => shape.Remove();
+
+    public ITable AsTable() => shape.AsTable();
+
+    public IMediaShape AsMedia() => shape.AsMedia();
+
+    public void Duplicate() => shape.Duplicate();
+
+    public void SetText(string text) => shape.SetText(text);
+
+    public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
     private string? GetTitleOrNull()
     {
-        var cTitle = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -110,7 +177,7 @@ internal sealed class Chart : Shape, IChart
         // However, it can have store multiple series data in the spreadsheet.
         if (this.Type == ChartType.PieChart)
         {
-            return this.seriesCollection.First().Name;
+            return seriesCollection.First().Name;
         }
 
         return null;
