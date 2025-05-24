@@ -232,61 +232,16 @@ internal sealed class TextBox: ITextBox
         var firstParagraph = paragraphs.FirstOrDefault();
         
         // Store LatinName from first portion if available
-        string? latinNameToPreserve = null;
-        var firstPortion = firstParagraph?.Portions.FirstOrDefault();
-        if (firstPortion?.Font != null && firstPortion.Font.LatinName != null)
-        {
-            latinNameToPreserve = firstPortion.Font.LatinName;
-        }
+        string? latinNameToPreserve = GetLatinNameToPreserve(firstParagraph);
         
-        // Clear existing content
-        if (firstParagraph == null)
-        {
-            this.Paragraphs.Add();
-            firstParagraph = this.Paragraphs.First();
-        }
-        else
-        {
-            foreach (var paragraph in paragraphs.Skip(1))
-            {
-                paragraph.Remove();
-            }
-        
-            foreach (var portion in firstParagraph.Portions.ToList())
-            {
-                portion.Remove();
-            }
-        }
+        // Clear existing content and ensure we have a first paragraph
+        firstParagraph = this.PrepareTextContainer(firstParagraph, paragraphs);
         
         // Add new text with preserved font
         var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
-        if (paragraphLines.Length > 0)
-        {
-            firstParagraph!.Portions.AddText(paragraphLines[0]);
-            var newPortion = firstParagraph.Portions.Last();
-            if (latinNameToPreserve != null && newPortion.Font != null)
-            {
-                newPortion.Font.LatinName = latinNameToPreserve;
-            }
-        }
-        
-        for (int i = 1; i < paragraphLines.Length; i++)
-        {
-            this.Paragraphs.Add();
-            this.Paragraphs[i].Portions.AddText(paragraphLines[i]);
-            var portion = this.Paragraphs[i].Portions.Last();
-            if (latinNameToPreserve != null && portion.Font != null)
-            {
-                portion.Font.LatinName = latinNameToPreserve;
-            }
-        }
+        this.AddTextToParagraphs(paragraphLines, firstParagraph, latinNameToPreserve);
 
-        if (this.AutofitType == AutofitType.Shrink)
-        {
-            this.ShrinkFont(text);
-        }
-
-        this.ResizeParentShapeOnDemand();
+        this.ApplyTextFormatting(text);
     }
     
     internal void ResizeParentShapeOnDemand()
@@ -334,10 +289,76 @@ internal sealed class TextBox: ITextBox
         }
     }
     
-    // Detect if the text represents a markdown list
     private static bool IsList(string[] lines)
     {
         return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
+    }
+    
+    private static void ApplyLatinNameIfNeeded(IParagraphPortion portion, string? latinNameToPreserve)
+    {
+        if (latinNameToPreserve != null && portion.Font != null)
+        {
+            portion.Font.LatinName = latinNameToPreserve;
+        }
+    }
+    
+    private static string? GetLatinNameToPreserve(IParagraph? firstParagraph)
+    {
+        var firstPortion = firstParagraph?.Portions.FirstOrDefault();
+        return firstPortion?.Font?.LatinName;
+    }
+    
+    private IParagraph PrepareTextContainer(IParagraph? firstParagraph, System.Collections.Generic.List<IParagraph> paragraphs)
+    {
+        if (firstParagraph == null)
+        {
+            this.Paragraphs.Add();
+            return this.Paragraphs.First();
+        }
+        
+        // Remove all paragraphs except the first one
+        foreach (var paragraph in paragraphs.Skip(1))
+        {
+            paragraph.Remove();
+        }
+    
+        // Clear the first paragraph
+        foreach (var portion in firstParagraph.Portions.ToList())
+        {
+            portion.Remove();
+        }
+        
+        return firstParagraph;
+    }
+    
+    private void AddTextToParagraphs(string[] paragraphLines, IParagraph firstParagraph, string? latinNameToPreserve)
+    {
+        if (paragraphLines.Length <= 0)
+        {
+            return;
+        }
+        
+        // Add first line to the first paragraph
+        firstParagraph.Portions.AddText(paragraphLines[0]);
+        ApplyLatinNameIfNeeded(firstParagraph.Portions.Last(), latinNameToPreserve);
+        
+        // Add remaining lines as new paragraphs
+        for (int i = 1; i < paragraphLines.Length; i++)
+        {
+            this.Paragraphs.Add();
+            this.Paragraphs[i].Portions.AddText(paragraphLines[i]);
+            ApplyLatinNameIfNeeded(this.Paragraphs[i].Portions.Last(), latinNameToPreserve);
+        }
+    }
+    
+    private void ApplyTextFormatting(string text)
+    {
+        if (this.AutofitType == AutofitType.Shrink)
+        {
+            this.ShrinkFont(text);
+        }
+
+        this.ResizeParentShapeOnDemand();
     }
 
     private void SetVerticalAlignment(TextVerticalAlignment alignmentValue)
