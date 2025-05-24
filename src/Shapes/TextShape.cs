@@ -7,8 +7,6 @@ namespace ShapeCrawler.Shapes;
 internal class TextShape(Shape shape, TextBox textBox) : IShape
 {
     public void SetText(string text) => textBox.SetText(text);
-
-    #region Composition
     
     public virtual decimal X
     {
@@ -132,6 +130,8 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
 
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
 
+    #region Composition Methods
+    
     public virtual ITable AsTable() => shape.AsTable();
 
     public virtual IMediaShape AsMedia() => shape.AsMedia();
@@ -143,5 +143,7 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
 
     public virtual void Remove() => shape.Remove();
     
-    #endregion Composition
+    public void CopyTo(P.ShapeTree pShapeTree) => shape.CopyTo(pShapeTree);
+    
+    #endregion Composition Methods
 }

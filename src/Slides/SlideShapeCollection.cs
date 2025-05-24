@@ -39,16 +39,22 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public IShape this[int index] => this.shapes[index];
 
-    public void Add(IShape shape)
+    public void Add(IShape addingShape)
     {
         var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
-        switch (shape)
+        switch (addingShape)
         {
             case Picture picture:
                 picture.CopyTo(pShapeTree);
                 break;
-            case Shape addingShape:
-                addingShape.CopyTo(pShapeTree);
+            case Shape shape:
+                shape.CopyTo(pShapeTree);
+                break;
+            case TextShape textShape:
+                textShape.CopyTo(pShapeTree);
+                break;
+            case Table table:
+                table.CopyTo(pShapeTree);
                 break;
             default:
                 throw new SCException("Unsupported shape type for adding.");

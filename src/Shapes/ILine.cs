@@ -5,7 +5,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a line shape.
@@ -77,7 +76,7 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
     public ShapeContent ShapeContent => ShapeContent.Line;
 
     public IShapeOutline Outline => shape.Outline;
-    public IShapeFill? Fill => shape.Fill;
+    public IShapeFill Fill => shape.Fill;
     public ITextBox? TextBox => shape.TextBox;
     public double Rotation => shape.Rotation;
     public string SDKXPath => shape.SDKXPath;
@@ -164,31 +163,25 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
 
     public void Remove() => pConnectionShape.Remove();
 
-    public ITable AsTable()
+    public ITable AsTable() => shape.AsTable();
+
+    public IMediaShape AsMedia()=> shape.AsMedia();
+
+    public void Duplicate()=> shape.Duplicate();
+
+    public void SetText(string text)=> shape.SetText(text);
+
+    public void SetImage(string imagePath)=> shape.SetImage(imagePath);
+
+    public decimal X
     {
-        throw new System.NotImplementedException();
+        get=> shape.X;
+        set=> shape.X = value;
     }
 
-    public IMediaShape AsMedia()
+    public decimal Y
     {
-        throw new System.NotImplementedException();
+        get=> shape.Y;
+        set=> shape.Y = value;
     }
-
-    public void Duplicate()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void SetText(string text)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void SetImage(string imagePath)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public decimal X { get; set; }
-    public decimal Y { get; set; }
 }

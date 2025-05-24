@@ -8,7 +8,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
@@ -100,9 +99,9 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
         }
     }
 
-    public IReadOnlyList<ICategory>? Categories { get; }
+    public IReadOnlyList<ICategory>? Categories => null; 
 
-    public IXAxis? XAxis { get; }
+    public IXAxis? XAxis => null;
 
     public ISeriesCollection SeriesCollection => seriesCollection;
 
@@ -112,7 +111,11 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
         set=>throw new SCException("Unable to set geometry type for chart.");
     }
 
-    public decimal CornerSize { get; set; }
+    public decimal CornerSize
+    {
+        get=> shape.CornerSize;
+        set=> shape.CornerSize = value;
+    }
 
     public decimal[] Adjustments
     {
@@ -120,7 +123,7 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
         set=> shape.Adjustments = value;
     }
 
-    public  bool Removable => true;
+    public bool Removable => true;
 
     public byte[] GetWorksheetByteArray() => new Workbook(chartPart.EmbeddedPackagePart!).AsByteArray();
 
@@ -187,6 +190,15 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
         return false;
     }
 
-    public decimal X { get; set; }
-    public decimal Y { get; set; }
+    public decimal X
+    {
+        get=> shape.X;
+        set=> shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get=> shape.Y;
+        set=> shape.Y = value;
+    }
 }

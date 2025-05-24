@@ -57,7 +57,12 @@ public interface ITable : IShape
     ITableCell Cell(int rowNumber, int columnNumber);
 }
 
-internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCollection columns, TableStyleOptions styleOptions, P.GraphicFrame pGraphicFrame) : ITable
+internal sealed class Table(
+    Shape shape,
+    TableRowCollection rows,
+    TableColumnCollection columns,
+    TableStyleOptions styleOptions,
+    P.GraphicFrame pGraphicFrame) : ITable
 {
     // private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
@@ -79,9 +84,7 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
     public string SDKXPath => shape.SDKXPath;
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
     public IPresentation Presentation => shape.Presentation;
-
     public ITableColumnCollection Columns => columns;
-
     public ITableRowCollection Rows => rows;
 
     public ITableStyle TableStyle
@@ -90,7 +93,11 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
         set => this.SetTableStyle(value);
     }
 
-    public decimal Width { get; set; }
+    public decimal Width
+    {
+        get => shape.Width;
+        set => shape.Width = value;
+    }
 
     public decimal Height
     {
@@ -113,22 +120,23 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
 
     public string Name
     {
-        get=> shape.Name;
-        set=> shape.Name = value;
+        get => shape.Name;
+        set => shape.Name = value;
     }
 
     public string AltText
     {
-        get=> shape.AltText;
-        set=> shape.AltText = value;
+        get => shape.AltText;
+        set => shape.AltText = value;
     }
+
     public bool Hidden => shape.Hidden;
     public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public string? CustomData
     {
-        get=> shape.CustomData;
-        set=> shape.CustomData = value;
+        get => shape.CustomData;
+        set => shape.CustomData = value;
     }
 
     public ITableStyleOptions StyleOptions => styleOptions;
@@ -137,20 +145,20 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
 
     public Geometry GeometryType
     {
-        get=>Geometry.Rectangle;
-        set=> throw new SCException("Updating geometry is not supported for table.");
+        get => Geometry.Rectangle;
+        set => throw new SCException("Updating geometry is not supported for table.");
     }
 
     public decimal CornerSize
     {
         get => shape.CornerSize;
-        set=> shape.CornerSize = value;
+        set => shape.CornerSize = value;
     }
 
     public decimal[] Adjustments
     {
-        get=> shape.Adjustments;
-        set=> shape.Adjustments = value;
+        get => shape.Adjustments;
+        set => shape.Adjustments = value;
     }
 
     private A.Table ATable => pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
@@ -208,12 +216,12 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
 
     public void Duplicate() => shape.Duplicate();
 
-    public void SetText(string text)=> shape.SetText(text);
+    public void SetText(string text) => shape.SetText(text);
 
-    public void SetImage(string imagePath)=> shape.SetImage(imagePath);
+    public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
-    internal void SetTableHeight(decimal value)=> shape.Height = value;
-    
+    internal void SetTableHeight(decimal value) => shape.Height = value;
+
     private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
     {
         foreach (var aTblRow in aTableRows)
@@ -225,7 +233,7 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
             }
         }
     }
-    
+
     private void SetTableStyle(ITableStyle style)
     {
         this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = ((TableStyle)style).Guid;
@@ -388,6 +396,17 @@ internal sealed class Table(Shape shape, TableRowCollection rows, TableColumnCol
         }
     }
 
-    public decimal X { get; set; }
-    public decimal Y { get; set; }
+    public decimal X
+    {
+        get=> shape.X;
+        set=> shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get=> shape.Y;
+        set=> shape.Y = value;
+    }
+
+    internal void CopyTo(P.ShapeTree pShapeTree) => shape.CopyTo(pShapeTree);
 }
