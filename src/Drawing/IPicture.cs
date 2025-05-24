@@ -219,9 +219,9 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IP
         pGrpSpPr.InsertAfterSelf(pPicture);
     }
 
-    public void SetImage(string file)
+    public void SetImage(string imagePath)
     {
-        using var imageStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+        using var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
         this.Image.Update(imageStream);
     }
 
