@@ -364,10 +364,10 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.AddNotes(new[] { "Starting value" });
-        var notes = slide.Notes;
-        var expected = "SlideAddNotes_can_change_notes";
+        var slide = pres.Slide(1);
+        slide.AddNotes(["My notes"]);
+        var notes = slide.Notes!;
+        const string expected = "My new notes";
 
         // Act
         notes.SetText(expected);

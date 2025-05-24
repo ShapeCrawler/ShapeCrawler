@@ -9,39 +9,12 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
 
-internal sealed class TextPortionFont : ITextPortionFont
+internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontColor, ThemeFontScheme themeFontScheme, A.Text aText) : ITextPortionFont
 {
-    private readonly A.Text aText;
-    private readonly Lazy<FontColor> fontColor;
-    private readonly IFontSize size;
-    private readonly ThemeFontScheme themeFontScheme;
-    private readonly SCAText scAText;
-
-    internal TextPortionFont(
-        A.Text aText,
-        IFontSize size)
-        : this(
-            aText,
-            size,
-            new ThemeFontScheme(aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!))
-    {
-    }
-
-    private TextPortionFont(A.Text aText, IFontSize size, ThemeFontScheme themeFontScheme)
-    {
-        this.aText = aText;
-        this.fontColor = new Lazy<FontColor>(() => new FontColor(this.aText));
-        this.size = size;
-        this.themeFontScheme = themeFontScheme;
-        this.scAText = new SCAText(aText);
-    }
-
-    #region Public APIs
-
     public decimal Size
     {
-        get => this.size.Size;
-        set => this.size.Size = value;
+        get => fontSize.Size;
+        set => fontSize.Size = value;
     }
 
     public string? LatinName
@@ -50,7 +23,7 @@ internal sealed class TextPortionFont : ITextPortionFont
         {
             if (this.ALatinFont().Typeface == "+mj-lt")
             {
-                return this.themeFontScheme.MajorLatinFont();
+                return themeFontScheme.MajorLatinFont();
             }
 
             return this.ALatinFont().Typeface!;
@@ -60,8 +33,8 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     public string EastAsianName
     {
-        get => this.scAText.EastAsianName();
-        set => this.scAText.UpdateEastAsianName(value);
+        get =>  new SCAText(aText).EastAsianName();
+        set => new SCAText(aText).UpdateEastAsianName(value);
     }
 
     public bool IsBold
@@ -76,19 +49,19 @@ internal sealed class TextPortionFont : ITextPortionFont
         set => this.SetItalicFlag(value);
     }
 
-    public IFontColor Color => this.fontColor.Value;
+    public IFontColor Color => fontColor.Value;
 
     public A.TextUnderlineValues Underline
     {
         get
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            var aRunPr = aText.Parent!.GetFirstChild<A.RunProperties>();
             return aRunPr?.Underline?.Value ?? A.TextUnderlineValues.None;
         }
 
         set
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            var aRunPr = aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
@@ -96,14 +69,14 @@ internal sealed class TextPortionFont : ITextPortionFont
             else
             {
                 var aEndParaRPr =
-                    this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
                 }
                 else
                 {
-                    var runProp = this.aText.Parent.AddRunProperties();
+                    var runProp = aText.Parent.AddRunProperties();
                     runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
                 }
             }
@@ -116,11 +89,9 @@ internal sealed class TextPortionFont : ITextPortionFont
         set => this.SetOffset(value);
     }
 
-    #endregion Public APIs
-
     private void SetOffset(int value)
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
         Int32Value int32Value = value * 1000;
         if (aRunProperties is not null)
         {
@@ -128,7 +99,7 @@ internal sealed class TextPortionFont : ITextPortionFont
         }
         else
         {
-            var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+            var aEndParaRPr = aText.Parent.NextSibling<A.EndParagraphRunProperties>();
             if (aEndParaRPr != null)
             {
                 aEndParaRPr.Baseline = int32Value;
@@ -136,21 +107,21 @@ internal sealed class TextPortionFont : ITextPortionFont
             else
             {
                 aRunProperties = new A.RunProperties { Baseline = int32Value };
-                this.aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
+                aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
             }
         }
     }
 
     private int GetOffsetEffect()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties is not null &&
             aRunProperties.Baseline is not null)
         {
             return aRunProperties.Baseline.Value / 1000;
         }
 
-        var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+        var aEndParaRPr = aText.Parent.NextSibling<A.EndParagraphRunProperties>();
         if (aEndParaRPr is not null)
         {
             return aEndParaRPr.Baseline! / 1000;
@@ -161,8 +132,8 @@ internal sealed class TextPortionFont : ITextPortionFont
     
     private A.LatinFont ALatinFont()
     {
-        var openXmlPart = this.aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
         var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
         if (aLatinFont != null)
@@ -170,7 +141,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        aLatinFont = new ReferencedIndentLevel(this.aText).ALatinFontOrNull();
+        aLatinFont = new ReferencedIndentLevel(aText).ALatinFontOrNull();
         if (aLatinFont != null)
         {
             return aLatinFont;
@@ -181,7 +152,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     private bool ParseBoldFlag()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties == null)
         {
             return false;
@@ -192,7 +163,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return true;
         }
 
-        bool? isFontBold = new ReferencedIndentLevel(this.aText).FontBoldFlagOrNull();
+        bool? isFontBold = new ReferencedIndentLevel(aText).FontBoldFlagOrNull();
         if (isFontBold.HasValue)
         {
             return isFontBold.Value;
@@ -203,7 +174,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     private bool GetItalicFlag()
     {
-        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aRunPr = aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr == null)
         {
             return false;
@@ -225,7 +196,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     private void UpdateBoldFlag(bool value)
     {
-        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aRunPr = aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)
         {
             aRunPr.Bold = new BooleanValue(value);
@@ -240,7 +211,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             else
             {
                 var aEndParaRPr =
-                    this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Bold = new BooleanValue(value);
@@ -248,7 +219,7 @@ internal sealed class TextPortionFont : ITextPortionFont
                 else
                 {
                     aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
-                    this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                    aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
         }
@@ -256,7 +227,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     private void SetItalicFlag(bool isItalic)
     {
-        var aTextParent = this.aText.Parent!;
+        var aTextParent = aText.Parent!;
         var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)
         {
@@ -279,7 +250,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     private void UpdateLatinName(string latinFont)
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
 
         A.TextCharacterPropertiesType aCurrentProperties; 
 
@@ -289,7 +260,7 @@ internal sealed class TextPortionFont : ITextPortionFont
         }
         else
         {
-            var aEndParaRunProperties = this.aText.Parent!.GetFirstChild<A.EndParagraphRunProperties>();
+            var aEndParaRunProperties = aText.Parent!.GetFirstChild<A.EndParagraphRunProperties>();
 
             if (aEndParaRunProperties is not null)
             {
@@ -297,7 +268,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             }
             else
             {
-                aCurrentProperties = this.aText.Parent!.AddRunProperties();
+                aCurrentProperties = aText.Parent!.AddRunProperties();
             }
         }
 

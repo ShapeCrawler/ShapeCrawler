@@ -193,8 +193,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             yield return new OLEObject(
                 new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame),
                 new SlideShapeOutline(pShapeProperties),
-                new ShapeFill(pShapeProperties),
-                pGraphicFrame
+                new ShapeFill(pShapeProperties)
             );
             yield break;
         }

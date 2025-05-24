@@ -39,9 +39,11 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
     {
         this.aFontScheme = openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .FontScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .FontScheme!,
+            NotesSlidePart notesSlidePart => notesSlidePart.NotesMasterPart!.ThemePart!.Theme.ThemeElements!
                 .FontScheme!,
             _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.FontScheme!
         };

@@ -7,16 +7,8 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Shapes;
 
 // ReSharper disable once InconsistentNaming
-internal sealed class OLEObject(Shape shape, SlideShapeOutline outline, ShapeFill fill, P.GraphicFrame pGraphicFrame) : IShape
+internal sealed class OLEObject(Shape shape, SlideShapeOutline outline, ShapeFill fill) : IShape
 {
-    // internal OLEObject(P.GraphicFrame pGraphicFrame)
-    //     : base(pGraphicFrame)
-    // {
-    //     this.pGraphicFrame = pGraphicFrame;
-    //     this.Outline = new SlideShapeOutline(pGraphicFrame.Descendants<P.ShapeProperties>().First());
-    //     this.Fill = new ShapeFill(pGraphicFrame.Descendants<P.ShapeProperties>().First());
-    // }
-
     public decimal Width
     {
         get => shape.Width;
