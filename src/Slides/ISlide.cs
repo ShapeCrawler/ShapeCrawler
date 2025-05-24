@@ -260,9 +260,11 @@ internal sealed class Slide : ISlide
     public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
 
     public IPicture Picture(string name) => this.Shapes.Shape<IPicture>(name);
+
     public IPicture Picture(int id) => this.Shapes.GetById<IPicture>(id);
 
     public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
+
     public IShape Shape(int id) => this.Shapes.GetById<IShape>(id);
 
     public T Shape<T>(string name)

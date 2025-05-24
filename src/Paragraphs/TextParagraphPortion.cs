@@ -22,7 +22,10 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         this.font = new Lazy<TextPortionFont>(() =>
             new TextPortionFont(
                 new PortionFontSize(this.AText),
-                new Lazy<FontColor>(() => new FontColor(this.AText)), new ThemeFontScheme(openXmlPart), this.AText)
+                new Lazy<FontColor>(() => new FontColor(this.AText)),
+                new ThemeFontScheme(openXmlPart),
+                this.AText
+            )
         );
         this.hyperlink = new Lazy<Hyperlink>(() => new Hyperlink(this.aRun.RunProperties!));
     }

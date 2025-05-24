@@ -114,7 +114,6 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Sets the text content. Throws <see cref="SCException"/> if text content cannot be set for this element.
     ///     Use <see cref="ShapeContent"/> property to check element content type.
     /// </summary>
-    /// <remarks></remarks>
     void SetText(string text);
 
     /// <summary>

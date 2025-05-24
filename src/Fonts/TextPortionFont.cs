@@ -9,7 +9,11 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
 
-internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontColor, ThemeFontScheme themeFontScheme, A.Text aText) : ITextPortionFont
+internal sealed class TextPortionFont(
+    IFontSize fontSize,
+    Lazy<FontColor> fontColor,
+    ThemeFontScheme themeFontScheme,
+    A.Text aText) : ITextPortionFont
 {
     public decimal Size
     {
@@ -33,7 +37,7 @@ internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontCo
 
     public string EastAsianName
     {
-        get =>  new SCAText(aText).EastAsianName();
+        get => new SCAText(aText).EastAsianName();
         set => new SCAText(aText).UpdateEastAsianName(value);
     }
 
@@ -129,7 +133,7 @@ internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontCo
 
         return 0;
     }
-    
+
     private A.LatinFont ALatinFont()
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
@@ -252,7 +256,7 @@ internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontCo
     {
         var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
 
-        A.TextCharacterPropertiesType aCurrentProperties; 
+        A.TextCharacterPropertiesType aCurrentProperties;
 
         if (aRunProperties is not null)
         {
@@ -264,7 +268,7 @@ internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontCo
 
             if (aEndParaRunProperties is not null)
             {
-                aCurrentProperties = aEndParaRunProperties;   
+                aCurrentProperties = aEndParaRunProperties;
             }
             else
             {
@@ -279,7 +283,7 @@ internal sealed class TextPortionFont(IFontSize fontSize, Lazy<FontColor> fontCo
             aLatinFont = new A.LatinFont();
             aCurrentProperties.Append(aLatinFont); // to avoid ignoring color
         }
-        
+
         aLatinFont.Typeface = latinFont;
     }
 }

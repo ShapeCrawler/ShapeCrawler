@@ -64,27 +64,26 @@ internal sealed class Table(
     TableStyleOptions styleOptions,
     P.GraphicFrame pGraphicFrame) : ITable
 {
-    // private readonly P.GraphicFrame pGraphicFrame;
     private ITableStyle? tableStyle;
 
-    // internal Table(OpenXmlCompositeElement pShapeTreeElement)
-    //     : base(pShapeTreeElement)
-    // {
-    //     pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-    //     this.Rows = new TableRows(pGraphicFrame);
-    //     this.Columns = new TableColumns(pGraphicFrame);
-    //     this.TableStyleOptions = new TableStyleOptions(this.ATable.TableProperties!);
-    // }
-
     public ShapeContent ShapeContent => ShapeContent.Table;
+
     public IShapeOutline Outline => shape.Outline;
+
     public IShapeFill Fill => shape.Fill;
+
     public ITextBox? TextBox => shape.TextBox;
+
     public double Rotation => shape.Rotation;
+
     public string SDKXPath => shape.SDKXPath;
+
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
+
     public IPresentation Presentation => shape.Presentation;
+
     public ITableColumnCollection Columns => columns;
+
     public ITableRowCollection Rows => rows;
 
     public ITableStyle TableStyle
@@ -131,6 +130,7 @@ internal sealed class Table(
     }
 
     public bool Hidden => shape.Hidden;
+
     public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public string? CustomData
@@ -159,6 +159,18 @@ internal sealed class Table(
     {
         get => shape.Adjustments;
         set => shape.Adjustments = value;
+    }
+
+    public decimal X
+    {
+        get => shape.X;
+        set => shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get => shape.Y;
+        set => shape.Y = value;
     }
 
     private A.Table ATable => pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
@@ -212,6 +224,7 @@ internal sealed class Table(
     public void Remove() => pGraphicFrame.Remove();
 
     public ITable AsTable() => this;
+
     public IMediaShape AsMedia() => shape.AsMedia();
 
     public void Duplicate() => shape.Duplicate();
@@ -221,6 +234,8 @@ internal sealed class Table(
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
     internal void SetTableHeight(decimal value) => shape.Height = value;
+    
+    internal void CopyTo(P.ShapeTree pShapeTree) => shape.CopyTo(pShapeTree);
 
     private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
     {
@@ -395,18 +410,4 @@ internal sealed class Table(
             this.Columns[colIdx].Width += column.Width;
         }
     }
-
-    public decimal X
-    {
-        get=> shape.X;
-        set=> shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get=> shape.Y;
-        set=> shape.Y = value;
-    }
-
-    internal void CopyTo(P.ShapeTree pShapeTree) => shape.CopyTo(pShapeTree);
 }

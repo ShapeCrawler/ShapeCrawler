@@ -80,6 +80,5 @@ public interface IPresentation : IDisposable
     /// <summary>
     ///     Returns the presentation as a base64 string.
     /// </summary>
-    /// <returns></returns>
     string AsBase64();
 }

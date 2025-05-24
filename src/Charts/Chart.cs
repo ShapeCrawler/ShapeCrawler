@@ -11,23 +11,14 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, SlideShapeOutline outline, ShapeFill fill, ChartPart chartPart) : IChart
+internal sealed class Chart(
+    Shape shape,
+    SeriesCollection seriesCollection,
+    SlideShapeOutline outline,
+    ShapeFill fill,
+    ChartPart chartPart) : IChart
 {
     private string? chartTitle;
-
-    // internal Chart(Shape shape, SlideShapeOutline outline, ChartPart chartPart)
-    // {
-    //     // shape = shape;
-    //     // this.chartPart = chartPart;
-    //     // var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-    //     // this.cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-    //     // var pShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-    //     // this.Outline = new SlideShapeOutline(pShapeProperties);
-    //     // this.Fill = new ShapeFill(pShapeProperties);
-    //     // this.seriesCollection = new SeriesCollection(
-    //     //     chartPart,
-    //     //     plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
-    // }
 
     public ChartType Type
     {
@@ -49,45 +40,54 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
 
     public decimal Width
     {
-        get => shape.Width; 
-        set=> shape.Width = value;
+        get => shape.Width;
+        set => shape.Width = value;
     }
 
     public decimal Height
     {
-        get=> shape.Height;
-        set=> shape.Height = value;
+        get => shape.Height;
+        set => shape.Height = value;
     }
+
     public int Id => shape.Id;
 
     public string Name
     {
-        get=> shape.Name;
-        set=> shape.Name = value;
+        get => shape.Name;
+        set => shape.Name = value;
     }
 
     public string AltText
     {
-        get=> shape.AltText;
-        set=> shape.AltText = value;
+        get => shape.AltText;
+        set => shape.AltText = value;
     }
+
     public bool Hidden => shape.Hidden;
+
     public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public string? CustomData
     {
-        get=> shape.CustomData;
-        set=> shape.CustomData = value;
+        get => shape.CustomData;
+        set => shape.CustomData = value;
     }
+
     public ShapeContent ShapeContent => ShapeContent.Chart;
 
     public IShapeOutline Outline => outline;
 
     public IShapeFill Fill => fill;
+
     public ITextBox? TextBox => shape.TextBox;
+
     public double Rotation => shape.Rotation;
+
     public string SDKXPath => shape.SDKXPath;
+
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
+
     public IPresentation Presentation => shape.Presentation;
 
     public string? Title
@@ -99,7 +99,7 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
         }
     }
 
-    public IReadOnlyList<ICategory>? Categories => null; 
+    public IReadOnlyList<ICategory>? Categories => null;
 
     public IXAxis? XAxis => null;
 
@@ -107,27 +107,40 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
 
     public Geometry GeometryType
     {
-        get=>Geometry.Rectangle;
-        set=>throw new SCException("Unable to set geometry type for chart.");
+        get => Geometry.Rectangle;
+        set => throw new SCException("Unable to set geometry type for chart.");
     }
 
     public decimal CornerSize
     {
-        get=> shape.CornerSize;
-        set=> shape.CornerSize = value;
+        get => shape.CornerSize;
+        set => shape.CornerSize = value;
     }
 
     public decimal[] Adjustments
     {
-        get=> shape.Adjustments;
-        set=> shape.Adjustments = value;
+        get => shape.Adjustments;
+        set => shape.Adjustments = value;
     }
 
     public bool Removable => true;
+    
+    public decimal X
+    {
+        get => shape.X;
+        set => shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get => shape.Y;
+        set => shape.Y = value;
+    }
 
     public byte[] GetWorksheetByteArray() => new Workbook(chartPart.EmbeddedPackagePart!).AsByteArray();
 
     public void Remove() => shape.Remove();
+
     public ITable AsTable() => shape.AsTable();
 
     public IMediaShape AsMedia() => shape.AsMedia();
@@ -135,7 +148,7 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
     public void Duplicate() => shape.Duplicate();
 
     public void SetText(string text) => shape.SetText(text);
-    
+
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
     private string? GetTitleOrNull()
@@ -188,17 +201,5 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
         }
 
         return false;
-    }
-
-    public decimal X
-    {
-        get=> shape.X;
-        set=> shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get=> shape.Y;
-        set=> shape.Y = value;
     }
 }

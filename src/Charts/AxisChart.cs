@@ -1,19 +1,10 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts;
 
 internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
 {
-    // private readonly IChart chart;
-
-    // internal AxisChart(IChart chart, ChartPart chartPart)
-    // {
-    //     chart = chart;
-    //     this.XAxis = new XAxis(chartPart);
-    // }
-
     public IXAxis XAxis => xAxis;
 
     public decimal X
@@ -113,6 +104,7 @@ internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
     public IMediaShape AsMedia() => chart.AsMedia();
 
     public void Duplicate() => chart.Duplicate();
+
     public void SetText(string text) => chart.SetText(text);
 
     public void SetImage(string imagePath) => chart.SetImage(imagePath);

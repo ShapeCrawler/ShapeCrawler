@@ -109,11 +109,15 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGraphicFrame);
 
-        return new SmartArt(
-            new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame),
-                pGraphicFrame),
-            new SmartArtNodeCollection()
-        );
+        return
+            new SmartArt(
+                new Shape(
+                    new Position(pGraphicFrame),
+                    new ShapeSize(pGraphicFrame),
+                    new ShapeId(pGraphicFrame),
+                    pGraphicFrame),
+                new SmartArtNodeCollection()
+            );
     }
 
     private static void GeneratePieChartContent(

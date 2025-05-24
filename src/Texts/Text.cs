@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using ShapeCrawler.Units;
 using SkiaSharp;
 
 namespace ShapeCrawler.Texts;

@@ -40,7 +40,7 @@ internal class ParagraphCollection(OpenXmlElement textBody) : IParagraphCollecti
         var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
         newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         lastAParagraph.InsertAfterSelf(newAParagraph);
-        new Paragraph(newAParagraph).Text = "";
+        new Paragraph(newAParagraph).Text = string.Empty;
     }
 
     public void Add(string content, int index)

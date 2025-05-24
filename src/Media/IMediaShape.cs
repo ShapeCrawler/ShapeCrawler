@@ -36,16 +36,6 @@ public interface IMediaShape : IShape
 
 internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill, P.Picture pPicture) : IMediaShape
 {
-    // private readonly P.Picture pPicture;
-    //
-    // internal MediaShape(P.Picture pPicture)
-    //     : base(pPicture)
-    // {
-    //     pPicture = pPicture;
-    //     this.Outline = new SlideShapeOutline(pPicture.ShapeProperties!);
-    //     this.Fill = new ShapeFill(pPicture.ShapeProperties!);
-    // }
-
     public decimal Width
     {
         get => shape.Width;
@@ -73,6 +63,7 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
     }
 
     public bool Hidden => shape.Hidden;
+
     public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public string? CustomData
@@ -86,10 +77,45 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
     public IShapeOutline Outline => outline;
 
     public IShapeFill Fill => fill;
+
     public ITextBox? TextBox => shape.TextBox;
+
     public double Rotation => shape.Rotation;
+
     public string SDKXPath => shape.SDKXPath;
+    
+    public decimal X
+    {
+        get => shape.X;
+        set => shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get => shape.Y;
+        set => shape.Y = value;
+    }
+
+    public Geometry GeometryType
+    {
+        get => shape.GeometryType;
+        set => shape.GeometryType = value;
+    }
+
+    public decimal CornerSize
+    {
+        get => shape.CornerSize;
+        set => shape.CornerSize = value;
+    }
+
+    public decimal[] Adjustments
+    {
+        get => shape.Adjustments;
+        set => shape.Adjustments = value;
+    }
+
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
+
     public IPresentation Presentation => shape.Presentation;
 
     public bool Removable => true;
@@ -129,6 +155,7 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
     }
 
     public void Remove() => shape.Remove();
+
     public ITable AsTable() => shape.AsTable();
 
     public IMediaShape AsMedia() => shape.AsMedia();
@@ -138,34 +165,4 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
     public void SetText(string text) => shape.SetText(text);
 
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
-
-    public decimal X
-    {
-        get => shape.X;
-        set => shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => shape.Y;
-        set => shape.Y = value;
-    }
-
-    public Geometry GeometryType
-    {
-        get => shape.GeometryType;
-        set => shape.GeometryType = value;
-    }
-
-    public decimal CornerSize
-    {
-        get => shape.CornerSize;
-        set => shape.CornerSize = value;
-    }
-
-    public decimal[] Adjustments
-    {
-        get => shape.Adjustments;
-        set => shape.Adjustments = value;
-    }
 }

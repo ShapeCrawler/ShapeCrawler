@@ -1,6 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
@@ -24,20 +23,6 @@ public interface ILine : IShape
 
 internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape) : ILine
 {
-    // private readonly P.ConnectionShape pConnectionShape;
-
-    // internal SlideLine(P.ConnectionShape pConnectionShape)
-    //     : this(pConnectionShape, new SlideShapeOutline(pConnectionShape.ShapeProperties!))
-    // {
-    // }
-    //
-    // private SlideLine(P.ConnectionShape pConnectionShape, SlideShapeOutline shapeOutline)
-    //     : base(pConnectionShape)
-    // {
-    //     this.pConnectionShape = pConnectionShape;
-    //     this.Outline = shapeOutline;
-    // }
-
     public decimal Width
     {
         get => shape.Width;
@@ -65,6 +50,7 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
     }
 
     public bool Hidden => shape.Hidden;
+
     public PlaceholderType? PlaceholderType => shape.PlaceholderType;
 
     public string? CustomData
@@ -76,11 +62,17 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
     public ShapeContent ShapeContent => ShapeContent.Line;
 
     public IShapeOutline Outline => shape.Outline;
+
     public IShapeFill Fill => shape.Fill;
+
     public ITextBox? TextBox => shape.TextBox;
+
     public double Rotation => shape.Rotation;
+
     public string SDKXPath => shape.SDKXPath;
+
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
+
     public IPresentation Presentation => shape.Presentation;
 
     public Geometry GeometryType
@@ -111,7 +103,7 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (flipH && (Height == 0 || flipV))
+            if (flipH && (this.Height == 0 || flipV))
             {
                 return new Point(this.X, this.Y);
             }
@@ -158,6 +150,18 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
             return new Point(this.Width, this.Y);
         }
     }
+    
+    public decimal X
+    {
+        get => shape.X;
+        set => shape.X = value;
+    }
+
+    public decimal Y
+    {
+        get => shape.Y;
+        set => shape.Y = value;
+    }
 
     public bool Removable => true;
 
@@ -165,23 +169,11 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
 
     public ITable AsTable() => shape.AsTable();
 
-    public IMediaShape AsMedia()=> shape.AsMedia();
+    public IMediaShape AsMedia() => shape.AsMedia();
 
-    public void Duplicate()=> shape.Duplicate();
+    public void Duplicate() => shape.Duplicate();
 
-    public void SetText(string text)=> shape.SetText(text);
+    public void SetText(string text) => shape.SetText(text);
 
-    public void SetImage(string imagePath)=> shape.SetImage(imagePath);
-
-    public decimal X
-    {
-        get=> shape.X;
-        set=> shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get=> shape.Y;
-        set=> shape.Y = value;
-    }
+    public void SetImage(string imagePath) => shape.SetImage(imagePath);
 }

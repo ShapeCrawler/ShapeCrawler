@@ -6,15 +6,13 @@ namespace ShapeCrawler.Shapes;
 
 internal class TextShape(Shape shape, TextBox textBox) : IShape
 {
-    public void SetText(string text) => textBox.SetText(text);
-    
-    public virtual decimal X
+    public decimal X
     {
         get => shape.X;
         set => shape.X = value;
     }
 
-    public virtual decimal Y
+    public decimal Y
     {
         get => shape.Y;
         set => shape.Y = value;
@@ -36,7 +34,7 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
     
     public int Id
     {
-        get =>shape.Id;
+        get => shape.Id;
         set => shape.Id = value;
     }
 
@@ -138,7 +136,8 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
 
     public void Duplicate() => shape.Duplicate();
     
-
+    public void SetText(string text) => textBox.SetText(text);
+    
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
     public virtual void Remove() => shape.Remove();

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 

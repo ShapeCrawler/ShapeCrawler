@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -238,8 +237,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             );
         }
     }
-
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    
     private IEnumerable<IShape> CreateChartShapes(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
@@ -248,7 +246,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         
-        if (cCharts.Count() > 1) // combination chart has multiple chart types
+        // Combination chart has multiple chart types
+        if (cCharts.Count() > 1) 
         {
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
