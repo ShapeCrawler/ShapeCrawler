@@ -597,18 +597,4 @@ public class PresentationTests : SCTest
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
     }
-
-    [Test]
-    public void Repro_issue_1051()
-    {
-        var pres = new Presentation(@"c:\temp\picture.pptx");
-        var slide = pres.Slide(1);
-        var picture = slide.Picture("Picture 1");
-        pres.Slides.Add(slide);
-
-        using var image = File.OpenRead(@"c:\Repo\ShapeCrawler\tests\ShapeCrawler.DevTests\Assets\images\10 png image.png");
-        // picture.Image!.Update(image);
-        
-        pres.Save(@"c:\temp\output.pptx");
-    }
 }
