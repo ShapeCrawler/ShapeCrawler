@@ -36,7 +36,11 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
 
     public IPresentation Presentation => shape.Presentation;
     
-    public int Id => shape.Id;
+    public int Id
+    {
+        get =>shape.Id;
+        set => shape.Id = value;
+    }
 
     public string Name
     {

@@ -597,14 +597,4 @@ public class PresentationTests : SCTest
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
     }
-
-    [Test]
-    public void WIP()
-    {
-        using var pres = new Presentation(@"c:\temp\mcp.pptx");
-        
-        pres.Slide(1).Fill.SetColor("00ff00");
-        
-        // pres.Save();
-    }
 }

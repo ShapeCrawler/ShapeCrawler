@@ -23,7 +23,7 @@ public interface ILine : IShape
     Point EndPoint { get; }
 }
 
-internal sealed class SlideLine(Shape shape, SlideShapeOutline outline, P.ConnectionShape pConnectionShape) : ILine
+internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape) : ILine
 {
     // private readonly P.ConnectionShape pConnectionShape;
 
@@ -76,7 +76,7 @@ internal sealed class SlideLine(Shape shape, SlideShapeOutline outline, P.Connec
 
     public ShapeContent ShapeContent => ShapeContent.Line;
 
-    public IShapeOutline Outline => outline;
+    public IShapeOutline Outline => shape.Outline;
     public IShapeFill? Fill => shape.Fill;
     public ITextBox? TextBox => shape.TextBox;
     public double Rotation => shape.Rotation;

@@ -10,7 +10,7 @@ namespace ShapeCrawler.DevTests;
 public class FontTests : SCTest
 {
     [Test]
-    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_in_New_Presentation()
+    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters()
     {
         // Arrange
         var pres = new Presentation();
@@ -350,7 +350,7 @@ public class FontTests : SCTest
     }
     
     [Test]
-    public void LatinName_Setter_should_sets_font_for_the_latin_characters_only_for_the_specified_shape()
+    public void LatinName_Setter_sets_font_for_the_latin_characters()
     {
         // Arrange
         var pres = new Presentation();

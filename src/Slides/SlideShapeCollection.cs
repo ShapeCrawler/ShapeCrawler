@@ -298,7 +298,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var nextShapeId = this.GetNextShapeId();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<Shape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -316,7 +316,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var nextShapeId = this.GetNextShapeId();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<Shape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -324,7 +324,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         addedShape.Height = height;
         addedShape.Id = nextShapeId;
         addedShape.GeometryType = geometry;
-        addedShape.TextBox!.SetText(text);
+        addedShape.TextBox.SetText(text);
     }
 
     public void AddLine(string xml)

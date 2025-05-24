@@ -85,7 +85,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         yield return new SlideLine(
             new Shape(new Position(pConnectionShape), new ShapeSize(pConnectionShape), new ShapeId(pConnectionShape), pConnectionShape),
-            new SlideShapeOutline(pConnectionShape.ShapeProperties!),
             pConnectionShape
         );
     }

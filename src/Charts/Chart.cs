@@ -106,7 +106,12 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
 
     public ISeriesCollection SeriesCollection => seriesCollection;
 
-    public Geometry GeometryType => Geometry.Rectangle;
+    public Geometry GeometryType
+    {
+        get=>Geometry.Rectangle;
+        set=>throw new SCException("Unable to set geometry type for chart.");
+    }
+
     public decimal CornerSize { get; set; }
 
     public decimal[] Adjustments
@@ -184,5 +189,4 @@ internal sealed class Chart(Shape shape, SeriesCollection seriesCollection, Slid
 
     public decimal X { get; set; }
     public decimal Y { get; set; }
-    Geometry IShapeGeometry.GeometryType { get; set; }
 }
