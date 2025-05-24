@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -238,6 +239,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
     }
     
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     private IEnumerable<IShape> CreateChartShapes(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;

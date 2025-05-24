@@ -26,6 +26,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageIcon>package icon.jpg</PackageIcon> 
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <NoWarn>OOXML0001</NoWarn>
   </PropertyGroup>
 
    <ItemGroup>
