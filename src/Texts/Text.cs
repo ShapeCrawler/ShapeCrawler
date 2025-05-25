@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using SkiaSharp;
 
 namespace ShapeCrawler.Texts;
@@ -54,38 +54,51 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
         {
             var word = words[i];
             var wordWidth = skFont.MeasureText(word);
+            
+            // Handle word that fits on current line
             if (wordWidth <= rect.Right - wordX)
             {
                 canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
                 wordX += wordWidth + spaceWidth;
+                i++;
+                continue;
+            }
+            
+            // Move to next line
+            wordY += skFont.Spacing;
+            wordX = rect.Left;
+            
+            // Check if we've reached vertical limit
+            if ((decimal)wordY > wordMaxY)
+            {
+                // Minimum font size reached, can't shrink further
+                if (skFont.Size <= 5)
+                {
+                    break;
+                }
+
+                // Reduce font size and restart layout
+                skFont.Size--;
+                ResetTextLayout(ref wordX, ref wordY, rect, skFont);
+                i = -1;
             }
             else
             {
-                wordY += skFont.Spacing;
-                wordX = rect.Left;
-
-                if ((decimal)wordY > wordMaxY)
-                {
-                    if (skFont.Size <= 5)
-                    {
-                        break;
-                    }
-
-                    skFont.Size = --skFont.Size;
-                    wordX = rect.Left;
-                    wordY = rect.Top + skFont.Size;
-                    i = -1;
-                }
-                else
-                {
-                    wordX += wordWidth + spaceWidth;
-                    canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
-                }
+                // Draw word at beginning of new line
+                canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
+                wordX += wordWidth + spaceWidth;
             }
-
+            
             i++;
         }
 
         font.Size = (decimal)skFont.Size;
+    }
+
+    // Resets the text layout coordinates when font size changes
+    private static void ResetTextLayout(ref float wordX, ref float wordY, SKRect rect, SKFont font)
+    {
+        wordX = rect.Left;
+        wordY = rect.Top + font.Size;
     }
 }
