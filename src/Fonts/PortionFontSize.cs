@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -19,7 +20,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
             var runPropertiesFontSize = this.GetRunPropertiesFontSizeOrNull();
             if (runPropertiesFontSize.HasValue)
             {
-                return runPropertiesFontSize.Value;
+                return this.ApplyNormAutofitScaling(runPropertiesFontSize.Value);   
             }
 
             // Try getting font size from referenced indent level
@@ -188,5 +189,19 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         var pShape = aText.Ancestors<P.Shape>().First();
 
         return new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
+    }
+    
+    private decimal ApplyNormAutofitScaling(decimal size)
+    {
+        var bodyPr = aText.Ancestors<A.Paragraph>().First().Ancestors<P.TextBody>().FirstOrDefault()
+            ?.GetFirstChild<A.BodyProperties>();
+        var normAutofit = bodyPr?.GetFirstChild<A.NormalAutoFit>();
+        if (normAutofit?.FontScale != null)
+        {
+            decimal fontScale = normAutofit.FontScale.Value / 100000m;
+            size = Math.Round(size * fontScale, MidpointRounding.AwayFromZero);
+        }
+
+        return size;
     }
 }

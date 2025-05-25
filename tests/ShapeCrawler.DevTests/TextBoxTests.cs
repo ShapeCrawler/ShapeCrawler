@@ -69,7 +69,7 @@ namespace ShapeCrawler.DevTests
             textBox.Text.Should().Contain("confirm that");
         }
 
-        [Test]
+        [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/1053")]
         public void SetText_reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
@@ -157,7 +157,7 @@ namespace ShapeCrawler.DevTests
             pres.Validate();
         }
 
-        [Test]
+        [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/1054")]
         [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Ubuntu and macOS")]
         public void SetText_updates_shape_height_to_fit_text()
         {

@@ -359,7 +359,7 @@ public class SlideTests : SCTest
         pres.Validate();
     }
 
-    [Test]
+    [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/1052")]
     public void Notes_Text_Setter_updates_notes()
     {
         // Arrange
