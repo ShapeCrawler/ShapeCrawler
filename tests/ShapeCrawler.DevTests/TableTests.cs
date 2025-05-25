@@ -1271,7 +1271,7 @@ public class TableTests : SCTest
         table.Rows[1].Height.Should().Be(templateRowHeight);
         pres.Validate();
     }
-/
+
     [Test]
     public void Rows_Add_adds_a_new_row_with_template_font_color()
     {
