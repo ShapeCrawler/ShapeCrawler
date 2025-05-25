@@ -233,9 +233,9 @@ internal sealed class TextBox : ITextBox
             var scFont = popularPortion.Font;
 
             var paragraphText = paragraph.Text.ToUpper();
-            var paragraphTextWidthPx = new Text(paragraphText, scFont).Width;
-            var paragraphTextHeightPx = scFont.Size;
-            var requiredRowsCount = paragraphTextWidthPx / shapeWidthCapacity;
+            var paragraphTextWidth = new Text(paragraphText, scFont).Width;
+            var paragraphTextHeight = scFont.Size;
+            var requiredRowsCount = paragraphTextWidth / shapeWidthCapacity;
             var intRequiredRowsCount = (int)requiredRowsCount;
             var fractionalPart = requiredRowsCount - intRequiredRowsCount;
             if (fractionalPart > 0)
@@ -243,7 +243,7 @@ internal sealed class TextBox : ITextBox
                 intRequiredRowsCount++;
             }
 
-            textHeightPx += intRequiredRowsCount * (int)paragraphTextHeightPx;
+            textHeightPx += intRequiredRowsCount * (int)paragraphTextHeight;
         }
 
         this.UpdateShapeHeight(textHeightPx, shapeHeightCapacity);
@@ -385,11 +385,10 @@ internal sealed class TextBox : ITextBox
         this.shapeSize.Width = newWidth;
     }
 
-    private void UpdateShapeHeight(decimal textHeightPx, decimal shapeHeightPtCapacity)
+    private void UpdateShapeHeight(decimal textHeight, decimal shapeHeightPtCapacity)
     {
-        var textHeightPt = new Pixels(textHeightPx).AsPoints();
         var parentShape = this.textBody.Parent!;
-        var requiredHeightPt = textHeightPt + this.TopMargin + this.BottomMargin;
+        var requiredHeightPt = textHeight + this.TopMargin + this.BottomMargin;
         var newHeight = requiredHeightPt + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
         this.shapeSize.Height = newHeight;
 
