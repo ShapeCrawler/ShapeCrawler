@@ -15,12 +15,14 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class TextBox: ITextBox
 {
+    private readonly TextBoxMargins margins;
     private readonly OpenXmlElement textBody;
     private readonly ShapeSize shapeSize;
     private TextVerticalAlignment? vAlignment;
 
-    internal TextBox(OpenXmlElement textBody)
+    internal TextBox(TextBoxMargins margins, OpenXmlElement textBody)
     {
+        this.margins = margins;
         this.textBody = textBody;
         this.shapeSize = new ShapeSize(textBody.Parent!);
     }
@@ -66,7 +68,6 @@ internal sealed class TextBox: ITextBox
 
             return AutofitType.None;
         }
-
         set
         {
             var currentType = this.AutofitType;
@@ -77,7 +78,6 @@ internal sealed class TextBox: ITextBox
 
             var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
             
-            // Remove existing autofit elements
             RemoveExistingAutofitElements(aBodyPr);
 
             switch (value)
@@ -98,53 +98,28 @@ internal sealed class TextBox: ITextBox
         }
     }
     
-
     public decimal LeftMargin
     {
-        get
-        {
-                return new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
-        }
-
-        set
-        {
-            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-            var emu = new Points(value).AsEmus();
-            bodyProperties.LeftInset = new Int32Value((int)emu);
-        }
+        get=> this.margins.Left; 
+        set=> this.margins.Left = value;
     }
 
     public decimal RightMargin
     {
-        get => new LeftRightMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.RightInset).Value;
-        set
-        {
-            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-            var emu = new Points(value).AsEmus();
-            bodyProperties.RightInset = new Int32Value((int)emu);
-        }
+        get => this.margins.Right;
+        set => this.margins.Right = value;
     }
 
     public decimal TopMargin
     {
-        get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.TopInset).Value;
-        set
-        {
-            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-            var emu = new Points(value).AsEmus();
-            bodyProperties.TopInset = new Int32Value((int)emu);
-        }
+        get => margins.Top;
+        set=> margins.Top = value;
     }
 
     public decimal BottomMargin
     {
-        get => new TopBottomMargin(this.textBody.GetFirstChild<A.BodyProperties>() !.BottomInset).Value;
-        set
-        {
-            var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
-            var emu = new Points(value).AsEmus();
-            bodyProperties.BottomInset = new Int32Value((int)emu);
-        }
+        get => this.margins.Bottom;
+        set => this.margins.Bottom = value;
     }
 
     public bool TextWrapped
@@ -277,11 +252,9 @@ internal sealed class TextBox: ITextBox
             this.UpdateShapeWidth();
         }
     }
-    
-    private static bool IsList(string[] lines)
-    {
-        return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
-    }
+
+    private static bool IsList(string[] lines) =>
+        lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
     
     private static void RemoveExistingAutofitElements(A.BodyProperties bodyProperties)
     {
