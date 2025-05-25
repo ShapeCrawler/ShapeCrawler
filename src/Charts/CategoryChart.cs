@@ -115,6 +115,12 @@ internal class CategoryChart(IChart chart, Categories categories) : IChart
 
     public void SetImage(string imagePath) => chart.SetImage(imagePath);
 
+    public void SetFontName(string fontName) => chart.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => chart.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => chart.SetFontColor(colorHex);
+
     public byte[] GetWorksheetByteArray() => chart.GetWorksheetByteArray();
 
     #endregion Composition Methods

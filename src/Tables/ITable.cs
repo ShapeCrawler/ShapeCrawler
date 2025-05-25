@@ -233,6 +233,12 @@ internal sealed class Table(
 
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
+    public void SetFontName(string fontName) => shape.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
     internal void SetTableHeight(decimal value) => shape.Height = value;
     
     internal void CopyTo(P.ShapeTree pShapeTree) => shape.CopyTo(pShapeTree);

@@ -81,7 +81,7 @@ internal sealed class FontColor(A.Text aText): IFontColor
         }
     }
     
-    public void Update(string hex)
+    public void Set(string hex)
     {
         var aTextContainer = aText.Parent!;
         var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();

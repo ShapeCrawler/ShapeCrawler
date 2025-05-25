@@ -60,6 +60,16 @@ public interface IParagraph
     ///     Sets font size in points.
     /// </summary>
     void SetFontSize(int fontSize);
+
+    /// <summary>
+    ///     Sets font name.
+    /// </summary>
+    void SetFontName(string fontName);
+
+    /// <summary>
+    ///     Sets font color.
+    /// </summary>
+    void SetFontColor(string colorHex);
 }
 
 internal sealed class Paragraph : IParagraph
@@ -221,6 +231,22 @@ internal sealed class Paragraph : IParagraph
         foreach (var portion in this.portions)
         {
             portion.Font!.Size = fontSize;
+        }
+    }
+
+    public void SetFontName(string fontName)
+    {
+        foreach (var portion in this.Portions)
+        {
+            portion.Font!.LatinName = fontName;
+        }
+    }
+
+    public void SetFontColor(string colorHex)
+    {
+        foreach (var portion in this.Portions)
+        {
+            portion.Font!.Color.Set(colorHex);
         }
     }
 

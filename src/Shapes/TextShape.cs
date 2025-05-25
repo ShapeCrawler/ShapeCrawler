@@ -108,9 +108,9 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
 
     public virtual ShapeContent ShapeContent => ShapeContent.Shape;
 
-    public virtual IShapeOutline Outline => shape.Outline!;
+    public virtual IShapeOutline Outline => shape.Outline;
 
-    public virtual IShapeFill Fill => shape.Fill!;
+    public virtual IShapeFill Fill => shape.Fill;
 
     public ITextBox TextBox => textBox;
 
@@ -139,6 +139,30 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
     public void SetText(string text) => textBox.SetText(text);
     
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
+
+    public void SetFontName(string fontName)
+    {
+        foreach (var paragraph in this.TextBox.Paragraphs)
+        {
+            paragraph.SetFontName(fontName);
+        }
+    }
+
+    public void SetFontSize(decimal fontSize)
+    {
+        foreach (var paragraph in this.TextBox.Paragraphs)
+        {
+            paragraph.SetFontSize((int)fontSize);
+        }
+    }
+
+    public void SetFontColor(string colorHex)
+    {
+        foreach (var paragraph in this.TextBox.Paragraphs)
+        {
+            paragraph.SetFontColor(colorHex);
+        }
+    }
 
     public virtual void Remove() => shape.Remove();
     

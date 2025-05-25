@@ -88,11 +88,11 @@ internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
     public OpenXmlElement SDKOpenXmlElement => chart.SDKOpenXmlElement;
 
     public IPresentation Presentation => chart.Presentation;
-    
+
     public ChartType Type => chart.Type;
 
     public string? Title => chart.Title;
-    
+
     public IReadOnlyList<ICategory>? Categories => chart.Categories;
 
     public ISeriesCollection SeriesCollection => chart.SeriesCollection;
@@ -108,6 +108,12 @@ internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
     public void SetText(string text) => chart.SetText(text);
 
     public void SetImage(string imagePath) => chart.SetImage(imagePath);
+
+    public void SetFontName(string fontName) => chart.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => chart.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => chart.SetFontColor(colorHex);
 
     public byte[] GetWorksheetByteArray() => chart.GetWorksheetByteArray();
 }

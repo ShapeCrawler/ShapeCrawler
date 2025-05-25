@@ -152,6 +152,12 @@ internal sealed class Group : IGroup
 
     public void SetImage(string imagePath) => this.shape.SetImage(imagePath);
 
+    public void SetFontName(string fontName) => this.shape.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => this.shape.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => this.shape.SetFontColor(colorHex);
+
     public IShape Shape(string groupedShapeName) => this.Shapes.Shape(groupedShapeName);
 
     public T Shape<T>(string groupedShapeName) =>

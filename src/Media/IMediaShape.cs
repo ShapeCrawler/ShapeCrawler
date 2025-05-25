@@ -165,4 +165,10 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
     public void SetText(string text) => shape.SetText(text);
 
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
+
+    public void SetFontName(string fontName) => shape.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
 }

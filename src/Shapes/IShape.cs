@@ -121,4 +121,19 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Use <see cref="ShapeContent"/> property to check element content type.
     /// </summary>
     void SetImage(string imagePath);
+    
+    /// <summary>
+    ///     Sets the font name.
+    /// </summary>
+    void SetFontName(string fontName);
+    
+    /// <summary>
+    ///     Sets the font size.
+    /// </summary>
+    void SetFontSize(decimal fontSize);
+    
+    /// <summary>
+    ///     Sets the font color.
+    /// </summary>
+    void SetFontColor(string colorHex);
 }

@@ -17,7 +17,7 @@ public interface IFontColor
     string Hex { get; }
 
     /// <summary>
-    ///     Updates the color with the specified color in the hexadecimal representation.
+    ///     Set the color by its hexadecimal representation.
     /// </summary>
-    void Update(string hex);
+    void Set(string hex);
 }
