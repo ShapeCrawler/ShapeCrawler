@@ -13,7 +13,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextBox: ITextBox
+internal sealed class TextBox : ITextBox
 {
     private readonly TextBoxMargins margins;
     private readonly OpenXmlElement textBody;
@@ -77,7 +77,7 @@ internal sealed class TextBox: ITextBox
             }
 
             var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
-            
+
             RemoveExistingAutofitElements(aBodyPr);
 
             switch (value)
@@ -97,11 +97,11 @@ internal sealed class TextBox: ITextBox
             }
         }
     }
-    
+
     public decimal LeftMargin
     {
-        get=> this.margins.Left; 
-        set=> this.margins.Left = value;
+        get => this.margins.Left;
+        set => this.margins.Left = value;
     }
 
     public decimal RightMargin
@@ -113,7 +113,7 @@ internal sealed class TextBox: ITextBox
     public decimal TopMargin
     {
         get => margins.Top;
-        set=> margins.Top = value;
+        set => margins.Top = value;
     }
 
     public decimal BottomMargin
@@ -169,7 +169,7 @@ internal sealed class TextBox: ITextBox
 
         set => this.SetVerticalAlignment(value);
     }
-    
+
     public void SetMarkdownText(string text)
     {
         var lines = Regex.Split(text, "\r\n|\r|\n", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
@@ -184,7 +184,7 @@ internal sealed class TextBox: ITextBox
 
         this.ResizeParentShapeOnDemand();
     }
-    
+
     public void SetText(string text)
     {
         if (string.IsNullOrEmpty(text))
@@ -194,20 +194,20 @@ internal sealed class TextBox: ITextBox
 
         var paragraphs = this.Paragraphs.ToList();
         var firstParagraph = paragraphs.FirstOrDefault();
-        
+
         // Store LatinName from first portion if available
         string? latinNameToPreserve = GetLatinNameToPreserve(firstParagraph);
-        
+
         // Clear existing content and ensure we have a first paragraph
         firstParagraph = this.PrepareTextContainer(firstParagraph, paragraphs);
-        
+
         // Add new text with preserved font
         var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
         this.AddTextToParagraphs(paragraphLines, firstParagraph, latinNameToPreserve);
 
         this.ApplyTextFormatting(text);
     }
-    
+
     internal void ResizeParentShapeOnDemand()
     {
         if (this.AutofitType != AutofitType.Resize)
@@ -255,14 +255,14 @@ internal sealed class TextBox: ITextBox
 
     private static bool IsList(string[] lines) =>
         lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
-    
+
     private static void RemoveExistingAutofitElements(A.BodyProperties bodyProperties)
     {
         bodyProperties.GetFirstChild<A.NoAutoFit>()?.Remove();
         bodyProperties.GetFirstChild<A.NormalAutoFit>()?.Remove();
         bodyProperties.GetFirstChild<A.ShapeAutoFit>()?.Remove();
     }
-    
+
     private static void ApplyLatinNameIfNeeded(IParagraphPortion portion, string? latinNameToPreserve)
     {
         if (latinNameToPreserve != null && portion.Font != null)
@@ -270,47 +270,48 @@ internal sealed class TextBox: ITextBox
             portion.Font.LatinName = latinNameToPreserve;
         }
     }
-    
+
     private static string? GetLatinNameToPreserve(IParagraph? firstParagraph)
     {
         var firstPortion = firstParagraph?.Portions.FirstOrDefault();
         return firstPortion?.Font?.LatinName;
     }
-    
-    private IParagraph PrepareTextContainer(IParagraph? firstParagraph, System.Collections.Generic.List<IParagraph> paragraphs)
+
+    private IParagraph PrepareTextContainer(IParagraph? firstParagraph,
+        System.Collections.Generic.List<IParagraph> paragraphs)
     {
         if (firstParagraph == null)
         {
             this.Paragraphs.Add();
             return this.Paragraphs.First();
         }
-        
+
         // Remove all paragraphs except the first one
         foreach (var paragraph in paragraphs.Skip(1))
         {
             paragraph.Remove();
         }
-    
+
         // Clear the first paragraph
         foreach (var portion in firstParagraph.Portions.ToList())
         {
             portion.Remove();
         }
-        
+
         return firstParagraph;
     }
-    
+
     private void AddTextToParagraphs(string[] paragraphLines, IParagraph firstParagraph, string? latinNameToPreserve)
     {
         if (paragraphLines.Length <= 0)
         {
             return;
         }
-        
+
         // Add first line to the first paragraph
         firstParagraph.Portions.AddText(paragraphLines[0]);
         ApplyLatinNameIfNeeded(firstParagraph.Portions.Last(), latinNameToPreserve);
-        
+
         // Add remaining lines as new paragraphs
         for (int i = 1; i < paragraphLines.Length; i++)
         {
@@ -319,7 +320,7 @@ internal sealed class TextBox: ITextBox
             ApplyLatinNameIfNeeded(this.Paragraphs[i].Portions.Last(), latinNameToPreserve);
         }
     }
-    
+
     private void ApplyTextFormatting(string text)
     {
         if (this.AutofitType == AutofitType.Shrink)
@@ -377,8 +378,10 @@ internal sealed class TextBox: ITextBox
         var textWidth = new Text(longerText, font).Width;
         var leftMargin = this.LeftMargin;
         var rightMargin = this.RightMargin;
-        var newWidth = (int)(textWidth * 1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
-                       + leftMargin + rightMargin;
+        var newWidth =
+            (int)(textWidth *
+                  1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
+            + leftMargin + rightMargin;
         this.shapeSize.Width = newWidth;
     }
 
@@ -395,8 +398,7 @@ internal sealed class TextBox: ITextBox
         var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
         position.Y -= yOffset;
     }
-
-    // Render markdown list items as bullet paragraphs
+    
     private void RenderList(string[] lines)
     {
         var paragraphs = this.Paragraphs.ToList();
@@ -448,8 +450,7 @@ internal sealed class TextBox: ITextBox
             paraIndex++;
         }
     }
-
-    // Render markdown text with bold formatting
+    
     private void RenderRegularText(string text)
     {
         var paragraphs = this.Paragraphs.ToList();
@@ -467,7 +468,8 @@ internal sealed class TextBox: ITextBox
         }
 
         const string markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
-        var matches = Regex.Matches(text, markdownPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(1000));
+        var matches = Regex.Matches(text, markdownPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase,
+            TimeSpan.FromMilliseconds(1000));
         foreach (Match match in matches)
         {
             if (match.Groups["bold"].Success)
