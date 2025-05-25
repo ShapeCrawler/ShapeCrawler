@@ -398,7 +398,7 @@ internal sealed class TextBox : ITextBox
         var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
         position.Y -= yOffset;
     }
-    
+
     private void RenderList(string[] lines)
     {
         var paragraphs = this.Paragraphs.ToList();
@@ -450,7 +450,7 @@ internal sealed class TextBox : ITextBox
             paraIndex++;
         }
     }
-    
+
     private void RenderRegularText(string text)
     {
         var paragraphs = this.Paragraphs.ToList();
