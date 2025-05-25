@@ -76,39 +76,28 @@ internal sealed class TextBox: ITextBox
             }
 
             var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
-            var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
-            var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
-            var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
+            
+            // Remove existing autofit elements
+            RemoveExistingAutofitElements(aBodyPr);
 
             switch (value)
             {
                 case AutofitType.None:
-                    shrink?.Remove();
-                    resize?.Remove();
-                    dontAutofit = new A.NoAutoFit();
-                    aBodyPr.Append(dontAutofit);
+                    aBodyPr.Append(new A.NoAutoFit());
                     break;
                 case AutofitType.Shrink:
-                    dontAutofit?.Remove();
-                    resize?.Remove();
-                    shrink = new A.NormalAutoFit();
-                    aBodyPr.Append(shrink);
+                    aBodyPr.Append(new A.NormalAutoFit());
                     break;
                 case AutofitType.Resize:
-                    {
-                        dontAutofit?.Remove();
-                        shrink?.Remove();
-                        resize = new A.ShapeAutoFit();
-                        aBodyPr.Append(resize);
-                        this.ResizeParentShapeOnDemand();
-                        break;
-                    }
-
+                    aBodyPr.Append(new A.ShapeAutoFit());
+                    this.ResizeParentShapeOnDemand();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
         }
     }
+    
 
     public decimal LeftMargin
     {
@@ -292,6 +281,13 @@ internal sealed class TextBox: ITextBox
     private static bool IsList(string[] lines)
     {
         return lines.Any(l => l.TrimStart().StartsWith("- ", StringComparison.CurrentCulture));
+    }
+    
+    private static void RemoveExistingAutofitElements(A.BodyProperties bodyProperties)
+    {
+        bodyProperties.GetFirstChild<A.NoAutoFit>()?.Remove();
+        bodyProperties.GetFirstChild<A.NormalAutoFit>()?.Remove();
+        bodyProperties.GetFirstChild<A.ShapeAutoFit>()?.Remove();
     }
     
     private static void ApplyLatinNameIfNeeded(IParagraphPortion portion, string? latinNameToPreserve)

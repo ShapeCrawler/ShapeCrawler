@@ -44,16 +44,16 @@ public interface IPicture : IShape
     void SendToBack();
 }
 
-internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IPicture
+internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : IPicture
 {
     public IImage Image => new SlidePictureImage(aBlip);
 
     public string? SvgContent => this.GetSvgContent();
-    
+
     public ShapeContent ShapeContent => ShapeContent.Image;
-    
+
     public bool HasOutline => true;
-    
+
     public bool Removable => true;
 
     public IShapeOutline Outline => shape.Outline;
@@ -63,7 +63,7 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IP
     public IShapeFill Fill => shape.Fill;
 
     public ITextBox? TextBox => null;
-    
+
     public CroppingFrame Crop
     {
         get
@@ -110,7 +110,7 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IP
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
     }
-    
+
     public bool IsGroup => false;
 
     public Geometry GeometryType
@@ -142,7 +142,7 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IP
         get => shape.Height;
         set => shape.Height = value;
     }
-    
+
     public decimal X
     {
         get => shape.X;
@@ -185,31 +185,26 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IP
 
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
 
-    public IShapeCollection GroupedShapes => throw new SCException($"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
+    public IShapeCollection GroupedShapes => throw new SCException(
+        $"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
 
     public IPresentation Presentation => shape.Presentation;
 
-    public void Remove()
-    {
-        throw new NotImplementedException();
-    }
+    public void Remove() => shape.Remove();
 
-    public ITable AsTable() => throw new SCException($"Picture cannot be converted to table. Use {nameof(IShape.ShapeContent)} property to check if the shape is a table.");
+    public ITable AsTable() => shape.AsTable();
 
-    public IMediaShape AsMedia()
-    {
-        throw new NotImplementedException();
-    }
+    public IMediaShape AsMedia() => shape.AsMedia();
 
-    public void Duplicate()
-    {
-        throw new NotImplementedException();
-    }
+    public void Duplicate() => shape.Duplicate();
 
-    public void SetText(string text)
-    {
-        throw new NotImplementedException();
-    }
+    public void SetText(string text) => shape.SetText(text);
+
+    public void SetFontName(string fontName) => shape.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
 
     public void SendToBack()
     {
@@ -229,30 +224,30 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip): IP
     {
         // Clone the picture and add it to the target shape tree
         new SCPShapeTree(pShapeTree).Add(pPicture);
-        
+
         // Get the source slide part and target slide part
         var sourceOpenXmlPart = pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var sourceImagePart = (ImagePart)sourceOpenXmlPart.GetPartById(aBlip.Embed!.Value!);
         var targetOpenXmlPart = pShapeTree.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        
+
         // If source and target parts are the same, no need to create a new relationship
         if (sourceOpenXmlPart == targetOpenXmlPart)
         {
             return;
         }
-        
+
         // Source and target are different slides, so we need to create a proper relationship
         // Read the source image
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
         sourceImageStream.Position = 0;
-        
+
         // Determine target part relationship ID
         string targetImagePartRId = new SCOpenXmlPart(targetOpenXmlPart).NextRelationshipId();
-        
+
         // Create a new image part in the target slide
         var targetImagePart = targetOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         targetImagePart.FeedData(sourceImageStream);
-        
+
         // Update the copied shape with the correct relationship ID
         var copyElement = pShapeTree.Elements<P.Picture>().Last();
         copyElement.Descendants<A.Blip>().First().Embed = targetImagePartRId;

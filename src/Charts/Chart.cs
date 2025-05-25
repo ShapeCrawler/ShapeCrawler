@@ -151,6 +151,12 @@ internal sealed class Chart(
 
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
+    public void SetFontName(string fontName) => shape.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
     private string? GetTitleOrNull()
     {
         var cTitle = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;

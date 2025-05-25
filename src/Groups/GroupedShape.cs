@@ -324,5 +324,11 @@ internal sealed class GroupedShape(IShape shape, P.Shape pShape) : IShape
 
     public void SetImage(string imagePath) => shape.SetImage(imagePath);
 
+    public void SetFontName(string fontName) => shape.SetFontName(fontName);
+
+    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
+
+    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
     #endregion Composition Methods
 }
