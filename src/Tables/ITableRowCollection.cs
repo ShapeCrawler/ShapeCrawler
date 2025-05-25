@@ -13,7 +13,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a table row collection.
 /// </summary>
-public interface ITableRows : IEnumerable<ITableRow>
+public interface ITableRowCollection : IEnumerable<ITableRow>
 {
     /// <summary>
     ///     Gets number of rows.
@@ -53,11 +53,11 @@ public interface ITableRows : IEnumerable<ITableRow>
     void Add(int index, int templateRowIndex);
 }
 
-internal sealed class TableRows : ITableRows
+internal sealed class TableRowCollection : ITableRowCollection
 {
     private readonly A.Table aTable;
 
-    internal TableRows(P.GraphicFrame pGraphicFrame)
+    internal TableRowCollection(P.GraphicFrame pGraphicFrame)
     {
         this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
     }
@@ -124,6 +124,10 @@ internal sealed class TableRows : ITableRows
         }
     }
 
+    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
+    
     public void Add(int index, int templateRowIndex)
     {
         var rows = this.Rows();
@@ -146,43 +150,11 @@ internal sealed class TableRows : ITableRows
         
         var templateACells = templateARow.Elements<A.TableCell>().ToList();
         
-        // Build each cell of the new row based on the template cell formatting (fill, borders, etc.)
+        // Build each cell of the new row based on the template cell formatting
         foreach (var (templateACell, columnIndex) in templateACells.Select((c, i) => (c, i)))
         {
-            // Create a brand-new table cell with an empty text body
-            var newACell = new A.TableCell();
-            var textBody = new A.TextBody(
-                new A.BodyProperties(),
-                new A.ListStyle(),
-                new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" }));
-            newACell.Append(textBody);
-            
-            // Determine template cell properties and font color
             var templateCell = templateRow.Cells[columnIndex];
-            var templateFontColor = templateCell.TextBox.Paragraphs.FirstOrDefault()?.Portions.FirstOrDefault()?.Font?.Color.Hex;
-            
-            A.TableCellProperties newTcPr;
-            if (templateACell.TableCellProperties is not null)
-            {
-                // Clone existing TableCellProperties from template
-                newTcPr = (A.TableCellProperties)templateACell.TableCellProperties.CloneNode(true);
-            }
-            else
-            {
-                newTcPr = new A.TableCellProperties();
-            }
-            
-            if (!string.IsNullOrEmpty(templateFontColor))
-            {
-                newTcPr.AddSolidFill(templateFontColor!);
-            }
-            else
-            {
-                newTcPr.AddSolidFill("000000"); // default color
-            }
-
-            newACell.Append(newTcPr);
-            
+            var newACell = CreateCellFromTemplate(templateACell, templateCell);
             newARow.Append(newACell);
         }
         
@@ -200,9 +172,43 @@ internal sealed class TableRows : ITableRows
         }
     }
 
-    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
+    private static A.TableCell CreateCellFromTemplate(A.TableCell templateACell, ITableCell templateCell)
+    {
+        // Create a brand-new table cell with an empty text body
+        var newACell = new A.TableCell();
+        var textBody = new A.TextBody(
+            new A.BodyProperties(),
+            new A.ListStyle(),
+            new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" }));
+        newACell.Append(textBody);
+        
+        // Determine template cell properties and font color
+        var templateFontColor = templateCell.TextBox.Paragraphs.FirstOrDefault()?.Portions.FirstOrDefault()?.Font?.Color.Hex;
+        
+        A.TableCellProperties newTcPr;
+        if (templateACell.TableCellProperties is not null)
+        {
+            // Clone existing TableCellProperties from template
+            newTcPr = (A.TableCellProperties)templateACell.TableCellProperties.CloneNode(true);
+        }
+        else
+        {
+            newTcPr = new A.TableCellProperties();
+        }
+        
+        if (!string.IsNullOrEmpty(templateFontColor))
+        {
+            newTcPr.AddSolidFill(templateFontColor!);
+        }
+        else
+        {
+            newTcPr.AddSolidFill("000000"); // default color
+        }
 
-    IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
+        newACell.Append(newTcPr);
+        
+        return newACell;
+    }
 
     private List<TableRow> Rows() =>
     [

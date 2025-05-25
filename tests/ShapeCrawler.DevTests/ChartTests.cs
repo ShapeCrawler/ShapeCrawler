@@ -266,7 +266,8 @@ public class ChartTests : SCTest
     public void GeometryType_Getter_returns_rectangle()
     {
         // Arrange
-        IChart chart = (IChart)new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
+        var pres = new Presentation(TestAsset("018.pptx"));
+        var chart = pres.Slide(1).Shapes.GetById<IChart>(6);
 
         // Act-Assert
         chart.GeometryType.Should().Be(Geometry.Rectangle);

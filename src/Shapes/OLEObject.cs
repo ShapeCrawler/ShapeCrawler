@@ -1,22 +1,42 @@
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Drawing;
+using ShapeCrawler.Slides;
 
 namespace ShapeCrawler.Shapes;
 
-/// <summary>
-///     Represents a SmartArt graphic.
-/// </summary>
-public interface ISmartArt : IShape
+// ReSharper disable once InconsistentNaming
+internal sealed class OLEObject(Shape shape, SlideShapeOutline outline, ShapeFill fill) : IShape
 {
-    /// <summary>
-    ///     Gets the collection of nodes in the SmartArt graphic.
-    /// </summary>
-    ISmartArtNodeCollection Nodes { get; }
-}
+    public decimal Width
+    {
+        get => shape.Width;
+        set => shape.Width = value;
+    }
 
-internal class SmartArt(Shape shape, SmartArtNodeCollection nodeCollection) : ISmartArt
-{
-    public ISmartArtNodeCollection Nodes => nodeCollection;
+    public decimal Height
+    {
+        get => shape.Height;
+        set => shape.Height = value;
+    }
 
+    public int Id => shape.Id;
+
+    public string Name
+    {
+        get => shape.Name;
+        set => shape.Name = value;
+    }
+
+    public string AltText
+    {
+        get => shape.AltText;
+        set => shape.AltText = value;
+    }
+
+    public bool Hidden => shape.Hidden;
+
+    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
+    
     public decimal X
     {
         get => shape.X;
@@ -47,47 +67,17 @@ internal class SmartArt(Shape shape, SmartArtNodeCollection nodeCollection) : IS
         set => shape.Adjustments = value;
     }
 
-    public decimal Width
-    {
-        get => shape.Width;
-        set => shape.Width = value;
-    }
-
-    public decimal Height
-    {
-        get => shape.Height;
-        set => shape.Height = value;
-    }
-
-    public int Id => shape.Id;
-
-    public string Name
-    {
-        get => shape.Name;
-        set => shape.Name = value;
-    }
-
-    public string AltText
-    {
-        get => shape.AltText;
-        set => shape.AltText = value;
-    }
-
-    public bool Hidden => shape.Hidden;
-
-    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
-
     public string? CustomData
     {
         get => shape.CustomData;
         set => shape.CustomData = value;
     }
 
-    public ShapeContent ShapeContent => shape.ShapeContent;
+    public ShapeContent ShapeContent => ShapeContent.OLEObject;
 
-    public IShapeOutline Outline => shape.Outline;
+    public IShapeOutline Outline => outline;
 
-    public IShapeFill Fill => shape.Fill;
+    public IShapeFill Fill => fill;
 
     public ITextBox? TextBox => shape.TextBox;
 
@@ -98,6 +88,8 @@ internal class SmartArt(Shape shape, SmartArtNodeCollection nodeCollection) : IS
     public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
 
     public IPresentation Presentation => shape.Presentation;
+
+    public bool Removable => true;
 
     public void Remove() => shape.Remove();
 

@@ -169,6 +169,15 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
+    public string AsBase64()
+    {
+        using var stream = new MemoryStream();
+        this.Save(stream);
+
+        return Convert.ToBase64String(stream.ToArray());
+    }
+
+    /// <inheritdoc />
     public PresentationDocument GetSDKPresentationDocument() => this.presDocument.Clone();
 
     /// <summary>

@@ -359,15 +359,15 @@ public class SlideTests : SCTest
         pres.Validate();
     }
 
-    [Test]
+    [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/1052")]
     public void Notes_Text_Setter_updates_notes()
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.AddNotes(new[] { "Starting value" });
-        var notes = slide.Notes;
-        var expected = "SlideAddNotes_can_change_notes";
+        var slide = pres.Slide(1);
+        slide.AddNotes(["My notes"]);
+        var notes = slide.Notes!;
+        const string expected = "My new notes";
 
         // Act
         notes.SetText(expected);

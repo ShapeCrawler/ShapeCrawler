@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -40,27 +41,39 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
             switch (pGroupShapeElement)
             {
                 case P.GroupShape pGroupShape:
-                    shape = new Group(new Shape(pGroupShape), pGroupShape);
+                    shape = new Group(
+                        new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape),
+                        pGroupShape);
                     break;
+
                 case P.Shape { TextBody: not null } pShape:
                     shape = new GroupedShape(
-                        pShape,
-                        new Shape(
-                            pShape,
-                            new TextBox(pShape.TextBody)));
+                        new TextShape(
+                            new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape),
+                            new TextBox(pShape.TextBody)
+                        ),
+                        pShape
+                    );
                     break;
+
                 case P.Shape pShape:
                     shape = new GroupedShape(
-                        pShape,
-                        new Shape(pShape));
+                        new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape),
+                        pShape
+                    );
                     break;
+
                 case P.Picture pPicture:
                     {
                         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
                         var blipEmbed = aBlip?.Embed;
                         if (blipEmbed is not null)
                         {
-                            shape = new Picture(pPicture, aBlip!);
+                            shape = new Picture(
+                                new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
+                                pPicture,
+                                aBlip!
+                            );
                         }
 
                         break;
