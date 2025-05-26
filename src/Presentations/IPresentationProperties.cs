@@ -32,7 +32,8 @@ public interface IPresentationProperties
     ///     Gets or sets the primary creator.
     /// </summary>
     /// <remarks>
-    ///     The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.     
+    ///     The identification is environment-specific and can consist of a name, email address, employee ID, etc.
+    ///     It is recommended that this value be only as verbose as necessary to identify the individual.     
     /// </remarks>
     string? Author { get; set; }
 
@@ -50,10 +51,11 @@ public interface IPresentationProperties
     string? Tags { get; set; }
 
     /// <summary>
-    ///     Gets or sets the primary language of the package content.
+    ///     Gets or sets the primary language.
     /// </summary>
     /// <remarks>
-    ///     The language tag is composed of one or more parts: A primary language subtag and a (possibly empty) series of subsequent subtags, for example, "EN-US". These values MUST follow the convention specified in RFC 3066. Show in File Explorer, but not in PowerPoint client.
+    ///     The language tag is composed of one or more parts: A primary language subtag and a (possibly empty) series of subsequent subtags, for example, "EN-US".
+    ///     These values MUST follow the convention specified in RFC 3066. Show in File Explorer, but not in PowerPoint client.
     /// </remarks>
     string? Language { get; set; }
 
@@ -61,7 +63,8 @@ public interface IPresentationProperties
     ///     Gets or sets the user who performed the last modification.
     /// </summary>
     /// <remarks>
-    ///     The identification is environment-specific and can consist of a name, email address, employee ID, etc. It is recommended that this value be only as verbose as necessary to identify the individual.
+    ///     The identification is environment-specific and can consist of a name, email address, employee ID, etc.
+    ///     It is recommended that this value be only as verbose as necessary to identify the individual.
     /// </remarks>
     string? LastModifiedBy { get; set; }
 
@@ -79,7 +82,8 @@ public interface IPresentationProperties
     ///     Gets or sets the revision number.
     /// </summary>
     /// <remarks>
-    ///      This value indicates the number of saves or revisions. The application is responsible for updating this value after each revision. Show in File Explorer, but not in PowerPoint client.
+    ///      This value indicates the number of saves or revisions. The application is responsible for updating this value after each revision.
+    ///      Show in File Explorer, but not in PowerPoint client.
     /// </remarks>
     int? RevisionNumber { get; set; }
 
