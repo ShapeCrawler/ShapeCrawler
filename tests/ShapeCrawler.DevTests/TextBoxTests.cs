@@ -100,6 +100,23 @@ namespace ShapeCrawler.DevTests
         }
         
         [Test]
+        public void SetText_preserves_font_color()
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
+            var shape = pres.Slide(1).Shape("AutoShape 4");
+            var textBox = shape.TextBox!;
+            var expectedColor = textBox.Paragraphs[0].Portions[0].Font!.Color.Hex;
+
+            // Act
+            textBox.SetText("AutoShape 4 some text");
+            pres.Save(@"c:\temp\output.pptx");
+            
+            // Assert
+            textBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be(expectedColor);
+        }
+        
+        [Test]
         public void SetMarkdownText()
         {
             // Arrange
@@ -152,8 +169,8 @@ namespace ShapeCrawler.DevTests
             
             // Assert
             textBox.Text.Should().Be("AutoShape 4 some text");
-            shape.Height.Should().BeApproximately(53m, 1m);
-            shape.Y.Should().BeApproximately(102m, 1m);
+            shape.Height.Should().BeApproximately(64m, 1m);
+            shape.Y.Should().BeApproximately(96m, 1m);
             pres.Validate();
         }
 

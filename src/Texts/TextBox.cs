@@ -197,6 +197,8 @@ internal sealed class TextBox : ITextBox
 
         // Store LatinName from first portion if available
         string? latinNameToPreserve = GetLatinNameToPreserve(firstParagraph);
+        // Store font color hex from first portion if available
+        string? colorHexToPreserve = GetFontColorHexToPreserve(firstParagraph);
 
         // Clear existing content and ensure we have a first paragraph
         firstParagraph = this.PrepareTextContainer(firstParagraph, paragraphs);
@@ -204,6 +206,14 @@ internal sealed class TextBox : ITextBox
         // Add new text with preserved font
         var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
         this.AddTextToParagraphs(paragraphLines, firstParagraph, latinNameToPreserve);
+        if (colorHexToPreserve != null)
+        {
+            for (int i = 0; i < paragraphLines.Length; i++)
+            {
+                var portion = this.Paragraphs[i].Portions.Last();
+                portion.Font!.Color.Set(colorHexToPreserve);
+            }
+        }
 
         this.ApplyTextFormatting(text);
     }
@@ -275,6 +285,12 @@ internal sealed class TextBox : ITextBox
     {
         var firstPortion = firstParagraph?.Portions.FirstOrDefault();
         return firstPortion?.Font?.LatinName;
+    }
+
+    private static string? GetFontColorHexToPreserve(IParagraph? firstParagraph)
+    {
+        var firstPortion = firstParagraph?.Portions.FirstOrDefault();
+        return firstPortion?.Font?.Color.Hex;
     }
 
     private IParagraph PrepareTextContainer(IParagraph? firstParagraph,

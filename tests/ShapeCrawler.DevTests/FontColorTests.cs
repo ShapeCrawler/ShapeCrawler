@@ -190,5 +190,4 @@ public class FontColorTests : SCTest
         // Assert
         colorHex.Should().Be(expectedColorHex);
     }
-    
 }
