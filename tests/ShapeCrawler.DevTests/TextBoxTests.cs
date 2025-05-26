@@ -110,7 +110,6 @@ namespace ShapeCrawler.DevTests
 
             // Act
             textBox.SetText("AutoShape 4 some text");
-            pres.Save(@"c:\temp\output.pptx");
             
             // Assert
             textBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be(expectedColor);
