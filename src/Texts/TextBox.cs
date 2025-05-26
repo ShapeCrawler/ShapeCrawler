@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -66,7 +67,7 @@ internal sealed class TextBox : ITextBox
 
             return AutofitType.None;
         }
-
+        
         set
         {
             var currentType = this.AutofitType;
@@ -234,7 +235,7 @@ internal sealed class TextBox : ITextBox
         var shapeWidthCapacity = this.shapeSize.Width - this.LeftMargin - this.RightMargin;
         var shapeHeightCapacity = this.shapeSize.Height - this.TopMargin - this.BottomMargin;
 
-        decimal textHeightPx = 0;
+        decimal textHeight = 0;
         foreach (var paragraph in this.Paragraphs)
         {
             var paragraphPortion = paragraph.Portions.OfType<TextParagraphPortion>();
@@ -259,10 +260,10 @@ internal sealed class TextBox : ITextBox
                 intRequiredRowsCount++;
             }
 
-            textHeightPx += intRequiredRowsCount * (int)paragraphTextHeight;
+            textHeight += intRequiredRowsCount * (int)paragraphTextHeight;
         }
 
-        this.UpdateShapeHeight(textHeightPx, shapeHeightCapacity);
+        this.UpdateShapeHeight(textHeight, shapeHeightCapacity);
         if (!this.TextWrapped)
         {
             this.UpdateShapeWidth();
@@ -299,23 +300,19 @@ internal sealed class TextBox : ITextBox
         return firstPortion?.Font?.Color.Hex;
     }
 
-    private IParagraph PrepareTextContainer(
-        IParagraph? firstParagraph,
-        System.Collections.Generic.List<IParagraph> paragraphs)
+    private IParagraph PrepareTextContainer(IParagraph? firstParagraph, List<IParagraph> paragraphs)
     {
         if (firstParagraph == null)
         {
             this.Paragraphs.Add();
             return this.Paragraphs.First();
         }
-
-        // Remove all paragraphs except the first one
+        
         foreach (var paragraph in paragraphs.Skip(1))
         {
             paragraph.Remove();
         }
 
-        // Clear the first paragraph
         foreach (var portion in firstParagraph.Portions.ToList())
         {
             portion.Remove();
@@ -408,16 +405,16 @@ internal sealed class TextBox : ITextBox
         this.shapeSize.Width = newWidth;
     }
 
-    private void UpdateShapeHeight(decimal textHeight, decimal shapeHeightPtCapacity)
+    private void UpdateShapeHeight(decimal textHeight, decimal shapeHeightCapacity)
     {
         var parentShape = this.textBody.Parent!;
-        var requiredHeightPt = textHeight + this.TopMargin + this.BottomMargin;
-        var newHeight = requiredHeightPt + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
+        var requiredHeight = textHeight + this.TopMargin + this.BottomMargin;
+        var newHeight = requiredHeight + this.TopMargin + this.BottomMargin + this.TopMargin + this.BottomMargin;
         this.shapeSize.Height = newHeight;
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
         var position = new Position(parentShape);
-        var yOffset = (requiredHeightPt - shapeHeightPtCapacity) / 2;
+        var yOffset = (requiredHeight - shapeHeightCapacity) / 2;
         position.Y -= yOffset;
     }
 

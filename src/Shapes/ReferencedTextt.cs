@@ -9,7 +9,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal readonly ref struct ReferencedIndentLevel(A.Text aText)
+internal readonly ref struct ReferencedFont(A.Text aText)
 {
     internal string? ColorHexOrNull()
     {
@@ -21,7 +21,7 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
         };
     }
 
-    internal bool? FontBoldFlagOrNull()
+    internal bool? BoldFlagOrNull()
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (openXmlPart is SlidePart)
@@ -32,7 +32,7 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
         throw new SCException("Not implemented.");
     }
 
-    internal decimal? FontSizeOrNull()
+    internal decimal? SizeOrNull()
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var aParagraph = aText.Ancestors<A.Paragraph>().First();
@@ -343,7 +343,7 @@ internal readonly ref struct ReferencedIndentLevel(A.Text aText)
     {
         var pTitleStyle = openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
                 .TitleStyle!,
             _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
                 .TitleStyle!
