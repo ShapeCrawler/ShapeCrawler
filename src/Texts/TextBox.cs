@@ -6,8 +6,6 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tables;
-using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -68,6 +66,7 @@ internal sealed class TextBox : ITextBox
 
             return AutofitType.None;
         }
+
         set
         {
             var currentType = this.AutofitType;
@@ -112,8 +111,14 @@ internal sealed class TextBox : ITextBox
 
     public decimal TopMargin
     {
-        get => margins.Top;
-        set => margins.Top = value;
+        get => this.margins.Top;
+        set
+        {
+            if (this.margins != null)
+            {
+                this.margins.Top = value;
+            }
+        }
     }
 
     public decimal BottomMargin
@@ -197,6 +202,7 @@ internal sealed class TextBox : ITextBox
 
         // Store LatinName from first portion if available
         string? latinNameToPreserve = GetLatinNameToPreserve(firstParagraph);
+
         // Store font color hex from first portion if available
         string? colorHexToPreserve = GetFontColorHexToPreserve(firstParagraph);
 
@@ -293,7 +299,8 @@ internal sealed class TextBox : ITextBox
         return firstPortion?.Font?.Color.Hex;
     }
 
-    private IParagraph PrepareTextContainer(IParagraph? firstParagraph,
+    private IParagraph PrepareTextContainer(
+        IParagraph? firstParagraph,
         System.Collections.Generic.List<IParagraph> paragraphs)
     {
         if (firstParagraph == null)
@@ -483,7 +490,10 @@ internal sealed class TextBox : ITextBox
         }
 
         const string markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
-        var matches = Regex.Matches(text, markdownPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase,
+        var matches = Regex.Matches(
+            text, 
+            markdownPattern, 
+            RegexOptions.Singleline | RegexOptions.IgnoreCase,
             TimeSpan.FromMilliseconds(1000));
         foreach (Match match in matches)
         {

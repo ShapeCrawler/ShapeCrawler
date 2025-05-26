@@ -13,6 +13,7 @@ internal sealed class TextBoxMargins(OpenXmlElement textBody)
         {
             return new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
         }
+
         set
         {
             var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
