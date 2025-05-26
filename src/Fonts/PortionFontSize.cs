@@ -24,7 +24,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
             }
 
             // Try getting font size from referenced indent level
-            var referencedIndentFontSize = new ReferencedIndentLevel(aText).FontSizeOrNull();
+            var referencedIndentFontSize = new ReferencedFont(aText).SizeOrNull();
             if (referencedIndentFontSize.HasValue)
             {
                 return referencedIndentFontSize.Value;

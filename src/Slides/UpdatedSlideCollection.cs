@@ -114,7 +114,6 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, number);
         
-        // Save changes
         presentationPart.Presentation.Save();
     }
 
