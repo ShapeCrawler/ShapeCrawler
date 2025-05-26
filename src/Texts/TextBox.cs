@@ -67,6 +67,7 @@ internal sealed class TextBox : ITextBox
 
             return AutofitType.None;
         }
+        
         set
         {
             var currentType = this.AutofitType;
