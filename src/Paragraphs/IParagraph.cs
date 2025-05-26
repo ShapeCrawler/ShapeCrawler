@@ -147,7 +147,7 @@ internal sealed class Paragraph : IParagraph
             }
 
             var textBody = this.aParagraph.Parent!;
-            var textBox = new TextBox(textBody);
+            var textBox = new TextBox(new TextBoxMargins(textBody), textBody);
             textBox.ResizeParentShapeOnDemand();
         }
     }

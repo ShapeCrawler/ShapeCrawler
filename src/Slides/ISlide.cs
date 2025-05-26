@@ -151,7 +151,12 @@ internal sealed class Slide : ISlide
         this.slidePart = slidePart;
         this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapeCollection(new ShapeCollection(slidePart), this.slidePart, mediaCollection);
+        this.Shapes = this.Shapes = new SlideShapeCollection(
+            new ShapeCollection(slidePart),
+            new MediaShapeCollection(new ShapeCollection(slidePart), slidePart, mediaCollection),
+            new ChartCollection(slidePart),
+            this.slidePart
+        );
     }
 
     public ISlideLayout SlideLayout { get; }

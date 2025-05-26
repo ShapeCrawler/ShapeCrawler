@@ -13,7 +13,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Positions;
-using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
@@ -22,26 +21,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideShapeCollection : ISlideShapeCollection
+internal sealed class SlideShapeCollection(
+    IShapeCollection shapes,
+    MediaShapeCollection mediaShapes,
+    ChartCollection chartCollection,
+    SlidePart slidePart) : ISlideShapeCollection
 {
-    private readonly SlidePart slidePart;
-    private readonly IShapeCollection shapes;
-    private readonly MediaShapeCollection mediaShapes;
+    public int Count => shapes.Count;
 
-    internal SlideShapeCollection(IShapeCollection shapes, SlidePart slidePart, MediaCollection mediaCollection)
-    {
-        this.shapes = shapes;
-        this.mediaShapes = new MediaShapeCollection(shapes, slidePart, mediaCollection);
-        this.slidePart = slidePart;
-    }
-
-    public int Count => this.shapes.Count;
-
-    public IShape this[int index] => this.shapes[index];
+    public IShape this[int index] => shapes[index];
 
     public void Add(IShape addingShape)
     {
-        var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
+        var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
         switch (addingShape)
         {
             case Picture picture:
@@ -61,11 +53,11 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio) => this.mediaShapes.AddAudio(x, y, audio);
+    public void AddAudio(int x, int y, Stream audio) => mediaShapes.AddAudio(x, y, audio);
 
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => this.mediaShapes.AddAudio(x, y, audio, type);
+    public void AddAudio(int x, int y, Stream audio, AudioType type) => mediaShapes.AddAudio(x, y, audio, type);
 
-    public void AddPicture(Stream imageStream) => this.mediaShapes.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream) => mediaShapes.AddPicture(imageStream);
 
     public void AddPieChart(
         int x,
@@ -73,26 +65,17 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         int width,
         int height,
         Dictionary<string, double> categoryValues,
-        string seriesName)
-    {
-        if (seriesName == null)
-        {
-            throw new ArgumentNullException(nameof(seriesName));
-        }
-
-        new SCSlidePart(this.slidePart).AddPieChart(x, y, width, height, categoryValues, seriesName);
-    }
+        string seriesName
+    ) => chartCollection.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddBarChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName)
-    {
-        new SCSlidePart(this.slidePart).AddBarChart(x, y, width, height, categoryValues, seriesName);
-    }
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<string, double> categoryValues, 
+        string seriesName
+    ) => chartCollection.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddScatterChart(
         int x,
@@ -100,21 +83,17 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         int width,
         int height,
         Dictionary<double, double> pointValues,
-        string seriesName)
-    {
-        new SCSlidePart(this.slidePart).AddScatterChart(x, y, width, height, pointValues, seriesName);
-    }
+        string seriesName
+    ) => chartCollection.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
     public void AddStackedColumnChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        IDictionary<string, IList<double>> categoryValues,
-        IList<string> seriesNames)
-    {
-        new SCSlidePart(this.slidePart).AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
-    }
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        IDictionary<string, IList<double>> categoryValues, 
+        IList<string> seriesNames
+    ) => chartCollection.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
     /// <summary>
     ///     Adds a SmartArt graphic to the slide.
@@ -127,36 +106,35 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     /// <returns>The added SmartArt graphic.</returns>
     public ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
     {
-        return new SCSlidePart(this.slidePart).AddSmartArt(x, y, width, height, smartArtType);
+        return new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
     }
 
     public IGroup Group(IShape[] groupingShapes)
     {
         // Create a new group shape
         var groupShape = new P.GroupShape();
-        
+
         // Create non-visual properties for the group shape
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
         var idAndName = this.GenerateIdAndName();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)idAndName.Item1,
-            Name = idAndName.Item2
+            Id = (uint)idAndName.Item1, Name = idAndName.Item2
         };
         var nonVisualGroupShapeDrawingProperties = new P.NonVisualGroupShapeDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
-        
+
         nonVisualGroupShapeProperties.Append(nonVisualDrawingProperties);
         nonVisualGroupShapeProperties.Append(nonVisualGroupShapeDrawingProperties);
         nonVisualGroupShapeProperties.Append(applicationNonVisualDrawingProperties);
-        
+
         var groupShapeProperties = new P.GroupShapeProperties();
-        
+
         decimal minX = decimal.MaxValue;
         decimal minY = decimal.MaxValue;
         decimal maxX = decimal.MinValue;
         decimal maxY = decimal.MinValue;
-        
+
         foreach (var groupingShape in groupingShapes)
         {
             minX = Math.Min(minX, groupingShape.X);
@@ -164,53 +142,45 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             maxX = Math.Max(maxX, groupingShape.X + groupingShape.Width);
             maxY = Math.Max(maxY, groupingShape.Y + groupingShape.Height);
         }
-        
+
         var transformGroup = new A.TransformGroup();
-        var offset = new A.Offset 
-        { 
-            X = (int)minX, 
-            Y = (int)minY 
-        };
-        var extents = new A.Extents 
-        { 
-            Cx = (int)(maxX - minX), 
-            Cy = (int)(maxY - minY) 
-        };
+        var offset = new A.Offset { X = (int)minX, Y = (int)minY };
+        var extents = new A.Extents { Cx = (int)(maxX - minX), Cy = (int)(maxY - minY) };
         var childOffset = new A.ChildOffset { X = 0, Y = 0 };
         var childExtents = new A.ChildExtents { Cx = extents.Cx, Cy = extents.Cy };
-        
+
         transformGroup.Append(offset);
         transformGroup.Append(extents);
         transformGroup.Append(childOffset);
         transformGroup.Append(childExtents);
-        
+
         groupShapeProperties.Append(transformGroup);
-        
+
         groupShape.Append(nonVisualGroupShapeProperties);
         groupShape.Append(groupShapeProperties);
-        
+
         foreach (var groupingShape in groupingShapes)
         {
             // Get the OpenXml element for the shape
             var openXmlElement = groupingShape.SDKOpenXmlElement;
-            
+
             // Remove the shape from its current parent
             if (openXmlElement.Parent is not null)
             {
                 openXmlElement.Remove();
             }
-            
+
             // Add the shape to the group
             groupShape.Append(openXmlElement);
         }
-        
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(groupShape);
+
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(groupShape);
 
         foreach (var grouping in groupingShapes)
         {
             grouping.Remove();
         }
-        
+
         return new Group(
             new Shape(
                 new Position(groupShape),
@@ -223,15 +193,15 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
 
     public void AddVideo(int x, int y, Stream stream)
     {
-        var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
+        var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
         var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
         mediaDataPart.FeedData(stream);
         var imagePartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
-        var imagePart = this.slidePart.AddNewPart<ImagePart>("image/png", imagePartRId);
+        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imagePartRId);
         var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.bmp");
         imagePart.FeedData(imageStream);
-        var videoRr = this.slidePart.AddVideoReferenceRelationship(mediaDataPart);
-        var mediaRr = this.slidePart.AddMediaReferenceRelationship(mediaDataPart);
+        var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
+        var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
         var shapeId = (uint)this.GetNextShapeId();
         P.NonVisualDrawingProperties nonVisualDrawingProperties = new() { Id = shapeId, Name = $"Video{shapeId}" };
@@ -291,7 +261,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
             applicationNonVisualDrawingProperties);
         var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId = new() { Val = (UInt32Value)3972997422U };
         creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
@@ -302,9 +272,9 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.GetNextShapeId();
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<TextShape>();
+        var addedShape = shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -320,9 +290,9 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.GetNextShapeId();
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<TextShape>();
+        var addedShape = shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -337,14 +307,14 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     {
         var newPConnectionShape = new P.ConnectionShape(xml);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new line.xml");
         var pConnectionShape = new P.ConnectionShape(xml);
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
 
         var deltaY = endPointY - startPointY;
         var cx = endPointX;
@@ -467,12 +437,12 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
         graphicFrame.Append(pTransform);
         graphicFrame.Append(graphic);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
     public void Remove(IShape shape)
     {
-        var removingShape = this.shapes.FirstOrDefault(sp => sp.Id == shape.Id) ??
+        var removingShape = shapes.FirstOrDefault(sp => sp.Id == shape.Id) ??
                             throw new SCException("Shape is not found.");
         removingShape.Remove();
     }
@@ -480,28 +450,28 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     public IShape GetById(int id) => this.GetById<IShape>(id);
 
     public T GetById<T>(int id)
-        where T : IShape => this.shapes.GetById<T>(id);
+        where T : IShape => shapes.GetById<T>(id);
 
     public T GetByName<T>(string name)
-        where T : IShape => this.shapes.Shape<T>(name);
+        where T : IShape => shapes.Shape<T>(name);
 
     public T Shape<T>(string name)
-        where T : IShape => this.shapes.Shape<T>(name);
+        where T : IShape => shapes.Shape<T>(name);
 
-    public IShape Shape(string name) => this.shapes.Shape(name);
+    public IShape Shape(string name) => shapes.Shape(name);
 
     public T Last<T>()
-        where T : IShape => this.shapes.Last<T>();
+        where T : IShape => shapes.Last<T>();
 
-    public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
+    public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     private int GetNextShapeId()
     {
-        if (this.shapes.Any())
+        if (shapes.Any())
         {
-            return this.shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
+            return shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
         return 1;
@@ -517,7 +487,7 @@ internal sealed class SlideShapeCollection : ISlideShapeCollection
     private string GenerateNextTableName()
     {
         var maxOrder = 0;
-        foreach (var shape in this.shapes)
+        foreach (var shape in shapes)
         {
             var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+", RegexOptions.None, TimeSpan.FromSeconds(100));
             if (!matchOrder.Success)

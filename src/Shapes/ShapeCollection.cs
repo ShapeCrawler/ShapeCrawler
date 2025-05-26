@@ -103,7 +103,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         {
             yield return new TextShape(
                 new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape),
-                new TextBox(pShape.TextBody)
+                new TextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
             );
         }
         else
@@ -217,11 +217,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
         if (IsChartPGraphicFrame(pGraphicFrame))
         {
-            foreach (var chart in this.CreateChartShapes(pGraphicFrame))
-            {
-                yield return chart;
-            }
-
+            yield return this.CreateChart(pGraphicFrame);
             yield break;
         }
 
@@ -240,7 +236,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     }
     
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    private IEnumerable<IShape> CreateChartShapes(P.GraphicFrame pGraphicFrame)
+    private IShape CreateChart(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
@@ -254,7 +250,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            yield return new AxisChart(
+            return new AxisChart(
                 new CategoryChart(
                     new Chart(
                         new Shape(
@@ -272,8 +268,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 ),
                 new XAxis(chartPart)
             );
-
-            yield break;
         }
 
         var chartTypeName = cCharts.Single().LocalName;
@@ -284,7 +278,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            yield return new AxisChart(
+            return new AxisChart(
                 new CategoryChart(
                     new Chart(
                         new Shape(
@@ -302,8 +296,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 ),
                 new XAxis(chartPart)
             );
-
-            yield break;
         }
 
         // With categories
@@ -312,7 +304,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            yield return new CategoryChart(
+            return new CategoryChart(
                 new Chart(
                     new Shape(
                         new Position(pGraphicFrame),
@@ -327,8 +319,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 ),
                 new Categories(chartPart)
             );
-
-            yield break;
         }
 
         // With axis
@@ -337,7 +327,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            yield return new AxisChart(
+            return new AxisChart(
                 new Chart(
                     new Shape(
                         new Position(pGraphicFrame),
@@ -352,14 +342,13 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 ),
                 new XAxis(chartPart)
             );
-            yield break;
         }
 
         // Other
         var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         var otherChartCXCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        yield return new Chart(
+        return new Chart(
             new Shape(
                 new Position(pGraphicFrame),
                 new ShapeSize(pGraphicFrame),
