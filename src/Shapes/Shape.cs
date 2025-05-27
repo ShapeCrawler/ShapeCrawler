@@ -84,15 +84,15 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
                 return ShapeCrawler.PlaceholderType.Content;
             }
 
-            // Handle direct enum value mappings
             var placeholderValueMappings =
                 new System.Collections.Generic.Dictionary<P.PlaceholderValues, PlaceholderType>
                 {
                     { P.PlaceholderValues.Title, ShapeCrawler.PlaceholderType.Title },
-                    { P.PlaceholderValues.CenteredTitle, ShapeCrawler.PlaceholderType.CenteredTitle },
+                    { P.PlaceholderValues.Chart, ShapeCrawler.PlaceholderType.Chart },
+                    { P.PlaceholderValues.CenteredTitle, ShapeCrawler.PlaceholderType.Title },
                     { P.PlaceholderValues.Body, ShapeCrawler.PlaceholderType.Text },
                     { P.PlaceholderValues.Diagram, ShapeCrawler.PlaceholderType.SmartArt },
-                    { P.PlaceholderValues.ClipArt, ShapeCrawler.PlaceholderType.OnlineImage }
+                    { P.PlaceholderValues.ClipArt, ShapeCrawler.PlaceholderType.OnlineImage },
                 };
 
             if (placeholderValueMappings.TryGetValue(pPlaceholderValue, out var mappedType))
