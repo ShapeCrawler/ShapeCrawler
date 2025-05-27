@@ -69,11 +69,11 @@ internal sealed class SlideShapeCollection(
     ) => chartCollection.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddBarChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        Dictionary<string, double> categoryValues, 
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
         string seriesName
     ) => chartCollection.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
@@ -87,11 +87,11 @@ internal sealed class SlideShapeCollection(
     ) => chartCollection.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
     public void AddStackedColumnChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        IDictionary<string, IList<double>> categoryValues, 
+        int x,
+        int y,
+        int width,
+        int height,
+        IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
     ) => chartCollection.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
@@ -104,10 +104,13 @@ internal sealed class SlideShapeCollection(
     /// <param name="height">The height of the SmartArt graphic.</param>
     /// <param name="smartArtType">The type of SmartArt graphic to add.</param>
     /// <returns>The added SmartArt graphic.</returns>
-    public ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
-    {
-        return new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
-    }
+    public ISmartArt AddSmartArt(
+        int x,
+        int y,
+        int width,
+        int height,
+        SmartArtType smartArtType)
+        => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
     public IGroup Group(IShape[] groupingShapes)
     {
