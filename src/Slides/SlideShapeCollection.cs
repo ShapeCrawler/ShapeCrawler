@@ -23,7 +23,7 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection(
     IShapeCollection shapes,
-    MediaShapeCollection mediaShapes,
+    AudioVideoShapeCollection audioVideoShapes,
     ChartCollection chartCollection,
     SlidePart slidePart) : ISlideShapeCollection
 {
@@ -53,11 +53,11 @@ internal sealed class SlideShapeCollection(
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio) => mediaShapes.AddAudio(x, y, audio);
+    public void AddAudio(int x, int y, Stream audio) => audioVideoShapes.AddAudio(x, y, audio);
 
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => mediaShapes.AddAudio(x, y, audio, type);
+    public void AddAudio(int x, int y, Stream audio, AudioType type) => audioVideoShapes.AddAudio(x, y, audio, type);
 
-    public void AddPicture(Stream imageStream) => mediaShapes.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream) => audioVideoShapes.AddPicture(imageStream);
 
     public void AddPieChart(
         int x,

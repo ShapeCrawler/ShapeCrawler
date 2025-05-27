@@ -19,7 +19,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class MediaShapeCollection(
+internal sealed class AudioVideoShapeCollection(
     IShapeCollection shapes,
     SlidePart slidePart,
     MediaCollection mediaCollection)

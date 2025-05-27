@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
@@ -43,9 +44,15 @@ internal sealed class SlideCollection : IReadOnlyList<ISlide>
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
             var newSlide = new Slide(
-                slidePart,
                 new SlideLayout(slidePart.SlideLayoutPart!),
-                this.mediaCollection);
+                new SlideShapeCollection(
+                    new ShapeCollection(slidePart),
+                    new AudioVideoShapeCollection(new ShapeCollection(slidePart), slidePart, mediaCollection),
+                    new ChartCollection(slidePart),
+                    slidePart
+                ),
+                slidePart
+            );
             slides.Add(newSlide);
         }
 
