@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +12,7 @@ using ShapeCrawler.Assets;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
@@ -19,14 +22,15 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class AudioVideoShapeCollection(
-    IShapeCollection shapes,
-    SlidePart slidePart,
-    MediaCollection mediaCollection)
+internal sealed class MediaShapeCollection(
+    ISlideShapeCollection shapes,
+    MediaFiles mediaFiles,
+    SlidePart slidePart
+) : ISlideShapeCollection
 {
-    internal void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
+    public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
 
-    internal void AddAudio(int x, int y, Stream audio, AudioType type)
+    public void AddAudio(int x, int y, Stream audio, AudioType type)
     {
         string? contentType;
         string? extension;
@@ -89,16 +93,135 @@ internal sealed class AudioVideoShapeCollection(
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
 
-    internal void AddPicture(Stream imageStream)
+    public void Add(IShape addingShape) => shapes.Add(addingShape);
+    
+     public void AddVideo(int x, int y, Stream stream)
+    {
+        var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
+        var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
+        mediaDataPart.FeedData(stream);
+        var imagePartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
+        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imagePartRId);
+        var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.bmp");
+        imagePart.FeedData(imageStream);
+        var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
+        var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
+
+        var shapeId = (uint)this.GetNextShapeId();
+        P.NonVisualDrawingProperties nonVisualDrawingProperties = new() { Id = shapeId, Name = $"Video{shapeId}" };
+        var hyperlinkOnClick = new A.HyperlinkOnClick { Id = string.Empty, Action = "ppaction://media" };
+
+        A.NonVisualDrawingPropertiesExtensionList
+            nonVisualDrawingPropertiesExtensionList = new();
+
+        A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension =
+            new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
+
+        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension);
+
+        nonVisualDrawingProperties.Append(hyperlinkOnClick);
+        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
+
+        var nonVisualPictureDrawingProperties =
+            new P.NonVisualPictureDrawingProperties(new A.PictureLocks { NoChangeAspect = true });
+
+        var videoFromFile = new A.VideoFromFile { Link = videoRr.Id };
+
+        P.ApplicationNonVisualDrawingPropertiesExtensionList
+            applicationNonVisualDrawingPropertiesExtensionList = new();
+
+        var media = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media { Embed = mediaRr.Id };
+        media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+        var applicationNonVisualDrawingPropertiesExtension =
+            new P.ApplicationNonVisualDrawingPropertiesExtension(media)
+            {
+                Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"
+            };
+        applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
+        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties(
+            videoFromFile,
+            applicationNonVisualDrawingPropertiesExtensionList);
+
+        P.BlipFill blipFill = new();
+        A.Blip blip = new() { Embed = imagePartRId };
+        A.Stretch stretch = new();
+        A.FillRectangle fillRectangle = new();
+        stretch.Append(fillRectangle);
+        blipFill.Append(blip);
+        blipFill.Append(stretch);
+
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
+        A.Offset offset = new() { X = xEmu, Y = yEmu };
+        A.Extents extents = new() { Cx = 609600L, Cy = 609600L };
+
+        var transform2D = new A.Transform2D(offset, extents);
+        A.PresetGeometry presetGeometry = new(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle };
+
+        var shapeProperties = new P.ShapeProperties(transform2D, presetGeometry);
+        var nonVisualPictureProperties = new P.NonVisualPictureProperties(
+            nonVisualDrawingProperties,
+            nonVisualPictureDrawingProperties,
+            applicationNonVisualDrawingProperties);
+        var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
+
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+
+        DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId = new() { Val = (UInt32Value)3972997422U };
+        creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+    }
+
+    public void AddShape(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Geometry geometry = Geometry.Rectangle
+        )=>shapes.AddShape(x, y, width, height, geometry);
+
+    public void AddShape(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Geometry geometry, 
+        string text
+        )=>shapes.AddShape(x, y, width, height, geometry, text);
+
+    public void AddLine(string xml)=> shapes.AddLine(xml);
+
+    public void AddLine(
+        int startPointX, 
+        int startPointY, 
+        int endPointX, 
+        int endPointY
+        ) => shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
+
+    public void AddTable(
+        int x, 
+        int y, 
+        int columnsCount, 
+        int rowsCount
+        )=> shapes.AddTable(x, y, columnsCount, rowsCount);
+
+    public void AddTable(
+        int x, 
+        int y, 
+        int columnsCount, 
+        int rowsCount, 
+        ITableStyle style
+        )=> shapes.AddTable(x, y, columnsCount, rowsCount, style);
+
+    public void AddPicture(Stream imageStream)
     {
         try
         {
             using var image = CreateMagickImage(imageStream);
             var originalFormat = image.Format;
-            
+
             EnsureSupportedImageFormat(image);
             HandleSvgFormat(image, originalFormat);
-            
+
             uint width = image.Width, height = image.Height;
             if (originalFormat == MagickFormat.Svg)
             {
@@ -125,6 +248,52 @@ internal sealed class AudioVideoShapeCollection(
                 "The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
+
+    public void AddPieChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<string, double> categoryValues, 
+        string seriesName
+        ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
+
+    public void AddBarChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<string, double> categoryValues, 
+        string seriesName
+        ) => shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
+
+    public void AddScatterChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        Dictionary<double, double> pointValues, 
+        string seriesName
+        )=> shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
+
+    public void AddStackedColumnChart(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        IDictionary<string, IList<double>> categoryValues, 
+        IList<string> seriesNames
+        ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+
+    public ISmartArt AddSmartArt(
+        int x, 
+        int y, 
+        int width, 
+        int height, 
+        SmartArtType smartArtType
+        )=> shapes.AddSmartArt(x, y, width, height, smartArtType);
+
+    public IGroup Group(IShape[] groupingShapes)=> shapes.Group(groupingShapes);
 
     private static MagickImage CreateMagickImage(Stream imageStream)
     {
@@ -156,7 +325,10 @@ internal sealed class AudioVideoShapeCollection(
         if (originalFormat == MagickFormat.Svg)
         {
             image.Format = MagickFormat.Png;
-            image.Density = new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+            image.Density =
+                new Density(384,
+                    DensityUnit
+                        .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
         }
     }
 
@@ -221,7 +393,7 @@ internal sealed class AudioVideoShapeCollection(
 
     private bool TryGetImageRId(string hash, out string imgPartRId)
     {
-        if (mediaCollection.TryGetImagePart(hash, out var imagePart))
+        if (mediaFiles.TryGetImagePart(hash, out var imagePart))
         {
             // Image already exists in the presentation so far.
             // Do we have a reference to it on this slide?
@@ -254,7 +426,7 @@ internal sealed class AudioVideoShapeCollection(
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             (imgPartRId, var imagePart) = slidePart.AddImagePart(image, mimeType);
-            mediaCollection.SetImagePart(hash, imagePart);
+            mediaFiles.SetImagePart(hash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -302,7 +474,7 @@ internal sealed class AudioVideoShapeCollection(
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
             (svgPartRId, var svgPart) = slidePart.AddImagePart(svgStream, "image/svg+xml");
-            mediaCollection.SetImagePart(svgHash, svgPart);
+            mediaFiles.SetImagePart(svgHash, svgPart);
         }
 
         // There is a possible optimization here. If we've previously in this session rasterized
@@ -314,7 +486,7 @@ internal sealed class AudioVideoShapeCollection(
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
             (imgPartRId, var imagePart) = slidePart.AddImagePart(rasterStream, "image/png");
-            mediaCollection.SetImagePart(imgHash, imagePart);
+            mediaFiles.SetImagePart(imgHash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -402,4 +574,25 @@ internal sealed class AudioVideoShapeCollection(
 
         return pPicture;
     }
+
+    public IEnumerator<IShape> GetEnumerator()=> shapes.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+    public int Count => shapes.Count;
+
+    public IShape this[int index] => shapes[index];
+
+    public IShape GetById(int id) => this.GetById<IShape>(id);
+
+    public T GetById<T>(int id) where T : IShape
+        => shapes.GetById<T>(id);
+
+    public IShape Shape(string name)=> this.Shape<IShape>(name);
+
+    public T Shape<T>(string name) where T : IShape
+        => shapes.Shape<T>(name);
+
+    public T Last<T>() where T : IShape
+        => shapes.Last<T>();
 }

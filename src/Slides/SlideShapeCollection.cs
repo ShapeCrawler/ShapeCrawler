@@ -21,11 +21,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideShapeCollection(
-    IShapeCollection shapes,
-    AudioVideoShapeCollection audioVideoShapes,
-    ChartCollection chartCollection,
-    SlidePart slidePart) : ISlideShapeCollection
+internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
     public int Count => shapes.Count;
 
@@ -53,11 +49,12 @@ internal sealed class SlideShapeCollection(
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio) => audioVideoShapes.AddAudio(x, y, audio);
+    public void AddAudio(int x, int y, Stream audio) => shapes.AddAudio(x, y, audio);
 
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => audioVideoShapes.AddAudio(x, y, audio, type);
+    public void AddAudio(int x, int y, Stream audio, AudioType type) => shapes.AddAudio(x, y, audio, type);
+    public void AddVideo(int x, int y, Stream stream)=> shapes.AddVideo(x, y, stream);
 
-    public void AddPicture(Stream imageStream) => audioVideoShapes.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
 
     public void AddPieChart(
         int x,
@@ -66,7 +63,7 @@ internal sealed class SlideShapeCollection(
         int height,
         Dictionary<string, double> categoryValues,
         string seriesName
-    ) => chartCollection.AddPieChart(x, y, width, height, categoryValues, seriesName);
+    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddBarChart(
         int x,
@@ -75,7 +72,7 @@ internal sealed class SlideShapeCollection(
         int height,
         Dictionary<string, double> categoryValues,
         string seriesName
-    ) => chartCollection.AddBarChart(x, y, width, height, categoryValues, seriesName);
+    ) => shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddScatterChart(
         int x,
@@ -84,7 +81,7 @@ internal sealed class SlideShapeCollection(
         int height,
         Dictionary<double, double> pointValues,
         string seriesName
-    ) => chartCollection.AddScatterChart(x, y, width, height, pointValues, seriesName);
+    ) => shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
     public void AddStackedColumnChart(
         int x,
@@ -93,7 +90,7 @@ internal sealed class SlideShapeCollection(
         int height,
         IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
-    ) => chartCollection.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+    ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
     /// <summary>
     ///     Adds a SmartArt graphic to the slide.
@@ -193,83 +190,7 @@ internal sealed class SlideShapeCollection(
             ),
             groupShape);
     }
-
-    public void AddVideo(int x, int y, Stream stream)
-    {
-        var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
-        var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
-        mediaDataPart.FeedData(stream);
-        var imagePartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
-        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imagePartRId);
-        var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.bmp");
-        imagePart.FeedData(imageStream);
-        var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
-        var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
-
-        var shapeId = (uint)this.GetNextShapeId();
-        P.NonVisualDrawingProperties nonVisualDrawingProperties = new() { Id = shapeId, Name = $"Video{shapeId}" };
-        var hyperlinkOnClick = new A.HyperlinkOnClick { Id = string.Empty, Action = "ppaction://media" };
-
-        A.NonVisualDrawingPropertiesExtensionList
-            nonVisualDrawingPropertiesExtensionList = new();
-
-        A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension =
-            new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
-
-        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension);
-
-        nonVisualDrawingProperties.Append(hyperlinkOnClick);
-        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
-
-        var nonVisualPictureDrawingProperties =
-            new P.NonVisualPictureDrawingProperties(new A.PictureLocks { NoChangeAspect = true });
-
-        var videoFromFile = new A.VideoFromFile { Link = videoRr.Id };
-
-        P.ApplicationNonVisualDrawingPropertiesExtensionList
-            applicationNonVisualDrawingPropertiesExtensionList = new();
-
-        var media = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media { Embed = mediaRr.Id };
-        media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-        var applicationNonVisualDrawingPropertiesExtension =
-            new P.ApplicationNonVisualDrawingPropertiesExtension(media)
-            {
-                Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"
-            };
-        applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties(
-            videoFromFile,
-            applicationNonVisualDrawingPropertiesExtensionList);
-
-        P.BlipFill blipFill = new();
-        A.Blip blip = new() { Embed = imagePartRId };
-        A.Stretch stretch = new();
-        A.FillRectangle fillRectangle = new();
-        stretch.Append(fillRectangle);
-        blipFill.Append(blip);
-        blipFill.Append(stretch);
-
-        var xEmu = new Points(x).AsEmus();
-        var yEmu = new Points(y).AsEmus();
-        A.Offset offset = new() { X = xEmu, Y = yEmu };
-        A.Extents extents = new() { Cx = 609600L, Cy = 609600L };
-
-        var transform2D = new A.Transform2D(offset, extents);
-        A.PresetGeometry presetGeometry = new(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle };
-
-        var shapeProperties = new P.ShapeProperties(transform2D, presetGeometry);
-        var nonVisualPictureProperties = new P.NonVisualPictureProperties(
-            nonVisualDrawingProperties,
-            nonVisualPictureDrawingProperties,
-            applicationNonVisualDrawingProperties);
-        var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
-
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
-
-        DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId = new() { Val = (UInt32Value)3972997422U };
-        creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-    }
-
+    
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");

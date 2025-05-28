@@ -4,7 +4,6 @@ using ShapeCrawler.Shapes;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a shape collection.
@@ -76,11 +75,6 @@ public interface ISlideShapeCollection : IShapeCollection
     void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style);
 
     /// <summary>
-    ///     Removes specified shape.
-    /// </summary>
-    void Remove(IShape shape);
-
-    /// <summary>
     ///     Adds picture.
     /// </summary>
     void AddPicture(Stream imageStream);
@@ -89,7 +83,6 @@ public interface ISlideShapeCollection : IShapeCollection
     ///     Adds Pie Chart.
     /// </summary>
     void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
-    
     
     /// <summary>
     ///     Adds Bar Chart with specified parameters.

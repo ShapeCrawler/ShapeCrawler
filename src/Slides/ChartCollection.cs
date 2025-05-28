@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -7,12 +8,14 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Presentations;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class ChartCollection(SlidePart slidePart)
+internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart slidePart)
+    : ISlideShapeCollection
 {
     public void AddPieChart(
         int x,
@@ -28,7 +31,7 @@ internal sealed class ChartCollection(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height);
     }
 
-    internal void AddBarChart(
+    public void AddBarChart(
         int x,
         int y,
         int width,
@@ -42,7 +45,7 @@ internal sealed class ChartCollection(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Bar Chart");
     }
 
-    internal void AddScatterChart(
+    public void AddScatterChart(
         int x,
         int y,
         int width,
@@ -56,7 +59,7 @@ internal sealed class ChartCollection(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Scatter Chart");
     }
 
-    internal void AddStackedColumnChart(
+    public void AddStackedColumnChart(
         int x,
         int y,
         int width,
@@ -70,10 +73,97 @@ internal sealed class ChartCollection(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Stacked Column Chart");
     }
 
+    #region Shapes
+
+    public void Add(IShape addingShape) => shapes.Add(addingShape);
+
+    public void AddAudio(int x, int y, Stream audio) => shapes.AddAudio(x, y, audio);
+
+    public void AddAudio(int x, int y, Stream audio, AudioType type) => shapes.AddAudio(x, y, audio, type);
+
+    public void AddVideo(int x, int y, Stream stream) => shapes.AddVideo(x, y, stream);
+
+    public void AddShape(
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry = Geometry.Rectangle
+    ) => shapes.AddShape(x, y, width, height, geometry);
+
+    public void AddShape(
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry,
+        string text
+    ) => shapes.AddShape(x, y, width, height, geometry, text);
+
+    public void AddLine(string xml) => shapes.AddLine(xml);
+
+    public void AddLine(
+        int startPointX,
+        int startPointY,
+        int endPointX,
+        int endPointY
+    ) => shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
+
+    public void AddTable(
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount
+    ) => shapes.AddTable(x, y, columnsCount, rowsCount);
+
+    public void AddTable(
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount,
+        ITableStyle style
+    ) => shapes.AddTable(x, y, columnsCount, rowsCount, style);
+
+    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
+
+    public ISmartArt AddSmartArt(
+        int x,
+        int y,
+        int width,
+        int height,
+        SmartArtType smartArtType
+    ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
+
+    public IGroup Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
+
+    public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
+
+    public int Count => shapes.Count;
+
+    public IShape this[int index] => shapes[index];
+
+    public IShape GetById(int id) => shapes.GetById(id);
+
+    public T GetById<T>(int id) where T : IShape
+        => shapes.GetById<T>(id);
+
+    public IShape Shape(string name) => shapes.Shape(name);
+
+    public T Shape<T>(string name) where T : IShape
+        => shapes.Shape<T>(name);
+
+    public T Last<T>() where T : IShape
+        => shapes.Last<T>();
+
+    #endregion Shapes
+    
     private static void GeneratePieChartContent(
         ChartPart chartPart,
         Dictionary<string, double> categoryValues,
-        string seriesName)
+        string seriesName
+    )
     {
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
         var chart = new Chart();
@@ -595,13 +685,13 @@ internal sealed class ChartCollection(SlidePart slidePart)
 
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
-    
+
     private uint GetNextShapeId()
     {
         var shapeIds = slidePart.Slide.Descendants<NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0)
             .ToList();
-        
+
         return shapeIds.Count > 0 ? shapeIds.Max() + 1 : 1;
     }
 }

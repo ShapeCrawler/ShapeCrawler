@@ -67,7 +67,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
                     shape.PlaceholderType == PlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
-                slide.Shapes.Remove(slideNumberPlaceholder);
+                slideNumberPlaceholder.Remove();
             }
         }
     }

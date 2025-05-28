@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -18,7 +19,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeCollection
 {
     public int Count => this.GetShapes().Count();
 
@@ -36,7 +37,16 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         where T : IShape => (T)this.Shape(name);
 
     public T Shape<T>(string name)
-        where T : IShape => (T)this.GetShapes().First(shape => shape.Name == name);
+        where T : IShape
+    {
+        var shape = this.GetShapes().FirstOrDefault(shape => shape.Name == name);
+        if (shape is null)
+        {
+            throw new SCException("Shape not found"); 
+        }
+        
+        return (T)shape;
+    }
 
     public IShape Shape(string name) =>
         this.GetShapes().FirstOrDefault(shape => shape.Name == name)
@@ -84,7 +94,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
     {
         yield return new SlideLine(
-            new Shape(new Position(pConnectionShape), new ShapeSize(pConnectionShape), new ShapeId(pConnectionShape), pConnectionShape),
+            new Shape(new Position(pConnectionShape), new ShapeSize(pConnectionShape), new ShapeId(pConnectionShape),
+                pConnectionShape),
             pConnectionShape
         );
     }
@@ -133,7 +144,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             );
             yield break;
         }
-        
+
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
         if (aBlip?.Embed != null)
         {
@@ -191,7 +202,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         {
             var pShapeProperties = pGraphicFrame.Descendants<P.ShapeProperties>().First();
             yield return new OLEObject(
-                new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame),
+                new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame),
+                    pGraphicFrame),
                 new SlideShapeOutline(pShapeProperties),
                 new ShapeFill(pShapeProperties)
             );
@@ -226,7 +238,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!
                 .GetFirstChild<A.Table>() !;
             yield return new Table(
-                new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame),
+                new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame),
+                    pGraphicFrame),
                 new TableRowCollection(pGraphicFrame),
                 new TableColumnCollection(pGraphicFrame),
                 new TableStyleOptions(aTable.TableProperties!),
@@ -234,7 +247,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             );
         }
     }
-    
+
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private IShape CreateChart(P.GraphicFrame pGraphicFrame)
     {
@@ -243,9 +256,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         var chartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
         var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        
+
         // Combination chart has multiple chart types
-        if (cCharts.Count() > 1) 
+        if (cCharts.Count() > 1)
         {
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
@@ -361,4 +374,101 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             chartPart
         );
     }
+
+    public void Add(IShape addingShape) => throw new NotImplementedException();
+
+    public void AddAudio(int x, int y, Stream audio) => throw new NotImplementedException();
+
+    public void AddAudio(int x, int y, Stream audio, AudioType type) => throw new NotImplementedException();
+
+    public void AddVideo(int x, int y, Stream stream) => throw new NotImplementedException();
+
+    public void AddShape(
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry = Geometry.Rectangle
+    ) => throw new NotImplementedException();
+
+    public void AddShape(
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry,
+        string text
+    ) => throw new NotImplementedException();
+
+    public void AddLine(string xml) => throw new NotImplementedException();
+
+    public void AddLine(
+        int startPointX,
+        int startPointY,
+        int endPointX,
+        int endPointY
+    ) => throw new NotImplementedException();
+
+    public void AddTable(
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount
+    ) => throw new NotImplementedException();
+
+    public void AddTable(
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount,
+        ITableStyle style
+    ) => throw new NotImplementedException();
+
+    public void AddPicture(Stream imageStream) => throw new NotImplementedException();
+
+    public void AddPieChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName
+    ) => throw new NotImplementedException();
+
+    public void AddBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName
+    ) => throw new NotImplementedException();
+
+    public void AddScatterChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<double, double> pointValues,
+        string seriesName
+    ) => throw new NotImplementedException();
+
+    public void AddStackedColumnChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IDictionary<string, IList<double>> categoryValues,
+        IList<string> seriesNames
+    ) => throw new NotImplementedException();
+
+    public ISmartArt AddSmartArt(
+        int x,
+        int y,
+        int width,
+        int height,
+        SmartArtType smartArtType
+    ) => throw new NotImplementedException();
+
+    public IGroup Group(IShape[] groupingShapes) => throw new NotImplementedException();
 }
