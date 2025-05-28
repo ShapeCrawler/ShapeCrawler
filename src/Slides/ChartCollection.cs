@@ -17,6 +17,10 @@ namespace ShapeCrawler.Slides;
 internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart slidePart)
     : ISlideShapeCollection
 {
+    public int Count => shapes.Count;
+
+    public IShape this[int index] => shapes[index];
+    
     public void AddPieChart(
         int x,
         int y,
@@ -140,22 +144,18 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
 
     IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
 
-    public int Count => shapes.Count;
-
-    public IShape this[int index] => shapes[index];
-
     public IShape GetById(int id) => shapes.GetById(id);
 
-    public T GetById<T>(int id) where T : IShape
-        => shapes.GetById<T>(id);
+    public T GetById<T>(int id)
+        where T : IShape => shapes.GetById<T>(id);
 
     public IShape Shape(string name) => shapes.Shape(name);
 
-    public T Shape<T>(string name) where T : IShape
-        => shapes.Shape<T>(name);
+    public T Shape<T>(string name)
+        where T : IShape => shapes.Shape<T>(name);
 
-    public T Last<T>() where T : IShape
-        => shapes.Last<T>();
+    public T Last<T>()
+        where T : IShape => shapes.Last<T>();
 
     #endregion Shapes
     

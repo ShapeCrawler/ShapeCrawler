@@ -52,7 +52,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     public void AddAudio(int x, int y, Stream audio) => shapes.AddAudio(x, y, audio);
 
     public void AddAudio(int x, int y, Stream audio, AudioType type) => shapes.AddAudio(x, y, audio, type);
-    public void AddVideo(int x, int y, Stream stream)=> shapes.AddVideo(x, y, stream);
+
+    public void AddVideo(int x, int y, Stream stream) => shapes.AddVideo(x, y, stream);
 
     public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
 
@@ -190,7 +191,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             ),
             groupShape);
     }
-    
+
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");

@@ -9,7 +9,6 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 

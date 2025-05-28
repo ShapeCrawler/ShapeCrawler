@@ -28,6 +28,10 @@ internal sealed class MediaShapeCollection(
     SlidePart slidePart
 ) : ISlideShapeCollection
 {
+    public int Count => shapes.Count;
+
+    public IShape this[int index] => shapes[index];
+
     public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
 
     public void AddAudio(int x, int y, Stream audio, AudioType type)
@@ -94,8 +98,8 @@ internal sealed class MediaShapeCollection(
     }
 
     public void Add(IShape addingShape) => shapes.Add(addingShape);
-    
-     public void AddVideo(int x, int y, Stream stream)
+
+    public void AddVideo(int x, int y, Stream stream)
     {
         var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
         var mediaDataPart = presDocument.CreateMediaDataPart("video/mp4", ".mp4");
@@ -172,45 +176,45 @@ internal sealed class MediaShapeCollection(
     }
 
     public void AddShape(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
+        int x,
+        int y,
+        int width,
+        int height,
         Geometry geometry = Geometry.Rectangle
-        )=>shapes.AddShape(x, y, width, height, geometry);
+    ) => shapes.AddShape(x, y, width, height, geometry);
 
     public void AddShape(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        Geometry geometry, 
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry,
         string text
-        )=>shapes.AddShape(x, y, width, height, geometry, text);
+    ) => shapes.AddShape(x, y, width, height, geometry, text);
 
-    public void AddLine(string xml)=> shapes.AddLine(xml);
+    public void AddLine(string xml) => shapes.AddLine(xml);
 
     public void AddLine(
-        int startPointX, 
-        int startPointY, 
-        int endPointX, 
+        int startPointX,
+        int startPointY,
+        int endPointX,
         int endPointY
-        ) => shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
+    ) => shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
 
     public void AddTable(
-        int x, 
-        int y, 
-        int columnsCount, 
+        int x,
+        int y,
+        int columnsCount,
         int rowsCount
-        )=> shapes.AddTable(x, y, columnsCount, rowsCount);
+    ) => shapes.AddTable(x, y, columnsCount, rowsCount);
 
     public void AddTable(
-        int x, 
-        int y, 
-        int columnsCount, 
-        int rowsCount, 
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount,
         ITableStyle style
-        )=> shapes.AddTable(x, y, columnsCount, rowsCount, style);
+    ) => shapes.AddTable(x, y, columnsCount, rowsCount, style);
 
     public void AddPicture(Stream imageStream)
     {
@@ -250,51 +254,68 @@ internal sealed class MediaShapeCollection(
     }
 
     public void AddPieChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        Dictionary<string, double> categoryValues, 
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
         string seriesName
-        ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
+    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddBarChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        Dictionary<string, double> categoryValues, 
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
         string seriesName
-        ) => shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
+    ) => shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddScatterChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        Dictionary<double, double> pointValues, 
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<double, double> pointValues,
         string seriesName
-        )=> shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
+    ) => shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
     public void AddStackedColumnChart(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
-        IDictionary<string, IList<double>> categoryValues, 
+        int x,
+        int y,
+        int width,
+        int height,
+        IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
-        ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+    ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
     public ISmartArt AddSmartArt(
-        int x, 
-        int y, 
-        int width, 
-        int height, 
+        int x,
+        int y,
+        int width,
+        int height,
         SmartArtType smartArtType
-        )=> shapes.AddSmartArt(x, y, width, height, smartArtType);
+    ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes)=> shapes.Group(groupingShapes);
+    public IGroup Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
 
+    public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+    public IShape GetById(int id) => this.GetById<IShape>(id);
+
+    public T GetById<T>(int id)
+        where T : IShape => shapes.GetById<T>(id);
+
+    public IShape Shape(string name) => this.Shape<IShape>(name);
+
+    public T Shape<T>(string name)
+        where T : IShape => shapes.Shape<T>(name);
+
+    public T Last<T>()
+        where T : IShape => shapes.Last<T>();
+    
     private static MagickImage CreateMagickImage(Stream imageStream)
     {
         return new MagickImage(
@@ -326,9 +347,7 @@ internal sealed class MediaShapeCollection(
         {
             image.Format = MagickFormat.Png;
             image.Density =
-                new Density(384,
-                    DensityUnit
-                        .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
         }
     }
 
@@ -574,25 +593,4 @@ internal sealed class MediaShapeCollection(
 
         return pPicture;
     }
-
-    public IEnumerator<IShape> GetEnumerator()=> shapes.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    public int Count => shapes.Count;
-
-    public IShape this[int index] => shapes[index];
-
-    public IShape GetById(int id) => this.GetById<IShape>(id);
-
-    public T GetById<T>(int id) where T : IShape
-        => shapes.GetById<T>(id);
-
-    public IShape Shape(string name)=> this.Shape<IShape>(name);
-
-    public T Shape<T>(string name) where T : IShape
-        => shapes.Shape<T>(name);
-
-    public T Last<T>() where T : IShape
-        => shapes.Last<T>();
 }

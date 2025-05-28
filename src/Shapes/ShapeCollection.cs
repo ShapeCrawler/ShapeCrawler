@@ -39,12 +39,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
     public T Shape<T>(string name)
         where T : IShape
     {
-        var shape = this.GetShapes().FirstOrDefault(shape => shape.Name == name);
-        if (shape is null)
-        {
-            throw new SCException("Shape not found"); 
-        }
-        
+        var shape = this.GetShapes().FirstOrDefault(shape => shape.Name == name) ??
+                    throw new SCException("Shape not found");
         return (T)shape;
     }
 
@@ -58,6 +54,103 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
     public IEnumerator<IShape> GetEnumerator() => this.GetShapes().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+    public void Add(IShape addingShape) => throw new NotImplementedException();
+
+    public void AddAudio(int x, int y, Stream audio) => throw new NotImplementedException();
+
+    public void AddAudio(int x, int y, Stream audio, AudioType type) => throw new NotImplementedException();
+
+    public void AddVideo(int x, int y, Stream stream) => throw new NotImplementedException();
+
+    public void AddShape(
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry = Geometry.Rectangle
+    ) => throw new NotImplementedException();
+
+    public void AddShape(
+        int x,
+        int y,
+        int width,
+        int height,
+        Geometry geometry,
+        string text
+    ) => throw new NotImplementedException();
+
+    public void AddLine(string xml) => throw new NotImplementedException();
+
+    public void AddLine(
+        int startPointX,
+        int startPointY,
+        int endPointX,
+        int endPointY
+    ) => throw new NotImplementedException();
+
+    public void AddTable(
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount
+    ) => throw new NotImplementedException();
+
+    public void AddTable(
+        int x,
+        int y,
+        int columnsCount,
+        int rowsCount,
+        ITableStyle style
+    ) => throw new NotImplementedException();
+
+    public void AddPicture(Stream imageStream) => throw new NotImplementedException();
+
+    public void AddPieChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName
+    ) => throw new NotImplementedException();
+
+    public void AddBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName
+    ) => throw new NotImplementedException();
+
+    public void AddScatterChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<double, double> pointValues,
+        string seriesName
+    ) => throw new NotImplementedException();
+
+    public void AddStackedColumnChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IDictionary<string, IList<double>> categoryValues,
+        IList<string> seriesNames
+    ) => throw new NotImplementedException();
+
+    public ISmartArt AddSmartArt(
+        int x,
+        int y,
+        int width,
+        int height,
+        SmartArtType smartArtType
+    ) => throw new NotImplementedException();
+
+    public IGroup Group(IShape[] groupingShapes) => throw new NotImplementedException();
 
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
@@ -94,8 +187,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
     private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
     {
         yield return new SlideLine(
-            new Shape(new Position(pConnectionShape), new ShapeSize(pConnectionShape), new ShapeId(pConnectionShape),
-                pConnectionShape),
+            new Shape(
+                new Position(pConnectionShape),
+                new ShapeSize(pConnectionShape),
+                new ShapeId(pConnectionShape),
+                pConnectionShape
+            ),
             pConnectionShape
         );
     }
@@ -202,8 +299,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         {
             var pShapeProperties = pGraphicFrame.Descendants<P.ShapeProperties>().First();
             yield return new OLEObject(
-                new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame),
-                    pGraphicFrame),
+                new Shape(
+                    new Position(pGraphicFrame),
+                    new ShapeSize(pGraphicFrame),
+                    new ShapeId(pGraphicFrame),
+                    pGraphicFrame
+                ),
                 new SlideShapeOutline(pShapeProperties),
                 new ShapeFill(pShapeProperties)
             );
@@ -238,8 +339,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!
                 .GetFirstChild<A.Table>() !;
             yield return new Table(
-                new Shape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame),
-                    pGraphicFrame),
+                new Shape(
+                    new Position(pGraphicFrame),
+                    new ShapeSize(pGraphicFrame),
+                    new ShapeId(pGraphicFrame),
+                    pGraphicFrame
+                ),
                 new TableRowCollection(pGraphicFrame),
                 new TableColumnCollection(pGraphicFrame),
                 new TableStyleOptions(aTable.TableProperties!),
@@ -374,101 +479,4 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             chartPart
         );
     }
-
-    public void Add(IShape addingShape) => throw new NotImplementedException();
-
-    public void AddAudio(int x, int y, Stream audio) => throw new NotImplementedException();
-
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => throw new NotImplementedException();
-
-    public void AddVideo(int x, int y, Stream stream) => throw new NotImplementedException();
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry = Geometry.Rectangle
-    ) => throw new NotImplementedException();
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry,
-        string text
-    ) => throw new NotImplementedException();
-
-    public void AddLine(string xml) => throw new NotImplementedException();
-
-    public void AddLine(
-        int startPointX,
-        int startPointY,
-        int endPointX,
-        int endPointY
-    ) => throw new NotImplementedException();
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount
-    ) => throw new NotImplementedException();
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount,
-        ITableStyle style
-    ) => throw new NotImplementedException();
-
-    public void AddPicture(Stream imageStream) => throw new NotImplementedException();
-
-    public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName
-    ) => throw new NotImplementedException();
-
-    public void AddBarChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName
-    ) => throw new NotImplementedException();
-
-    public void AddScatterChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<double, double> pointValues,
-        string seriesName
-    ) => throw new NotImplementedException();
-
-    public void AddStackedColumnChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        IDictionary<string, IList<double>> categoryValues,
-        IList<string> seriesNames
-    ) => throw new NotImplementedException();
-
-    public ISmartArt AddSmartArt(
-        int x,
-        int y,
-        int width,
-        int height,
-        SmartArtType smartArtType
-    ) => throw new NotImplementedException();
-
-    public IGroup Group(IShape[] groupingShapes) => throw new NotImplementedException();
 }

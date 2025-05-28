@@ -65,10 +65,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
             var slideNumberPlaceholder =
                 slide.Shapes.FirstOrDefault(shape =>
                     shape.PlaceholderType == PlaceholderType.SlideNumber);
-            if (slideNumberPlaceholder != null)
-            {
-                slideNumberPlaceholder.Remove();
-            }
+            slideNumberPlaceholder?.Remove();
         }
     }
 }

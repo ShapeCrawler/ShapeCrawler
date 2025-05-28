@@ -47,7 +47,7 @@ internal sealed class SlideCollection : IReadOnlyList<ISlide>
                 new SlideLayout(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(
-                        new MediaShapeCollection(new ShapeCollection(slidePart), presentationImageFiles, slidePart),
+                        new MediaShapeCollection(new ShapeCollection(slidePart), this.presentationImageFiles, slidePart),
                         slidePart
                     ),
                     slidePart
