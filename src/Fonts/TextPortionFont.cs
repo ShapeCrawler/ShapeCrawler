@@ -145,7 +145,7 @@ internal sealed class TextPortionFont(
             return aLatinFont;
         }
 
-        aLatinFont = new ReferencedFont(aText).ALatinFontOrNull();
+        aLatinFont = new ReferencedFont(new ReferencedFontColor(aText), aText).ALatinFontOrNull();
         if (aLatinFont != null)
         {
             return aLatinFont;
@@ -167,7 +167,7 @@ internal sealed class TextPortionFont(
             return true;
         }
 
-        bool? isFontBold = new ReferencedFont(aText).BoldFlagOrNull();
+        bool? isFontBold = new ReferencedFont(new ReferencedFontColor(aText), aText).BoldFlagOrNull();
         if (isFontBold.HasValue)
         {
             return isFontBold.Value;

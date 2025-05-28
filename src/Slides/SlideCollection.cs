@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
@@ -11,7 +12,7 @@ namespace ShapeCrawler.Slides;
 internal sealed class SlideCollection : IReadOnlyList<ISlide>
 {
     private readonly IEnumerable<SlidePart> slideParts;
-    private readonly MediaCollection mediaCollection = new();
+    private readonly MediaFiles presentationImageFiles = new();
 
     internal SlideCollection(IEnumerable<SlidePart> slideParts)
     {
@@ -43,9 +44,16 @@ internal sealed class SlideCollection : IReadOnlyList<ISlide>
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
             var newSlide = new Slide(
-                slidePart,
                 new SlideLayout(slidePart.SlideLayoutPart!),
-                this.mediaCollection);
+                new SlideShapeCollection(
+                    new ChartCollection(
+                        new MediaShapeCollection(new ShapeCollection(slidePart), this.presentationImageFiles, slidePart),
+                        slidePart
+                    ),
+                    slidePart
+                ),
+                slidePart
+            );
             slides.Add(newSlide);
         }
 
@@ -59,9 +67,9 @@ internal sealed class SlideCollection : IReadOnlyList<ISlide>
         {
             using var stream = imagePart.GetStream();
             var hash = new ImageStream(stream).Base64Hash;
-            if (!this.mediaCollection.TryGetImagePart(hash, out _))
+            if (!this.presentationImageFiles.TryGetImagePart(hash, out _))
             {
-                this.mediaCollection.SetImagePart(hash, imagePart);
+                this.presentationImageFiles.SetImagePart(hash, imagePart);
             }
         }
     }

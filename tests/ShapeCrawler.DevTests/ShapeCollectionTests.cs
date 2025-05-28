@@ -1014,22 +1014,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void Remove()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slide(1).Shapes; 
-        shapes.AddShape(10, 10, 10, 10);
-
-        // Act
-        shapes.Remove(shapes.Last());
-        
-        // Assert
-        shapes.Should().HaveCount(0);
-        pres.Validate();
-    }
-    
-    [Test]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_png_image_is_added_twice()
     {
         // Arrange

@@ -304,13 +304,13 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var shape = pres.Slides[0].Shape("TextBox 3");
+        var shape = pres.Slide(1).Shape("TextBox 3");
 
         // Act
         shape.Remove();
 
         // Assert
-        var act = () => pres.Slides[0].Shapes.Shape("TextBox 3");
+        var act = () => pres.Slide(1).Shape("TextBox 3");
         act.Should().Throw<SCException>();
         pres.Validate();
     }

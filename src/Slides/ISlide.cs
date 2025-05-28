@@ -9,7 +9,6 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -143,20 +142,12 @@ internal sealed class Slide : ISlide
     private CustomXmlPart? customDataCustomXmlPart;
     private IShapeFill? fill;
 
-    internal Slide(
-        SlidePart slidePart,
-        ISlideLayout slideLayout,
-        MediaCollection mediaCollection)
+    internal Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
     {
         this.slidePart = slidePart;
         this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
-        this.Shapes = this.Shapes = new SlideShapeCollection(
-            new ShapeCollection(slidePart),
-            new MediaShapeCollection(new ShapeCollection(slidePart), slidePart, mediaCollection),
-            new ChartCollection(slidePart),
-            this.slidePart
-        );
+        this.Shapes = shapes;
     }
 
     public ISlideLayout SlideLayout { get; }
