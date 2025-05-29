@@ -92,16 +92,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
     ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
-
-    /// <summary>
-    ///     Adds a SmartArt graphic to the slide.
-    /// </summary>
-    /// <param name="x">The x-coordinate of the SmartArt graphic.</param>
-    /// <param name="y">The y-coordinate of the SmartArt graphic.</param>
-    /// <param name="width">The width of the SmartArt graphic.</param>
-    /// <param name="height">The height of the SmartArt graphic.</param>
-    /// <param name="smartArtType">The type of SmartArt graphic to add.</param>
-    /// <returns>The added SmartArt graphic.</returns>
+    
     public ISmartArt AddSmartArt(
         int x,
         int y,
@@ -112,10 +103,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     public IGroup Group(IShape[] groupingShapes)
     {
-        // Create a new group shape
         var groupShape = new P.GroupShape();
 
-        // Create non-visual properties for the group shape
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
         var idAndName = this.GenerateIdAndName();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
@@ -170,8 +159,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             {
                 openXmlElement.Remove();
             }
-
-            // Add the shape to the group
+            
             groupShape.Append(openXmlElement);
         }
 
@@ -306,8 +294,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         aXfrm.VerticalFlip = new BooleanValue(flipV);
     }
 
-    public void AddTable(int x, int y, int columnsCount, int rowsCount) =>
-        this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
+    public void AddTable(int x, int y, int columnsCount, int rowsCount)
+        => this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {
@@ -365,14 +353,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
-    public void Remove(IShape shape)
-    {
-        var removingShape = shapes.FirstOrDefault(sp => sp.Id == shape.Id) ??
-                            throw new SCException("Shape is not found.");
-        removingShape.Remove();
-    }
-
-    public IShape GetById(int id) => this.GetById<IShape>(id);
+    public IShape GetById(int id) => shapes.GetById(id);
 
     public T GetById<T>(int id)
         where T : IShape => shapes.GetById<T>(id);

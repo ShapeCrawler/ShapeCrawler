@@ -50,7 +50,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
         var wordY = rect.Top + skFont.Size;
 
         var words = content.Split(' ').ToList();
-        for (var i = 0; i < words.Count;)
+        for (var i = 0; i < words.Count; i++)
         {
             var word = words[i];
             var wordWidth = skFont.MeasureText(word);
@@ -60,7 +60,6 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
             {
                 canvas.DrawText(word, wordX, wordY, SKTextAlign.Left, skFont, paint);
                 wordX += wordWidth + spaceWidth;
-                i++;
                 continue;
             }
             
