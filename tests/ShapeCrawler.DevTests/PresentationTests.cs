@@ -222,32 +222,6 @@ public class PresentationTests : SCTest
         // TODO: Add assertion
     }
 
-#if DEBUG
-    [Test]
-    [Explicit]
-    public void Slides_Add()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("autoshape-case017_slide-number.pptx"));
-        const string jsonSlide = """
-                                 {
-                                   "slideLayoutNumber": 1,
-                                   "slideLayoutShapes": [
-                                     {
-                                       "name": "Title",
-                                       "text": "Hello World!"
-                                     }
-                                   ]
-                                 }
-                                 """;
-        // Act
-        pres.Slides.AddJSON(jsonSlide);
-
-        // Assert
-        pres.Validate();
-    }
-#endif
-
     [Test]
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {

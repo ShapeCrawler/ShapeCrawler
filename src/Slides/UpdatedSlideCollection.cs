@@ -20,7 +20,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     public IEnumerator<ISlide> GetEnumerator() => slideCollection.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => slideCollection.GetEnumerator();
 
     public void Add(int layoutNumber)
     {
@@ -117,12 +117,6 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         presentationPart.Presentation.Save();
     }
 
-    // ReSharper disable once InconsistentNaming
-    public void AddJSON(string jsonSlide)
-    {
-        throw new NotImplementedException();
-    }
-
     public void Add(ISlide slide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
@@ -186,7 +180,6 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
     {
-        // Get or create a master part
         var masterPart = GetOrCreateMasterPart(presentationPart, sourceLayoutPart);
         
         // Create a new layout part linked to the master
