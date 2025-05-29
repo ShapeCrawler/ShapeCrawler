@@ -24,7 +24,7 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class MediaShapeCollection(
     ISlideShapeCollection shapes,
-    MediaFiles mediaFiles,
+    PresentationImageFiles presentationImageFiles,
     SlidePart slidePart
 ) : ISlideShapeCollection
 {
@@ -412,7 +412,8 @@ internal sealed class MediaShapeCollection(
 
     private bool TryGetImageRId(string hash, out string imgPartRId)
     {
-        if (mediaFiles.TryGetImagePart(hash, out var imagePart))
+        var imagePart = presentationImageFiles.ImagePartByImageHashOrNull(hash);
+        if (imagePart is not null)
         {
             // Image already exists in the presentation so far.
             // Do we have a reference to it on this slide?
@@ -445,7 +446,7 @@ internal sealed class MediaShapeCollection(
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
             (imgPartRId, var imagePart) = slidePart.AddImagePart(image, mimeType);
-            mediaFiles.SetImagePart(hash, imagePart);
+            // presentationImageFiles.SetImagePart(hash, imagePart);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
@@ -492,8 +493,7 @@ internal sealed class MediaShapeCollection(
         var svgHash = new ImageStream(svgStream).Base64Hash;
         if (!this.TryGetImageRId(svgHash, out var svgPartRId))
         {
-            (svgPartRId, var svgPart) = slidePart.AddImagePart(svgStream, "image/svg+xml");
-            mediaFiles.SetImagePart(svgHash, svgPart);
+            (svgPartRId, _) = slidePart.AddImagePart(svgStream, "image/svg+xml");
         }
 
         // There is a possible optimization here. If we've previously in this session rasterized
@@ -504,8 +504,7 @@ internal sealed class MediaShapeCollection(
         var imgHash = new ImageStream(rasterStream).Base64Hash;
         if (!this.TryGetImageRId(imgHash, out var imgPartRId))
         {
-            (imgPartRId, var imagePart) = slidePart.AddImagePart(rasterStream, "image/png");
-            mediaFiles.SetImagePart(imgHash, imagePart);
+            (imgPartRId, _) = slidePart.AddImagePart(rasterStream, "image/png");
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();

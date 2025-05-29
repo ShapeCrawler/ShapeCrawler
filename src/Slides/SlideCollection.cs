@@ -9,68 +9,40 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideCollection : IReadOnlyList<ISlide>
+internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IReadOnlyList<ISlide>
 {
-    private readonly IEnumerable<SlidePart> slideParts;
-    private readonly MediaFiles presentationImageFiles = new();
+    public int Count => this.GetSlides().Count();
 
-    internal SlideCollection(IEnumerable<SlidePart> slideParts)
-    {
-        this.slideParts = slideParts;
-        this.GetMediaCollection();
-    }
-
-    public int Count => this.GetSlides().Count;
-
-    public ISlide this[int index] => this.GetSlides()[index];
+    public ISlide this[int index] => this.GetSlides().ElementAt(index);
 
     public IEnumerator<ISlide> GetEnumerator() => this.GetSlides().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private List<Slide> GetSlides()
+    private IEnumerable<Slide> GetSlides()
     {
-        if (!this.slideParts.Any())
+        if (!slideParts.Any())
         {
-            return [];
+            yield break;
         }
 
-        var presDocument = (PresentationDocument)this.slideParts.First().OpenXmlPackage;
+        var presDocument = (PresentationDocument)slideParts.First().OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
         var pSlideIdList = presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();
-        var slidesCount = pSlideIdList.Count;
-        var slides = new List<Slide>(slidesCount);
         foreach (var pSlideId in pSlideIdList)
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
-            var newSlide = new Slide(
+            yield return new Slide(
                 new SlideLayout(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(
-                        new MediaShapeCollection(new ShapeCollection(slidePart), this.presentationImageFiles, slidePart),
+                        new MediaShapeCollection(new ShapeCollection(slidePart), new PresentationImageFiles(slideParts) , slidePart),
                         slidePart
                     ),
                     slidePart
                 ),
                 slidePart
             );
-            slides.Add(newSlide);
-        }
-
-        return slides;
-    }
-
-    private void GetMediaCollection()
-    {
-        var imageParts = this.slideParts.SelectMany(slidePart => slidePart.ImageParts);
-        foreach (var imagePart in imageParts)
-        {
-            using var stream = imagePart.GetStream();
-            var hash = new ImageStream(stream).Base64Hash;
-            if (!this.presentationImageFiles.TryGetImagePart(hash, out _))
-            {
-                this.presentationImageFiles.SetImagePart(hash, imagePart);
-            }
         }
     }
 }
