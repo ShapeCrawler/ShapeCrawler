@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -38,7 +37,9 @@ internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IRead
                     new ChartCollection(
                         new AudioVideoShapeCollection(
                             new PictureCollection(new ShapeCollection(slidePart), new PresentationImageFiles(slideParts), slidePart),
-                            new PresentationImageFiles(slideParts), slidePart),
+                            new PresentationImageFiles(slideParts), 
+                            slidePart
+                        ),
                         slidePart
                     ),
                     slidePart

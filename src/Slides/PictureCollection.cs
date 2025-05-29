@@ -3,12 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ImageMagick.Formats;
-using ShapeCrawler.Assets;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
@@ -220,9 +217,7 @@ internal sealed class PictureCollection(
         {
             image.Format = MagickFormat.Png;
             image.Density =
-                new Density(384,
-                    DensityUnit
-                        .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
         }
     }
 
@@ -307,8 +302,7 @@ internal sealed class PictureCollection(
 
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
-            (imgPartRId, var imagePart) = slidePart.AddImagePart(image, mimeType);
-            // presentationImageFiles.SetImagePart(hash, imagePart);
+            (imgPartRId, _) = slidePart.AddImagePart(image, mimeType);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
