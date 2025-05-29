@@ -36,7 +36,9 @@ internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IRead
                 new SlideLayout(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(
-                        new MediaShapeCollection(new ShapeCollection(slidePart), new PresentationImageFiles(slideParts) , slidePart),
+                        new AudioVideoShapeCollection(
+                            new PictureCollection(new ShapeCollection(slidePart), new PresentationImageFiles(slideParts), slidePart),
+                            new PresentationImageFiles(slideParts), slidePart),
                         slidePart
                     ),
                     slidePart
