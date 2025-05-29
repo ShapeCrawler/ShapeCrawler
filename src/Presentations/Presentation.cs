@@ -190,7 +190,8 @@ public sealed class Presentation : IPresentation
         var nonCriticalErrors = new List<string>
         {
             "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
-            "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
+            "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. " +
+            "List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
             "The 'uri' attribute is not declared.",
             "The 'mod' attribute is not declared.",
             "The 'mod' attribute is not declared.",
