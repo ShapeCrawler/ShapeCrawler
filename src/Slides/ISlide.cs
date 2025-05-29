@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a slide.
@@ -139,15 +138,13 @@ public interface ISlide
 internal sealed class Slide : ISlide
 {
     private readonly SlidePart slidePart;
-    private CustomXmlPart? customDataCustomXmlPart;
     private IShapeFill? fill;
 
     internal Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
     {
-        this.slidePart = slidePart;
-        this.customDataCustomXmlPart = this.GetCustomXmlPart();
         this.SlideLayout = slideLayout;
         this.Shapes = shapes;
+        this.slidePart = slidePart;
     }
 
     public ISlideLayout SlideLayout { get; }
@@ -156,12 +153,28 @@ internal sealed class Slide : ISlide
 
     public int Number
     {
-        get => this.ParseNumber();
+        get
+        {
+            var presDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
+            var presPart = presDocument.PresentationPart!;
+            var currentSlidePartId = presPart.GetIdOfPart(this.slidePart);
+            var slideIdList =
+                presPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
+            for (var i = 0; i < slideIdList.Count; i++)
+            {
+                if (slideIdList[i].RelationshipId == currentSlidePartId)
+                {
+                    return i + 1;
+                }
+            }
+
+            throw new SCException("An error occurred while parsing slide number.");
+        }
         set
         {
             if (this.Number == value)
             {
-                return;
+                throw new SCException("Slide number is already set to the specified value.");
             }
 
             var currentIndex = this.Number - 1;
@@ -197,11 +210,8 @@ internal sealed class Slide : ISlide
 
             // Remove the source slide from its current position.
             sourceSlide.Remove();
-
-            // Insert the source slide at its new position after the target slide.
             slideIdList.InsertAfter(sourceSlide, targetSlide);
 
-            // Save the modified presentation.
             presentation.Save();
         }
     }
@@ -442,32 +452,15 @@ internal sealed class Slide : ISlide
         notesSlidePart1.NotesSlide = notesSlide;
     }
 
-    private int ParseNumber()
-    {
-        var sdkPresentationDocument = (PresentationDocument)this.slidePart.OpenXmlPackage;
-        var presentationPart = sdkPresentationDocument.PresentationPart!;
-        var currentSlidePartId = presentationPart.GetIdOfPart(this.slidePart);
-        var slideIdList =
-            presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
-        for (var i = 0; i < slideIdList.Count; i++)
-        {
-            if (slideIdList[i].RelationshipId == currentSlidePartId)
-            {
-                return i + 1;
-            }
-        }
-
-        throw new SCException("An error occurred while parsing slide number.");
-    }
-
     private string? GetCustomData()
     {
-        if (this.customDataCustomXmlPart == null)
+        var getCustomXmlPart = this.GetCustomXmlPartOrNull();
+        if (getCustomXmlPart == null)
         {
             return null;
         }
 
-        var customXmlPartStream = this.customDataCustomXmlPart.GetStream();
+        var customXmlPartStream = getCustomXmlPart.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
         return raw[3..];
@@ -475,23 +468,24 @@ internal sealed class Slide : ISlide
 
     private void SetCustomData(string? value)
     {
+        var getCustomXmlPart = this.GetCustomXmlPartOrNull();
         Stream customXmlPartStream;
-        if (this.customDataCustomXmlPart == null)
+        if (getCustomXmlPart == null)
         {
             var newSlideCustomXmlPart = this.slidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.customDataCustomXmlPart = newSlideCustomXmlPart;
+            getCustomXmlPart = newSlideCustomXmlPart;
         }
         else
         {
-            customXmlPartStream = this.customDataCustomXmlPart.GetStream();
+            customXmlPartStream = getCustomXmlPart.GetStream();
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
         customXmlStreamReader.Write($"ctd{value}");
     }
 
-    private CustomXmlPart? GetCustomXmlPart()
+    private CustomXmlPart? GetCustomXmlPartOrNull()
     {
         foreach (var customXmlPart in this.slidePart.CustomXmlParts)
         {
