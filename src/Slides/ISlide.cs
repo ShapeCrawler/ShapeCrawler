@@ -474,7 +474,6 @@ internal sealed class Slide : ISlide
         {
             var newSlideCustomXmlPart = this.slidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            getCustomXmlPart = newSlideCustomXmlPart;
         }
         else
         {
