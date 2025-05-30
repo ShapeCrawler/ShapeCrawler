@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -126,12 +127,22 @@ internal sealed class ReferencedFontColor(A.Text aText)
         return false;
     }
 
-    private string? GetColorFromLayoutPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart, int indentLevel)
+    private string? GetColorFromLayoutPlaceholderType(
+        P.PlaceholderShape pPlaceholderShape, 
+        OpenXmlPart openXmlPart,
+        int indentLevel)
     {
+        var slideMasterPart = openXmlPart switch
+        {
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!,
+            NotesSlidePart notesSlidePart =>
+                notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!,
+            _ => throw new ArgumentException($"Unsupported OpenXmlPart type: {openXmlPart.GetType()}")
+        };
+
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            var pTitleStyle = ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
-                .TitleStyle!;
+            var pTitleStyle = slideMasterPart.SlideMaster.TextStyles!.TitleStyle!;
             var masterTitleFonts = new IndentFonts(pTitleStyle);
             var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterTitleFont, out var masterTitleColor))
@@ -141,7 +152,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
         }
         else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            var pBodyStyle = ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!;
+            var pBodyStyle = slideMasterPart.SlideMaster.TextStyles!.BodyStyle!;
             var masterBodyFonts = new IndentFonts(pBodyStyle);
             var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterBodyFont, out var masterTitleColor))
@@ -208,7 +219,10 @@ internal sealed class ReferencedFontColor(A.Text aText)
             : null;
     }
 
-    private string? GetColorFromPlaceholderType(P.PlaceholderShape pPlaceholderShape, OpenXmlPart openXmlPart, int indentLevel)
+    private string? GetColorFromPlaceholderType(
+        P.PlaceholderShape pPlaceholderShape, 
+        OpenXmlPart openXmlPart,
+        int indentLevel)
     {
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
@@ -229,8 +243,13 @@ internal sealed class ReferencedFontColor(A.Text aText)
         {
             SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
                 .TitleStyle!,
-            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
-                .TitleStyle!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.SlideMaster.TextStyles!
+                .TitleStyle!,
+            NotesSlidePart notesSlidePart =>
+                notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
+                    .SlideMaster.TextStyles!
+                    .TitleStyle!,
+            _ => throw new ArgumentException($"Unsupported OpenXmlPart type: {openXmlPart.GetType()}")
         };
 
         var masterTitleFonts = new IndentFonts(pTitleStyle);
@@ -247,7 +266,11 @@ internal sealed class ReferencedFontColor(A.Text aText)
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
                 .BodyStyle!,
-            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!,
+            NotesSlidePart notesSlidePart =>
+                notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
+                    .SlideMaster.TextStyles!.BodyStyle!,
+            _ => throw new ArgumentException($"Unsupported OpenXmlPart type: {openXmlPart.GetType()}")
         };
 
         var masterBodyFonts = new IndentFonts(pBodyStyle);

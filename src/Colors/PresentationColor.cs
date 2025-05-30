@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -27,14 +28,14 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
             ? new IndentFonts(aTextDefault).FontOrNull(indentLevel)
             : null;
     }
-    
+
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
         var aColorScheme = GetColorScheme(openXmlPart);
-        
+
         return this.GetColorValue(aColorScheme, aSchemeColorValue);
     }
-    
+
     private static string GetRgbOrSystemColor(A.Color2Type colorType)
     {
         return colorType.RgbColorModelHex != null
@@ -50,10 +51,14 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
                 .ColorScheme!,
             SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
+            NotesSlidePart notesSlidePart =>
+                notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!.ThemePart!
+                    .Theme.ThemeElements!
+                    .ColorScheme!,
             _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
         };
     }
-    
+
     private static string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
     {
         var colorMap = new Dictionary<string, Func<A.Color2Type>>
@@ -84,7 +89,7 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
             ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
             : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!;
     }
-    
+
     private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
     {
         var mapping = new Dictionary<A.SchemeColorValues, Func<A.Color2Type>>
@@ -110,13 +115,16 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
 
         return this.GetThemeMappedColor(aSchemeColorValue);
     }
-    
+
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)
     {
         var pColorMap = openXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster.ColorMap!,
+            NotesSlidePart notesSlidePart =>
+                notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
+                    .SlideMaster.ColorMap!,
             _ => ((SlideMasterPart)openXmlPart).SlideMaster.ColorMap!
         };
         if (themeColor == A.SchemeColorValues.Text1)
