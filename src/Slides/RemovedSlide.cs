@@ -4,9 +4,6 @@ using ShapeCrawler.Presentations;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
-#if DEBUG
-#endif
-
 namespace ShapeCrawler.Slides;
 
 internal sealed class RemovedSlide : Slide
@@ -28,8 +25,7 @@ internal sealed class RemovedSlide : Slide
         var removingPSlideId = slideIdList.Elements<P.SlideId>()
                                    .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ??
                                throw new SCException("Could not find slide ID in presentation.");
-
-        // Handle section references
+        
         var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
         var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
             .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
@@ -43,8 +39,7 @@ internal sealed class RemovedSlide : Slide
 
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
-
-        // Final save to ensure structure is consistent
+        
         presPart.Presentation.Save();
     }
 }

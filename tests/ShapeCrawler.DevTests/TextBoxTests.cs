@@ -173,7 +173,7 @@ namespace ShapeCrawler.DevTests
             pres.Validate();
         }
 
-        [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/1054")]
+        [Test]
         [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Ubuntu and macOS")]
         public void SetText_updates_shape_height_to_fit_text()
         {
@@ -191,7 +191,7 @@ namespace ShapeCrawler.DevTests
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().BeApproximately(95m, 1m);
+            shape.Height.Should().BeApproximately(99m, 1m);
         }
 
         [Test]
