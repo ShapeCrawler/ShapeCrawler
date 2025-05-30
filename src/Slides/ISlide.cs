@@ -139,7 +139,7 @@ internal abstract class Slide : ISlide
     protected readonly SlidePart SlidePart;
     private IShapeFill? fill;
 
-    internal Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
+    private protected Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
     {
         this.SlideLayout = slideLayout;
         this.Shapes = shapes;
