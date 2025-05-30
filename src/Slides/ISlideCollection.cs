@@ -26,12 +26,4 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     ///     Adds slide at the specified number position.
     /// </summary>
     void Add(ISlide slide, int number);
-#if DEBUG
-    /// <summary>
-    ///     Adds a new slide from JSON.
-    /// </summary>
-    /// <param name="jsonSlide">Slide in JSON format.</param>
-    [System.Diagnostics.CodeAnalysis.Experimental("SCE0001")]
-    void AddJSON(string jsonSlide);
-#endif
 }

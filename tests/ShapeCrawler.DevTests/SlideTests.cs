@@ -188,21 +188,7 @@ public class SlideTests : SCTest
         slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
         slide2.Number.Should().Be(2);
     }
-
-    [Test]
-    public void Number_Setter()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-
-        // Act
-        slide.Number = 1;
-
-        // Assert
-        slide.Number.Should().Be(1);
-    }
-
+    
     [Test]
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {

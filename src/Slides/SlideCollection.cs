@@ -31,7 +31,7 @@ internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IRead
         foreach (var pSlideId in pSlideIdList)
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
-            yield return new Slide(
+            yield return new RemovedSlide(
                 new SlideLayout(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(

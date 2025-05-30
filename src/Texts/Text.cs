@@ -1,4 +1,5 @@
 using System.Linq;
+using ShapeCrawler.Fonts;
 using SkiaSharp;
 
 namespace ShapeCrawler.Texts;
@@ -89,9 +90,37 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
             }
             
             i++;
-        }
+        }        
 
-        font.Size = (decimal)skFont.Size;
+        // Compensate for the scaling that will be applied later by PortionFontSize.ApplyNormAutofitScaling()
+        var scaleFactor = GetNormAutofitScaleFactor(font);
+        var compensatedSize = scaleFactor > 0 ? (decimal)skFont.Size / scaleFactor : (decimal)skFont.Size;
+        
+        font.Size = compensatedSize;
+    }
+
+    // Gets the scaling factor that will be applied by PortionFontSize.ApplyNormAutofitScaling()
+    private static decimal GetNormAutofitScaleFactor(ITextPortionFont font)
+    {
+        // Access the underlying PortionFontSize to get the scaling factor
+        if (font is TextPortionFont textPortionFont)
+        {
+            // Get the current font size without setting it
+            var currentSize = textPortionFont.Size;
+            
+            // Set a test value and see how it gets scaled
+            var testSize = 100m;
+            textPortionFont.Size = testSize;
+            var scaledTestSize = textPortionFont.Size;
+            
+            // Restore the original size
+            textPortionFont.Size = currentSize;
+            
+            // Calculate the scale factor
+            return scaledTestSize / testSize;
+        }
+        
+        return 1m; // No scaling if we can't determine it
     }
 
     // Resets the text layout coordinates when font size changes

@@ -193,11 +193,6 @@ internal sealed class TextBox : ITextBox
 
     public void SetText(string text)
     {
-        if (string.IsNullOrEmpty(text))
-        {
-            return;
-        }
-
         var paragraphs = this.Paragraphs.ToList();
         var firstParagraph = paragraphs.FirstOrDefault();
 
@@ -291,7 +286,7 @@ internal sealed class TextBox : ITextBox
     private static string? GetLatinNameToPreserve(IParagraph? firstParagraph)
     {
         var firstPortion = firstParagraph?.Portions.FirstOrDefault();
-        return firstPortion?.Font?.LatinName;
+        return firstPortion?.Font!.LatinName;
     }
 
     private static string? GetFontColorHexToPreserve(IParagraph? firstParagraph)
