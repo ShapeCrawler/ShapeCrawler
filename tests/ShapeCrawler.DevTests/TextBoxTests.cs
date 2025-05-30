@@ -69,7 +69,7 @@ namespace ShapeCrawler.DevTests
             textBox.Text.Should().Contain("confirm that");
         }
 
-        [Test, Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/1053")]
+        [Test]
         public void SetText_reduces_font_size_When_text_is_Overflow()
         {
             // Arrange

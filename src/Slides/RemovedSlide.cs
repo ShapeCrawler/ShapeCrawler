@@ -7,7 +7,7 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 #if DEBUG
 #endif
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Slides;
 
 internal sealed class RemovedSlide : Slide
 {
@@ -34,7 +34,7 @@ internal sealed class RemovedSlide : Slide
         var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
             .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
         removingSectionSlideIdListEntry?.Remove();
-        
+
         slideIdList.RemoveChild(removingPSlideId);
         pPresentation.Save();
 

@@ -10,7 +10,6 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
-using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -170,6 +169,7 @@ internal abstract class Slide : ISlide
 
             throw new SCException("An error occurred while parsing slide number.");
         }
+
         set
         {
             if (this.Number == value)
