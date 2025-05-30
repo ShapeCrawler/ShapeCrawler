@@ -87,6 +87,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         {
             SlidePart slidePart => this.SlideALatinFontOrNull(slidePart),
             SlideMasterPart => this.SlideMasterALatinFont(),
+            NotesSlidePart notesSlidePart => this.NotesSlideALatinFontOrNull(notesSlidePart),
             _ => throw new SCException("Not implemented.")
         };
     }
@@ -263,5 +264,38 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         var fonts = new IndentFonts(pShape.TextBody!.ListStyle!);
 
         return fonts.ALatinFontOrNull(indentLevel) !;
+    }
+
+    private A.LatinFont? NotesSlideALatinFontOrNull(NotesSlidePart notesSlidePart)
+    {
+        var aParagraph = aText.Ancestors<A.Paragraph>().First();
+        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
+        var pShape = aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape == null)
+        {
+            return null;
+        }
+
+        var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholderShape == null)
+        {
+            return null;
+        }
+
+        // NotesMaster doesn't have TextStyles like SlideMaster, so we fall back to the slide's master part
+        var parentSlidePart = notesSlidePart.GetParentParts().OfType<SlidePart>().FirstOrDefault();
+        if (parentSlidePart?.SlideLayoutPart?.SlideMasterPart != null)
+        {
+            var slideMasterFonts =
+                new IndentFonts(parentSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
+            var slideMasterIndentFont = slideMasterFonts.FontOrNull(indentLevel);
+            if (slideMasterIndentFont.HasValue)
+            {
+                return slideMasterIndentFont.Value.ALatinFont;
+            }
+        }
+
+        return null;
     }
 }
