@@ -300,8 +300,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {
         var shapeName = this.GenerateNextTableName();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var xEmu = new Points(x).AsEmus();
+        var yEmu = new Points(y).AsEmus();
         var tableHeightEmu = Constants.DefaultRowHeightEmu * rowsCount;
 
         var graphicFrame = new P.GraphicFrame();

@@ -49,7 +49,7 @@ public interface ITableRowCollection : IEnumerable<ITableRow>
     ///     Adds a new row at the specified index.
     /// </summary>
     /// <param name="index">Index where the new row will be added.</param>
-    /// <param name="templateRowIndex">Row index used as a format template for the new row.</param>
+    /// <param name="templateRowIndex">Index of the row used as a template.</param>
     void Add(int index, int templateRowIndex);
 }
 

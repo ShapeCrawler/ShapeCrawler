@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.69.0 - Unreleased
+## Version 0.69.0 - 2025-05-31
 🍀Added support adding table row with template [#922](https://github.com/ShapeCrawler/ShapeCrawler/issues/922)    
 
 ## Version 0.68.1 - 2025-05-15
