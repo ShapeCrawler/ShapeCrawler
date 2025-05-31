@@ -6,7 +6,7 @@ public class Tables
     public void Create_table()
     {
         using var pres = new Presentation("pres.pptx");
-        var shapeCollection = pres.Slides[0].Shapes;
+        var shapeCollection = pres.Slide(1).Shapes;
 
         shapeCollection.AddTable(x: 50, y: 100, columnsCount: 3, rowsCount: 2);
         var addedTable = (ITable)shapeCollection.Last();
@@ -67,5 +67,15 @@ public class Tables
         var table = slide.Shapes.Shape<ITable>("Table 1");
 
         table.Rows.RemoveAt(0);
+    }
+    
+    public static void Add_row()
+    {
+        using var pres = new Presentation("presentation.pptx");
+        var slide = pres.Slide(1);
+        var table = slide.Shapes.Shape<ITable>("Table 1");
+
+        // Add a new row at the 1 index using row with the index 0 as a template
+        table.Rows.Add(1,0);
     }
 }

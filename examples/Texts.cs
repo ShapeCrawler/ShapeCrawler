@@ -22,7 +22,7 @@ public class Texts
 
         var fontColor = paragraphPortion.Font.Color.Hex;
 
-        paragraphPortion.Font.Color.Update("FF0000");
+        paragraphPortion.Font.Color.Set("FF0000");
 
         pres.Save();
     }
