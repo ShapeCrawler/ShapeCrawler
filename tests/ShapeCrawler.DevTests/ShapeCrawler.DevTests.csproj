@@ -272,6 +272,8 @@
     <EmbeddedResource Include="Assets\images\11 image 1600x690.jpg" />
     <None Remove="Assets\077 grouped shape.pptx" />
     <EmbeddedResource Include="Assets\077 grouped shape.pptx" />
+    <None Remove="Assets\078.yaml" />
+    <EmbeddedResource Include="Assets\078.yaml" />
   </ItemGroup>
 
 </Project>
