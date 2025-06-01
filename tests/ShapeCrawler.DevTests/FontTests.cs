@@ -12,12 +12,8 @@ public class FontTests : SCTest
     public void EastAsianName_Setter_sets_font_for_the_east_asian_characters()
     {
         // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.Shapes.AddShape(10, 10, 10, 10);
-        var rectangle = slide.Shapes.Last();
-        rectangle.TextBox!.Paragraphs[0].Portions.AddText("test");
-        var font = rectangle.TextBox!.Paragraphs[0].Portions[0].Font;
+        var pres = TestPresentation("078.yaml");
+        var font = pres.Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font;
 
         // Act
         font!.EastAsianName = "SimSun";

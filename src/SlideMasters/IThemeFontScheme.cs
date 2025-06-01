@@ -87,7 +87,7 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
     private static A.FontScheme GetFontSchemeFromNotesSlidePart(NotesSlidePart notesSlidePart)
     {
         // If NotesMasterPart exists, use it
-        var notesMasterFontScheme = notesSlidePart.NotesMasterPart?.ThemePart?.Theme?.ThemeElements?.FontScheme;
+        var notesMasterFontScheme = notesSlidePart.NotesMasterPart?.ThemePart?.Theme.ThemeElements?.FontScheme;
         if (notesMasterFontScheme != null)
         {
             return notesMasterFontScheme;
@@ -95,7 +95,7 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
 
         // Fall back to the slide's master part if NotesMasterPart is null
         var parentSlidePart = notesSlidePart.GetParentParts().OfType<SlidePart>().FirstOrDefault();
-        var slideMasterFontScheme = parentSlidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme?.ThemeElements
+        var slideMasterFontScheme = parentSlidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements
             ?.FontScheme;
         if (slideMasterFontScheme != null)
         {
