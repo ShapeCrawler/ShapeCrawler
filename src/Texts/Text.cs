@@ -109,7 +109,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
             var currentSize = textPortionFont.Size;
             
             // Set a test value and see how it gets scaled
-            var testSize = 100m;
+            const decimal testSize = 100m;
             textPortionFont.Size = testSize;
             var scaledTestSize = textPortionFont.Size;
             
