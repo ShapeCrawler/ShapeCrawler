@@ -15,6 +15,11 @@ namespace ShapeCrawler;
 public interface ISlideMaster
 {
     /// <summary>
+    ///     Gets slide master order number.
+    /// </summary>
+    int Number { get; }
+    
+    /// <summary>
     ///     Gets background image if slide master has background, otherwise <see langword="null"/>.
     /// </summary>
     IImage? Background { get; }
