@@ -311,4 +311,11 @@ public class SlideMasterTests : SCTest
         slideMaster.Theme.ColorScheme.FollowedHyperlink.Should().Be("FFC0CB");
         pres.Validate();
     }
+
+    [Test]
+    public void Number_returns_slide_master_order_number()
+    {
+        // Act & Assert
+        new Presentation().SlideMaster(1).Number.Should().Be(1);
+    }
 }
