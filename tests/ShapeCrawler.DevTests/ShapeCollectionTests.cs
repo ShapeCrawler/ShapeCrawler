@@ -640,7 +640,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestAsset("ico image.ico");
+        var image = TestAsset("05 ico image.ico");
 
         // Act
         shapes.AddPicture(image);
