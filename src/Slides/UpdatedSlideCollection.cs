@@ -111,6 +111,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
         CopySlideContent(sourceSlidePart, clonedSlidePart);
         CopyCustomXmlParts(sourceSlidePart, clonedSlidePart);
+        CopySlideHyperlinks(sourceSlidePart, clonedSlidePart);
         LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, number);
         
@@ -175,6 +176,17 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             sourceStream.Position = 0;
             using var destStream = newCustomXmlPart.GetStream(FileMode.Create, FileAccess.Write);
             sourceStream.CopyTo(destStream);
+        }
+    }
+
+    private static void CopySlideHyperlinks(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        foreach (var idPart in sourceSlidePart.Parts)
+        {
+            if (idPart.OpenXmlPart is SlidePart relatedSlide)
+            {
+                clonedSlidePart.AddPart(relatedSlide, idPart.RelationshipId!);
+            }
         }
     }
 
