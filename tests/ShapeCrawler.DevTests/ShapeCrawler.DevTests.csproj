@@ -255,7 +255,6 @@
     <None Remove="Assets\images\reference image.jpg" />
     <EmbeddedResource Include="Assets\images\reference image.jpg" />
     <None Remove="Assets\images\test-image.eps" />
-    <EmbeddedResource Include="Assets\images\test-image.eps" />
     <None Remove="Assets\images\05 ico image.ico" />
     <EmbeddedResource Include="Assets\images\05 ico image.ico" />
     <None Remove="Assets\072 content placeholder.pptx" />
