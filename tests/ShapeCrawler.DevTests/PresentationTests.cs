@@ -207,19 +207,17 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/864")]
     public void Slides_Add_should_not_break_hyperlink()
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case018_rotation.pptx"));
         var inserting = pres.Slide(1);
-
+        
         // Act
         pres.Slides.Add(inserting, 2);
 
         // Assert
         pres.Validate();
-        // TODO: Add assertion
     }
 
     [Test]
