@@ -48,11 +48,6 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets or sets custom data string for the shape.
     /// </summary>
     string? CustomData { get; set; }
-
-    /// <summary>
-    ///     Gets the shape content type.
-    /// </summary>
-    ShapeContent ShapeContent { get; }
     
     /// <summary>
     ///     Gets outline of the shape. Returns <see langword="null"/> if the shape cannot be outlined, for example, a picture.
@@ -65,7 +60,37 @@ public interface IShape : IPosition, IShapeGeometry
     IShapeFill? Fill { get; }
 
     /// <summary>
-    ///     Gets Text Box. Returns <c>null</c> if the slide element doesn't contain text content. Use <see cref="ShapeContent"/> property to check content type.
+    ///     Gets a value indicating whether the shape contains text content.
+    /// </summary>
+    bool HasText { get; }
+    
+    /// <summary>
+    ///     Gets a value indicating whether the shape contains chart content.
+    /// </summary>
+    bool HasChart { get; }
+    
+    /// <summary>
+    ///     Gets a value indicating whether the shape contains table content.
+    /// </summary>
+    bool HasTable { get; }
+    
+    /// <summary>
+    ///     Gets a value indicating whether the shape contains OLE Object.
+    /// </summary>
+    bool HasOLEObject { get; }
+    
+    /// <summary>
+    ///     Gets a value indicating whether the shape contains SmartArt graphic.
+    /// </summary>
+    bool HasSmartArt { get; }
+    
+    /// <summary>
+    ///     Gets a value indicating whether the shape contains media content.
+    /// </summary>
+    bool HasMedia { get; }
+    
+    /// <summary>
+    ///     Gets shape Text Box. Returns <c>null</c> if the shape is not a text holder. Use property <see cref="HasText"/> to check whether the shape is a text holder.
     /// </summary>
     ITextBox? TextBox { get; }
     
@@ -111,10 +136,16 @@ public interface IShape : IPosition, IShapeGeometry
     void Duplicate();
 
     /// <summary>
-    ///     Sets the text content. Throws <see cref="SCException"/> if text content cannot be set for this element.
-    ///     Use <see cref="ShapeContent"/> property to check element content type.
+    ///     Sets text. Throws <see cref="SCException"/> if the shape is not a text holder.
+    ///     Use property <see cref="HasText"/> to check whether the shape is a text holder.
     /// </summary>
     void SetText(string text);
+    
+    /// <summary>
+    ///     Sets text in Markdown format. Throws <see cref="SCException"/> if the shape is not a text holder.
+    ///     Use property <see cref="HasText"/> to check whether the shape is a text holder.
+    /// </summary>
+    void SetMarkdownText(string text);
 
     /// <summary>
     ///     Sets the image content. Throws <see cref="SCException"/> if image content cannot be set for this element.

@@ -10,8 +10,7 @@ using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, OpenXmlElement pShapeTreeElement)
-    : IShape
+internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
     public decimal X
     {
@@ -27,14 +26,14 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
 
     public decimal Width
     {
-        get => size.Width;
-        set => size.Width = value;
+        get => shapeSize.Width;
+        set => shapeSize.Width = value;
     }
 
     public decimal Height
     {
-        get => size.Height;
-        set => size.Height = value;
+        get => shapeSize.Height;
+        set => shapeSize.Height = value;
     }
 
     public IPresentation Presentation => new Presentation(new SCOpenXmlElement(pShapeTreeElement).PresentationDocument);
@@ -197,13 +196,11 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
         }
     }
 
-    public ShapeContent ShapeContent => ShapeContent.Shape;
-
     public IShapeOutline Outline
     {
         get
         {
-            var pShapeProperties = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pShapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new SlideShapeOutline(pShapeProperties);
         }
     }
@@ -212,10 +209,17 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
     {
         get
         {
-            var pShapeProperties = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pShapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeFill(pShapeProperties);
         }
     }
+
+    public bool HasText => false;
+    public bool HasChart => false;
+    public bool HasTable => false;
+    public bool HasOLEObject => false;
+    public bool HasSmartArt => false;
+    public bool HasMedia => false;
 
     public ITextBox? TextBox => null;
 
@@ -263,6 +267,8 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
 
     public void SetText(string text) => throw new SCException(
         $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+
+    public void SetMarkdownText(string text) => throw new SCException();
 
     public void SetImage(string imagePath) => throw new SCException(
         $"The shape is not an image shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is an image shape.");

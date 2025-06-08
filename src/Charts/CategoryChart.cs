@@ -75,8 +75,6 @@ internal class CategoryChart(IChart chart, Categories categories) : IChart
         set => chart.CustomData = value;
     }
 
-    public ShapeContent ShapeContent => chart.ShapeContent;
-
     public IShapeOutline? Outline => chart.Outline;
 
     public IShapeFill? Fill => chart.Fill;

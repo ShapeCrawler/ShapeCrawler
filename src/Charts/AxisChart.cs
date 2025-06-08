@@ -73,11 +73,10 @@ internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
         set => chart.CustomData = value;
     }
 
-    public ShapeContent ShapeContent => chart.ShapeContent;
-
     public IShapeOutline? Outline => chart.Outline;
 
     public IShapeFill? Fill => chart.Fill;
+    public bool HasText => false;
 
     public ITextBox? TextBox => chart.TextBox;
 
@@ -106,6 +105,7 @@ internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
     public void Duplicate() => chart.Duplicate();
 
     public void SetText(string text) => chart.SetText(text);
+    public void SetMarkdownText(string text) => throw new SCException();
 
     public void SetImage(string imagePath) => chart.SetImage(imagePath);
 
