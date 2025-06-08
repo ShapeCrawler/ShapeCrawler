@@ -167,7 +167,6 @@ public class TableTests : SCTest
         pres.Validate();
     }
     
-
     [Test]
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
@@ -334,7 +333,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_Merges0x0And0x1CellsOf2x2Table()
+    public void MergeCells_merges_0x0_and_0x1_cells_of_2x2_table()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -358,7 +357,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
+    public void MergeCells_merges_0x1_and_0x2_cells_of_3x2_table()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -385,7 +384,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
+    public void MergeCells_merges0x0_and_0x1_and_0x2_cells_of_3x2_table()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -409,7 +408,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_Merges0x0And0x1MergedCellsWith0x2CellIn3x2Table()
+    public void MergeCells_merges_0x0_and_0x1_merged_cells_with_0x2_cell_of_3x2_table()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -494,7 +493,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_Merges0x1And1x1CellsOf3x2Table()
+    public void MergeCells_merges_0x1_and_1x1_cells_of_3x2_table()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -518,7 +517,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_Merges0x0To1x1RangeOf3x3Table()
+    public void MergeCells_merges_0x0_to_1x1_range_of_3x3_table()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -546,7 +545,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_MergesMergedCellWithNonMergedCell()
+    public void MergeCells_merges_merged_cell_with_non_merged_cell()
     {
         // Arrange
         IPresentation presentation = new Presentation(TestAsset("001.pptx"));
@@ -615,7 +614,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_converts_2X1_table_into_1X1_when_all_cells_are_merged()
+    public void MergeCells_converts_2x1_table_into_1x1_when_all_cells_are_merged()
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
