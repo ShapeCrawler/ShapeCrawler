@@ -301,7 +301,7 @@ internal abstract class Slide : ISlide
             .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
         textBoxes.AddRange(tableTextboxes);
 
-        var groupShapes = this.Shapes.OfType<Group>().ToList();
+        var groupShapes = this.Shapes.OfType<GroupShape>().ToList();
         foreach (var groupShape in groupShapes)
         {
             this.AddGroupTextBoxes(groupShape, textBoxes);

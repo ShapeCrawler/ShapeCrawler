@@ -199,7 +199,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     private static IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
     {
-        yield return new Group(
+        yield return new GroupShape(
             new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape),
             pGroupShape
         );
@@ -370,7 +370,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new AxisChart(
                 new CategoryChart(
-                    new Chart(
+                    new ChartShape(
                         new Shape(
                             new Position(pGraphicFrame),
                             new ShapeSize(pGraphicFrame),
@@ -398,7 +398,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new AxisChart(
                 new CategoryChart(
-                    new Chart(
+                    new ChartShape(
                         new Shape(
                             new Position(pGraphicFrame),
                             new ShapeSize(pGraphicFrame),
@@ -423,7 +423,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new CategoryChart(
-                new Chart(
+                new ChartShape(
                     new Shape(
                         new Position(pGraphicFrame),
                         new ShapeSize(pGraphicFrame),
@@ -446,7 +446,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new AxisChart(
-                new Chart(
+                new ChartShape(
                     new Shape(
                         new Position(pGraphicFrame),
                         new ShapeSize(pGraphicFrame),
@@ -466,7 +466,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         var otherChartCXCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        return new Chart(
+        return new ChartShape(
             new Shape(
                 new Position(pGraphicFrame),
                 new ShapeSize(pGraphicFrame),

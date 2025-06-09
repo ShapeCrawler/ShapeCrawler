@@ -58,41 +58,21 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets the fill of the shape. Returns <see langword="null"/> if the shape cannot be filled, for example, a line.
     /// </summary>
     IShapeFill? Fill { get; }
-
-    /// <summary>
-    ///     Gets a value indicating whether the shape contains text content.
-    /// </summary>
-    bool HasText { get; }
     
     /// <summary>
-    ///     Gets a value indicating whether the shape contains chart content.
-    /// </summary>
-    bool HasChart { get; }
-    
-    /// <summary>
-    ///     Gets a value indicating whether the shape contains table content.
-    /// </summary>
-    bool HasTable { get; }
-    
-    /// <summary>
-    ///     Gets a value indicating whether the shape contains OLE Object.
-    /// </summary>
-    bool HasOLEObject { get; }
-    
-    /// <summary>
-    ///     Gets a value indicating whether the shape contains SmartArt graphic.
-    /// </summary>
-    bool HasSmartArt { get; }
-    
-    /// <summary>
-    ///     Gets a value indicating whether the shape contains media content.
-    /// </summary>
-    bool HasMedia { get; }
-    
-    /// <summary>
-    ///     Gets shape Text Box. Returns <c>null</c> if the shape is not a text holder. Use property <see cref="HasText"/> to check whether the shape is a text holder.
+    ///     Gets Text Box. Returns <c>null</c> if the shape is not a text holder.
     /// </summary>
     ITextBox? TextBox { get; }
+    
+    /// <summary>
+    ///     Gets picture. Returns <c>null</c> if the shape doesn't contain image content.
+    /// </summary>
+    IPicture? Picture { get; }
+    
+    /// <summary>
+    ///     Gets chart. Returns <c>null</c> if the shape doesn't contain image content.
+    /// </summary>
+    IChart? Chart { get; }
     
     /// <summary>
     ///     Gets the rotation of the shape in degrees.
@@ -118,17 +98,6 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Removes the shape from the slide.
     /// </summary>
     void Remove();
-    
-    /// <summary>
-    ///     Gets the table if the shape is a table. Use <see cref="ShapeContent"/> property to check if the shape is a table.
-    /// </summary>
-    ITable AsTable();
-    
-    /// <summary>
-    ///     Gets the media shape which is an audio or video.
-    ///     Use <see cref="ShapeContent"/> property to check if the shape is an audio or video.    
-    /// </summary>
-    IMediaShape AsMedia();
 
     /// <summary>
     ///     Duplicates the shape.
@@ -136,21 +105,24 @@ public interface IShape : IPosition, IShapeGeometry
     void Duplicate();
 
     /// <summary>
-    ///     Sets text. Throws <see cref="SCException"/> if the shape is not a text holder.
-    ///     Use property <see cref="HasText"/> to check whether the shape is a text holder.
+    ///     Sets text content. 
+    ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
     /// </summary>
+    /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
     void SetText(string text);
     
     /// <summary>
-    ///     Sets text in Markdown format. Throws <see cref="SCException"/> if the shape is not a text holder.
-    ///     Use property <see cref="HasText"/> to check whether the shape is a text holder.
+    ///     Sets text content. 
+    ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
     /// </summary>
+    /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
     void SetMarkdownText(string text);
 
     /// <summary>
-    ///     Sets the image content. Throws <see cref="SCException"/> if image content cannot be set for this element.
-    ///     Use <see cref="ShapeContent"/> property to check element content type.
+    ///     Sets image content.
+    ///     Use <see cref="Picture"/> property to check whether shape contains image content.
     /// </summary>
+    /// <exception cref="SCException">Thrown if the shape doesn't contain image content.</exception>
     void SetImage(string imagePath);
     
     /// <summary>

@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a chart.
 /// </summary>
-public interface IChart : IShape
+public interface IChart
 {
     /// <summary>
     ///     Gets chart type.

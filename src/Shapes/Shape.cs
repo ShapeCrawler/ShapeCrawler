@@ -12,25 +12,25 @@ namespace ShapeCrawler.Shapes;
 
 internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
-    public decimal X
+    public virtual decimal X
     {
         get => position.X;
         set => position.X = value;
     }
 
-    public decimal Y
+    public virtual decimal Y
     {
         get => position.Y;
         set => position.Y = value;
     }
 
-    public decimal Width
+    public virtual decimal Width
     {
         get => shapeSize.Width;
         set => shapeSize.Width = value;
     }
 
-    public decimal Height
+    public virtual decimal Height
     {
         get => shapeSize.Height;
         set => shapeSize.Height = value;
@@ -122,7 +122,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         }
     }
 
-    public Geometry GeometryType
+    public virtual Geometry GeometryType
     {
         get
         {
@@ -214,14 +214,11 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         }
     }
 
-    public bool HasText => false;
-    public bool HasChart => false;
-    public bool HasTable => false;
-    public bool HasOLEObject => false;
-    public bool HasSmartArt => false;
-    public bool HasMedia => false;
-
     public ITextBox? TextBox => null;
+    public IPicture? Picture => null;
+    public IChart? Chart => null;
+    
+    public IOLEObject? OLEObject => null;
 
     public double Rotation
     {
@@ -265,13 +262,11 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
     }
 
-    public void SetText(string text) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public void SetText(string text) => throw new SCException();
 
     public void SetMarkdownText(string text) => throw new SCException();
 
-    public void SetImage(string imagePath) => throw new SCException(
-        $"The shape is not an image shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is an image shape.");
+    public void SetImage(string imagePath) => throw new SCException();
 
     public void Remove() => pShapeTreeElement.Remove();
 

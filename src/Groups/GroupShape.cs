@@ -13,7 +13,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a group shape.
 /// </summary>
-public interface IGroup : IShape
+public interface IGroup
 {
     /// <summary>
     ///     Gets grouped shape collection.
@@ -32,12 +32,12 @@ public interface IGroup : IShape
     IShape Shape(string groupedShapeName);
 }
 
-internal sealed class Group : IGroup
+internal sealed class GroupShape : Shape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly Shape shape;
 
-    internal Group(Shape shape, P.GroupShape pGroupShape)
+    internal GroupShape(Shape shape, P.GroupShape pGroupShape)
     {
         this.shape = shape;
         this.pGroupShape = pGroupShape;
@@ -49,13 +49,7 @@ internal sealed class Group : IGroup
 
     public IShapeCollection Shapes { get; }
 
-    public Geometry GeometryType
-    {
-        get => Geometry.Rectangle;
-        set => throw new SCException("The geometry type of a group shape cannot be set.");
-    }
-
-    public PlaceholderType? PlaceholderType => null;
+    public override Geometry GeometryType => Geometry.Rectangle;
 
     public bool HasOutline => true;
 
@@ -64,7 +58,6 @@ internal sealed class Group : IGroup
     public bool HasFill => true;
 
     public IShapeFill Fill { get; }
-    public bool HasText => false;
 
     public ITextBox? TextBox => null;
 

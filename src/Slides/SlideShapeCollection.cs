@@ -170,7 +170,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             grouping.Remove();
         }
 
-        return new Group(
+        return new GroupShape(
             new Shape(
                 new Position(groupShape),
                 new ShapeSize(groupShape),
