@@ -96,10 +96,12 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         var aSolidFill = aRunProperties.SdkASolidFill();
         aSolidFill?.Remove();
         hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
-        if (hex.Length == 8) // ARGB or RGBA, trim to RGB
+        if (hex.Length == 8) 
         {
-            hex = hex.Substring(0, 6);
+            // ARGB or RGBA, trim to RGB
+            hex = hex[..6];
         }
+
         var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);
