@@ -818,4 +818,18 @@ public class ShapeTests : SCTest
         shapes.Should().HaveCount(2);
         copyAddedShape.Id.Should().Be(2, "because it is the second shape in the collection");
     }
+
+    [Test]
+    public void SetText()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("078 textbox.pptx"));
+        var shape = pres.Slide(1).Shape("TextBox 1");
+        
+        // Act
+        shape.SetText("Test");
+
+        // Assert
+        pres.Validate();
+    }
 }
