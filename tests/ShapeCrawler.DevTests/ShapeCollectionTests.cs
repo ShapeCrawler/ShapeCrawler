@@ -347,7 +347,7 @@ public class ShapeCollectionTests : SCTest
         var preStream = TestAsset("001.pptx");
         var presentation = new Presentation(preStream);
         var shapesCollection = presentation.Slides[1].Shapes;
-        var videoStream = TestAsset("test-video.mp4");
+        var videoStream = TestAsset("079 mp4 video.mp4");
         int xPxCoordinate = 300;
         int yPxCoordinate = 100;
 
