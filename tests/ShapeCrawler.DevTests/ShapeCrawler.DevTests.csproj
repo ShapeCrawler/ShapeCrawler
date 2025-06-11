@@ -99,11 +99,11 @@
     <EmbeddedResource Include="Assets\tables\009_table.pptx" />
     <None Remove="Assets\tables\table-case001.pptx" />
     <EmbeddedResource Include="Assets\tables\table-case001.pptx" />
-    <None Remove="Assets\video\test-video.avi" />
+    <None Remove="Assets\080 avi video.avi" />
+    <EmbeddedResource Include="Assets\080 avi video.avi" />
     <EmbeddedResource Include="Assets\067 vector image-blank.svg" />
-    <EmbeddedResource Include="Assets\video\test-video.avi" />
-    <None Remove="Assets\video\test-video.mp4" />
-    <EmbeddedResource Include="Assets\video\test-video.mp4" />
+    <None Remove="Assets\079 mp4 video.mp4" />
+    <EmbeddedResource Include="Assets\079 mp4 video.mp4" />
     <None Remove="Assets\video\video-01.mp4" />
     <EmbeddedResource Include="Assets\video\video-01.mp4" />
     <None Remove="Assets\video\video-case001.pptx" />
@@ -275,6 +275,8 @@
     <EmbeddedResource Include="Assets\078.yaml" />
     <None Remove="Assets\078 textbox.pptx" />
     <EmbeddedResource Include="Assets\078 textbox.pptx" />
+    <None Remove="Assets\081 mp4 video.mp4.mp4" />
+    <EmbeddedResource Include="Assets\081 mp4 video.mp4.mp4" />
   </ItemGroup>
 
 </Project>
