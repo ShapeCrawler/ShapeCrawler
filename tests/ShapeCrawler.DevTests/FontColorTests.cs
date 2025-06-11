@@ -10,26 +10,36 @@ namespace ShapeCrawler.DevTests;
 public class FontColorTests : SCTest
 {
     [Test]
-    public void ColorHex_Getter_returns_White_color()
+    public void Hex_returns_White_color()
     {
         // Arrange
         var pres = new Presentation(TestAsset("020.pptx"));
         var shape = pres.Slides[0].Shapes.First(sp => sp.Id == 4);
-        var colorFormat = shape.TextBox!.Paragraphs[0].Portions[0].Font.Color;
+
+        // Act & Assert
+        shape.TextBox!.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be("FFFFFF");
+    }
+    
+    [Test]
+    public void Hex_returns_Black_color()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("078 textbox.pptx"));
+        var shape = pres.Slide(1).Shape("TextBox 1");
 
         // Act-Assert
-        colorFormat.Hex.Should().Be("FFFFFF");
+        shape.TextBox!.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be("000000");
     }
 
     [Test]
-    public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
+    public void Hex_returns_Slide_Layout_Placeholder_color()
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
         var titlePlaceholder = pres.Slides[0].SlideLayout.Shapes.GetById<IShape>(2);
-        var fontColor = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font!.Color;
+        var fontColor = titlePlaceholder.TextBox!.Paragraphs[0].Portions[0].Font!.Color;
 
-        // Act-Assert
+        // Act & Assert
         fontColor.Hex.Should().Be("000000");
     }
 

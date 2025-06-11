@@ -53,11 +53,17 @@ internal sealed class FontColor(A.Text aText) : IFontColor
             var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
             var pSlideMaster = GetSlideMaster(openXmlPart);
 
+            string ProcessHex(string hex)
+            {
+                hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex;
+                return hex.Length == 8 ? hex[2..] : hex;
+            }
+
             // From SolidFill
             var solidFillHex = this.GetSolidFillHex(pSlideMaster);
             if (solidFillHex != null)
             {
-                return solidFillHex;
+                return ProcessHex(solidFillHex);
             }
 
             // From TextBody
@@ -66,18 +72,19 @@ internal sealed class FontColor(A.Text aText) : IFontColor
             var textBodyHex = this.GetTextBodyHex(indentLevel);
             if (textBodyHex != null)
             {
-                return textBodyHex;
+                return ProcessHex(textBodyHex);
             }
 
             // From Shape or Referenced Shape
             var shapeHex = this.GetShapeHex(openXmlPart);
             if (shapeHex != null)
             {
-                return shapeHex;
+                return ProcessHex(shapeHex);
             }
 
             // From Common Placeholder or Presentation level
-            return this.GetDefaultHex(pSlideMaster, indentLevel, openXmlPart);
+            var defaultHex = this.GetDefaultHex(pSlideMaster, indentLevel, openXmlPart);
+            return ProcessHex(defaultHex);
         }
     }
 
