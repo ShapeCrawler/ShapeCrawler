@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.69.1 - 2025-07-11
+🐞Fixed `IShape.SetText()`
+
 ## Version 0.69.0 - 2025-05-31
 🍀Added support adding table row with template [#922](https://github.com/ShapeCrawler/ShapeCrawler/issues/922)    
 
