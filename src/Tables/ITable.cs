@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
@@ -238,6 +239,10 @@ internal sealed class Table(
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+    public void SetVideo(Stream video)
+    {
+        throw new NotImplementedException();
+    }
 
     internal void SetTableHeight(decimal value) => shape.Height = value;
     

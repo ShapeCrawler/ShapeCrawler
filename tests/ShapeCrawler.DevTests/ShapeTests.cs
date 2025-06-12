@@ -832,4 +832,21 @@ public class ShapeTests : SCTest
         // Assert
         pres.Validate();
     }
+
+    [Test]
+    public void SetVideo()
+    {
+        // Arrange
+        var pres = TestPresentation("082.json");
+        var videoShape = pres.Slide(1).Shape("Video");
+        var newVideoContent = TestAsset("083 mp4 video.mp4");
+
+        // Act
+        videoShape.SetVideo(newVideoContent);
+
+        // Assert
+        newVideoContent.Position = 0;
+        var newVideoBytes = newVideoContent.ToArray();
+        videoShape.AsMedia().AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
+    }
 }

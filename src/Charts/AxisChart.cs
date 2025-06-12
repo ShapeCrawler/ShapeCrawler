@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using DocumentFormat.OpenXml;
 
 namespace ShapeCrawler.Charts;
@@ -114,6 +115,10 @@ internal sealed class AxisChart(IChart chart, XAxis xAxis) : IChart
     public void SetFontSize(decimal fontSize) => chart.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => chart.SetFontColor(colorHex);
+    public void SetVideo(Stream video)
+    {
+        throw new System.NotImplementedException();
+    }
 
     public byte[] GetWorksheetByteArray() => chart.GetWorksheetByteArray();
 }

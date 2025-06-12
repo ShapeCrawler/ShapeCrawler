@@ -6,6 +6,7 @@
     <IsTestProject>true</IsTestProject>
     <LangVersion>latest</LangVersion>
     <WarningLevel>0</WarningLevel>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -104,8 +105,8 @@
     <EmbeddedResource Include="Assets\067 vector image-blank.svg" />
     <None Remove="Assets\079 mp4 video.mp4" />
     <EmbeddedResource Include="Assets\079 mp4 video.mp4" />
-    <None Remove="Assets\video\video-01.mp4" />
-    <EmbeddedResource Include="Assets\video\video-01.mp4" />
+    <None Remove="Assets\083 mp4 video.mp4" />
+    <EmbeddedResource Include="Assets\083 mp4 video.mp4" />
     <None Remove="Assets\video\video-case001.pptx" />
     <EmbeddedResource Include="Assets\video\video-case001.pptx" />
     <None Remove="Assets\066 1x1.svg" />
@@ -275,8 +276,10 @@
     <EmbeddedResource Include="Assets\078.yaml" />
     <None Remove="Assets\078 textbox.pptx" />
     <EmbeddedResource Include="Assets\078 textbox.pptx" />
-    <None Remove="Assets\081 mp4 video.mp4.mp4" />
-    <EmbeddedResource Include="Assets\081 mp4 video.mp4.mp4" />
+    <None Remove="Assets\081 mp4 video.mp4" />
+    <EmbeddedResource Include="Assets\081 mp4 video.mp4" />
+    <None Remove="Assets\082.json" />
+    <EmbeddedResource Include="Assets\082.json" />
   </ItemGroup>
 
 </Project>

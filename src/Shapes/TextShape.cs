@@ -1,3 +1,4 @@
+using System.IO;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -162,6 +163,11 @@ internal class TextShape(Shape shape, TextBox textBox) : IShape
         {
             paragraph.SetFontColor(colorHex);
         }
+    }
+
+    public void SetVideo(Stream video)
+    {
+        throw new System.NotImplementedException();
     }
 
     public virtual void Remove() => shape.Remove();
