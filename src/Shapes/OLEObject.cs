@@ -109,6 +109,7 @@ internal sealed class OLEObject(Shape shape, SlideShapeOutline outline, ShapeFil
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
     public void SetVideo(Stream video)
     {
         throw new System.NotImplementedException();

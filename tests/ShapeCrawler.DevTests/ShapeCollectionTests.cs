@@ -357,7 +357,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         pres.Save();
         pres = new Presentation(preStream);
-        var addedVideo = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
+        var addedVideo = pres.Slides[1].Shapes.Last<IMediaShape>();
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
@@ -374,6 +374,12 @@ public class ShapeCollectionTests : SCTest
         shapes.AddVideo(10, 10, videoStream);
 
         // Assert
+        pres = SaveAndOpenPresentation(pres);
+        var addedVideo = pres.Slide(1).Shapes.Last<IMediaShape>();
+        addedVideo.MIME.Should().Be("video/mp4");
+        addedVideo.ShapeContent.Should().Be(ShapeContent.Video);
+        addedVideo.X.Should().Be(10);
+        addedVideo.Y.Should().Be(10);
     }
     
     [Test]

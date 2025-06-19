@@ -158,6 +158,7 @@ internal sealed class Group : IGroup
     public void SetFontSize(decimal fontSize) => this.shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => this.shape.SetFontColor(colorHex);
+
     public void SetVideo(Stream video)
     {
         throw new System.NotImplementedException();

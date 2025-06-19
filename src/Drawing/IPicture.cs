@@ -205,6 +205,7 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : I
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
     public void SetVideo(Stream video)
     {
         throw new NotImplementedException();

@@ -117,6 +117,7 @@ internal class SmartArt(Shape shape, SmartArtNodeCollection nodeCollection) : IS
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
     public void SetVideo(Stream video)
     {
         throw new System.NotImplementedException();
