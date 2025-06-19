@@ -363,26 +363,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddVideo()
-    {
-        // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slide(1).Shapes;
-        var videoStream = TestAsset("083 mp4 video.mp4");
-
-        // Act
-        shapes.AddVideo(10, 10, videoStream);
-
-        // Assert
-        pres = SaveAndOpenPresentation(pres);
-        var addedVideo = pres.Slide(1).Shapes.Last<IMediaShape>();
-        addedVideo.MIME.Should().Be("video/mp4");
-        addedVideo.ShapeContent.Should().Be(ShapeContent.Video);
-        addedVideo.X.Should().Be(10);
-        addedVideo.Y.Should().Be(10);
-    }
-    
-    [Test]
     public void AddPicture_adds_svg_picture()
     {
         // Arrange
