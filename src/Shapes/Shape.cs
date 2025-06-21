@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
@@ -280,4 +281,9 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
 
     public void SetFontColor(string colorHex) => throw new SCException(
         $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+
+    public void SetVideo(Stream video)
+    {
+        throw new NotImplementedException();
+    }
 }

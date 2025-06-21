@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.70.0 - 2025-07-21
+🍀Added support for updating shape video content [D1069](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1069)
+
 ## Version 0.69.1 - 2025-07-11
 🐞Fixed `IShape.SetText()`
 

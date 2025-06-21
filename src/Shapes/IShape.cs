@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.IO;
+using DocumentFormat.OpenXml;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
@@ -139,4 +140,10 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Sets the font color.
     /// </summary>
     void SetFontColor(string colorHex);
+
+    /// <summary>
+    ///     Sets the video content.
+    /// </summary>
+    /// <exception cref="SCException">Thrown if the shape is not video content holder.</exception>
+    void SetVideo(Stream video);
 }

@@ -122,6 +122,11 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : I
     public IPresentation Presentation => shape.Presentation;
     
 
+    public void SetVideo(Stream video)
+    {
+        throw new NotImplementedException();
+    }
+
     public void SendToBack()
     {
         var parentPShapeTree = pPicture.Parent!;

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Groups;
@@ -151,6 +152,11 @@ internal sealed class GroupShape : Shape
     public void SetFontSize(decimal fontSize) => this.shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => this.shape.SetFontColor(colorHex);
+
+    public void SetVideo(Stream video)
+    {
+        throw new System.NotImplementedException();
+    }
 
     public IShape Shape(string groupedShapeName) => this.Shapes.Shape(groupedShapeName);
 

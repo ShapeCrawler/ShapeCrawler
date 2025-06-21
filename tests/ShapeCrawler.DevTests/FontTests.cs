@@ -9,18 +9,46 @@ namespace ShapeCrawler.DevTests;
 public class FontTests : SCTest
 {
     [Test]
-    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters()
+    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_1()
     {
         // Arrange
-        var pres = TestPresentation("078.yaml");
-        var font = pres.Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font;
+        var pres = TestPresentation("078.json");
+        var font = pres.Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font!;
 
         // Act
-        font!.EastAsianName = "SimSun";
+        font.EastAsianName = "SimSun";
 
         // Assert
         font.EastAsianName.Should().Be("SimSun");
         pres.Validate();
+    }
+    
+    [Test]
+    [TestCase("001.pptx", 1, "TextBox 3")]
+    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_2(string file, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset(file));
+        var shape = pres.Slide(slideNumber).Shapes.Shape(shapeName);
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
+
+        // Act
+        font.EastAsianName = "SimSun";
+
+        // Assert
+        font.EastAsianName.Should().Be("SimSun");
+        pres.Validate();
+    }
+    
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 7", "SimSun")]
+    public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
+    {
+        // Arrange
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
+
+        // Act & Assert
+        font.EastAsianName.Should().Be(expectedFontName);
     }
     
     [Test]
@@ -250,23 +278,6 @@ public class FontTests : SCTest
     }
     
     [Test]
-    [TestCase("001.pptx", 1, "TextBox 3")]
-    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters(string file, int slideNumber, string shapeName)
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slide(slideNumber).Shapes.Shape(shapeName);
-        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
-
-        // Act
-        font.EastAsianName = "SimSun";
-
-        // Assert
-        font.EastAsianName.Should().Be("SimSun");
-        pres.Validate();
-    }
-    
-    [Test]
     [SlideShape("002.pptx", 2, 3, "Palatino Linotype")]
     [SlideShape("001.pptx", 1, 4, "Broadway")]
     [SlideShape("001.pptx", 1, 7, "Calibri Light")]
@@ -279,17 +290,6 @@ public class FontTests : SCTest
 
         // Act & Assert
         font.LatinName.Should().Be(expectedFontName);
-    }
-    
-    [Test]
-    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 7", "SimSun")]
-    public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
-    {
-        // Arrange
-        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font!;
-
-        // Act & Assert
-        font.EastAsianName.Should().Be(expectedFontName);
     }
     
     [Test]

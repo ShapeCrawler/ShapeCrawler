@@ -104,7 +104,7 @@ internal sealed class AudioVideoShapeCollection(
         mediaDataPart.FeedData(stream);
         var imagePartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty)[..5]}";
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imagePartRId);
-        var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.bmp");
+        var imageStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("video image.png");
         imagePart.FeedData(imageStream);
         var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
         var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);

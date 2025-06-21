@@ -1,0 +1,13 @@
+{
+  "slides": [
+    {
+      "number": 1,
+      "shapes": [
+        {
+          "name": "Text Box",
+          "textContent": "Test"
+        }
+      ]
+    }
+  ]
+}
