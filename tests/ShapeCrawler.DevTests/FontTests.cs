@@ -12,7 +12,7 @@ public class FontTests : SCTest
     public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_1()
     {
         // Arrange
-        var pres = TestPresentation("078.yaml");
+        var pres = TestPresentation("078.json");
         var font = pres.Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font!;
 
         // Act

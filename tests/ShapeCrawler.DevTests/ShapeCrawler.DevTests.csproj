@@ -272,14 +272,14 @@
     <EmbeddedResource Include="Assets\images\11 image 1600x690.jpg" />
     <None Remove="Assets\077 grouped shape.pptx" />
     <EmbeddedResource Include="Assets\077 grouped shape.pptx" />
-    <None Remove="Assets\078.yaml" />
-    <EmbeddedResource Include="Assets\078.yaml" />
     <None Remove="Assets\078 textbox.pptx" />
     <EmbeddedResource Include="Assets\078 textbox.pptx" />
     <None Remove="Assets\081 mp4 video.mp4" />
     <EmbeddedResource Include="Assets\081 mp4 video.mp4" />
     <None Remove="Assets\082.json" />
     <EmbeddedResource Include="Assets\082.json" />
+    <None Remove="Assets\078.json" />
+    <EmbeddedResource Include="Assets\078.json" />
   </ItemGroup>
 
 </Project>

@@ -44,12 +44,12 @@ public abstract class SCTest
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
-            IncludeFields = true,
+            IncludeFields = true
         };
         
         var jsonPres = JsonSerializer.Deserialize<JSONPresentation>(json, options);
         
-        return jsonPres.ToSCPresentation();
+        return jsonPres.AsSCPresentation();
     }
 
     protected static string StringOf(string fileName)
