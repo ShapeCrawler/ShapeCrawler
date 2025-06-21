@@ -11,4 +11,14 @@ public class Shape
 
         shape.Fill!.SetColor(green);
     }
+
+    [Test, Explicit]
+    public void Update_shape_video_content()
+    {
+        using var pres = new Presentation("pres.pptx");
+        var videoShape = pres.Slide(1).Shape("Video");
+        using var videoContent = File.OpenRead("video.mp4");
+        
+        videoShape.SetVideo(videoContent);
+    }
 }
