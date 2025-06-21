@@ -10,7 +10,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <PackageReleaseNotes>🐞Fixed `IShape.SetText()`</PackageReleaseNotes>
+    <PackageReleaseNotes>🍀Added support for updating shape video content [D1069](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1069)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
