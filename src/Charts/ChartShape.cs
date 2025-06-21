@@ -50,7 +50,7 @@ internal class Chart(
         }
     }
 
-    public IReadOnlyList<ICategory>? Categories => null;
+    public virtual IReadOnlyList<ICategory>? Categories => null;
 
     public virtual IXAxis? XAxis => null;
 

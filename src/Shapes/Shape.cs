@@ -215,11 +215,11 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         }
     }
 
-    public ITextBox? TextBox => null;
-    public IPicture? Picture => null;
-    public IChart? Chart => null;
-    
-    public IOLEObject? OLEObject => null;
+    public virtual ITextBox? TextBox => null;
+    public virtual IPicture? Picture => null;
+    public virtual IChart? Chart => null;
+    public virtual ITable? Table => null;
+    public virtual IOLEObject? OLEObject => null;
 
     public double Rotation
     {
@@ -250,40 +250,26 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
 
     public OpenXmlElement SDKOpenXmlElement => pShapeTreeElement.CloneNode(true);
 
-    public ITable AsTable() => throw new SCException(
-        $"The shape is not a table. Use {nameof(IShape.ShapeContent)} property to check if the shape is a table.");
-
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a media (audio, video, etc.");
-
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)pShapeTreeElement.Parent!;
         new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
     }
 
-    public void SetText(string text) => throw new SCException();
-
-    public void SetMarkdownText(string text) => throw new SCException();
-
-    public void SetImage(string imagePath) => throw new SCException();
-
     public void Remove() => pShapeTreeElement.Remove();
 
     public void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
+    
+    public virtual void SetText(string text) => throw new SCException("The shape doesn't contain text content");
 
-    public void SetFontName(string fontName) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public virtual void SetMarkdownText(string text) => throw new SCException("The shape doesn't contain text content");
+    
+    public virtual void SetImage(string imagePath) => throw new SCException();
+    public virtual void SetFontName(string fontName) => throw new SCException("The shape doesn't contain text content");
 
-    public void SetFontSize(decimal fontSize) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public virtual void SetFontSize(decimal fontSize) => throw new SCException("The shape doesn't contain text content");
 
-    public void SetFontColor(string colorHex) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public virtual void SetFontColor(string colorHex) => throw new SCException("The shape doesn't contain text content");
 
-    public void SetVideo(Stream video)
-    {
-        throw new NotImplementedException();
-    }
+    public virtual void SetVideo(Stream video) => throw new SCException("The shape doesn't support video content");
 }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Shapes;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
@@ -74,6 +75,16 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets chart. Returns <c>null</c> if the shape doesn't contain image content.
     /// </summary>
     IChart? Chart { get; }
+    
+    /// <summary>
+    ///     Gets table. Returns <c>null</c> if the shape doesn't contain table content.
+    /// </summary>
+    ITable? Table { get; }
+    
+    /// <summary>
+    ///     Gets OLE object. Returns <c>null</c> if the shape doesn't contain OLE object content.
+    /// </summary>
+    IOLEObject? OLEObject { get; }
     
     /// <summary>
     ///     Gets the rotation of the shape in degrees.

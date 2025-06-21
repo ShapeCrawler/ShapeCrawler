@@ -14,9 +14,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a picture shape.
+///     Represents picture.
 /// </summary>
-public interface IPicture : IShape
+public interface IPicture
 {
     /// <summary>
     ///     Gets image. Returns <see langword="null"/> if the content of the picture element is not a binary image. 
@@ -44,7 +44,7 @@ public interface IPicture : IShape
     void SendToBack();
 }
 
-internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : IPicture
+internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : Shape(), IPicture
 {
     public IImage Image => new SlidePictureImage(aBlip);
 
@@ -52,16 +52,9 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : I
 
     public bool HasOutline => true;
 
-    public bool Removable => true;
-
-    public IShapeOutline Outline => shape.Outline;
-
     public bool HasFill => true;
-
-    public IShapeFill Fill => shape.Fill;
+    
     public bool HasText => false;
-
-    public ITextBox? TextBox => null;
 
     public CroppingFrame Crop
     {
@@ -110,23 +103,6 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : I
         }
     }
 
-    public double Rotation => shape.Rotation;
-
-    public string SDKXPath => shape.SDKXPath;
-
-    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
-
-    public IShapeCollection GroupedShapes => throw new SCException(
-        $"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
-
-    public IPresentation Presentation => shape.Presentation;
-    
-
-    public void SetVideo(Stream video)
-    {
-        throw new NotImplementedException();
-    }
-
     public void SendToBack()
     {
         var parentPShapeTree = pPicture.Parent!;
@@ -135,7 +111,7 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : I
         pGrpSpPr.InsertAfterSelf(pPicture);
     }
 
-    public void SetImage(string imagePath)
+    public override void SetImage(string imagePath)
     {
         using var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
         this.Image.Update(imageStream);
