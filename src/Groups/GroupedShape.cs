@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Units;
@@ -329,6 +330,11 @@ internal sealed class GroupedShape(IShape shape, P.Shape pShape) : IShape
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
+    public void SetVideo(Stream video)
+    {
+        throw new System.NotImplementedException();
+    }
 
     #endregion Composition Methods
 }

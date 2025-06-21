@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -156,6 +157,11 @@ internal sealed class Chart(
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
+    public void SetVideo(Stream video)
+    {
+        throw new NotImplementedException();
+    }
 
     private string? GetTitleOrNull()
     {

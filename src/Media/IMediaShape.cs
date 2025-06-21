@@ -158,7 +158,7 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
 
     public ITable AsTable() => shape.AsTable();
 
-    public IMediaShape AsMedia() => shape.AsMedia();
+    public IMediaShape AsMedia() => this;
 
     public void Duplicate() => shape.Duplicate();
 
@@ -171,4 +171,36 @@ internal class MediaShape(Shape shape, SlideShapeOutline outline, ShapeFill fill
     public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
 
     public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
+
+    public void SetVideo(Stream video)
+    {
+        if (video is null)
+        {
+            throw new ArgumentNullException(nameof(video));
+        }
+
+        // Reset incoming stream position to ensure full copy
+        if (video.CanSeek)
+        {
+            video.Position = 0;
+        }
+
+        // Locate the Open XML part that contains this picture
+        var openXmlPart = pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+
+        // The <p14:media> element stores a relationship ID pointing to the media data part
+        var p14Media = pPicture.NonVisualPictureProperties!
+            .ApplicationNonVisualDrawingProperties!
+            .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>()
+            .Single();
+
+        var embedId = p14Media.Embed!.Value!;
+
+        // Find the relationship on the containing part that matches this ID
+        var relationship = openXmlPart.DataPartReferenceRelationships.First(r => r.Id == embedId);
+
+        // Feed the new video data into the existing media data part
+        video.Position = 0;
+        relationship.DataPart.FeedData(video);
+    }
 }

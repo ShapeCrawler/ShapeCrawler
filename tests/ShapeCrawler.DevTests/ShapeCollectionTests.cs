@@ -345,19 +345,19 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var preStream = TestAsset("001.pptx");
-        var presentation = new Presentation(preStream);
-        var shapesCollection = presentation.Slides[1].Shapes;
+        var pres = new Presentation(preStream);
+        var shapes = pres.Slides[1].Shapes;
         var videoStream = TestAsset("079 mp4 video.mp4");
         int xPxCoordinate = 300;
         int yPxCoordinate = 100;
 
         // Act
-        shapesCollection.AddVideo(xPxCoordinate, yPxCoordinate, videoStream);
+        shapes.AddVideo(xPxCoordinate, yPxCoordinate, videoStream);
 
         // Assert
-        presentation.Save();
-        presentation = new Presentation(preStream);
-        var addedVideo = presentation.Slides[1].Shapes.OfType<IMediaShape>().Last();
+        pres.Save();
+        pres = new Presentation(preStream);
+        var addedVideo = pres.Slides[1].Shapes.Last<IMediaShape>();
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
