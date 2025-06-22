@@ -95,7 +95,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
 
         // Act-Assert
-        shapes.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
+        shapes.Should().Contain(shape => shape.Id == 10 && shape is ILineContent && shape.GeometryType == Geometry.Line);
     }
 
     [Test]
@@ -141,7 +141,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 20, endPointY: 5);
 
         // Assert
-        var addedLine = (ILine)shapes.Last();
+        var addedLine = (ILineContent)shapes.Last();
         shapes.Should().ContainSingle();
         addedLine.ShapeContent.Should().Be(ShapeContent.Line);
         addedLine.StartPoint.X.Should().Be(10);
@@ -162,7 +162,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 10, endPointY: 5);
 
         // Assert
-        var addedLine = (ILine)shapes.Last();
+        var addedLine = (ILineContent)shapes.Last();
         addedLine.StartPoint.X.Should().Be(10);
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(10);
@@ -181,7 +181,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 40, endPointY: 20);
 
         // Assert
-        var addedLine = (ILine)shapes.Last();
+        var addedLine = (ILineContent)shapes.Last();
         addedLine.StartPoint.X.Should().Be(100);
         addedLine.StartPoint.Y.Should().Be(50);
         addedLine.EndPoint.X.Should().Be(40);
@@ -200,7 +200,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddLine(startPointX: 50, startPointY: 10, endPointX: 40, endPointY: 20);
 
         // Assert
-        var addedLine = (ILine)shapes.Last();
+        var addedLine = (ILineContent)shapes.Last();
         addedLine.StartPoint.X.Should().Be(50);
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(40);
@@ -219,7 +219,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
 
         // Assert
-        var line = (ILine)shapes.Last();
+        var line = (ILineContent)shapes.Last();
         line.StartPoint.X.Should().Be(50);
         line.StartPoint.Y.Should().Be(60);
         line.EndPoint.X.Should().Be(100);
@@ -239,7 +239,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.Should().ContainSingle();
-        var line = (ILine)shapes.Last();
+        var line = (ILineContent)shapes.Last();
         line.ShapeContent.Should().Be(ShapeContent.Line);
         line.X.Should().Be(50);
         line.Y.Should().Be(60);
@@ -257,7 +257,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 80, endPointY: 50);
 
         // Assert
-        var line = (ILine)shapes.Last();
+        var line = (ILineContent)shapes.Last();
         line.StartPoint.X.Should().Be(100);
         line.StartPoint.Y.Should().Be(50);
         line.EndPoint.X.Should().Be(80);

@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a line shape.
 /// </summary>
-public interface ILine : IShape
+public interface ILineContent
 {
     /// <summary>
     ///    Gets the start point of the line.
@@ -22,74 +22,12 @@ public interface ILine : IShape
     Point EndPoint { get; }
 }
 
-internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape) : ILine
+internal sealed class LineContent(P.ConnectionShape pConnectionShape) : ILineContent
 {
-    public decimal Width
-    {
-        get => shape.Width;
-        set => shape.Width = value;
-    }
-
-    public decimal Height
-    {
-        get => shape.Height;
-        set => shape.Height = value;
-    }
-
-    public int Id => shape.Id;
-
-    public string Name
-    {
-        get => shape.Name;
-        set => shape.Name = value;
-    }
-
-    public string AltText
-    {
-        get => shape.AltText;
-        set => shape.AltText = value;
-    }
-
-    public bool Hidden => shape.Hidden;
-
-    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
-
-    public string? CustomData
-    {
-        get => shape.CustomData;
-        set => shape.CustomData = value;
-    }
-
-    public IShapeOutline Outline => shape.Outline;
-
-    public IShapeFill Fill => shape.Fill;
-
-    public ITextBox? TextBox => shape.TextBox;
-
-    public double Rotation => shape.Rotation;
-
-    public string SDKXPath => shape.SDKXPath;
-
-    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
-
-    public IPresentation Presentation => shape.Presentation;
-
     public Geometry GeometryType
     {
         get => Geometry.Line;
         set => throw new SCException("Unable to set geometry type for line shape.");
-    }
-
-    public decimal CornerSize
-    {
-        get => shape.CornerSize;
-        set => shape.CornerSize = value;
-    }
-
-    public decimal[] Adjustments
-    {
-        get => shape.Adjustments;
-        set => shape.Adjustments = value;
     }
 
     public Point StartPoint

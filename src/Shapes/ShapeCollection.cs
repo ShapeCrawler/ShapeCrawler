@@ -186,7 +186,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
     {
-        yield return new SlideLine(
+        yield return new LineContent(
             new Shape(
                 new Position(pConnectionShape),
                 new ShapeSize(pConnectionShape),
