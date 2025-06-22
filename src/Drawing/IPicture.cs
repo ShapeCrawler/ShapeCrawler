@@ -44,7 +44,7 @@ public interface IPicture
     void SendToBack();
 }
 
-internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : Shape(), IPicture
+internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
 {
     public IImage Image => new SlidePictureImage(aBlip);
 
@@ -111,7 +111,7 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : Shape(), IPict
         pGrpSpPr.InsertAfterSelf(pPicture);
     }
 
-    public override void SetImage(string imagePath)
+    public void SetImage(string imagePath)
     {
         using var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
         this.Image.Update(imageStream);

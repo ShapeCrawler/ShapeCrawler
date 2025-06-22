@@ -82,7 +82,7 @@ public class ShapeCollectionTests : SCTest
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
         // Act
-        bool isMediaShape = shape is IMediaShape;
+        bool isMediaShape = shape is IMediaContent;
 
         // Assert
         isMediaShape.Should().BeTrue();
@@ -107,7 +107,7 @@ public class ShapeCollectionTests : SCTest
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
         // Act
-        bool isVideo = shape is IMediaShape;
+        bool isVideo = shape is IMediaContent;
 
         // Act-Assert
         isVideo.Should().BeTrue();
@@ -281,7 +281,7 @@ public class ShapeCollectionTests : SCTest
 
         pres.Save();
         pres = new Presentation(pptx);
-        var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
+        var addedAudio = pres.Slides[1].Shapes.OfType<IMediaContent>().Last();
 
         // Assert
         addedAudio.X.Should().Be(xPtCoordinate);
@@ -300,7 +300,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddAudio(300, 100, wav, AudioType.WAVE);
 
         // Assert
-        var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
+        var addedAudio = pres.Slides[1].Shapes.OfType<IMediaContent>().Last();
         addedAudio.X.Should().Be(300);
     }
 
@@ -318,7 +318,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
-        var addedAudio = pres.Slide(1).First<IMediaShape>();
+        var addedAudio = pres.Slide(1).First<IMediaContent>();
         pres.Validate();
         addedAudio.StartMode.Should().Be(AudioStartMode.InClickSequence);
     }
@@ -341,7 +341,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         pres.Save();
         pres = new Presentation(preStream);
-        var addedVideo = pres.Slides[1].Shapes.Last<IMediaShape>();
+        var addedVideo = pres.Slides[1].Shapes.Last<IMediaContent>();
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }

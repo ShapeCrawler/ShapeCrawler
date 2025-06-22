@@ -60,8 +60,6 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
         set => shape.CustomData = value;
     }
 
-    public ShapeContent ShapeContent => ShapeContent.Line;
-
     public IShapeOutline Outline => shape.Outline;
 
     public IShapeFill Fill => shape.Fill;
@@ -167,11 +165,7 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
     public bool Removable => true;
 
     public void Remove() => pConnectionShape.Remove();
-
-    public ITable AsTable() => shape.AsTable();
-
-    public IMediaShape AsMedia() => shape.AsMedia();
-
+    
     public void Duplicate() => shape.Duplicate();
 
     public void SetText(string text) => shape.SetText(text);

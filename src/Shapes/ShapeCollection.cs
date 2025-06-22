@@ -210,7 +210,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         if (pShape.TextBody is not null)
         {
             yield return new TextShape(
-                new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape),
+                pShape,
                 new TextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
             );
         }
@@ -233,7 +233,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
         if (element is A.AudioFromFile or A.VideoFromFile)
         {
-            yield return new MediaShape(
+            yield return new MediaContent(
                 new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
                 new SlideShapeOutline(pPicture.ShapeProperties!),
                 new ShapeFill(pPicture.ShapeProperties!),

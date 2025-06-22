@@ -14,7 +14,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptx = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptx);
-        var audioShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Audio 1");
+        var audioShape = pres.Slides[0].Shapes.Shape<IMediaContent>("Audio 1");
 
         // Act
         var bytes = audioShape.AsByteArray();
@@ -29,7 +29,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var audioShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Audio 1");
+        var audioShape = pres.Slides[0].Shapes.Shape<IMediaContent>("Audio 1");
 
         // Act
         var mime = audioShape.MIME;
@@ -47,14 +47,14 @@ public class ShapeTests : SCTest
         var mp3 = TestAsset("064 mp3.mp3");
         var shapes = pres.Slide(1).Shapes;
         shapes.AddAudio(x: 300, y: 100, mp3, AudioType.MP3);
-        var addedAudio = pres.Slide(1).First<IMediaShape>();
+        var addedAudio = pres.Slide(1).First<IMediaContent>();
 
         // Act
         addedAudio.StartMode = AudioStartMode.Automatically;
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
-        addedAudio = pres.Slide(1).First<IMediaShape>();
+        addedAudio = pres.Slide(1).First<IMediaContent>();
         pres.Validate();
         addedAudio.StartMode.Should().Be(AudioStartMode.Automatically);
     }
@@ -66,7 +66,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Video 1");
+        var videoShape = pres.Slides[0].Shapes.Shape<IMediaContent>("Video 1");
 
         // Act
         var bytes = videoShape.AsByteArray();
@@ -81,7 +81,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Video 1");
+        var videoShape = pres.Slides[0].Shapes.Shape<IMediaContent>("Video 1");
 
         // Act
         var mime = videoShape.MIME;
