@@ -31,6 +31,21 @@ public class SmartArtTests : SCTest
     }
     
     [Test]
+    public void AddSmartArt_AddsOneShapeInShapeCollection()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slide(1);
+        var shapes = slide.Shapes;
+        
+        // Act
+        shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList);
+        
+        // Assert
+        shapes.Count.Should().Be(1);
+    }
+    
+    [Test]
     public void SmartArtNodes_AddNode_AddsTextToSmartArt()
     {
         // Arrange
