@@ -130,7 +130,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
 
     public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
 
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,

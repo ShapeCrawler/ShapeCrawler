@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Groups;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Tables;
@@ -244,9 +245,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         if (element is A.AudioFromFile or A.VideoFromFile)
         {
             yield return new MediaShape(
-                new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                new SlideShapeOutline(pPicture.ShapeProperties!),
-                new ShapeFill(pPicture.ShapeProperties!),
+                new Position(pPicture),
+                new ShapeSize(pPicture),
+                new ShapeId(pPicture),
                 pPicture
             );
             yield break;
@@ -255,10 +256,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
         if (aBlip?.Embed != null)
         {
-            yield return new Picture(
-                new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                pPicture,
-                aBlip
+            yield return new PictureShape(
+                new Picture(pPicture, aBlip),
+                pPicture
             );
         }
     }
@@ -307,16 +307,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
         if (IsOLEObject(aGraphicData))
         {
-            var pShapeProperties = pGraphicFrame.Descendants<P.ShapeProperties>().First();
-            yield return new OLEObject(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new SlideShapeOutline(pShapeProperties),
-                new ShapeFill(pShapeProperties)
+            yield return new OLEObjectShape(
+                new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
+                pGraphicFrame
             );
             yield break;
         }
@@ -328,11 +323,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
             if (aBlip?.Embed != null)
             {
-                yield return new Picture(
-                    new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                    pPicture,
-                    aBlip
-                );
+                yield return new PictureShape(new Picture(pPicture, aBlip), pPicture);
             }
 
             yield break;
@@ -346,32 +337,20 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
         if (IsSmartArtPGraphicFrame(pGraphicFrame))
         {
-            yield return new SmartArt(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new SmartArtNodeCollection()
+            yield return new SmartArtShape(new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
+                pGraphicFrame
             );
+                
             yield break;
         }
 
         if (IsTablePGraphicFrame(pGraphicFrame))
         {
-            var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!
-                .GetFirstChild<A.Table>() !;
-            yield return new Table(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new TableRowCollection(pGraphicFrame),
-                new TableColumnCollection(pGraphicFrame),
-                new TableStyleOptions(aTable.TableProperties!),
+            yield return new TableShape(new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
                 pGraphicFrame
             );
         }

@@ -256,7 +256,7 @@ internal sealed class AudioVideoShapeCollection(
         IList<string> seriesNames
     ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,

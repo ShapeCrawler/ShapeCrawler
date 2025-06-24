@@ -55,12 +55,6 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
                     var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
                     var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
                     var table = new Table(
-                        new Shape(
-                            new Position(pGraphicFrame),
-                            new ShapeSize(pGraphicFrame),
-                            new ShapeId(pGraphicFrame),
-                            pGraphicFrame
-                        ),
                         new TableRowCollection(pGraphicFrame),
                         new TableColumnCollection(pGraphicFrame),
                         new TableStyleOptions(aTable.TableProperties!),
@@ -100,12 +94,6 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
             var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
             var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
             var parentTable = new Table(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
                 new TableRowCollection(pGraphicFrame),
                 new TableColumnCollection(pGraphicFrame),
                 new TableStyleOptions(aTable.TableProperties!),
