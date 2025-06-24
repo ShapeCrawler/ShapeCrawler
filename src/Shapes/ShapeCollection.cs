@@ -184,6 +184,22 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         return false;
     }
 
+    private static bool IsSmartArtPGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
+    {
+        if (pShapeTreeChild is P.GraphicFrame)
+        {
+            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            if (aGraphicData.Uri!.Value!.Equals(
+                    "http://schemas.openxmlformats.org/drawingml/2006/diagram",
+                    StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
     {
         yield return new LineContent(
@@ -331,6 +347,20 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         if (IsChartPGraphicFrame(pGraphicFrame))
         {
             yield return this.CreateChart(pGraphicFrame);
+            yield break;
+        }
+
+        if (IsSmartArtPGraphicFrame(pGraphicFrame))
+        {
+            yield return new SmartArt(
+                new Shape(
+                    new Position(pGraphicFrame),
+                    new ShapeSize(pGraphicFrame),
+                    new ShapeId(pGraphicFrame),
+                    pGraphicFrame
+                ),
+                new SmartArtNodeCollection()
+            );
             yield break;
         }
 
