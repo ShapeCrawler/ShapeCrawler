@@ -12,6 +12,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Groups;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
@@ -32,17 +33,17 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
         switch (addingShape)
         {
-            case Picture picture:
+            case PictureShape picture:
                 picture.CopyTo(pShapeTree);
-                break;
-            case Shape shape:
-                shape.CopyTo(pShapeTree);
                 break;
             case TextShape textShape:
                 textShape.CopyTo(pShapeTree);
                 break;
-            case Table table:
+            case TableShape table:
                 table.CopyTo(pShapeTree);
+                break;
+            case Shape shape:
+                shape.CopyTo(pShapeTree);
                 break;
             default:
                 throw new SCException("Unsupported shape type for adding.");
@@ -93,7 +94,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         IList<string> seriesNames
     ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
     
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,

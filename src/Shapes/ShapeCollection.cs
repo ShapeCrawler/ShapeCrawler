@@ -142,7 +142,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         IList<string> seriesNames
     ) => throw new NotImplementedException();
 
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,
@@ -200,28 +200,22 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         return false;
     }
 
-    private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
+    private static IEnumerable<IShape> CreateLineShapes(P.ConnectionShape pConnectionShape)
     {
-        yield return new LineContent(
-            new Shape(
+        yield return new LineShape(
                 new Position(pConnectionShape),
                 new ShapeSize(pConnectionShape),
                 new ShapeId(pConnectionShape),
                 pConnectionShape
-            ),
-            pConnectionShape
         );
     }
 
-    private static IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
+    private static IEnumerable<IShape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
-        yield return new GroupShape(
-            new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape),
-            pGroupShape
-        );
+        yield return new GroupShape(pGroupShape);
     }
 
-    private static IEnumerable<IShape> CreateShape(P.Shape pShape)
+    private static IEnumerable<IShape> CreateShapes(P.Shape pShape)
     {
         if (pShape.TextBody is not null)
         {
@@ -249,7 +243,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
         if (element is A.AudioFromFile or A.VideoFromFile)
         {
-            yield return new MediaContent(
+            yield return new MediaShape(
                 new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
                 new SlideShapeOutline(pPicture.ShapeProperties!),
                 new ShapeFill(pPicture.ShapeProperties!),
@@ -294,9 +288,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
     {
         return element switch
         {
-            P.GroupShape pGroupShape => CreateGroupShape(pGroupShape),
-            P.ConnectionShape pConnectionShape => CreateConnectionShape(pConnectionShape),
-            P.Shape pShape => CreateShape(pShape),
+            P.GroupShape pGroupShape => CreateGroupShapes(pGroupShape),
+            P.ConnectionShape pConnectionShape => CreateLineShapes(pConnectionShape),
+            P.Shape pShape => CreateShapes(pShape),
             P.GraphicFrame pGraphicFrame => this.CreateGraphicFrameShapes(pGraphicFrame),
             P.Picture pPicture => CreatePictureShapes(pPicture),
             _ => []

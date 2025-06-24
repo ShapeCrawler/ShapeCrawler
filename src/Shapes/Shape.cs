@@ -220,6 +220,8 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public virtual IChart? Chart => null;
     public virtual ITable? Table => null;
     public virtual IOLEObject? OLEObject => null;
+    public virtual IMedia? Media => null;
+    public virtual ILine? Line => null;
 
     public double Rotation
     {

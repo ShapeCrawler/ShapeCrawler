@@ -13,7 +13,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a media content.
 /// </summary>
-public interface IMediaContent
+public interface IMedia
 {
     /// <summary>
     ///     Gets MIME type.
@@ -34,7 +34,7 @@ public interface IMediaContent
 #endif
 }
 
-internal class MediaContent(SlideShapeOutline outline, ShapeFill fill, P.Picture pPicture) : IMediaContent
+internal class Media(SlideShapeOutline outline, ShapeFill fill, P.Picture pPicture) : IMedia
 {
     public IShapeOutline Outline => outline;
 

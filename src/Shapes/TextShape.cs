@@ -4,7 +4,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal class TextShape(P.Shape pShape, TextBox textBox) : Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
+internal sealed class TextShape(P.Shape pShape, TextBox textBox) : Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
 {
     public override ITextBox TextBox => textBox;
 

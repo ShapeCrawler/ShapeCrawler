@@ -6,7 +6,7 @@ namespace ShapeCrawler.Shapes;
 /// <summary>
 ///     Represents a SmartArt graphic.
 /// </summary>
-public interface ISmartArt : IShape
+public interface ISmartArt
 {
     /// <summary>
     ///     Gets the collection of nodes in the SmartArt graphic.
@@ -14,10 +14,9 @@ public interface ISmartArt : IShape
     ISmartArtNodeCollection Nodes { get; }
 }
 
-internal class SmartArt : Shape, ISmartArt
+internal sealed class SmartArt : ISmartArt
 {
-    internal SmartArt(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement,
-        SmartArtNodeCollection nodeCollection): base(position, shapeSize, shapeId, pShapeTreeElement)
+    internal SmartArt( SmartArtNodeCollection nodeCollection)
     {
         this.Nodes = nodeCollection;
     }

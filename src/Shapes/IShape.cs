@@ -87,6 +87,16 @@ public interface IShape : IPosition, IShapeGeometry
     IOLEObject? OLEObject { get; }
     
     /// <summary>
+    ///     Gets media. Returns <c>null</c> if the shape doesn't contain media content.
+    /// </summary>
+    IMedia? Media { get; }
+    
+    /// <summary>
+    ///     Gets line. Returns <c>null</c> if the shape is not a line.
+    /// </summary>
+    ILine? Line { get; }
+    
+    /// <summary>
     ///     Gets the rotation of the shape in degrees.
     /// </summary>
     double Rotation { get; }

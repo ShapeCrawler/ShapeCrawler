@@ -112,15 +112,9 @@ public interface ISlideShapeCollection : IShapeCollection
     void AddStackedColumnChart(int x, int y, int width, int height, IDictionary<string, IList<double>> categoryValues, IList<string> seriesNames);
 
     /// <summary>
-    ///     Adds a SmartArt graphic to the slide.
+    ///     Adds shape with SmartArt graphic content.
     /// </summary>
-    /// <param name="x">The x-coordinate of the SmartArt graphic.</param>
-    /// <param name="y">The y-coordinate of the SmartArt graphic.</param>
-    /// <param name="width">The width of the SmartArt graphic.</param>
-    /// <param name="height">The height of the SmartArt graphic.</param>
-    /// <param name="smartArtType">The type of SmartArt graphic to add.</param>
-    /// <returns>The added SmartArt graphic.</returns>
-    ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType);
+    IShape AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType);
 
     /// <summary>
     ///     Groups the specified shapes.

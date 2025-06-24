@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a line shape.
 /// </summary>
-public interface ILineContent
+public interface ILine
 {
     /// <summary>
     ///    Gets the start point of the line.
@@ -22,7 +22,7 @@ public interface ILineContent
     Point EndPoint { get; }
 }
 
-internal sealed class LineContent(P.ConnectionShape pConnectionShape) : ILineContent
+internal sealed class LineContent(P.ConnectionShape pConnectionShape, LineShape parentLineShape) : ILine
 {
     public Geometry GeometryType
     {
@@ -40,17 +40,17 @@ internal sealed class LineContent(P.ConnectionShape pConnectionShape) : ILineCon
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (flipH && (this.Height == 0 || flipV))
+            if (flipH && (parentLineShape.Height == 0 || flipV))
             {
-                return new Point(this.X, this.Y);
+                return new Point(parentLineShape.X, parentLineShape.Y);
             }
 
             if (flipH)
             {
-                return new Point(this.X + this.Width, this.Y);
+                return new Point(parentLineShape.X + parentLineShape.Width, parentLineShape.Y);
             }
 
-            return new Point(this.X, this.Y);
+            return new Point(parentLineShape.X, parentLineShape.Y);
         }
     }
 
@@ -64,60 +64,27 @@ internal sealed class LineContent(P.ConnectionShape pConnectionShape) : ILineCon
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (this.Width == 0)
+            if (parentLineShape.Width == 0)
             {
-                return new Point(this.X, this.Height);
+                return new Point(parentLineShape.X, parentLineShape.Height);
             }
 
-            if (flipH && this.Height == 0)
+            if (flipH && parentLineShape.Height == 0)
             {
-                return new Point(this.X - this.Width, this.Y);
+                return new Point(parentLineShape.X - parentLineShape.Width, parentLineShape.Y);
             }
 
             if (flipV)
             {
-                return new Point(this.Width, this.Height);
+                return new Point(parentLineShape.Width, parentLineShape.Height);
             }
 
             if (flipH)
             {
-                return new Point(this.X, this.Height);
+                return new Point(parentLineShape.X, parentLineShape.Height);
             }
 
-            return new Point(this.Width, this.Y);
+            return new Point(parentLineShape.Width, parentLineShape.Y);
         }
-    }
-    
-    public decimal X
-    {
-        get => shape.X;
-        set => shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => shape.Y;
-        set => shape.Y = value;
-    }
-
-    public bool Removable => true;
-
-    public void Remove() => pConnectionShape.Remove();
-    
-    public void Duplicate() => shape.Duplicate();
-
-    public void SetText(string text) => shape.SetText(text);
-
-    public void SetImage(string imagePath) => shape.SetImage(imagePath);
-
-    public void SetFontName(string fontName) => shape.SetFontName(fontName);
-
-    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
-
-    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
-
-    public void SetVideo(Stream video)
-    {
-        throw new System.NotImplementedException();
     }
 }
