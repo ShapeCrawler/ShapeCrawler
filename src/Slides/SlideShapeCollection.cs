@@ -102,7 +102,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes)
+    public IShape Group(IShape[] groupingShapes)
     {
         var groupShape = new P.GroupShape();
 
@@ -171,14 +171,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             grouping.Remove();
         }
 
-        return new GroupShape(
-            new Shape(
-                new Position(groupShape),
-                new ShapeSize(groupShape),
-                new ShapeId(groupShape),
-                groupShape
-            ),
-            groupShape);
+        return new GroupShape(groupShape);
     }
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)

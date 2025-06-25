@@ -2,6 +2,7 @@
 using System.Linq;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -92,23 +93,17 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
             var newEmu = new Points(value).AsEmus();
             this.ATableRow.Height!.Value = newEmu;
             var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-            var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
-            var parentTable = new Table(
-                new TableRowCollection(pGraphicFrame),
-                new TableColumnCollection(pGraphicFrame),
-                new TableStyleOptions(aTable.TableProperties!),
-                pGraphicFrame
-            );
+            var parentTableShape = new TableShape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame);
 
             if (value > currentPoints)
             {
                 var diffPoints = value - currentPoints;
-                parentTable.SetTableHeight(parentTable.Height + diffPoints);
+                parentTableShape.Height += diffPoints;
             }
             else
             {
                 var diffPoints = currentPoints - value;
-                parentTable.SetTableHeight(parentTable.Height - diffPoints);
+                parentTableShape.Height -= diffPoints;
             }
         }
     }

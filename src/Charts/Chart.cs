@@ -11,13 +11,59 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal class Chart(
-    SeriesCollection seriesCollection,
-    SlideShapeOutline outline,
-    ShapeFill fill,
-    ChartPart chartPart) : IChart
+internal sealed class Chart : IChart
 {
+    private readonly SeriesCollection seriesCollection;
+    private readonly SlideShapeOutline outline;
+    private readonly ShapeFill fill;
+    private readonly ChartPart chartPart;
+    private readonly Categories? categories;
+    private readonly XAxis? xAxis;
     private string? chartTitle;
+    
+    internal Chart(
+        SeriesCollection seriesCollection, 
+        SlideShapeOutline outline, 
+        ShapeFill fill, 
+        ChartPart chartPart, 
+        Categories categories,
+        XAxis xAxis)
+    {
+        this.seriesCollection = seriesCollection;
+        this.outline = outline;
+        this.fill = fill;
+        this.chartPart = chartPart;
+        this.categories = categories;
+        this.xAxis = xAxis;
+    }
+    
+    internal Chart(
+        SeriesCollection seriesCollection, 
+        SlideShapeOutline outline, 
+        ShapeFill fill, 
+        ChartPart chartPart,
+        XAxis xAxis)
+    {
+        this.seriesCollection = seriesCollection;
+        this.outline = outline;
+        this.fill = fill;
+        this.chartPart = chartPart;
+        this.xAxis = xAxis;
+    }
+    
+    internal Chart(
+        SeriesCollection seriesCollection, 
+        SlideShapeOutline outline, 
+        ShapeFill fill, 
+        ChartPart chartPart, 
+        Categories categories)
+    {
+        this.seriesCollection = seriesCollection;
+        this.outline = outline;
+        this.fill = fill;
+        this.chartPart = chartPart;
+        this.categories = categories;
+    }
 
     public ChartType Type
     {
@@ -50,9 +96,9 @@ internal class Chart(
         }
     }
 
-    public virtual IReadOnlyList<ICategory>? Categories => null;
+    public IReadOnlyList<ICategory>? Categories => categories;
 
-    public virtual IXAxis? XAxis => null;
+    public IXAxis? XAxis => xAxis;
 
     public ISeriesCollection SeriesCollection => seriesCollection;
 

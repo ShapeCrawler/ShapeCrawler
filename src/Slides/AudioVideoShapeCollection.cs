@@ -264,7 +264,7 @@ internal sealed class AudioVideoShapeCollection(
         SmartArtType smartArtType
     ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
+    public IShape Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
 
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 

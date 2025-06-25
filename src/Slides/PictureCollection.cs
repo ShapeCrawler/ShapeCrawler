@@ -165,7 +165,10 @@ internal sealed class PictureCollection(
         SmartArtType smartArtType
     ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
+    public IShape Group(IShape[] groupingShapes)
+    {
+        throw new NotImplementedException();
+    }
 
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 

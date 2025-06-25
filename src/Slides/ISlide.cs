@@ -69,21 +69,6 @@ public interface ISlide
     bool Hidden();
 
     /// <summary>
-    ///     Gets table by name.
-    /// </summary>
-    ITable Table(string name);
-
-    /// <summary>
-    ///     Gets picture by name.
-    /// </summary>
-    IPicture Picture(string name);
-    
-    /// <summary>
-    ///     Gets picture by ID.
-    /// </summary>
-    IPicture Picture(int id);
-
-    /// <summary>
     ///     Adds specified lines to the slide notes.
     /// </summary>
     void AddNotes(IEnumerable<string> lines);
@@ -110,16 +95,6 @@ public interface ISlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
-
-    /// <summary>
-    ///     Gets chart by name.
-    /// </summary>
-    IChart Chart(string name);
-
-    /// <summary>
-    ///     Gets chart by ID.
-    /// </summary>
-    IChart Chart(int id);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -263,12 +238,6 @@ internal abstract class Slide : ISlide
         }
     }
 
-    public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
-
-    public IPicture Picture(string name) => this.Shapes.Shape<IPicture>(name);
-
-    public IPicture Picture(int id) => this.Shapes.GetById<IPicture>(id);
-
     public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
 
     public IShape Shape(int id) => this.Shapes.GetById<IShape>(id);
@@ -276,10 +245,6 @@ internal abstract class Slide : ISlide
     public T Shape<T>(string name)
         where T : IShape
         => this.Shapes.Shape<T>(name);
-
-    public IChart Chart(string name) => this.Shapes.Shape<IChart>(name);
-
-    public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
 
     public PresentationPart GetSDKPresentationPart()
     {
@@ -331,17 +296,17 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove(); 
 
-    private void AddGroupTextBoxes(IGroup groupShape, List<ITextBox> textBoxes)
+    private void AddGroupTextBoxes(GroupShape groupShape, List<ITextBox> textBoxes)
     {
-        foreach (var shape in groupShape.Shapes)
+        foreach (var groupShapeShape in groupShape.Shapes)
         {
-            if (shape is IGroup group)
+            if (groupShapeShape is GroupShape groupShapeGroupShape)
             {
-                this.AddGroupTextBoxes(group, textBoxes);
+                this.AddGroupTextBoxes(groupShapeGroupShape, textBoxes);
             }
-            else if (shape.TextBox is not null)
+            else if (groupShapeShape.TextBox is not null)
             {
-                textBoxes.Add(shape.TextBox);
+                textBoxes.Add(groupShapeShape.TextBox);
             }
         }
     }
