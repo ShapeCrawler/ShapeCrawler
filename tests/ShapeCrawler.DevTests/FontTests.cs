@@ -74,8 +74,8 @@ public class FontTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var table = pres.Slides[2].Shapes.GetById<ITable>(3);
-        var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
+        var table = pres.Slide(3).Shape(3);
+        var portion = table.Table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act-Assert
         portion.Font!.Size.Should().Be(18);

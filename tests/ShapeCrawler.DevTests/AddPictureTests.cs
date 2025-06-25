@@ -24,10 +24,10 @@ public class AddPictureTests : SCTest
 
         // Assert
         shapes.Should().HaveCount(1);
-        var picture = (IPicture)shapes.Last();
-        picture.ShapeContent.Should().Be(ShapeContent.Image);
-        picture.Height.Should().Be(75);
-        picture.Width.Should().Be(75);
+        var addedPictureShape = shapes.Last();
+        addedPictureShape.Picture.Should().NotBeNull();
+        addedPictureShape.Height.Should().Be(75);
+        addedPictureShape.Width.Should().Be(75);
         pres.Validate();
     }
     
