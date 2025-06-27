@@ -172,4 +172,10 @@ public interface IShape : IPosition, IShapeGeometry
     /// </summary>
     /// <exception cref="SCException">Thrown if the shape is not video content holder.</exception>
     void SetVideo(Stream video);
+
+    /// <summary>
+    ///     Gets grouped shape by its name.
+    /// </summary>
+    /// <exception cref="SCException">Thrown if the current shape is not a group shape.</exception>
+    IShape GroupedShape(string name);
 }

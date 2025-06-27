@@ -20,48 +20,48 @@ public class PictureTests : SCTest
     public async Task Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var shapePicture1 = (IPicture)new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var shapePicture1 =
+            (IPicture)new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
         var shapePicture2 = (IPicture)new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
         var shapePictureContentCase1 = shapePicture1.Image.AsByteArray();
-        var shapePictureContentCase2 =  shapePicture2.Image.AsByteArray();
+        var shapePictureContentCase2 = shapePicture2.Image.AsByteArray();
 
         // Assert
         shapePictureContentCase1.Should().NotBeEmpty();
         shapePictureContentCase2.Should().NotBeEmpty();
     }
-        
+
     [Test]
     public async Task Image_GetBytes_returns_image_byte_array_of_Layout_picture()
     {
         // Arrange
-        var pptxStream = TestAsset("pictures-case001.pptx");
-        var presentation = new Presentation(pptxStream);
-        var pictureShape = presentation.Slides[0].SlideLayout.Shapes.Shape<IPicture>("Picture 7");
-            
+        var pres = new Presentation(TestAsset("pictures-case001.pptx"));
+        var picture = pres.Slides[0].SlideLayout.Shapes.Shape("Picture 7").Picture;
+
         // Act
-        var picByteArray = pictureShape.Image.AsByteArray();
-            
+        var picByteArray = picture.Image.AsByteArray();
+
         // Assert
         picByteArray.Should().NotBeEmpty();
     }
-        
+
     [Test]
     public void Image_MIME_returns_MIME_type_of_image()
     {
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
-        var image = presentation.Slides[0].SlideLayout.Shapes.Shape<IPicture>("Picture 7").Image;
-            
+        var image = presentation.Slides[0].SlideLayout.Shapes.Shape("Picture 7").Picture.Image;
+
         // Act
         var mimeType = image.Mime;
-            
+
         // Assert
         mimeType.Should().Be("image/png");
     }
-        
+
     [Test]
     public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
     {
@@ -69,11 +69,11 @@ public class PictureTests : SCTest
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
         var slideMaster = presentation.SlideMasters[0];
-      var pictureShape = slideMaster.Shapes.Shape<IPicture>("Picture 9");
-            
+        var picture = slideMaster.Shapes.Shape("Picture 9").Picture;
+
         // Act
-        var picByteArray = pictureShape.Image.AsByteArray();
-            
+        var picByteArray = picture.Image.AsByteArray();
+
         // Assert
         picByteArray.Should().NotBeEmpty();
     }
@@ -86,17 +86,17 @@ public class PictureTests : SCTest
         var pngStream = TestAsset("10 png image.png");
         var pres = new Presentation(pptx);
         var mStream = new MemoryStream();
-        var picture = pres.Slides[1].Shapes.Shape<IPicture>("Picture 1");
-        var image = picture.Image!; 
+        var picture = pres.Slides[1].Shapes.Shape("Picture 1").Picture;
+        var image = picture.Image!;
         var lengthBefore = image.AsByteArray().Length;
-        
+
         // Act
         image.Update(pngStream);
 
         // Assert
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        picture = pres.Slides[1].Shapes.Shape<IPicture>("Picture 1");
+        picture = pres.Slides[1].Shapes.Shape("Picture 1").Picture;
         var lengthAfter = picture.Image!.AsByteArray().Length;
 
         lengthAfter.Should().NotBe(lengthBefore);
@@ -108,11 +108,11 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case002.pptx");
         var pres = new Presentation(pptxStream);
-        var picture = pres.Slides[0].Shapes.Shape<IPicture>("Picture 1");
+        var picture = pres.Slides[0].Shapes.Shape("Picture 1").Picture;
 
         // Act
         var svgContent = picture.SvgContent;
-        
+
         // Assert
         svgContent.Should().NotBeEmpty();
     }
@@ -123,9 +123,9 @@ public class PictureTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("pictures-case001.pptx"));
         var image = TestAsset("10 png image.png");
-        var groupShape = pres.Slide(1).Shape<IGroup>("Group 1");
-        var groupedPicture1 = groupShape.Shapes.Shape<IPicture>("Picture 1");
-        var groupedPicture2 = groupShape.Shapes.Shape<IPicture>("Picture 2");
+        var groupShape = pres.Slide(1).Shape("Group 1");
+        var groupedPicture1 = groupShape.GroupedShape("Picture 1").Picture;
+        var groupedPicture2 = groupShape.GroupedShape("Picture 2").Picture;
         var stream = new MemoryStream();
 
         // Act
@@ -137,33 +137,33 @@ public class PictureTests : SCTest
         var pictureContent2 = groupedPicture2.Image!.AsByteArray();
         pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();
     }
-        
+
     [Test]
     public void Image_Name_Getter_returns_internal_image_file_name()
     {
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var pictureImage = pres.Slides[0].Shapes.Shape<IPicture>("Picture 3").Image;
-            
+        var pictureImage = pres.Slides[0].Shape("Picture 3").Picture.Image;
+
         // Act
         var fileName = pictureImage!.Name;
-            
+
         // Assert
         fileName.Should().Be("image2.png");
     }
-    
+
     [Test]
     public void SendToBack_sends_the_shape_backward_in_the_z_order()
     {
         // Arrange
         var pre = new Presentation(TestAsset("pictures-case002.pptx"));
         var shapes = pre.Slide(1).Shapes;
-        var picture = shapes.Shape<IPicture>("Picture 2");
+        var picture = shapes.Shape("Picture 2").Picture;
 
         // Act
         picture.SendToBack();
-        
+
         // Assert
         shapes[0].Name.Should().Be("Picture 2");
     }
@@ -194,7 +194,7 @@ public class PictureTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("059_crop-images.pptx"));
         var newCrop = CroppingFrame.Parse(newCropStr);
-        var picture = pres.Slide(1).Picture("None");
+        var picture = pres.Slide(1).Shape("None").Picture;
 
         // Act
         picture.Crop = newCrop;
@@ -211,13 +211,10 @@ public class PictureTests : SCTest
     public void Picture_geometry_getter_gets_expected_values(IShape shape, string expectedStr)
     {
         // Arrange
-        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+        var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
 
-        // Act
-        var actual = shape.As<IPicture>().GeometryType;
-
-        // Assert
-        actual.Should().Be(expected);
+        // Act & Assert
+        shape.GeometryType.Should().Be(expected);
     }
 
     [Test]
@@ -229,10 +226,9 @@ public class PictureTests : SCTest
     {
         // Arrange
         var expectedCornerSize = decimal.Parse(expectedCornerSizeStr);
-        var picture = shape.As<IPicture>();
 
         // Act-Assert
-        picture.CornerSize.Should().Be(expectedCornerSize);
+        shape.CornerSize.Should().Be(expectedCornerSize);
     }
 
     [TestCase("RoundedRectangle")]
@@ -250,13 +246,13 @@ public class PictureTests : SCTest
     public void Picture_geometry_setter_sets_expected_values(string expectedStr)
     {
         // Arrange
-        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
+        var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("063 vector image.svg");
         image.Position = 0;
         shapes.AddPicture(image);
-        var picture = shapes.Last().As<IPicture>();
+        var picture = shapes.Last();
 
         // Act
         picture.GeometryType = expected;
@@ -275,8 +271,8 @@ public class PictureTests : SCTest
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("063 vector image.svg");
         shapes.AddPicture(image);
-        var picture = shapes.Last().As<IPicture>();
-        var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryName);
+        var picture = shapes.Last();
+        var geometry = (Geometry)Enum.Parse(typeof(Geometry), geometryName);
         picture.GeometryType = geometry;
 
         // Act
@@ -295,7 +291,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("060_picture-transparency.pptx"));
-        var picture = pres.Slides[0].Shapes.Shape<IPicture>("50%");
+        var picture = pres.Slides[0].Shape("50%").Picture;
 
         // Act
         picture.Transparency = transparency;

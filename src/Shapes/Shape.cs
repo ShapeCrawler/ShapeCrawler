@@ -276,4 +276,5 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public virtual void SetFontColor(string colorHex) => throw new SCException("The shape doesn't contain text content");
 
     public virtual void SetVideo(Stream video) => throw new SCException("The shape doesn't support video content");
+    public IShape GroupedShape(string name) => throw new SCException("The shape is not a group shape and does not contain grouped shape.");
 }

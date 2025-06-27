@@ -73,7 +73,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = new Presentation();
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
-        var table = pres.Slide(1).Shapes.Last<ITable>();
+        var table = pres.Slide(1).Shapes.Last().Table;
         var textBox = table.Rows[0].Cells[0].TextBox!;
         textBox.SetText("some-text");
         var paragraph = textBox.Paragraphs[0];
@@ -162,8 +162,8 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
-        var group = pres.Slide(1).Shape<IGroup>("Group 1");
-        var shape = group.Shapes.Shape("Shape 1");
+        var group = pres.Slide(1).Shape("Group 1");
+        var shape = group.GroupedShape("Shape 1");
         var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act

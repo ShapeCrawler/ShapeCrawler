@@ -131,7 +131,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(imageStream);
         
         // Assert
-        var addedPicture = shapes.Last<IPicture>();
+        var addedPicture = shapes.Last().Picture;
         var image = new MagickImage(addedPicture.Image!.AsByteArray());
         image.Width.Should().Be(1600);
     }
@@ -178,16 +178,14 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
+        var pictureShape = shapes.Last();
 
-        // These values are reasonable range for size of an added image
-        picture.Height.Should().BeGreaterThan(0);
-        picture.Height.Should().BeLessThan(2400);
-        picture.Width.Should().BeGreaterThan(0);
-        picture.Width.Should().BeLessThan(2400);
+        pictureShape.Height.Should().BeGreaterThan(0);
+        pictureShape.Height.Should().BeLessThan(2400);
+        pictureShape.Width.Should().BeGreaterThan(0);
+        pictureShape.Width.Should().BeLessThan(2400);
 
-        // Ensure aspect ratio has been maintained
-        var aspect = picture.Width / picture.Height;
+        var aspect = pictureShape.Width / pictureShape.Height;
         aspect.Should().Be(100);
 
         pres.Validate();
@@ -208,9 +206,9 @@ public class AddPictureTests : SCTest
         // Assert
         // These values are the viewbox size of the test image, which is what
         // we'll be using since the image has no width or height tags
-        var picture = (IPicture)shapes.Last();
-        picture.Height.Should().BeApproximately(67.5m, 0.1m);
-        picture.Width.Should().Be(210);
+        var pictureShape = shapes.Last();
+        pictureShape.Height.Should().BeApproximately(67.5m, 0.1m);
+        pictureShape.Width.Should().Be(210);
         pres.Validate();
     }
     
@@ -270,7 +268,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(imageStream);
 
         // Assert
-        var addedPicture = shapes.Last<IPicture>();
+        var addedPicture = shapes.Last().Picture;
         
         addedPicture.Image!.Mime.Should().Be("image/png");
         
@@ -315,7 +313,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var picture = shapes.Last<IPicture>();
+        var picture = shapes.Last().Picture;
         
         picture.Image!.Mime.Should().Be("image/jpeg");
         
@@ -369,7 +367,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var addedPictureImage = shapes.Last<IPicture>().Image!;
+        var addedPictureImage = shapes.Last().Picture.Image;
         addedPictureImage.Mime.Should().Be("image/jpeg");
     }
     
@@ -389,7 +387,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(imageStream);
 
         // Assert
-        var addedPictureImage = shapes.Last<IPicture>().Image!;
+        var addedPictureImage = shapes.Last().Picture.Image!;
         addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)imageStream.Length + fileSizeTolerance);
     }
     
@@ -400,7 +398,7 @@ public class AddPictureTests : SCTest
         var sourcePres = new Presentation();
         var image = TestAsset("09 png image.png");
         sourcePres.Slide(1).Shapes.AddPicture(image);
-        var picture = sourcePres.Slide(1).First<IPicture>();
+        var picture = sourcePres.Slide(1).Shapes.First(shape => shape.Picture is not null);
         var destPres = new Presentation();
         
         // Act
@@ -463,7 +461,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(svg);
         
         // Assert
-        var addedPicture = shapes.Last<IPicture>();
+        var addedPicture = shapes.Last().Picture;
         var addedPictureInfo = new MagickImageInfo(addedPicture.Image!.AsByteArray());
         var addedPictureResolution = addedPictureInfo.Density!.ChangeUnits(DensityUnit.PixelsPerInch);
         addedPictureResolution.X.Should().BeApproximately(384, 0.1);

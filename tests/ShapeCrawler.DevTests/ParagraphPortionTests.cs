@@ -117,7 +117,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slides[0].Shape("Table 1").Table;
         var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act

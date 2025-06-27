@@ -14,7 +14,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptx = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptx);
-        var audioShape = pres.Slides[0].Shapes.Shape<IMedia>("Audio 1");
+        var audioShape = pres.Slides[0].Shape("Audio 1").Media;
 
         // Act
         var bytes = audioShape.AsByteArray();
@@ -29,7 +29,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var audioShape = pres.Slides[0].Shapes.Shape<IMedia>("Audio 1");
+        var audioShape = pres.Slide(1).Shape("Audio 1").Media;
 
         // Act
         var mime = audioShape.MIME;
@@ -66,7 +66,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.Shape<IMedia>("Video 1");
+        var videoShape = pres.Slide(1).Shape("Video 1").Media;
 
         // Act
         var bytes = videoShape.AsByteArray();
@@ -81,7 +81,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.Shape<IMedia>("Video 1");
+        var videoShape = pres.Slide(1).Shape("Video 1").Media;
 
         // Act
         var mime = videoShape.MIME;
@@ -369,22 +369,7 @@ public class ShapeTests : SCTest
         // Assert
         shapeId.Should().Be(expectedShapeId);
     }
-
-    [Test]
-    public void AsTable_returns_ITable()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var slide = pres.Slides[0];
-        var table = slide.Shapes.Shape<ITable>("Table 1");
-
-        // Act
-        var castingToITable = () => table.AsTable();
-
-        // Assert
-        castingToITable.Should().NotThrow();
-    }
-
+    
     [Test]
     [SlideShape("021.pptx", 4, 2, 287.68)]
     [SlideShape("008.pptx", 1, 3, 49.5)]
@@ -847,6 +832,6 @@ public class ShapeTests : SCTest
         // Assert
         newVideoContent.Position = 0;
         var newVideoBytes = newVideoContent.ToArray();
-        videoShape.AsMedia().AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
+        videoShape.Media.AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
     }
 }
