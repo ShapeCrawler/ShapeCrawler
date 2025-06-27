@@ -117,6 +117,11 @@ public interface IShape : IPosition, IShapeGeometry
     IPresentation Presentation { get; }
 
     /// <summary>
+    ///     Gets grouped shapes. Returns <c>null</c> if the shape is not a group shape.
+    /// </summary>
+    IShapeCollection? GroupedShapes { get; }
+
+    /// <summary>
     ///     Removes the shape from the slide.
     /// </summary>
     void Remove();

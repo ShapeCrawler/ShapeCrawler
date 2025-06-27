@@ -104,8 +104,6 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     public IShape Group(IShape[] groupingShapes)
     {
-        var groupShape = new P.GroupShape();
-
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
         var idAndName = this.GenerateIdAndName();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
@@ -147,8 +145,9 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
         groupShapeProperties.Append(transformGroup);
 
-        groupShape.Append(nonVisualGroupShapeProperties);
-        groupShape.Append(groupShapeProperties);
+        var pGroupShape = new P.GroupShape();
+        pGroupShape.Append(nonVisualGroupShapeProperties);
+        pGroupShape.Append(groupShapeProperties);
 
         foreach (var groupingShape in groupingShapes)
         {
@@ -161,17 +160,17 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
                 openXmlElement.Remove();
             }
             
-            groupShape.Append(openXmlElement);
+            pGroupShape.Append(openXmlElement);
         }
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(groupShape);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGroupShape);
 
         foreach (var grouping in groupingShapes)
         {
             grouping.Remove();
         }
 
-        return new GroupShape(groupShape);
+        return new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape);
     }
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)

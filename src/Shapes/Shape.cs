@@ -223,6 +223,8 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public virtual IMedia? Media => null;
     public virtual ILine? Line => null;
 
+    public IShapeCollection? GroupedShapes => null;
+
     public double Rotation
     {
         get

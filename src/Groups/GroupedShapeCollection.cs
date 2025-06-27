@@ -41,7 +41,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
             switch (pGroupChild)
             {
                 case P.GroupShape pGroupShape:
-                    shape = new GroupShape(pGroupShape);
+                    shape = new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape);
                     break;
 
                 case P.Shape { TextBody: not null } pShape:

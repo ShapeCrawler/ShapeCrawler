@@ -266,7 +266,7 @@ internal abstract class Slide : ISlide
             .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
         textBoxes.AddRange(tableTextboxes);
 
-        var groupShapes = this.Shapes.OfType<GroupShape>().ToList();
+        var groupShapes = this.Shapes.Where(shape => shape.GroupedShapes is not null);
         foreach (var groupShape in groupShapes)
         {
             this.AddGroupTextBoxes(groupShape, textBoxes);
@@ -296,13 +296,13 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove(); 
 
-    private void AddGroupTextBoxes(GroupShape groupShape, List<ITextBox> textBoxes)
+    private void AddGroupTextBoxes(IShape groupShape, List<ITextBox> textBoxes)
     {
-        foreach (var groupShapeShape in groupShape.Shapes)
+        foreach (var groupShapeShape in groupShape.GroupedShapes!)
         {
-            if (groupShapeShape is GroupShape groupShapeGroupShape)
+            if (groupShapeShape.GroupedShapes is not null)
             {
-                this.AddGroupTextBoxes(groupShapeGroupShape, textBoxes);
+                this.AddGroupTextBoxes(groupShapeShape, textBoxes);
             }
             else if (groupShapeShape.TextBox is not null)
             {

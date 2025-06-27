@@ -13,7 +13,7 @@ public class LineShapeTests : SCTest
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
-        var line = shapes.Last<ILine>();
+        var line = shapes.Last().Line;
 
         // Act
         var startPoint = line.StartPoint;

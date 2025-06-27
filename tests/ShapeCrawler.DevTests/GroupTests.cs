@@ -11,8 +11,8 @@ public class GroupTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-grouping.pptx"));
-        var groupShape = pres.Slide(1).Shape<IGroup>("Group 2");
-        var groupedShape = groupShape.Shapes.Shape<IShape>("Shape 1");
+        var groupShape = pres.Slide(1).Shape("Group 2");
+        var groupedShape = groupShape.GroupedShapes.Shape("Shape 1");
 
         // Act
         groupedShape.Y = 307;

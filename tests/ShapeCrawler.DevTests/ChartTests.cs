@@ -19,7 +19,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("024_chart.pptx"));
-        var scatterChart = pres.Slide(2).Shapes.GetById<IChart>(5);
+        var scatterChart = pres.Slide(2).Shapes.GetById(5).Chart;
 
         // Act
         // double xValue = chart.XValues[0];
@@ -34,7 +34,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("021.pptx"));
-        var chart = pres.Slide(3).Chart(4);
+        var chart = pres.Slide(3).Shape(4).Chart;
 
         // Act & Assert
         chart.Categories.Should().BeNull();
@@ -104,7 +104,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptxStream = TestAsset(pptxFile);
         var pres = new Presentation(pptxStream);
-        var chart = pres.Slides[0].Shapes.Shape<IChart>(chartName);
+        var chart = pres.Slides[0].Shapes.Shape(chartName).Chart;
         var expectedSeriesCount = chart.SeriesCollection.Count - 1; 
             
         // Act
@@ -155,7 +155,7 @@ public class ChartTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("025_chart.pptx"));
         var mStream = new MemoryStream();
-        var pieChart = pres.Slides[0].Shapes.GetById<IChart>(7);
+        var pieChart = pres.Slides[0].Shapes.GetById(7).Chart;
 
         // Act
         pieChart.Categories[0].Name = "Category 1_new";
@@ -164,7 +164,7 @@ public class ChartTests : SCTest
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        pieChart = pres.Slides[0].Shapes.GetById<IChart>(7);
+        pieChart = pres.Slides[0].Shape(7).Chart;
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
     }
 
@@ -173,7 +173,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("025_chart.pptx"));
-        var lineChart = pres.Slides[3].Shapes.GetById<IChart>(13);
+        var lineChart = pres.Slides[3].Shape(13).Chart;
         var category = lineChart.Categories[0]; 
 
         // Act
@@ -267,7 +267,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("018.pptx"));
-        var chart = pres.Slide(1).Shapes.GetById<IChart>(6);
+        var chart = pres.Slide(1).Shape(6);
 
         // Act-Assert
         chart.GeometryType.Should().Be(Geometry.Rectangle);
@@ -278,7 +278,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var barChart = pres.Slide(1).Shapes.Shape<IChart>("Bar Chart 1");
+        var barChart = pres.Slide(1).Shape("Bar Chart 1").Chart;
         
         // Act
         var minimum = barChart.XAxis.Minimum;
@@ -292,7 +292,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
+        var barChart = pres.Slides[0].Shape("Bar Chart 1").Chart;
         var mStream = new MemoryStream();
         
         // Act
@@ -300,7 +300,7 @@ public class ChartTests : SCTest
 
         // Assert
         pres.Save(mStream);
-        barChart = new Presentation(mStream).Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
+        barChart = new Presentation(mStream).Slides[0].Shape("Bar Chart 1").Chart;
         barChart.XAxis!.Minimum.Should().Be(1);
         pres.Validate();
     }
@@ -311,7 +311,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.Shape<IChart>("Bar Chart 1");
+        var barChart = pres.Slides[0].Shapes.Shape("Bar Chart 1").Chart;
         
         // Act
         barChart.XAxis!.Maximum = 7;
@@ -326,7 +326,7 @@ public class ChartTests : SCTest
     {
         // Arrange  
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var barChart = pres.Slide(1).Chart("Bar Chart 1");
+        var barChart = pres.Slide(1).Shape("Bar Chart 1").Chart;
         
         // Act & Assert
         barChart.XAxis!.Maximum.Should().Be(6);
