@@ -15,7 +15,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var table = pres.Slide(3).Table("Таблица 4");
+        var table = pres.Slide(3).Shape("Таблица 4").Table;
 
         // Act 
         var tableStyle = table.TableStyle;
@@ -30,7 +30,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var table = pres.Slide(3).Table("Таблица 4");
+        var table = pres.Slide(3).Shape("Таблица 4").Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -40,7 +40,7 @@ public class TableTests : SCTest
         table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        table = pres.Slide(3).Table("Таблица 4");
+        table = pres.Slide(3).Shape("Таблица 4").Table;
         table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
         pres.Validate();
     }
@@ -50,7 +50,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
 
         // Act 
         var tableCell = table[1, 2];
@@ -64,7 +64,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -75,7 +75,7 @@ public class TableTests : SCTest
         pres.Save(mStream);
 
         pres = new Presentation(mStream);
-        table = pres.Slide(1).Table("Table 1");
+        table = pres.Slide(1).Shape("Table 1").Table;
         table[1, 2].RightBorder.Color.Should().Be("00FF00");
         pres.Validate();
     }
@@ -85,7 +85,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Table("Table 2");
+        var table = pres.Slide(1).Shape("Table 2").Table;
 
         // Assert
         var tableCell = table[0, 0];
@@ -100,7 +100,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Table("Table 2");
+        var table = pres.Slide(1).Shape("Table 2").Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -115,7 +115,7 @@ public class TableTests : SCTest
         pres.Save(mStream);
 
         pres = new Presentation(mStream);
-        table = pres.Slide(1).Table("Table 2");
+        table = pres.Slide(1).Shape("Table 2").Table;
 
         tableCell = table[0, 0];
         tableCell.TextBox.LeftMargin.Should().Be(10m);
@@ -131,7 +131,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Table("Table 2");
+        var table = pres.Slide(1).Shape("Table 2").Table;
 
         // Assert
         var tableCell = table[3, 2];
@@ -144,7 +144,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case004.pptx"));
-        var table = pres.Slide(1).Table("Table 2");
+        var table = pres.Slide(1).Shape("Table 2").Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -158,7 +158,7 @@ public class TableTests : SCTest
         pres.Save(mStream);
 
         pres = new Presentation(mStream);
-        table = pres.Slide(1).Table("Table 2");
+        table = pres.Slide(1).Shape("Table 2").Table;
 
         tableCell = table[1, 1];
         tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
@@ -193,7 +193,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
 
         // Act
         table.Rows.Add();
@@ -235,7 +235,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var row = pres.Slides[1].Shapes.Shape<ITable>("Table 4").Rows[1];
+        var row = pres.Slide(2).Shape("Table 4").Table.Rows[1];
         var cell1X0 = row.Cells[0];
         var cell1X1 = row.Cells[1];
 
@@ -275,7 +275,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var cell = pres.Slides[0].Table("Table 1")[0, 0];
+        var cell = pres.Slide(1).Shape("Table 1").Table[0, 0];
 
         // Act
         cell.LeftBorder.Width = 2;
@@ -321,15 +321,15 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
-        var row = table.Rows[0];
+        var tableShape = pres.Slide(1).Shape("Table 1");
+        var row = tableShape.Table.Rows[0];
 
         // Act
         row.Height = 39;
 
         // Assert
         row.Height.Should().Be(39);
-        table.Height.Should().Be(39);
+        tableShape.Height.Should().Be(39);
     }
 
     [Test]
@@ -437,7 +437,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[2].Shapes.GetById<ITable>(5);
+        var table = pres.Slide(2).Shape(5).Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -466,7 +466,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[2].Shapes.GetById<ITable>(5);
+        var table = pres.Slide(2).Shape(5).Table;
 
         // Act
         table.MergeCells(table[0, 0], table[1, 0]);
@@ -585,7 +585,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[3].Table("Table 2");
+        var table = pres.Slide(4).Shape("Table 2").Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -658,7 +658,7 @@ public class TableTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        table = pres.Slides[2].Shapes.Shape<ITable>("Table 5");
+        table = pres.Slide(3).Shape("Table 5").Table;
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
         static void AssertTable(ITable table, decimal expectedMergedColumnWidth, decimal expectedMergedRowHeight)
@@ -706,7 +706,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[3].Shapes.GetById<ITable>(6);
+        var table = pres.Slide(4).Shape(6).Table;
         var mStream = new MemoryStream();
         var expectedNewColumnWidth = table.Columns[1].Width + table.Columns[2].Width;
 
@@ -735,7 +735,7 @@ public class TableTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[3].Shapes.GetById<ITable>(6);
+        var table = pres.Slide(4).Shape(6).Table;
 
         // Act
         table.MergeCells(table[0, 1], table[0, 2]);
@@ -834,7 +834,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[1].Shapes.GetById<ITable>(3);
+        var table = pres.Slide(2).Shape(3).Table;
         var cell1 = table[0, 0];
         var cell2 = table[1, 0];
 
@@ -856,7 +856,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[1].Shapes.Shape<ITable>("Table 5");
+        var table = pres.Slide(2).Shape("Table 5").Table;
         var cell1 = table[1, 1];
         var cell2 = table[2, 1];
 
@@ -878,7 +878,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[3].Shapes.GetById<ITable>(4);
+        var table = pres.Slide(4).Shape(4).Table;
         var cell1 = table[0, 1];
         var cell2 = table[1, 1];
 
@@ -924,7 +924,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1");
 
         // Act
         table.AltText = "Alt text";
@@ -954,7 +954,7 @@ public class TableTests : SCTest
         var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
-        var table = slide.Shapes.Last<ITable>();
+        var table = slide.Shapes.Last().Table;
 
         // Act
         table.StyleOptions.HasHeaderRow = hasHeaderRow;
@@ -967,7 +967,7 @@ public class TableTests : SCTest
         // Assert
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        table = pres.Slides[0].Shapes.Last<ITable>();
+        table = pres.Slide(1).Shapes.Last().Table;
         table.StyleOptions.HasHeaderRow.Should().Be(hasHeaderRow);
         table.StyleOptions.HasTotalRow.Should().Be(hasTotalRow);
         table.StyleOptions.HasBandedRows.Should().Be(hasBandedRows);
@@ -983,7 +983,7 @@ public class TableTests : SCTest
         var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
-        var table = slide.Shapes.Last<ITable>();
+        var table = slide.Shapes.Last().Table;
 
         // Act
         var options = table.StyleOptions;
@@ -1003,14 +1003,15 @@ public class TableTests : SCTest
         // Arrange
         var pres = new Presentation();
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
-        var addedTable = pres.Slide(1).Shapes.Last<ITable>();
+        var tableShape = pres.Slide(1).Shapes.Last();
+        var table = tableShape.Table;
 
         // Act
-        addedTable.Height *= 1.5m;
+        tableShape.Height *= 1.5m;
 
         // Assert
-        addedTable.Rows[0].Height.Should().BeApproximately(43, 0.01m);
-        addedTable.Rows[1].Height.Should().Be(43);
+        table.Rows[0].Height.Should().BeApproximately(43, 0.01m);
+        table.Rows[1].Height.Should().Be(43);
         pres.Validate();
     }
 
@@ -1019,7 +1020,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var rowsCountBefore = table.Rows.Count;
 
         // Act
@@ -1029,7 +1030,7 @@ public class TableTests : SCTest
         table.Rows.Should().HaveCount(rowsCountBefore + 1);
         table.Rows[1].Cells[0].TextBox.Text.Should().BeEmpty();
         pres = SaveAndOpenPresentation(pres);
-        table = pres.Slide(1).Table("Table 1");
+        table = pres.Slide(1).Shape("Table 1").Table;
         table.Rows.Should().HaveCount(rowsCountBefore + 1);
         pres.Validate();
     }
@@ -1039,7 +1040,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var templateRowIndex = 0;
         var templateRowHeight = table.Rows[templateRowIndex].Height;
 
@@ -1048,7 +1049,7 @@ public class TableTests : SCTest
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
-        table = pres.Slide(1).Table("Table 1");
+        table = pres.Slide(1).Shape("Table 1").Table;
         table.Rows[1].Height.Should().Be(templateRowHeight);
         pres.Validate();
     }
@@ -1058,7 +1059,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var templateRowIndex = 0;
         var templateFontColor = table.Rows[templateRowIndex].Cells[0].TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex;
 
@@ -1067,6 +1068,6 @@ public class TableTests : SCTest
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
-        pres.Slide(1).Table("Table 1").Rows[1].Cells[0].Fill.Color.Should().Be(templateFontColor);
+        pres.Slide(1).Shape("Table 1").Table.Rows[1].Cells[0].Fill.Color.Should().Be(templateFontColor);
     }
 }

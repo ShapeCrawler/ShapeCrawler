@@ -97,6 +97,11 @@ public interface IShape : IPosition, IShapeGeometry
     ILine? Line { get; }
     
     /// <summary>
+    ///     Gets SmartArt. Returns <c>null</c> if the shape doesn't contain SmartArt graphic.
+    /// </summary>
+    ISmartArt? SmartArt { get; }
+    
+    /// <summary>
     ///     Gets the rotation of the shape in degrees.
     /// </summary>
     double Rotation { get; }

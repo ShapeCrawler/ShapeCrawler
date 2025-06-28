@@ -50,8 +50,7 @@ public class SmartArtTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slide = pres.Slides[0];
-        var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList);
+        var smartArt = pres.Slide(1).Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList).SmartArt;
         
         // Act
         var node1 = smartArt.Nodes.AddNode("Text 1");
@@ -77,7 +76,7 @@ public class SmartArtTests : SCTest
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
-        var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList);
+        var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList).SmartArt;
         var node = smartArt.Nodes.AddNode("Original Text");
         const string updatedText = "Updated Text";
         
@@ -96,7 +95,7 @@ public class SmartArtTests : SCTest
         // Arrange
         var pres = new Presentation();
         var slide = pres.Slides[0];
-        var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList);
+        var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList).SmartArt;
         var expectedTexts = new[] { "Node 1", "Node 2", "Node 3" };
         
         foreach (var text in expectedTexts)

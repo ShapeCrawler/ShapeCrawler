@@ -222,6 +222,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public virtual IOLEObject? OLEObject => null;
     public virtual IMedia? Media => null;
     public virtual ILine? Line => null;
+    public ISmartArt? SmartArt => null;
 
     public IShapeCollection? GroupedShapes => null;
 

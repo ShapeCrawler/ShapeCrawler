@@ -13,7 +13,7 @@ public class TableColumnTests : SCTest
         var ms = new MemoryStream();
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var expectedColumnsCount = table.Columns.Count - 1;
 
         // Act
@@ -23,7 +23,7 @@ public class TableColumnTests : SCTest
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Save(ms);
         pres = new Presentation(ms);
-        table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        table = pres.Slide(1).Shape("Table 1").Table;
         table.Columns.Should().HaveCount(expectedColumnsCount);
         pres.Validate();
     }
@@ -33,7 +33,7 @@ public class TableColumnTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var expectedColumnsCount = table.Columns.Count + 1;
 
         // Act
@@ -49,7 +49,7 @@ public class TableColumnTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
 
         // Act
         table.Columns.InsertAfter(1);
@@ -65,7 +65,7 @@ public class TableColumnTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case003.pptx"));
-        var table = pres.Slide(1).Table("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var columnsCountBefore = table.Columns.Count;
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -86,7 +86,7 @@ public class TableColumnTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slides[0].Shape("Table 1").Table;
         var columnsCountBefore = table.Columns.Count;
         var columnWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);
@@ -107,7 +107,7 @@ public class TableColumnTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case001.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var column = table.Columns[0];
         var columnsCountBefore = table.Columns.Count;
 
@@ -125,7 +125,7 @@ public class TableColumnTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case002.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var column = table.Columns[0];
 
         // Act
@@ -145,7 +145,7 @@ public class TableColumnTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var column = table.Columns[1];
 
         // Act
@@ -166,7 +166,7 @@ public class TableColumnTests : SCTest
         // Arrange
         var pptx = TestAsset("table-case003.pptx");
         var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slide(1).Shape("Table 1").Table;
         var column = table.Columns[0];
         var columWidthBefore = table.Columns.Select(c => c.Width).ToList();
         var totalWidthBefore = table.Columns.Sum(c => c.Width);

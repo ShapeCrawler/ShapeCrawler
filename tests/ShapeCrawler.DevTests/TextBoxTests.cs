@@ -542,7 +542,7 @@ namespace ShapeCrawler.DevTests
         {
             // Arrange
             var pres = new Presentation(TestAsset("009_table.pptx"));
-            var textFrame = pres.Slides[2].Shapes.GetById<ITable>(3).Rows[0].Cells[0].TextBox;
+            var textFrame = pres.Slide(3).Shape(3).Table.Rows[0].Cells[0].TextBox;
 
             // Act
             var paragraphsCount = textFrame.Paragraphs.Count;
