@@ -18,6 +18,7 @@ internal sealed class TextBox : ITextBox
     private readonly OpenXmlElement textBody;
     private readonly ShapeSize shapeSize;
     private TextVerticalAlignment? vAlignment;
+    private TextDirection? textDirection;
 
     internal TextBox(TextBoxMargins margins, OpenXmlElement textBody)
     {
@@ -174,6 +175,38 @@ internal sealed class TextBox : ITextBox
         }
 
         set => this.SetVerticalAlignment(value);
+    }
+
+    public TextDirection TextDirection 
+    {
+        get
+        {
+            if (!this.textDirection.HasValue)
+            {
+                var textDirectionVal = this.textBody.GetFirstChild<A.BodyProperties>()!.Vertical?.Value;
+
+                if (textDirectionVal == A.TextVerticalValues.Vertical)
+                {
+                    this.textDirection = TextDirection.Rotate90;
+                }
+                else if (textDirectionVal == A.TextVerticalValues.Vertical270)
+                {
+                    this.textDirection = TextDirection.Rotate270;
+                }
+                else if (textDirectionVal == A.TextVerticalValues.WordArtVertical)
+                {
+                    this.textDirection = TextDirection.Stacked;
+                }
+                else
+                {
+                    this.textDirection = TextDirection.Horizontal;
+                }
+            }
+
+            return this.textDirection.Value;
+        }
+
+        set => this.SetTextDirection(value); 
     }
 
     public void SetMarkdownText(string text)
@@ -364,6 +397,21 @@ internal sealed class TextBox : ITextBox
         }
 
         this.vAlignment = alignmentValue;
+    }
+
+    private void SetTextDirection(TextDirection direction)
+    {
+        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>()!;
+         
+        aBodyPr.Vertical = direction switch
+        {
+            TextDirection.Rotate90 => A.TextVerticalValues.Vertical,
+            TextDirection.Rotate270 => A.TextVerticalValues.Vertical270,
+            TextDirection.Stacked => A.TextVerticalValues.WordArtVertical,
+            _ => A.TextVerticalValues.Horizontal
+        };
+
+        this.textDirection = direction;
     }
 
     private void ShrinkFont(string newText)

@@ -633,6 +633,57 @@ namespace ShapeCrawler.DevTests
             textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
             textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
         }
+        
+        [Test]
+        [TestCase("001.pptx", 1, "TextBox 4")]
+        public void TextDirection_Getter_return_textbox_text_direction(string presName, int slideNumber,
+            string shapeName)
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset(presName));
+            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
+        
+            // Assert
+            textbox.TextDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Horizontal);
+        }
+
+        [Test]
+        [TestCase("001.pptx", 2, "Table 5")]
+        public void TextDirection_Getter_return_cell_textbox_text_direction(string presName, int slideNumber,
+            string shapeName)
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset(presName));
+            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<ITable>(shapeName)[0,0].TextBox!;
+            
+			// Act
+			var textDirection = textbox.TextDirection;
+
+			// Assert
+			textDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Rotate90);
+		}
+        
+        [Test]
+        [TestCase("001.pptx", 1, "TextBox 4")]
+        public void TextDirection_Setter_textbox_text_direction(string presName, int slideNumber,
+            string shapeName)
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset(presName));
+            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
+            var mStream = new MemoryStream();
+
+            // Act
+            textbox.TextDirection = ShapeCrawler.Texts.TextDirection.Rotate270;
+
+            // Assert
+            textbox.TextDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Rotate270);
+
+            pres.Save(mStream);
+            pres = new Presentation(mStream);
+            textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
+            textbox.TextDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Rotate270);
+        }
 
         [Test]
         [TestCase("054_get_shape_xpath.pptx", 1, "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]")]
