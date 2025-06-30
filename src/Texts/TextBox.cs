@@ -411,7 +411,7 @@ internal sealed class TextBox : ITextBox
             _ => A.TextVerticalValues.Horizontal
         };
 
-        this.TextDirection = direction;
+        this.textDirection = direction;
     }
 
     private void ShrinkFont(string newText)
