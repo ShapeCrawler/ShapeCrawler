@@ -11,6 +11,7 @@ namespace ShapeCrawler.Tables;
 internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 {
     private TextVerticalAlignment? vAlignment;
+    private TextDirection? textDirection;
 
     public TextVerticalAlignment VerticalAlignment
     {
@@ -129,6 +130,40 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
     public string SDKXPath => new XmlPath(aTableCell.TextBody!).XPath;
 
+    public TextDirection TextDirection 
+    { 
+        get
+        {
+            if (this.textDirection.HasValue)
+            {
+                return this.textDirection.Value;
+            }
+
+            var textPositionValue = aTableCell.TableCellProperties!.Vertical?.Value;
+
+            if (textPositionValue == A.TextVerticalValues.Vertical)
+            {
+                this.textDirection = TextDirection.Rotate90;
+            }
+            else if (textPositionValue == A.TextVerticalValues.Vertical270)
+            {
+                this.textDirection = TextDirection.Rotate270;
+            }
+            else if (textPositionValue == A.TextVerticalValues.WordArtVertical)
+            {
+                this.textDirection = TextDirection.Stacked;
+            }
+            else
+            {
+                this.textDirection = TextDirection.Horizontal;
+            }
+
+            return this.textDirection.Value;
+        }
+
+        set => this.SetTextDirection(value); 
+    }
+
     public void SetMarkdownText(string text)
     {
         throw new NotImplementedException();
@@ -189,5 +224,18 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
             // Add the text for this line
             newParagraph.Portions.AddText(textLines[i]);
         }
+    }
+    
+    private void SetTextDirection(TextDirection value)
+    {
+        aTableCell.TableCellProperties!.Vertical = value switch
+        {
+            TextDirection.Rotate90 => A.TextVerticalValues.Vertical,
+            TextDirection.Rotate270 => A.TextVerticalValues.Vertical270,
+            TextDirection.Stacked => A.TextVerticalValues.WordArtVertical,
+            _ => A.TextVerticalValues.Horizontal
+        };
+
+        this.TextDirection = value;
     }
 }
