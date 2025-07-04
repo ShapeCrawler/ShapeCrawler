@@ -2,6 +2,7 @@
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
+using ShapeCrawler.Texts;
 #pragma warning restore IDE0130
 
 /// <summary>
@@ -28,6 +29,11 @@ public interface ITextBox
     ///     Gets or sets the Autofit type.
     /// </summary>
     AutofitType AutofitType { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the TextDirection.
+    /// </summary>
+    TextDirection TextDirection { get; set; }
 
     /// <summary>
     ///     Gets or sets the left margin in points.
