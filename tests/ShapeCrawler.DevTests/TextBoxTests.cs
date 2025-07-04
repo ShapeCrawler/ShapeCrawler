@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
+using ShapeCrawler.Texts;
 
 namespace ShapeCrawler.DevTests
 {
@@ -83,7 +84,7 @@ namespace ShapeCrawler.DevTests
             textBox.Text.Should().BeEquivalentTo("Shrink text on overflow");
             textBox.Paragraphs[0].Portions[0].Font!.Size.Should().BeApproximately(8, 1);
         }
-        
+
         [Test]
         public void SetText_preserves_font()
         {
@@ -98,7 +99,7 @@ namespace ShapeCrawler.DevTests
             // Assert
             textBox.Paragraphs[0].Portions[0].Font!.LatinName.Should().BeEquivalentTo(expectedFont);
         }
-        
+
         [Test]
         public void SetText_preserves_font_color()
         {
@@ -110,11 +111,11 @@ namespace ShapeCrawler.DevTests
 
             // Act
             textBox.SetText("AutoShape 4 some text");
-            
+
             // Assert
             textBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be(expectedColor);
         }
-        
+
         [Test]
         public void SetMarkdownText()
         {
@@ -165,7 +166,7 @@ namespace ShapeCrawler.DevTests
 
             // Act
             textBox.SetText("AutoShape 4 some text");
-            
+
             // Assert
             textBox.Text.Should().Be("AutoShape 4 some text");
             shape.Height.Should().BeApproximately(64m, 1m);
@@ -485,7 +486,7 @@ namespace ShapeCrawler.DevTests
             cellTextBox.Paragraphs[0].Text.Should().BeEquivalentTo("Text 1");
             cellTextBox.Paragraphs[1].Text.Should().BeEquivalentTo("Text 2");
         }
-        
+
         [Test]
         [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
         public void SetText_preserves_new_lines(IShape shape)
@@ -493,7 +494,7 @@ namespace ShapeCrawler.DevTests
             // Arrange
             var expectedText = "Hello" + Environment.NewLine + Environment.NewLine + "Earth";
             var textBox = shape.TextBox!;
-        
+
             // Act
             var newText = textBox.Text.Replace("World", "Earth");
             textBox.SetText(newText);
@@ -633,56 +634,58 @@ namespace ShapeCrawler.DevTests
             textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
             textbox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
         }
-        
+
         [Test]
         [TestCase("001.pptx", 1, "TextBox 4")]
-        public void TextDirection_Getter_return_textbox_text_direction(string presName, int slideNumber,
+        public void TextDirection_Getter_returns_textbox_text_direction(
+            string presName, 
+            int slideNumber,
             string shapeName)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
-        
+            var textbox = pres.Slide(slideNumber).Shape<IShape>(shapeName).TextBox!;
+
             // Assert
-            textbox.TextDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Horizontal);
+            textbox.TextDirection.Should().Be(Texts.TextDirection.Horizontal);
         }
 
         [Test]
         [TestCase("001.pptx", 2, "Table 5")]
-        public void TextDirection_Getter_return_cell_textbox_text_direction(string presName, int slideNumber,
+        public void TextDirection_Getter_returns_cell_textbox_text_direction(
+            string presName, 
+            int slideNumber,
             string shapeName)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<ITable>(shapeName)[0,0].TextBox!;
-            
-			// Act
-			var textDirection = textbox.TextDirection;
+            var textbox = pres.Slide(slideNumber).Shape<ITable>(shapeName)[0, 0].TextBox;
 
-			// Assert
-			textDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Rotate90);
-		}
-        
+            // Act & Assert
+            textbox.TextDirection.Should().Be(Texts.TextDirection.Rotate90);
+        }
+
         [Test]
         [TestCase("001.pptx", 1, "TextBox 4")]
-        public void TextDirection_Setter_textbox_text_direction(string presName, int slideNumber,
+        public void TextDirection_Setter_sets_textbox_text_direction(
+            string presName, 
+            int slideNumber,
             string shapeName)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
+            var textbox = pres.Slide(slideNumber).Shape<IShape>(shapeName).TextBox!;
             var mStream = new MemoryStream();
 
             // Act
-            textbox.TextDirection = ShapeCrawler.Texts.TextDirection.Rotate270;
+            textbox.TextDirection = TextDirection.Rotate270;
 
             // Assert
-            textbox.TextDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Rotate270);
+            textbox.TextDirection.Should().Be(TextDirection.Rotate270);
 
             pres.Save(mStream);
             pres = new Presentation(mStream);
-            textbox = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox!;
-            textbox.TextDirection.Should().Be(ShapeCrawler.Texts.TextDirection.Rotate270);
+            pres.Slide(slideNumber).Shape<IShape>(shapeName).TextBox!.TextDirection.Should().Be(TextDirection.Rotate270);
         }
 
         [Test]

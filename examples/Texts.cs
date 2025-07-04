@@ -1,16 +1,23 @@
-﻿namespace ShapeCrawler.Examples;
+﻿using ShapeCrawler.Texts;
+
+namespace ShapeCrawler.Examples;
 
 public class Texts
 {
     [Test, Explicit]
     public void Set_text()
     {
-        using var pres = new Presentation("hello world.pptx");
+        using var pres = new Presentation("Hello world.pptx");
         var slide = pres.Slides.First();
         var shape = slide.Shapes.First();
 
+        // Update text
         shape.TextBox!.SetText("A new shape text");
+        
+        // Update text direction
+        shape.TextBox.TextDirection = TextDirection.Rotate90;
 
+        // Update a certain paragraph text
         var paragraph = shape.TextBox.Paragraphs[1];
         paragraph.Text = "A new text for second paragraph";
 
