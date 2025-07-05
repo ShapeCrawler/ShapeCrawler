@@ -2,9 +2,14 @@
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Groups;
+namespace ShapeCrawler.Shapes;
 
 internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture)
 {
     public override Picture Picture => picture;
+
+    public override void CopyTo(P.ShapeTree pShapeTree)
+    {
+        picture.CopyTo(pShapeTree);
+    }
 }

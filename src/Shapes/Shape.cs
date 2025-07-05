@@ -263,7 +263,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
 
     public void Remove() => pShapeTreeElement.Remove();
 
-    public void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
+    public virtual void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
     
     public virtual void SetText(string text) => throw new SCException("The shape doesn't contain text content");
 

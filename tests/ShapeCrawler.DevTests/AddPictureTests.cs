@@ -398,11 +398,11 @@ public class AddPictureTests : SCTest
         var sourcePres = new Presentation();
         var image = TestAsset("09 png image.png");
         sourcePres.Slide(1).Shapes.AddPicture(image);
-        var picture = sourcePres.Slide(1).Shapes.First(shape => shape.Picture is not null);
+        var pictureShape = sourcePres.Slide(1).Shapes.First(shape => shape.Picture is not null);
         var destPres = new Presentation();
         
         // Act
-        destPres.Slide(1).Shapes.Add(picture);
+        destPres.Slide(1).Shapes.Add(pictureShape);
         
         // Assert
         destPres.Validate();

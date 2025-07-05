@@ -659,7 +659,7 @@ namespace ShapeCrawler.DevTests
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textbox = pres.Slide(slideNumber).Shape<ITable>(shapeName)[0, 0].TextBox;
+            var textbox = pres.Slide(slideNumber).Shape(shapeName).Table[0, 0].TextBox;
 
             // Act & Assert
             textbox.TextDirection.Should().Be(Texts.TextDirection.Rotate90);
