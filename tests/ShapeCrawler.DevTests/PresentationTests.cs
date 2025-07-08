@@ -327,9 +327,24 @@ public class PresentationTests : SCTest
         textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
+    
+    [Test]
+    public void Save_should_not_throw_exception()
+    {
+        var presBytes = TestAsset("001.pptx").ToArray();
+        var nonExpandableStream = new MemoryStream(presBytes);
+        var pres = new Presentation(nonExpandableStream);
+        var outputStream = new MemoryStream();
+        
+        // Act
+        var saving = () => pres.Save(outputStream);
+        
+        // Assert
+        saving.Should().NotThrow<Exception>();
+    }
 
     [Test]
-    public void SaveAs_sets_the_date_of_the_last_modification()
+    public void Save_sets_the_date_of_the_last_modification()
     {
         // Arrange
         var expectedCreated = DateTime.Parse("2024-01-01T12:34:56Z", CultureInfo.InvariantCulture);

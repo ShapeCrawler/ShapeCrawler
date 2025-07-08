@@ -112,7 +112,7 @@ public sealed class Presentation : IPresentation
     /// <inheritdoc />
     public void Save(Stream stream)
     {
-        this.Save();
+        // this.Save();
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
 
         if (stream is FileStream fileStream)
