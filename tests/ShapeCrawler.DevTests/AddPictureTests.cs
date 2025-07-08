@@ -110,7 +110,7 @@ public class AddPictureTests : SCTest
         var image = TestAsset("063 vector image.svg");
         image.Position = 0;
         shapes.AddPicture(image);
-        var picture = (IPicture)shapes.Last();
+        var picture = shapes.Last().Picture;
 
         // Act
         var svgContent = picture.SvgContent;
@@ -152,7 +152,7 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(image);
 
         // ASSERT
-        var picture = (IPicture)shapes.First(shape => shape.Name.StartsWith("Picture"));
+        var picture = shapes.First(shape => shape.Name.StartsWith("Picture")).Picture;
         var xml = new XmlDocument { PreserveWhitespace = true };
         xml.LoadXml(picture.SvgContent);
         var textTagRandomChild = xml.GetElementsByTagName("text").OfType<XmlElement>().First().ChildNodes.Item(0);
@@ -224,8 +224,8 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
-        var imageMagickImage = new MagickImage(picture.Image!.AsByteArray());
+        var pictureShape = shapes.Last();
+        var imageMagickImage = new MagickImage(pictureShape.Picture.Image.AsByteArray());
         var pixels = imageMagickImage.GetPixels();
         pixels.Should().NotBeEmpty().And.AllSatisfy(x =>
         {
@@ -249,8 +249,7 @@ public class AddPictureTests : SCTest
 
         // Assert
         shapes.Should().HaveCount(1);
-        var picture = (IPicture)shapes.Last();
-        picture.Image!.Mime.Should().Be(expectedMime);
+        shapes.Last().Picture.Image.Mime.Should().Be(expectedMime);
         pres.Validate();
     }
     
