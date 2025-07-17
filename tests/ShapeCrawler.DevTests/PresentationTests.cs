@@ -314,8 +314,8 @@ public class PresentationTests : SCTest
     public void Save_saves_presentation_opened_from_Stream_when_it_was_Saved()
     {
         // Arrange
-        var pptx = TestAsset("autoshape-case003.pptx");
-        var pres = new Presentation(pptx);
+        var presStream = TestAsset("autoshape-case003.pptx");
+        var pres = new Presentation(presStream);
         var textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.SetText("Test");
 
@@ -323,7 +323,7 @@ public class PresentationTests : SCTest
         pres.Save();
 
         // Assert
-        pres = new Presentation(pptx);
+        pres = new Presentation(presStream);
         textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
