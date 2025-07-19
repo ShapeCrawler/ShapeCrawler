@@ -28,7 +28,7 @@ public sealed class Presentation : IPresentation
     private readonly SlideSize slideSize;
     private readonly MemoryStream presStream = new();
     private readonly Stream? inputPresStream;
-    private string? inputPresFile;
+    private readonly string? inputPresFile;
 
     /// <summary>
     ///    Opens presentation from the specified stream.
