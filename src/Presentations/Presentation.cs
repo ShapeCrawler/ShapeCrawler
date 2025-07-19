@@ -26,35 +26,20 @@ public sealed class Presentation : IPresentation
 {
     private readonly PresentationDocument presDocument;
     private readonly SlideSize slideSize;
+    private readonly MemoryStream presStream = new();
+    private readonly Stream? inputPresStream;
+    private readonly string? inputPresFile;
 
     /// <summary>
     ///    Opens presentation from the specified stream.
     /// </summary>
     public Presentation(Stream stream)
-        : this(PresentationDocument.Open(stream, true))
     {
-    }
-
-    /// <summary>
-    ///    Opens presentation from the specified file.
-    /// </summary>
-    public Presentation(string file)
-        : this(PresentationDocument.Open(file, true))
-    {
-    }
-
-    /// <summary>
-    ///     Creates a new presentation.
-    /// </summary>
-    public Presentation()
-        : this(new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx"))
-    {
-        this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
-    }
-
-    internal Presentation(PresentationDocument presDocument)
-    {
-        this.presDocument = presDocument;
+        this.inputPresStream = stream;
+        this.inputPresStream.Position = 0;
+        this.inputPresStream.CopyTo(this.presStream);
+        
+        this.presDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
@@ -67,6 +52,53 @@ public sealed class Presentation : IPresentation
             this.presDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
+    }
+
+    /// <summary>
+    ///    Opens presentation from the specified file.
+    /// </summary>
+    public Presentation(string file)
+    {
+        this.inputPresFile = file;
+        using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+        fileStream.CopyTo(this.presStream);
+        
+        this.presDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.presDocument);
+        this.Slides = new UpdatedSlideCollection(
+            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
+            this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatedSlideCollection(
+            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+        this.Properties =
+            this.presDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+                : new PresentationProperties(new DefaultPackageProperties());
+    }
+
+    /// <summary>
+    ///     Creates a new presentation.
+    /// </summary>
+    public Presentation()
+    {
+        this.presStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx");
+        
+        this.presDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.presDocument);
+        this.Slides = new UpdatedSlideCollection(
+            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
+            this.presDocument.PresentationPart);
+        this.Footer = new Footer(new UpdatedSlideCollection(
+            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+        this.Properties =
+            this.presDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+                : new PresentationProperties(new DefaultPackageProperties());
+        this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
 
     /// <inheritdoc />
@@ -107,12 +139,23 @@ public sealed class Presentation : IPresentation
     public ISlideMaster SlideMaster(int number) => this.SlideMasters[number - 1];
 
     /// <inheritdoc />
-    public void Save() => this.presDocument.Save();
+    public void Save()
+    {
+        this.presDocument.Save();
+        if (this.inputPresStream is not null)
+        {
+            this.presDocument.Clone(this.inputPresStream);
+        }
+        else if (this.inputPresFile is not null)
+        {
+            var savedPres = this.presDocument.Clone(this.inputPresFile);
+            savedPres.Dispose();
+        }
+    }
 
     /// <inheritdoc />
     public void Save(Stream stream)
     {
-        this.Save();
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
 
         if (stream is FileStream fileStream)

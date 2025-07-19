@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Slides;
@@ -38,7 +39,16 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
         set => size.Height = value;
     }
 
-    public IPresentation Presentation => new Presentation(new SCOpenXmlElement(pShapeTreeElement).PresentationDocument);
+    public IPresentation Presentation
+    {
+        get
+        {
+            var stream = new MemoryStream();
+            new SCOpenXmlElement(pShapeTreeElement).PresentationDocument.Clone(stream);
+            
+            return new Presentation(stream);
+        }
+    }
 
     public int Id
     {
