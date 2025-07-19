@@ -26,8 +26,8 @@ public sealed class Presentation : IPresentation
 {
     private readonly PresentationDocument presDocument;
     private readonly SlideSize slideSize;
-    private MemoryStream presStream = new();
-    private Stream? inputPresStream;
+    private readonly MemoryStream presStream = new();
+    private readonly Stream? inputPresStream;
     private string? inputPresFile;
 
     /// <summary>
@@ -142,16 +142,20 @@ public sealed class Presentation : IPresentation
     public void Save()
     {
         this.presDocument.Save();
-        if (this.inputPresStream != null)
+        if (this.inputPresStream is not null)
         {
             this.presDocument.Clone(this.inputPresStream);
+        }
+        else if (this.inputPresFile is not null)
+        {
+            var savedPres= this.presDocument.Clone(inputPresFile);
+            savedPres.Dispose();
         }
     }
 
     /// <inheritdoc />
     public void Save(Stream stream)
     {
-        // this.Save();
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
 
         if (stream is FileStream fileStream)
