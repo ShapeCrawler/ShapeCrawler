@@ -37,9 +37,9 @@ public sealed class Presentation : IPresentation
     {
         this.inputPresStream = stream;
         this.inputPresStream.Position = 0;
-        this.inputPresStream.CopyTo(presStream);
+        this.inputPresStream.CopyTo(this.presStream);
         
-        this.presDocument = PresentationDocument.Open(presStream, true);
+        this.presDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
@@ -61,9 +61,9 @@ public sealed class Presentation : IPresentation
     {
         this.inputPresFile = file;
         using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
-        fileStream.CopyTo(presStream);
+        fileStream.CopyTo(this.presStream);
         
-        this.presDocument = PresentationDocument.Open(presStream, true);
+        this.presDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
@@ -85,7 +85,7 @@ public sealed class Presentation : IPresentation
     {
         this.presStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx");
         
-        this.presDocument = PresentationDocument.Open(presStream, true);
+        this.presDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
         this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.presDocument);
@@ -148,7 +148,7 @@ public sealed class Presentation : IPresentation
         }
         else if (this.inputPresFile is not null)
         {
-            var savedPres= this.presDocument.Clone(inputPresFile);
+            var savedPres = this.presDocument.Clone(this.inputPresFile);
             savedPres.Dispose();
         }
     }
