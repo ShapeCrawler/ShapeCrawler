@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.71.1 - 2025-07-25
+🐞Fixed CVE-2025-53015 vulnerability.
+
 ## Version 0.71.0 - 2025-07-04
 🍀Added Text Direction
 
