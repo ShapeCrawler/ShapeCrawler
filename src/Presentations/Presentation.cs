@@ -101,6 +101,16 @@ public sealed class Presentation : IPresentation
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
 
+    /// <summary>
+    ///     Starts a fluent creation of a new presentation.
+    /// </summary>
+    public static DraftPresentation Create(Action<DraftPresentation> configure)
+    {
+        var draft = new DraftPresentation();
+        configure(draft);
+        return draft;
+    }
+
     /// <inheritdoc />
     public ISlideCollection Slides { get; }
 
@@ -335,4 +345,82 @@ public sealed class Presentation : IPresentation
             }
         }
     }
+
+    #region Fluent API
+
+    /// <summary>
+    ///     Represents a draft for building a presentation with a fluent API.
+    /// </summary>
+    public sealed class DraftPresentation
+    {
+        private readonly List<Action<Presentation>> actions = [];
+
+        /// <summary>
+        ///     Configures a slide within the presentation draft.
+        ///     For a new presentation this targets the first slide.
+        /// </summary>
+        public DraftPresentation Slide(Action<DraftSlide> configure)
+        {
+            var slideDraft = new DraftSlide();
+            configure(slideDraft);
+            this.actions.Add(p => slideDraft.ApplyTo(p));
+            return this;
+        }
+
+        /// <summary>
+        ///     Generates a new presentation applying the configured actions.
+        /// </summary>
+        public Presentation Generate()
+        {
+            var presentation = new Presentation();
+            foreach (var action in this.actions)
+            {
+                action(presentation);
+            }
+
+            return presentation;
+        }
+    }
+
+    /// <summary>
+    ///     Represents a draft for building a slide.
+    /// </summary>
+    public sealed class DraftSlide
+    {
+        private readonly List<Action<ISlide>> actions = [];
+
+        internal void ApplyTo(Presentation presentation)
+        {
+            // Target the existing first slide of a new presentation
+            var slide = presentation.Slide(1);
+            foreach (var action in this.actions)
+            {
+                action(slide);
+            }
+        }
+
+        /// <summary>
+        ///     Adds a picture to the slide with the specified name and geometry in points.
+        /// </summary>
+        public DraftSlide Picture(string name, int x, int y, int width, int height, Stream image)
+        {
+            this.actions.Add(slide =>
+            {
+                // Add the picture
+                slide.Shapes.AddPicture(image);
+
+                // Modify the last added picture
+                var picture = slide.Shapes.Last<IPicture>();
+                picture.Name = name;
+                picture.X = x;
+                picture.Y = y;
+                picture.Width = width;
+                picture.Height = height;
+            });
+
+            return this;
+        }
+    }
+
+    #endregion
 }
