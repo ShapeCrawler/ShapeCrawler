@@ -101,16 +101,6 @@ public sealed class Presentation : IPresentation
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
 
-    /// <summary>
-    ///     Starts a fluent creation of a new presentation.
-    /// </summary>
-    public static DraftPresentation Create(Action<DraftPresentation> configure)
-    {
-        var draft = new DraftPresentation();
-        configure(draft);
-        return draft;
-    }
-
     /// <inheritdoc />
     public ISlideCollection Slides { get; }
 
@@ -139,6 +129,16 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public IPresentationProperties Properties { get; }
+    
+    /// <summary>
+    ///     Starts a fluent creation of a new presentation.
+    /// </summary>
+    public static DraftPresentation Create(Action<DraftPresentation> configure)
+    {
+        var draft = new DraftPresentation();
+        configure(draft);
+        return draft;
+    }
 
     /// <inheritdoc />
     public ISlide Slide(int number) => this.Slides[number - 1];
@@ -388,17 +388,7 @@ public sealed class Presentation : IPresentation
     public sealed class DraftSlide
     {
         private readonly List<Action<ISlide>> actions = [];
-
-        internal void ApplyTo(Presentation presentation)
-        {
-            // Target the existing first slide of a new presentation
-            var slide = presentation.Slide(1);
-            foreach (var action in this.actions)
-            {
-                action(slide);
-            }
-        }
-
+        
         /// <summary>
         ///     Adds a picture to the slide with the specified name and geometry in points.
         /// </summary>
@@ -419,6 +409,16 @@ public sealed class Presentation : IPresentation
             });
 
             return this;
+        }
+        
+        internal void ApplyTo(Presentation presentation)
+        {
+            // Target the existing first slide of a new presentation
+            var slide = presentation.Slide(1);
+            foreach (var action in this.actions)
+            {
+                action(slide);
+            }
         }
     }
 
