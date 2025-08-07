@@ -212,7 +212,7 @@ public class PresentationTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case018_rotation.pptx"));
         var inserting = pres.Slide(1);
-        
+
         // Act
         pres.Slides.Add(inserting, 2);
 
@@ -327,7 +327,7 @@ public class PresentationTests : SCTest
         textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
-    
+
     [Test]
     public void Save_should_not_throw_exception()
     {
@@ -335,10 +335,10 @@ public class PresentationTests : SCTest
         var nonExpandableStream = new MemoryStream(presBytes);
         var pres = new Presentation(nonExpandableStream);
         var outputStream = new MemoryStream();
-        
+
         // Act
         var saving = () => pres.Save(outputStream);
-        
+
         // Assert
         saving.Should().NotThrow<Exception>();
     }
@@ -583,5 +583,30 @@ public class PresentationTests : SCTest
             destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    public void Create_creates_presentation()
+    {
+        // Arrange
+        var imageStream = TestAsset("reference image.png");
+
+        // Act
+        var pres = Presentation.Create(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture(
+                    name: "Picture",
+                    x: 100,
+                    y: 100,
+                    width: 200,
+                    height: 50,
+                    image: imageStream);
+            });
+        }).Generate();
+
+        // Assert
+        pres.Slide(1).Picture("Picture").Should().NotBeNull();
     }
 }
