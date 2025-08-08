@@ -184,7 +184,6 @@ public sealed class Presentation : IPresentation
     public void Save(Stream stream)
     {
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
-        // Materialize initial template slide if SlideIdList is empty but slide parts exist
         this.EnsureInitialSlideId();
         this.presDocument.PresentationPart!.Presentation.Save();
 
@@ -198,27 +197,6 @@ public sealed class Presentation : IPresentation
         else
         {
             this.presDocument.Clone(stream);
-        }
-    }
-
-    private void EnsureInitialSlideId()
-    {
-        var presentationPart = this.presDocument.PresentationPart!;
-        var presentation = presentationPart.Presentation;
-        presentation.SlideIdList ??= new P.SlideIdList();
-        var existingIds = presentation.SlideIdList.OfType<P.SlideId>().Select(s => s.RelationshipId!).ToHashSet();
-        uint nextIdVal = presentation.SlideIdList.OfType<P.SlideId>().Any()
-            ? presentation.SlideIdList.OfType<P.SlideId>().Max(s => s.Id!.Value) + 1u
-            : 256u;
-
-        // Ensure all slide parts are represented in SlideIdList
-        foreach (var slidePart in presentationPart.SlideParts)
-        {
-            var relId = presentationPart.GetIdOfPart(slidePart);
-            if (!existingIds.Contains(relId))
-            {
-                presentation.SlideIdList.Append(new P.SlideId { Id = nextIdVal++, RelationshipId = relId });
-            }
         }
     }
 
@@ -386,6 +364,27 @@ public sealed class Presentation : IPresentation
             }
         }
     }
+    
+    private void EnsureInitialSlideId()
+    {
+        var presentationPart = this.presDocument.PresentationPart!;
+        var presentation = presentationPart.Presentation;
+        presentation.SlideIdList ??= new P.SlideIdList();
+        var existingIds = presentation.SlideIdList.OfType<P.SlideId>().Select(s => s.RelationshipId!).ToHashSet();
+        uint nextIdVal = presentation.SlideIdList.OfType<P.SlideId>().Any()
+            ? presentation.SlideIdList.OfType<P.SlideId>().Max(s => s.Id!.Value) + 1u
+            : 256u;
+
+        // Ensure all slide parts are represented in SlideIdList
+        foreach (var slidePart in presentationPart.SlideParts)
+        {
+            var relId = presentationPart.GetIdOfPart(slidePart);
+            if (!existingIds.Contains(relId))
+            {
+                presentation.SlideIdList.Append(new P.SlideId { Id = nextIdVal++, RelationshipId = relId });
+            }
+        }
+    }
 
     #region Fluent API
 
@@ -463,11 +462,11 @@ public sealed class Presentation : IPresentation
         /// <summary>
         ///     Configures a picture using a nested builder.
         /// </summary>
-        public DraftSlide Picture(Action<PictureDraft> configure)
+        public DraftSlide Picture(Action<DraftPicture> configure)
         {
             this.actions.Add(slide =>
             {
-                var b = new PictureDraft();
+                var b = new DraftPicture();
                 configure(b);
                 slide.Shapes.AddPicture(b.ImageStream);
                 var pic = slide.Shapes.Last<IPicture>();
@@ -478,7 +477,7 @@ public sealed class Presentation : IPresentation
                 pic.Height = b.DraftHeight;
                 if (!string.IsNullOrEmpty(b.GeometryName))
                 {
-                    pic.GeometryType = (Geometry)Enum.Parse(typeof(Geometry), b.GeometryName.Replace(" ", string.Empty));
+                    pic.GeometryType = (Geometry)Enum.Parse(typeof(Geometry), b.GeometryName!.Replace(" ", string.Empty));
                 }
             });
 
@@ -503,18 +502,18 @@ public sealed class Presentation : IPresentation
         /// <summary>
         ///     Configures a text box using a nested builder.
         /// </summary>
-        public DraftSlide TextBox(Action<TextBoxDraft> configure)
+        public DraftSlide TextBox(Action<DraftTextBox> configure)
         {
             this.actions.Add(slide =>
             {
-                var builder = new TextBoxDraft();
+                var builder = new DraftTextBox();
                 configure(builder);
                 slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, Geometry.Rectangle);
                 var addedShape = slide.Shapes.Last<IShape>();
-                addedShape.Name = builder.BoxName;
+                addedShape.Name = builder.TextBoxName;
                 if (!string.IsNullOrEmpty(builder.Content))
                 {
-                    addedShape.TextBox!.SetText(builder.Content);
+                    addedShape.TextBox!.SetText(builder.Content!);
                 }
             });
 
@@ -573,28 +572,78 @@ public sealed class Presentation : IPresentation
         }
     }
 
-    public sealed class TextBoxDraft
+    /// <summary>
+    ///     Represents a draft text box.
+    /// </summary>
+    public sealed class DraftTextBox
     {
-        internal string BoxName { get; private set; } = "TextBox";
-        internal int PosX { get; private set; }
-        internal int PosY { get; private set; }
-        internal int BoxWidth { get; private set; } = 100;
-        internal int BoxHeight { get; private set; } = 50;
-        internal string? Content { get; private set; }
+        internal string TextBoxName { get; private set; } = "Text Box";
 
-        public TextBoxDraft NameMethod(string name)
+        internal int PosX { get; private set; }
+
+        internal int PosY { get; private set; }
+
+        internal int BoxWidth { get; private set; } = 100;
+
+        internal int BoxHeight { get; private set; } = 50;
+
+        internal string? Content { get; private set; }
+        
+        /// <summary>
+        ///     Sets name.
+        /// </summary>
+        public DraftTextBox Name(string name) => this.NameMethod(name);
+
+        /// <summary>
+        ///     Sets X-position.
+        /// </summary>
+        public DraftTextBox X(int x)
         {
-            this.BoxName = name;
+            this.PosX = x;
             return this;
         }
 
-        public TextBoxDraft Name(string name) => this.NameMethod(name);
+        /// <summary>
+        ///     Sets Y-position.
+        /// </summary>
+        public DraftTextBox Y(int y)
+        {
+            this.PosY = y;
+            return this;
+        }
 
-        public TextBoxDraft X(int x) { this.PosX = x; return this; }
-        public TextBoxDraft Y(int y) { this.PosY = y; return this; }
-        public TextBoxDraft Width(int width) { this.BoxWidth = width; return this; }
-        public TextBoxDraft Height(int height) { this.BoxHeight = height; return this; }
-        public TextBoxDraft Paragraph(string content) { this.Content = AppendParagraph(this.Content, content); return this; }
+        /// <summary>
+        ///     Sets width.
+        /// </summary>
+        public DraftTextBox Width(int width)
+        {
+            this.BoxWidth = width;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets height.
+        /// </summary>
+        public DraftTextBox Height(int height)
+        {
+            this.BoxHeight = height;
+            return this;
+        }
+
+        /// <summary>
+        ///     Adds paragraph.
+        /// </summary>
+        public DraftTextBox Paragraph(string content)
+        {
+            this.Content = AppendParagraph(this.Content, content);
+            return this;
+        }
+        
+        internal DraftTextBox NameMethod(string name)
+        {
+            this.TextBoxName = name;
+            return this;
+        }
 
         private static string AppendParagraph(string? current, string next)
         {
@@ -607,24 +656,87 @@ public sealed class Presentation : IPresentation
         }
     }
 
-    public sealed class PictureDraft
+    /// <summary>
+    ///     Represents a draft picture.
+    /// </summary>
+    public sealed class DraftPicture
     {
         internal string DraftName { get; private set; } = "Picture";
+
         internal int DraftX { get; private set; }
+
         internal int DraftY { get; private set; }
+
         internal int DraftWidth { get; private set; } = 100;
+
         internal int DraftHeight { get; private set; } = 100;
+
         internal Stream ImageStream { get; private set; } = new MemoryStream();
+
         internal string? GeometryName { get; private set; }
 
-        public PictureDraft NameMethod(string name) { this.DraftName = name; return this; }
-        public PictureDraft Name(string name) => this.NameMethod(name);
-        public PictureDraft X(int x) { this.DraftX = x; return this; }
-        public PictureDraft Y(int y) { this.DraftY = y; return this; }
-        public PictureDraft Width(int width) { this.DraftWidth = width; return this; }
-        public PictureDraft Height(int height) { this.DraftHeight = height; return this; }
-        public PictureDraft Image(Stream image) { this.ImageStream = image; return this; }
-        public PictureDraft GeometryType(string geometry) { this.GeometryName = geometry; return this; }
+        /// <summary>
+        ///     Sets name.
+        /// </summary>
+        public DraftPicture Name(string name)
+        {
+            this.DraftName = name;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets X-position.
+        /// </summary>
+        public DraftPicture X(int x)
+        {
+            this.DraftX = x;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets Y-position.
+        /// </summary>
+        public DraftPicture Y(int y) 
+        {
+            this.DraftY = y;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets width.
+        /// </summary>
+        public DraftPicture Width(int width)
+        {
+            this.DraftWidth = width;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets height.
+        /// </summary>
+        public DraftPicture Height(int height)
+        {
+            this.DraftHeight = height;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets image.
+        /// </summary>
+        public DraftPicture Image(Stream image)
+        {
+            this.ImageStream = image;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets geometry form.
+        /// </summary>
+        public DraftPicture GeometryType(string geometry)
+        {
+            this.GeometryName = geometry;
+            return this;
+        }
     }
 
     #endregion
