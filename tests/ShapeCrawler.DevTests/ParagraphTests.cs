@@ -10,12 +10,16 @@ public class ParagraphTests : SCTest
     public void IndentLevel_Setter_sets_indent_level()
     {
         // Act
-        var pres = new Presentation();
-        pres.Slides[0].Shapes.AddShape(100, 100, 500, 100);
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", 100, 100, 500, 100, "Test");
+            });
+        });
         var addedShape = pres.Slides[0].Shapes.Last();
         addedShape.TextBox!.Paragraphs.Add();
         var paragraph = addedShape.TextBox.Paragraphs.Last();
-        paragraph.Text = "Test";
 
         // Act
         paragraph.IndentLevel = 2;
@@ -71,8 +75,13 @@ public class ParagraphTests : SCTest
     public void HorizontalAlignment_Setter_sets_horizontal_alignment()
     {
         // Arrange
-        var pres = new Presentation();
-        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Table("Table 1", 10, 10, 2, 2);
+            });
+        });
         var table = pres.Slide(1).Shapes.Last<ITable>();
         var textBox = table.Rows[0].Cells[0].TextBox!;
         textBox.SetText("some-text");
@@ -378,12 +387,16 @@ public class ParagraphTests : SCTest
     public void Spacing_BeforeSpacingPoints_Setter_sets_before_spacing()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", 10, 10, 10, 10, "Test");
+            });
+        });
         var slide = pres.Slides[0];
-        slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes[0];
         var paragraph = addedShape.TextBox.Paragraphs[0];
-        paragraph.Text = "test";
 
         // Act
         paragraph.Spacing.BeforeSpacingPoints = 50;

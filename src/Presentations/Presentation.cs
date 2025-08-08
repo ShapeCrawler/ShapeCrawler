@@ -449,6 +449,27 @@ public sealed class Presentation : IPresentation
         }
 
         /// <summary>
+        ///     Configures a text box using a nested builder.
+        /// </summary>
+        public DraftSlide TextBox(Action<TextBoxDraft> configure)
+        {
+            this.actions.Add(slide =>
+            {
+                var builder = new TextBoxDraft();
+                configure(builder);
+                slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, Geometry.Rectangle);
+                var addedShape = slide.Shapes.Last<IShape>();
+                addedShape.Name = builder.BoxName;
+                if (!string.IsNullOrEmpty(builder.Content))
+                {
+                    addedShape.TextBox!.SetText(builder.Content);
+                }
+            });
+
+            return this;
+        }
+
+        /// <summary>
         ///     Adds a line shape.
         /// </summary>
         public DraftSlide Line(string name, int startPointX, int startPointY, int endPointX, int endPointY)
@@ -497,6 +518,40 @@ public sealed class Presentation : IPresentation
             {
                 action(slide);
             }
+        }
+    }
+
+    public sealed class TextBoxDraft
+    {
+        internal string BoxName { get; private set; } = "TextBox";
+        internal int PosX { get; private set; }
+        internal int PosY { get; private set; }
+        internal int BoxWidth { get; private set; } = 100;
+        internal int BoxHeight { get; private set; } = 50;
+        internal string? Content { get; private set; }
+
+        public TextBoxDraft NameMethod(string name)
+        {
+            this.BoxName = name;
+            return this;
+        }
+
+        public TextBoxDraft Name(string name) => this.NameMethod(name);
+
+        public TextBoxDraft X(int x) { this.PosX = x; return this; }
+        public TextBoxDraft Y(int y) { this.PosY = y; return this; }
+        public TextBoxDraft Width(int width) { this.BoxWidth = width; return this; }
+        public TextBoxDraft Height(int height) { this.BoxHeight = height; return this; }
+        public TextBoxDraft Paragraph(string content) { this.Content = AppendParagraph(this.Content, content); return this; }
+
+        private static string AppendParagraph(string? current, string next)
+        {
+            if (string.IsNullOrEmpty(current))
+            {
+                return next;
+            }
+
+            return current + Environment.NewLine + next;
         }
     }
 
