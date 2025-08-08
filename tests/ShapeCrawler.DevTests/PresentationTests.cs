@@ -10,17 +10,6 @@ namespace ShapeCrawler.DevTests;
 public class PresentationTests : SCTest
 {
     [Test]
-    public void Create_creates_a_new_presentation()
-    {
-        // Act
-        var pres = new Presentation();
-
-        // Assert
-        pres.Should().NotBeNull();
-        pres.Validate();
-    }
-
-    [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
         // Arrange
@@ -535,6 +524,49 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Create_creates_new_presentation_with_slide()
+    {
+        // Arrange
+        var imageStream = TestAsset("reference image.png");
+
+        // Act
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture(
+                    name: "Picture",
+                    x: 100,
+                    y: 100,
+                    width: 200,
+                    height: 50,
+                    image: imageStream);
+            });
+        });
+
+        // Assert
+        pres.Slide(1).Picture("Picture").Should().NotBeNull();
+    }
+    
+    [Test]
+    public void Constructor_creates_new_presentation()
+    {
+        // Act
+        var pres = new Presentation();
+
+        // Assert
+        pres.Should().NotBeNull();
+        pres.Validate();
+    }
+    
+    [Test]
+    public void Constructor_creates_empty_presentation()
+    {
+        // Act-Assert
+        new Presentation().Slides.Should().BeEmpty();
+    }
+
+    [Test]
     public void AsMarkdown_returns_markdown_string()
     {
         // Arrange
@@ -583,30 +615,5 @@ public class PresentationTests : SCTest
             destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
-    }
-
-    [Test]
-    public void Create_creates_presentation()
-    {
-        // Arrange
-        var imageStream = TestAsset("reference image.png");
-
-        // Act
-        var pres = Presentation.Create(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.Picture(
-                    name: "Picture",
-                    x: 100,
-                    y: 100,
-                    width: 200,
-                    height: 50,
-                    image: imageStream);
-            });
-        }).Generate();
-
-        // Assert
-        pres.Slide(1).Picture("Picture").Should().NotBeNull();
     }
 }

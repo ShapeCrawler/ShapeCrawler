@@ -101,6 +101,19 @@ public sealed class Presentation : IPresentation
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
 
+    /// <summary>
+    ///     Creates a new presentation using fluent configuration.
+    /// </summary>
+    public Presentation(Action<DraftPresentation> configure)
+        : this()
+    {
+        var draft = new DraftPresentation();
+        configure(draft);
+        draft.ApplyTo(this);
+    }
+
+    // Note: Create(Action<DraftPresentation>) is defined once earlier in the class.
+
     /// <inheritdoc />
     public ISlideCollection Slides { get; }
 
@@ -379,6 +392,14 @@ public sealed class Presentation : IPresentation
             }
 
             return presentation;
+        }
+        
+        internal void ApplyTo(Presentation presentation)
+        {
+            foreach (var action in this.actions)
+            {
+                action(presentation);
+            }
         }
     }
 
