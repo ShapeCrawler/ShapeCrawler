@@ -152,17 +152,22 @@ public class ParagraphTests : SCTest
     public void Text_Setter_sets_paragraph_text_in_New_Presentation()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", 10, 10, 10, 10, "Test");
+            });
+        });
         var slide = pres.Slides[0];
-        slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes.Last();
         var paragraph = addedShape.TextBox!.Paragraphs[0];
 
         // Act
-        paragraph.Text = "test";
+        paragraph.Text = "New Test";
 
         // Assert
-        paragraph.Text.Should().Be("test");
+        paragraph.Text.Should().Be("New Test");
         pres.Validate();
     }
 
@@ -415,12 +420,16 @@ public class ParagraphTests : SCTest
     public void Spacing_AfterSpacingPoints_Setter_sets_after_spacing()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", 10, 10, 10, 10, "Test");
+            });
+        });
         var slide = pres.Slides[0];
-        slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes[0];
         var paragraph = addedShape.TextBox.Paragraphs[0];
-        paragraph.Text = "test";
 
         // Act
         paragraph.Spacing.AfterSpacingPoints = 50;

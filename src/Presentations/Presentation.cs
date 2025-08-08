@@ -432,6 +432,31 @@ public sealed class Presentation : IPresentation
 
             return this;
         }
+
+        /// <summary>
+        ///     Configures a picture using a nested builder.
+        /// </summary>
+        public DraftSlide Picture(Action<PictureDraft> configure)
+        {
+            this.actions.Add(slide =>
+            {
+                var b = new PictureDraft();
+                configure(b);
+                slide.Shapes.AddPicture(b.ImageStream);
+                var pic = slide.Shapes.Last<IPicture>();
+                pic.Name = b.DraftName;
+                pic.X = b.DraftX;
+                pic.Y = b.DraftY;
+                pic.Width = b.DraftWidth;
+                pic.Height = b.DraftHeight;
+                if (!string.IsNullOrEmpty(b.GeometryName))
+                {
+                    pic.GeometryType = (Geometry)Enum.Parse(typeof(Geometry), b.GeometryName.Replace(" ", string.Empty));
+                }
+            });
+
+            return this;
+        }
         
         /// <summary>
         ///     Adds a text box (auto shape) and sets its content.
@@ -553,6 +578,26 @@ public sealed class Presentation : IPresentation
 
             return current + Environment.NewLine + next;
         }
+    }
+
+    public sealed class PictureDraft
+    {
+        internal string DraftName { get; private set; } = "Picture";
+        internal int DraftX { get; private set; }
+        internal int DraftY { get; private set; }
+        internal int DraftWidth { get; private set; } = 100;
+        internal int DraftHeight { get; private set; } = 100;
+        internal Stream ImageStream { get; private set; } = new MemoryStream();
+        internal string? GeometryName { get; private set; }
+
+        public PictureDraft NameMethod(string name) { this.DraftName = name; return this; }
+        public PictureDraft Name(string name) => this.NameMethod(name);
+        public PictureDraft X(int x) { this.DraftX = x; return this; }
+        public PictureDraft Y(int y) { this.DraftY = y; return this; }
+        public PictureDraft Width(int width) { this.DraftWidth = width; return this; }
+        public PictureDraft Height(int height) { this.DraftHeight = height; return this; }
+        public PictureDraft Image(Stream image) { this.ImageStream = image; return this; }
+        public PictureDraft GeometryType(string geometry) { this.GeometryName = geometry; return this; }
     }
 
     #endregion
