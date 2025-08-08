@@ -370,7 +370,17 @@ public sealed class Presentation : IPresentation
         var presentationPart = this.presDocument.PresentationPart!;
         var presentation = presentationPart.Presentation;
         presentation.SlideIdList ??= new P.SlideIdList();
-        var existingIds = presentation.SlideIdList.OfType<P.SlideId>().Select(s => s.RelationshipId!).ToHashSet();
+#if NETSTANDARD2_0
+        var existingIds = new HashSet<string>(
+            presentation.SlideIdList
+                .OfType<P.SlideId>()
+                .Select(s => (string)s.RelationshipId!));
+#else
+        var existingIds = presentation.SlideIdList
+            .OfType<P.SlideId>()
+            .Select(s => (string)s.RelationshipId!)
+            .ToHashSet();
+#endif
         uint nextIdVal = presentation.SlideIdList.OfType<P.SlideId>().Any()
             ? presentation.SlideIdList.OfType<P.SlideId>().Max(s => s.Id!.Value) + 1u
             : 256u;
