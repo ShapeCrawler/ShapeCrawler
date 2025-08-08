@@ -447,6 +447,36 @@ public sealed class Presentation : IPresentation
 
             return this;
         }
+
+        /// <summary>
+        ///     Adds a line shape.
+        /// </summary>
+        public DraftSlide Line(string name, int startPointX, int startPointY, int endPointX, int endPointY)
+        {
+            this.actions.Add(slide =>
+            {
+                slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
+                var line = slide.Shapes.Last<ILine>();
+                line.Name = name;
+            });
+
+            return this;
+        }
+        
+        /// <summary>
+        ///     Adds a table with specified size.
+        /// </summary>
+        public DraftSlide Table(string name, int x, int y, int columnsCount, int rowsCount)
+        {
+            this.actions.Add(slide =>
+            {
+                slide.Shapes.AddTable(x, y, columnsCount, rowsCount);
+                var table = slide.Shapes.Last<IShape>();
+                table.Name = name;
+            });
+
+            return this;
+        }
         
         internal void ApplyTo(Presentation presentation)
         {

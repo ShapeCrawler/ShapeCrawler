@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
+using ShapeCrawler.Texts;
 
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
@@ -323,9 +324,14 @@ public class FontTests : SCTest
     public void LatinName_Setter_sets_font_for_the_latin_characters_of_table_cell()
     {
         // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.Shapes.AddTable(40, 40, 6, 5);
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Table("Table 1", x: 40, y: 40, columnsCount: 6, rowsCount: 5);
+            });
+        });
+        var slide = pres.Slide(1);
         var table = (ITable)slide.Shapes.Last();
         var cell = table[1, 2];
         cell.TextBox.SetText("Test");
@@ -446,9 +452,14 @@ public class FontTests : SCTest
     public void LatinName_Setter()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", 0, 0, 100, 100, "Test");
+            });
+        });
         var slide = pres.Slide(1);
-        slide.Shapes.AddShape(0, 0, 100, 100, Geometry.Rectangle, "Test");
         var addedShape = slide.Shapes.Last();
         var font = addedShape.TextBox!.Paragraphs[0].Portions[0].Font!;
         var stream = new MemoryStream();
