@@ -151,11 +151,9 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var removingSlide = pres.Slides[0];
-        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
 
         // Act
-        removingSlide.Remove();
         pres.Slides.Add(layout.Number);
 
         // Assert

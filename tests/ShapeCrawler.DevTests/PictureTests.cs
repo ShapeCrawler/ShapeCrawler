@@ -247,22 +247,25 @@ public class PictureTests : SCTest
     [TestCase("UTurnArrow")]
     [TestCase("LineInverse")]
     [TestCase("RightTriangle")]
-    public void Picture_geometry_setter_sets_expected_values(string expectedStr)
+    public void Picture_geometry_setter_sets_expected_values(string geometryName)
     {
         // Arrange
-        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryName);
         var image = TestAsset("063 vector image.svg");
-        image.Position = 0;
-        shapes.AddPicture(image);
-        var picture = shapes.Last().As<IPicture>();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture("Picture 1", 10, 10, 500, 500, image);
+            });
+        });
+        var picture = pres.Slide(1).Picture("Picture 1");
 
         // Act
-        picture.GeometryType = expected;
+        picture.GeometryType = geometry;
 
         // Assert
-        picture.GeometryType.Should().Be(expected);
+        picture.GeometryType.Should().Be(geometry);
         pres.Validate();
     }
 

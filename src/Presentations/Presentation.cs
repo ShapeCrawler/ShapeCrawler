@@ -165,6 +165,9 @@ public sealed class Presentation : IPresentation
     /// <inheritdoc />
     public void Save()
     {
+        // Materialize initial template slide if SlideIdList is empty but slide parts exist
+        this.EnsureInitialSlideId();
+        this.presDocument.PresentationPart!.Presentation.Save();
         this.presDocument.Save();
         if (this.inputPresStream is not null)
         {
@@ -181,6 +184,9 @@ public sealed class Presentation : IPresentation
     public void Save(Stream stream)
     {
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
+        // Materialize initial template slide if SlideIdList is empty but slide parts exist
+        this.EnsureInitialSlideId();
+        this.presDocument.PresentationPart!.Presentation.Save();
 
         if (stream is FileStream fileStream)
         {
@@ -192,6 +198,27 @@ public sealed class Presentation : IPresentation
         else
         {
             this.presDocument.Clone(stream);
+        }
+    }
+
+    private void EnsureInitialSlideId()
+    {
+        var presentationPart = this.presDocument.PresentationPart!;
+        var presentation = presentationPart.Presentation;
+        presentation.SlideIdList ??= new P.SlideIdList();
+        var existingIds = presentation.SlideIdList.OfType<P.SlideId>().Select(s => s.RelationshipId!).ToHashSet();
+        uint nextIdVal = presentation.SlideIdList.OfType<P.SlideId>().Any()
+            ? presentation.SlideIdList.OfType<P.SlideId>().Max(s => s.Id!.Value) + 1u
+            : 256u;
+
+        // Ensure all slide parts are represented in SlideIdList
+        foreach (var slidePart in presentationPart.SlideParts)
+        {
+            var relId = presentationPart.GetIdOfPart(slidePart);
+            if (!existingIds.Contains(relId))
+            {
+                presentation.SlideIdList.Append(new P.SlideId { Id = nextIdVal++, RelationshipId = relId });
+            }
         }
     }
 
