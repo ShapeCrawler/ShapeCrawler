@@ -549,7 +549,7 @@ public class PresentationTests : SCTest
     }
     
     [Test]
-    public void Constructor_creates_new_presentation()
+    public void Constructor_creates_presentation()
     {
         // Act
         var pres = new Presentation();

@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
+using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #if NETSTANDARD2_0
@@ -432,10 +433,36 @@ public sealed class Presentation : IPresentation
             return this;
         }
         
+        /// <summary>
+        ///     Adds a text box (auto shape) and sets its content.
+        /// </summary>
+        public DraftSlide TextBox(string name, int x, int y, int width, int height, string content)
+        {
+            this.actions.Add(slide =>
+            {
+                slide.Shapes.AddShape(x, y, width, height, Geometry.Rectangle, content);
+                var addedShape = slide.Shapes.Last<IShape>();
+                addedShape.Name = name;
+            });
+
+            return this;
+        }
+        
         internal void ApplyTo(Presentation presentation)
         {
-            // Target the existing first slide of a new presentation
-            var slide = presentation.Slide(1);
+            // Ensure there is at least one slide
+            if (presentation.Slides.Count == 0)
+            {
+                // Ensure SlideIdList exists in the SDK presentation
+                var sdkPres = presentation.presDocument.PresentationPart!.Presentation;
+                sdkPres.SlideIdList ??= new P.SlideIdList();
+
+                var blankLayout = presentation.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+                presentation.Slides.Add(blankLayout.Number);
+            }
+
+            // Target the first slide
+            var slide = presentation.Slides[0];
             foreach (var action in this.actions)
             {
                 action(slide);
