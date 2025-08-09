@@ -569,7 +569,10 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -744,7 +747,10 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var geometry = (Geometry)Enum.Parse(typeof(Geometry), geometryStr);
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70, geometry);
         var shape = shapes.Last();

@@ -1170,7 +1170,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var mStream = new MemoryStream();
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
         var table = slide.Shapes.Last<ITable>();

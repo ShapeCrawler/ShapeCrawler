@@ -412,8 +412,6 @@ public sealed class Presentation : IPresentation
         public DraftPresentation Slide()
         {
             var slideDraft = new DraftSlide();
-            Action<DraftSlide> configure = _ => { };
-            configure(slideDraft);
             this.actions.Add(p => slideDraft.ApplyTo(p));
             return this;
         }
@@ -427,6 +425,51 @@ public sealed class Presentation : IPresentation
             var slideDraft = new DraftSlide();
             configure(slideDraft);
             this.actions.Add(p => slideDraft.ApplyTo(p));
+            return this;
+        }
+        
+        /// <summary>
+        ///     Adds a new slide using the specified layout.
+        /// </summary>
+        public DraftPresentation Slide(ISlideLayout layout)
+        {
+            this.actions.Add(p =>
+            {
+                // If no slides yet, create the initial slide first to ensure consistent numbering
+                if (p.Slides.Count == 0)
+                {
+                    var blank = p.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+                    p.Slides.Add(blank.Number);
+                }
+
+                p.Slides.Add(layout.Number);
+            });
+            return this;
+        }
+
+        /// <summary>
+        ///     Adds a new slide using the slide layout found by name on the first slide master.
+        /// </summary>
+        public DraftPresentation Slide(string layoutName)
+        {
+            if (string.IsNullOrWhiteSpace(layoutName))
+            {
+                throw new ArgumentException("Layout name must be provided", nameof(layoutName));
+            }
+
+            this.actions.Add(p =>
+            {
+                var layout = p.SlideMaster(1).SlideLayout(layoutName);
+                if (p.Slides.Count == 0)
+                {
+                    // Ensure initial slide id list and add via layout
+                    p.Slides.Add(layout.Number);
+                }
+                else
+                {
+                    p.Slides.Add(layout.Number);
+                }
+            });
             return this;
         }
         
