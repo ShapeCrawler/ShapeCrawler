@@ -88,6 +88,12 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             };
         }
 
+        // Ensure SlideIdList exists for presentations that don't initialize it
+        if (presPart.Presentation.SlideIdList == null)
+        {
+            presPart.Presentation.SlideIdList = new P.SlideIdList();
+        }
+
         var pSlideIdList = presPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
             ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1

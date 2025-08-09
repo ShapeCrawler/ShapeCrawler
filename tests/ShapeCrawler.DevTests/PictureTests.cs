@@ -247,37 +247,51 @@ public class PictureTests : SCTest
     [TestCase("UTurnArrow")]
     [TestCase("LineInverse")]
     [TestCase("RightTriangle")]
-    public void Picture_geometry_setter_sets_expected_values(string expectedStr)
+    public void Picture_geometry_setter_sets_expected_values(string geometryName)
     {
         // Arrange
-        var expected = (Geometry)Enum.Parse(typeof(Geometry),expectedStr);
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryName);
         var image = TestAsset("063 vector image.svg");
-        image.Position = 0;
-        shapes.AddPicture(image);
-        var picture = shapes.Last().As<IPicture>();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture("Picture 1", 10, 10, 500, 500, image);
+            });
+        });
+        var picture = pres.Slide(1).Picture("Picture 1");
 
         // Act
-        picture.GeometryType = expected;
+        picture.GeometryType = geometry;
 
         // Assert
-        picture.GeometryType.Should().Be(expected);
+        picture.GeometryType.Should().Be(geometry);
         pres.Validate();
     }
 
-    [TestCase("RoundedRectangle")]
-    [TestCase("TopCornersRoundedRectangle")]
-    public void CornerSize_Setter_sets_corner_size(string geometryName)
+    [TestCase("Rounded Rectangle")]
+    [TestCase("Top Corners Rounded Rectangle")]
+    public void CornerSize_Setter_sets_corner_size(string geometry)
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("063 vector image.svg");
-        shapes.AddPicture(image);
-        var picture = shapes.Last().As<IPicture>();
-        var geometry = (Geometry)Enum.Parse(typeof(Geometry),geometryName);
-        picture.GeometryType = geometry;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture(picture =>
+                {
+                    picture.Name("Picture 1");
+                    picture.X(10);
+                    picture.Y(10);
+                    picture.Width(100);
+                    picture.Height(100);
+                    picture.Image(image);
+                    picture.GeometryType(geometry);
+                });
+            });
+        });
+        var picture = pres.Slide(1).Picture("Picture 1");
 
         // Act
         picture.CornerSize = 10m;
