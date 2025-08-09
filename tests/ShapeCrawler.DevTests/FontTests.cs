@@ -348,13 +348,16 @@ public class FontTests : SCTest
     public void LatinName_Setter_sets_font_for_the_latin_characters()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
-        shapes.AddShape(10,20,30,40);
-        var shape1 = shapes.Last();
-        shapes.AddShape(100,20,30,40);
-        var shape2 = shapes.Last();
-        shape1.TextBox!.SetText("Shape 1");
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", x: 10, y: 20, width: 30, height: 40, content: "Shape 1");
+                slide.TextBox("TextBox 2", x: 100, y: 20, width: 30, height: 40, content: "Test");
+            });
+        });
+        var shape1 = pres.Slide(1).Shape("TextBox 1");
+        var shape2 = pres.Slide(1).Shape("TextBox 2");
         shape1.TextBox!.Paragraphs[0].Portions[0].Font!.LatinName = "Segoe UI Semibold";
 
         // Act

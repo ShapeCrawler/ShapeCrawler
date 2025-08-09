@@ -354,7 +354,7 @@ public class PresentationTests : SCTest
     public void Footer_AddSlideNumber_adds_slide_number()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p => { p.Slide(_ => { }); });
 
         // Act
         pres.Footer.AddSlideNumber();
