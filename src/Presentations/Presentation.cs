@@ -409,6 +409,19 @@ public sealed class Presentation : IPresentation
         ///     Configures a slide within the presentation draft.
         ///     For a new presentation this targets the first slide.
         /// </summary>
+        public DraftPresentation Slide()
+        {
+            var slideDraft = new DraftSlide();
+            Action<DraftSlide> configure = _ => { };
+            configure(slideDraft);
+            this.actions.Add(p => slideDraft.ApplyTo(p));
+            return this;
+        }
+        
+        /// <summary>
+        ///     Configures a slide within the presentation draft.
+        ///     For a new presentation this targets the first slide.
+        /// </summary>
         public DraftPresentation Slide(Action<DraftSlide> configure)
         {
             var slideDraft = new DraftSlide();
@@ -416,7 +429,7 @@ public sealed class Presentation : IPresentation
             this.actions.Add(p => slideDraft.ApplyTo(p));
             return this;
         }
-
+        
         /// <summary>
         ///     Generates a new presentation applying the configured actions.
         /// </summary>
