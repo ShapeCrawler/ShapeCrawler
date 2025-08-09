@@ -120,7 +120,7 @@ namespace ShapeCrawler.DevTests
         public void SetMarkdownText()
         {
             // Arrange
-            var pres = new Presentation();
+            var pres = new Presentation(p=>p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddShape(100, 100, 200, 200);
             var shape = shapes.Last();
@@ -138,7 +138,7 @@ namespace ShapeCrawler.DevTests
         public void SetMarkdownText_sets_list()
         {
             // Arrange
-            var pres = new Presentation();
+            var pres = new Presentation(p=>p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddShape(100, 100, 200, 200);
             var shape = shapes.Last();
@@ -199,7 +199,7 @@ namespace ShapeCrawler.DevTests
         public void SetText_sets_text_for_New_Shape()
         {
             // Arrange
-            var pres = new Presentation();
+            var pres = new Presentation(p=>p.Slide());
             var shapes = pres.Slides[0].Shapes;
             shapes.AddShape(50, 60, 100, 70);
             var textBox = shapes.Last().TextBox!;
@@ -474,7 +474,7 @@ namespace ShapeCrawler.DevTests
         public void SetText_adds_two_paragraphs_in_the_table_cell()
         {
             // Arrange
-            var pres = new Presentation();
+            var pres = new Presentation(p=>p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddTable(50, 50, 2, 2);
             var cellTextBox = pres.Slide(1).First<ITable>()[0, 0].TextBox!;

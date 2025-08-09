@@ -476,7 +476,7 @@ public class TableTests : SCTest
     public void Row_Cell_TopBorder_Width_Setter_sets_top_border_width_in_points()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(40, 40, 2, 1);
         var table = (ITable)slide.Shapes.Last();
@@ -507,7 +507,7 @@ public class TableTests : SCTest
     public void Row_Cell_TopBorder_Width_Getter_returns_top_border_width_in_points()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(40, 40, 2, 1);
         var table = (ITable)slide.Shapes.Last();
@@ -698,7 +698,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_cells_with_content()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         pres.Slides[0].Shapes.AddTable(10, 10, 3, 4);
         var table = (ITable)pres.Slides[0].Shapes.Last();
         table[1, 0].TextBox.SetText("A");
@@ -984,7 +984,7 @@ public class TableTests : SCTest
     public void MergeCells()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
         var table = slide.Shapes.Last() as ITable;
@@ -1000,7 +1000,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x0_and_0x1_then_1x1_and_1x2_cells()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 4, 2);
         var table = slide.Shapes.Last() as ITable;
@@ -1020,7 +1020,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x1_and_1x1()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 4, 2);
         var table = (ITable)slide.Shapes.Last();
@@ -1199,7 +1199,7 @@ public class TableTests : SCTest
     public void TableStyleOptions_property_getters_return_table_style_options()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddTable(0, 0, 3, 2);
         var table = slide.Shapes.Last<ITable>();
@@ -1220,7 +1220,7 @@ public class TableTests : SCTest
     public void Height_Setter_should_proportionally_increase_the_row_heights_When_the_new_table_height_is_bigger()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
         var addedTable = pres.Slide(1).Shapes.Last<ITable>();
 
