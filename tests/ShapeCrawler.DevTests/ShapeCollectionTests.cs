@@ -133,9 +133,12 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_a_new_Line_shape_from_raw_open_xml_content()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
         var xml = StringOf("line-shape.xml");
-        var shapes = pres.Slides[0].Shapes;
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(xml);
@@ -150,8 +153,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line_Right_Up()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 20, endPointY: 5);
@@ -171,8 +177,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line_Up_Up()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 10, endPointY: 5);
@@ -190,8 +199,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line_Left_Up()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 40, endPointY: 20);
@@ -209,8 +221,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line_Left_Down()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 50, startPointY: 10, endPointX: 40, endPointY: 20);
@@ -228,8 +243,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line_Right_Right()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
@@ -247,8 +265,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
@@ -266,8 +287,11 @@ public class ShapeCollectionTests : SCTest
     public void AddLine_adds_line_Left_Left()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 80, endPointY: 50);
@@ -732,8 +756,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_should_not_change_the_underlying_file_size(string image)
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var imageStream = TestAsset(image);
         const int fileSizeTolerance = 2000;
 
@@ -749,17 +776,32 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_picture_from_another_presentation()
     {
         // Arrange
-        var sourcePres = new Presentation();
         var image = TestAsset("09 png image.png");
-        sourcePres.Slide(1).Shapes.AddPicture(image);
-        var picture = sourcePres.Slide(1).First<IPicture>();
-        var destPres = new Presentation();
+        var sourcePres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture(
+                    "Picture 1", 
+                    x: 100, 
+                    y: 100, 
+                    width: 200, 
+                    height: 200,
+                    image: image);
+            });
+        });
+        
+        var sourcePicture = sourcePres.Slide(1).Picture("Picture 1");
+        var targetPres = new Presentation(pres=>
+        {
+            pres.Slide();
+        });
         
         // Act
-        destPres.Slide(1).Shapes.Add(picture);
+        targetPres.Slide(1).Shapes.Add(sourcePicture);
         
         // Assert
-        destPres.Validate();
+        targetPres.Validate();
     }
     
     [Test]
@@ -989,14 +1031,14 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
         var slides = pres.Slides;
 
         // Act
         slides.Add(layout.Number);
 
         // Assert
-        slides[1].Shapes.Should().HaveCount(0);
+        slides[0].Shapes.Should().HaveCount(0);
     }
 
     [Test]
@@ -1068,7 +1110,10 @@ public class ShapeCollectionTests : SCTest
     [Test]
     public void AddBarChart_adds_bar_chart()
     {
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
         var shapes = pres.Slide(1).Shapes;
         int x = 100;
         int y = 100;

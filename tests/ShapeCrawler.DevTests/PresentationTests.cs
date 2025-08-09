@@ -166,7 +166,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
         var stream = new MemoryStream();
 
         // Act
@@ -174,7 +174,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Save(stream);
-        new Presentation(stream).Slide(2).Shapes.Should().BeEmpty();
+        new Presentation(stream).Slide(1).Shapes.Should().BeEmpty();
     }
 
     [Test]
@@ -190,7 +190,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Save(stream);
-        new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
+        new Presentation(stream).Slide(1).Shapes.Count.Should().Be(1);
     }
 
     [Test]
