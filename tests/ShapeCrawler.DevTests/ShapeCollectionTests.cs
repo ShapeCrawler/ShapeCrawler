@@ -390,8 +390,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_svg_picture()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("063 vector image.svg");
         image.Position = 0;
 
@@ -436,8 +439,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_on_two_different_slides()
     {
         // Arrange
-        var pres = new Presentation();
-        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
         pres.Slides.Add(layout.Number);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
@@ -481,8 +487,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_sets_valid_svg_content()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("063 vector image.svg");
         image.Position = 0;
         shapes.AddPicture(image);
@@ -499,7 +508,10 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_preserves_original_1600_width()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
         var imageStream = TestAsset("11 image 1600x690.jpg");
         var shapes = pres.Slide(1).Shapes;
         
@@ -573,8 +585,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_svg_picture_no_width_height_tags()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("070 vector image-wide.svg");
         image.Position = 0;
 
@@ -594,8 +609,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_picture_with_transparent_background()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("067 vector image-blank.svg");
 
         // Act
@@ -618,8 +636,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_should_set_valid_mime(string image, string expectedMime)
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var imageStream = TestAsset(image);
 
         // Act
@@ -683,8 +704,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_should_set_jpeg_mime()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("04 heic image.heic");
 
         // Act
@@ -706,7 +730,10 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_throws_exception_when_the_specified_stream_is_non_image()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
         var shapes = pres.Slide(1).Shapes;
         var stream = TestAsset("autoshape-case011_save-as-png.pptx");
 
@@ -721,8 +748,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_picture_with_correct_Height()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("09 png image.png");
 
         // Act
@@ -737,8 +767,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_adds_picture_with_correct_mime()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var image = TestAsset("06 jpeg image.jpg");
 
         // Act
@@ -1077,8 +1110,11 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_sets_384_ppi_resolution_for_svg_picture()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
+        var shapes = pres.Slide(1).Shapes;
         var svg = TestAsset("063 vector image.svg");
         
         // Act
