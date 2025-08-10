@@ -10,17 +10,6 @@ namespace ShapeCrawler.DevTests;
 public class PresentationTests : SCTest
 {
     [Test]
-    public void Create_creates_a_new_presentation()
-    {
-        // Act
-        var pres = new Presentation();
-
-        // Assert
-        pres.Should().NotBeNull();
-        pres.Validate();
-    }
-
-    [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
         // Arrange
@@ -162,11 +151,9 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var removingSlide = pres.Slides[0];
-        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
 
         // Act
-        removingSlide.Remove();
         pres.Slides.Add(layout.Number);
 
         // Assert
@@ -179,7 +166,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
         var stream = new MemoryStream();
 
         // Act
@@ -187,7 +174,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Save(stream);
-        new Presentation(stream).Slide(2).Shapes.Should().BeEmpty();
+        new Presentation(stream).Slide(1).Shapes.Should().BeEmpty();
     }
 
     [Test]
@@ -203,7 +190,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Save(stream);
-        new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
+        new Presentation(stream).Slide(1).Shapes.Count.Should().Be(1);
     }
 
     [Test]
@@ -212,7 +199,7 @@ public class PresentationTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case018_rotation.pptx"));
         var inserting = pres.Slide(1);
-        
+
         // Act
         pres.Slides.Add(inserting, 2);
 
@@ -327,7 +314,7 @@ public class PresentationTests : SCTest
         textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
-    
+
     [Test]
     public void Save_should_not_throw_exception()
     {
@@ -335,10 +322,10 @@ public class PresentationTests : SCTest
         var nonExpandableStream = new MemoryStream(presBytes);
         var pres = new Presentation(nonExpandableStream);
         var outputStream = new MemoryStream();
-        
+
         // Act
         var saving = () => pres.Save(outputStream);
-        
+
         // Assert
         saving.Should().NotThrow<Exception>();
     }
@@ -367,7 +354,10 @@ public class PresentationTests : SCTest
     public void Footer_AddSlideNumber_adds_slide_number()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
 
         // Act
         pres.Footer.AddSlideNumber();
@@ -532,6 +522,49 @@ public class PresentationTests : SCTest
 
         // Assert
         openingGoogleSlides.Should().NotThrow();
+    }
+
+    [Test]
+    public void Create_creates_new_presentation_with_slide()
+    {
+        // Arrange
+        var imageStream = TestAsset("reference image.png");
+
+        // Act
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture(
+                    name: "Picture",
+                    x: 100,
+                    y: 100,
+                    width: 200,
+                    height: 50,
+                    image: imageStream);
+            });
+        });
+
+        // Assert
+        pres.Slide(1).Picture("Picture").Should().NotBeNull();
+    }
+    
+    [Test]
+    public void Constructor_creates_presentation()
+    {
+        // Act
+        var pres = new Presentation();
+
+        // Assert
+        pres.Should().NotBeNull();
+        pres.Validate();
+    }
+    
+    [Test]
+    public void Constructor_creates_empty_presentation()
+    {
+        // Act-Assert
+        new Presentation().Slides.Should().BeEmpty();
     }
 
     [Test]

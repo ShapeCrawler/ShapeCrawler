@@ -105,7 +105,7 @@ public class SlideTests : SCTest
     public void Fill_SetColor_sets_solid_color_for_slide_background()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slideFill = pres.Slide(1).Fill;
         var green = "00ff00";
 
@@ -120,7 +120,7 @@ public class SlideTests : SCTest
     public void Fill_SolidColor_twice_sets_fill()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         var expected = "ABCDEF";
 
@@ -254,7 +254,7 @@ public class SlideTests : SCTest
     public void Notes_Paragraph_Text_Setter_updates_paragraph_of_added_note()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.AddNotes(new[] { "SlideAddNotes_can_change_notes_with_many_lines" });
         var notes = slide.Notes;
@@ -277,7 +277,7 @@ public class SlideTests : SCTest
     public void AddNotes_with_no_notes_adds_empty_line()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
 
         // Act
@@ -304,7 +304,7 @@ public class SlideTests : SCTest
     public void Notes_Getter_returns_null_for_new_presentation()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
 
         // Act-Assert
@@ -315,7 +315,7 @@ public class SlideTests : SCTest
     public void AddNotes_adds_notes()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         var expected = "SlideAddNotes_adds_notes";
 
@@ -332,7 +332,7 @@ public class SlideTests : SCTest
     public void AddNotes_adds_many_notes()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         var adding = new[] { "1", "2", "3" };
         var expected = string.Join(Environment.NewLine, adding);
@@ -349,7 +349,7 @@ public class SlideTests : SCTest
     public void Notes_Text_Setter_updates_notes()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slide(1);
         slide.AddNotes(["My notes"]);
         var notes = slide.Notes!;

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
+using ShapeCrawler.Texts;
 
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
@@ -12,7 +13,19 @@ public class FontTests : SCTest
     public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_1()
     {
         // Arrange
-        var pres = TestPresentation("078.json");
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(
+                    name: "TextBox",
+                    x: 100,
+                    y: 100,
+                    width: 200,
+                    height: 50,
+                    content: "Test");
+            });
+        });
         var font = pres.Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font!;
 
         // Act
@@ -311,9 +324,14 @@ public class FontTests : SCTest
     public void LatinName_Setter_sets_font_for_the_latin_characters_of_table_cell()
     {
         // Arrange
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.Shapes.AddTable(40, 40, 6, 5);
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Table("Table 1", x: 40, y: 40, columnsCount: 6, rowsCount: 5);
+            });
+        });
+        var slide = pres.Slide(1);
         var table = (ITable)slide.Shapes.Last();
         var cell = table[1, 2];
         cell.TextBox.SetText("Test");
@@ -330,13 +348,16 @@ public class FontTests : SCTest
     public void LatinName_Setter_sets_font_for_the_latin_characters()
     {
         // Arrange
-        var pres = new Presentation();
-        var shapes = pres.Slides[0].Shapes;
-        shapes.AddShape(10,20,30,40);
-        var shape1 = shapes.Last();
-        shapes.AddShape(100,20,30,40);
-        var shape2 = shapes.Last();
-        shape1.TextBox!.SetText("Shape 1");
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", x: 10, y: 20, width: 30, height: 40, content: "Shape 1");
+                slide.TextBox("TextBox 2", x: 100, y: 20, width: 30, height: 40, content: "Test");
+            });
+        });
+        var shape1 = pres.Slide(1).Shape("TextBox 1");
+        var shape2 = pres.Slide(1).Shape("TextBox 2");
         shape1.TextBox!.Paragraphs[0].Portions[0].Font!.LatinName = "Segoe UI Semibold";
 
         // Act
@@ -434,9 +455,14 @@ public class FontTests : SCTest
     public void LatinName_Setter()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("TextBox 1", 0, 0, 100, 100, "Test");
+            });
+        });
         var slide = pres.Slide(1);
-        slide.Shapes.AddShape(0, 0, 100, 100, Geometry.Rectangle, "Test");
         var addedShape = slide.Shapes.Last();
         var font = addedShape.TextBox!.Paragraphs[0].Portions[0].Font!;
         var stream = new MemoryStream();

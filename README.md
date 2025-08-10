@@ -103,7 +103,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.71.0 - 2025-07-04
-🍀Added Text Direction
+### Version 0.71.1 - 2025-07-25
+🐞Fixed CVE-2025-53015 vulnerability.
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.

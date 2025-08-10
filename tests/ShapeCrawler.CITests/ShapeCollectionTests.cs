@@ -37,7 +37,10 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_twice()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var shapes = pres.Slides[0].Shapes;
         var svgImage = TestAsset("063 vector image.svg");
 
@@ -61,7 +64,10 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_image_is_added_a_second_apart(string fileName)
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var layout = pres.SlideMaster(1).SlideLayout("Blank");
         pres.Slides.Add(layout.Number);
         var shapesSlide1 = pres.Slides[0].Shapes;
@@ -85,7 +91,10 @@ public class ShapeCollectionTests : SCTest
     public void AddPicture_too_large_adds_svg_picture()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("068 vector image-large.svg");
         image.Position = 0;
