@@ -14,4 +14,10 @@ internal sealed class ChartShape : Shape
     }
 
     public override IChart? Chart { get; }
+
+    public override Geometry GeometryType
+    {
+        get => Geometry.Rectangle;
+        set => throw new SCException("Geometry type cannot be set for Chart shape.");
+    }
 }

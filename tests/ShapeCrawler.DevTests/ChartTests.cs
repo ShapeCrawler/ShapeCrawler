@@ -46,17 +46,15 @@ public class ChartTests : SCTest
         // Arrange
         var pres13 = new Presentation(TestAsset("013.pptx"));
         var pres19 = new Presentation(TestAsset("019.pptx"));
-        IChart chartCase1 = (IChart)new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase2 = (IChart)new Presentation(TestAsset("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
-        IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);
-        IChart chartCase4 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 4);
-        IChart chartCase5 = (IChart)pres19.Slides[0].Shapes.First(sp => sp.Id == 4);
-        IChart chartCase6 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase7 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
-        IChart chartCase8 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase9 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase10 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 3);
-        IChart chartCase11 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 5);
+        var chartCase1 = new Presentation(TestAsset("018.pptx")).Slide(1).Shape(6).Chart;
+        var chartCase2 = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(7).Chart;
+        var chartCase3 = pres13.Slide(1).Shape(5).Chart;
+        var chartCase5 = pres19.Slide(1).Shape(4).Chart;
+        var chartCase7 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(7).Chart;
+        var chartCase8 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(6).Chart;
+        var chartCase9 = new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(6).Chart;
+        var chartCase10 =new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(3).Chart;
+        var chartCase11 = new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(5).Chart;
             
         // Act
         string charTitleCase1 = chartCase1.Title;
@@ -87,7 +85,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptxStream = TestAsset("005 chart.pptx");
         var presentation = new Presentation(pptxStream);
-        var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
+        var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart").Chart;
         var series = chart.SeriesCollection[0]; 
             
         // Act
@@ -211,7 +209,7 @@ public class ChartTests : SCTest
     public void SeriesType_ReturnsChartTypeOfTheSeries()
     {
         // Arrange
-        IChart chart = (IChart)new Presentation(TestAsset("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
+        IChart chart = (IChart)new Presentation(TestAsset("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3).Chart;
         ISeries series2 = chart.SeriesCollection[1];
         ISeries series3 = chart.SeriesCollection[2];
 
@@ -228,7 +226,7 @@ public class ChartTests : SCTest
     public void Series_Name_returns_chart_series_name()
     {
         // Arrange
-        IChart chart = (IChart)new Presentation(TestAsset("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 5);
+        var chart = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(5).Chart;
 
         // Act
         string seriesNameCase1 = chart.SeriesCollection[0].Name;
@@ -244,10 +242,10 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres13 = new Presentation(TestAsset("013.pptx"));
-        IChart chartCase1 = (IChart)new Presentation(TestAsset("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
-        IChart chartCase2 = (IChart)new Presentation(TestAsset("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
-        IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);
-        IChart chartCase4 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IChart chartCase1 = (IChart)new Presentation(TestAsset("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3).Chart;
+        IChart chartCase2 = (IChart)new Presentation(TestAsset("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4).Chart;
+        IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
+        IChart chartCase4 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7).Chart;
 
         // Act
         ChartType chartTypeCase1 = chartCase1.Type;
@@ -338,7 +336,7 @@ public class ChartTests : SCTest
     public void SeriesCollection_Count_returns_number_of_series(IShape shape, int expectedSeriesCount)
     {
         // Act
-        var chart = (IChart)shape;
+        var chart = shape.Chart;
         int seriesCount = chart.SeriesCollection.Count;
 
         // Assert
