@@ -118,22 +118,22 @@ public class ChartTests : SCTest
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
-        IChart chartCase1 = (IChart)new Presentation(TestAsset("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
-        IChart chartCase3 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        var chart1 = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(4).Chart;
+        var chart2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(7).Chart;
 
         // Act-Assert
-        chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
-        chartCase3.Categories[0].Name.Should().BeEquivalentTo("Q1");
-        chartCase3.Categories[1].Name.Should().BeEquivalentTo("Q2");
-        chartCase3.Categories[2].Name.Should().BeEquivalentTo("Q3");
-        chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
+        chart1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
+        chart2.Categories[0].Name.Should().BeEquivalentTo("Q1");
+        chart2.Categories[1].Name.Should().BeEquivalentTo("Q2");
+        chart2.Categories[2].Name.Should().BeEquivalentTo("Q3");
+        chart2.Categories[3].Name.Should().BeEquivalentTo("Q4");
     }
         
     [Test]
     public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
     {
         // Arrange
-        var comboChart = (IChart)new Presentation(TestAsset("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var comboChart = new Presentation(TestAsset("021.pptx")).Slide(1).Shape(4).Chart;
 
         // Act-Assert
         comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
@@ -143,10 +143,10 @@ public class ChartTests : SCTest
     public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
     {
         // Arrange
-        var chartCase1 = (IChart)new Presentation(TestAsset("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var chart = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(4).Chart;
 
         // Act-Assert
-        chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
+        chart.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
     }
 
     [Test]
@@ -267,10 +267,10 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("018.pptx"));
-        var chart = pres.Slide(1).Shape(6);
+        var shape = pres.Slide(1).Shape(6);
 
         // Act-Assert
-        chart.GeometryType.Should().Be(Geometry.Rectangle);
+        shape.GeometryType.Should().Be(Geometry.Rectangle);
     }
 
     [Test]
