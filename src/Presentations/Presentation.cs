@@ -113,8 +113,6 @@ public sealed class Presentation : IPresentation
         draft.ApplyTo(this);
     }
 
-    // Note: Create(Action<DraftPresentation>) is defined once earlier in the class.
-
     /// <inheritdoc />
     public ISlideCollection Slides { get; }
 
@@ -599,7 +597,6 @@ public sealed class Presentation : IPresentation
             {
                 slide.Shapes.AddVideo(x, y, content);
                 var media = slide.Shapes.Last<IMediaShape>();
-                // Keep shape discoverable via "Video" per tests/examples
                 media.Name = name;
                 media.X = x;
                 media.Y = y;
