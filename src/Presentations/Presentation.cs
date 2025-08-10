@@ -463,28 +463,11 @@ public sealed class Presentation : IPresentation
                 if (p.Slides.Count == 0)
                 {
                     // Ensure initial slide id list and add via layout
-                    p.Slides.Add(layout.Number);
                 }
-                else
-                {
-                    p.Slides.Add(layout.Number);
-                }
+
+                p.Slides.Add(layout.Number);
             });
             return this;
-        }
-        
-        /// <summary>
-        ///     Generates a new presentation applying the configured actions.
-        /// </summary>
-        public Presentation Generate()
-        {
-            var presentation = new Presentation();
-            foreach (var action in this.actions)
-            {
-                action(presentation);
-            }
-
-            return presentation;
         }
         
         internal void ApplyTo(Presentation presentation)
