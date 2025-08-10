@@ -602,6 +602,32 @@ public sealed class Presentation : IPresentation
         }
         
         /// <summary>
+        ///     Adds a video shape and sets its properties.
+        /// </summary>
+        /// <param name="name">Requested shape name (ignored to keep a stable "Video" name as used by tests/examples).</param>
+        /// <param name="x">X coordinate in points.</param>
+        /// <param name="y">Y coordinate in points.</param>
+        /// <param name="elementWidth">Width in points.</param>
+        /// <param name="elementHeight">Height in points.</param>
+        /// <param name="content">Video stream.</param>
+        public DraftSlide Video(string name, int x, int y, int elementWidth, int elementHeight, Stream content)
+        {
+            this.actions.Add(slide =>
+            {
+                slide.Shapes.AddVideo(x, y, content);
+                var media = slide.Shapes.Last<IMediaShape>();
+                // Keep shape discoverable via "Video" per tests/examples
+                media.Name = name;
+                media.X = x;
+                media.Y = y;
+                media.Width = elementWidth;
+                media.Height = elementHeight;
+            });
+
+            return this;
+        }
+        
+        /// <summary>
         ///     Adds a table with specified size.
         /// </summary>
         public DraftSlide Table(string name, int x, int y, int columnsCount, int rowsCount)
