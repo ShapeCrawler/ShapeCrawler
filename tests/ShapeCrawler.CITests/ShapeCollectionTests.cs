@@ -103,13 +103,14 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
+        var pictureShape = shapes.Last();
+        var picture = shapes.Last().Picture;
 
         // These values are reasonable range for size of an added image
-        picture.Height.Should().BeGreaterThan(0);
-        picture.Height.Should().BeLessThan(2400);
-        picture.Width.Should().BeGreaterThan(0);
-        picture.Width.Should().BeLessThan(2400);
+        pictureShape.Height.Should().BeGreaterThan(0);
+        pictureShape.Height.Should().BeLessThan(2400);
+        pictureShape.Width.Should().BeGreaterThan(0);
+        pictureShape.Width.Should().BeLessThan(2400);
         var rasterImage = new MagickImageInfo(picture.Image!.AsByteArray());
         rasterImage.Width.Should().Be(500);
         rasterImage.Height.Should().Be(500);

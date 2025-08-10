@@ -9,7 +9,7 @@ public class Audio
         var shapes = pres.Slide(1).Shapes;
         using var audioStream = File.OpenRead("audio.mp3");
         shapes.AddAudio(x: 300, y: 100, audioStream);
-        var addedAudio = shapes.Last<IMediaShape>();
+        var addedAudio = shapes.Last().Media;
         pres.Save();
 
         // Get byte content
