@@ -10,17 +10,6 @@ namespace ShapeCrawler.DevTests;
 public class PresentationTests : SCTest
 {
     [Test]
-    public void Create_creates_a_new_presentation()
-    {
-        // Act
-        var pres = new Presentation();
-
-        // Assert
-        pres.Should().NotBeNull();
-        pres.Validate();
-    }
-
-    [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
         // Arrange
@@ -162,11 +151,9 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var removingSlide = pres.Slides[0];
-        var layout = pres.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
 
         // Act
-        removingSlide.Remove();
         pres.Slides.Add(layout.Number);
 
         // Assert
@@ -179,7 +166,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).SlideLayout("Blank");
         var stream = new MemoryStream();
 
         // Act
@@ -187,7 +174,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Save(stream);
-        new Presentation(stream).Slide(2).Shapes.Should().BeEmpty();
+        new Presentation(stream).Slide(1).Shapes.Should().BeEmpty();
     }
 
     [Test]
@@ -203,7 +190,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Save(stream);
-        new Presentation(stream).Slide(2).Shapes.Count.Should().Be(1);
+        new Presentation(stream).Slide(1).Shapes.Count.Should().Be(1);
     }
 
     [Test]
@@ -367,7 +354,10 @@ public class PresentationTests : SCTest
     public void Footer_AddSlideNumber_adds_slide_number()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide();
+        });
 
         // Act
         pres.Footer.AddSlideNumber();
@@ -535,6 +525,49 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Create_creates_new_presentation_with_slide()
+    {
+        // Arrange
+        var imageStream = TestAsset("reference image.png");
+
+        // Act
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Picture(
+                    name: "Picture",
+                    x: 100,
+                    y: 100,
+                    width: 200,
+                    height: 50,
+                    image: imageStream);
+            });
+        });
+
+        // Assert
+        pres.Slide(1).Picture("Picture").Should().NotBeNull();
+    }
+    
+    [Test]
+    public void Constructor_creates_presentation()
+    {
+        // Act
+        var pres = new Presentation();
+
+        // Assert
+        pres.Should().NotBeNull();
+        pres.Validate();
+    }
+    
+    [Test]
+    public void Constructor_creates_empty_presentation()
+    {
+        // Act-Assert
+        new Presentation().Slides.Should().BeEmpty();
+    }
+
+    [Test]
     public void AsMarkdown_returns_markdown_string()
     {
         // Arrange
@@ -583,30 +616,5 @@ public class PresentationTests : SCTest
             destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
-    }
-
-    [Test]
-    public void Create_creates_presentation()
-    {
-        // Arrange
-        var imageStream = TestAsset("reference image.png");
-
-        // Act
-        var pres = Presentation.Create(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.Picture(
-                    name: "Picture",
-                    x: 100,
-                    y: 100,
-                    width: 200,
-                    height: 50,
-                    image: imageStream);
-            });
-        }).Generate();
-
-        // Assert
-        pres.Slide(1).Picture("Picture").Should().NotBeNull();
     }
 }

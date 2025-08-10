@@ -495,7 +495,7 @@ public class ShapeTests : SCTest
     public void CornerSize_Getter_corner_size()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
@@ -540,7 +540,7 @@ public class ShapeTests : SCTest
     public void CornerSize_Setter_sets_corner_size()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
@@ -569,7 +569,10 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -586,7 +589,7 @@ public class ShapeTests : SCTest
     public void Geometry_setter_wont_set_custom()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -602,7 +605,7 @@ public class ShapeTests : SCTest
     public void Geometry_setter_resets_old_adjustments()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -744,7 +747,10 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var geometry = (Geometry)Enum.Parse(typeof(Geometry), geometryStr);
-        var pres = new Presentation();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70, geometry);
         var shape = shapes.Last();
@@ -783,7 +789,7 @@ public class ShapeTests : SCTest
     public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_new_shape()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70, Geometry.Snip2SameRectangle);
         var shape = shapes.Last();
@@ -805,7 +811,7 @@ public class ShapeTests : SCTest
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10, 20, 30, 40);
         var addedShape = shapes.Single();
@@ -837,16 +843,23 @@ public class ShapeTests : SCTest
     public void SetVideo()
     {
         // Arrange
-        var pres = TestPresentation("082.json");
-        var videoShape = pres.Slide(1).Shape("Video");
-        var newVideoContent = TestAsset("083 mp4 video.mp4");
+        var video = TestAsset("081 mp4 video.mp4");
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.Video("Video 1", x: 100, y: 100, elementWidth: 200, elementHeight: 150, content: video);
+            });
+        });
+        var videoElement = pres.Slide(1).Shape("Video 1");
+        var newVideo = TestAsset("083 mp4 video.mp4");
 
         // Act
-        videoShape.SetVideo(newVideoContent);
+        videoElement.SetVideo(newVideo);
 
         // Assert
-        newVideoContent.Position = 0;
-        var newVideoBytes = newVideoContent.ToArray();
-        videoShape.AsMedia().AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
+        newVideo.Position = 0;
+        var newVideoBytes = newVideo.ToArray();
+        videoElement.AsMedia().AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
     }
 }

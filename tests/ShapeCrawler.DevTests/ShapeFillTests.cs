@@ -140,7 +140,7 @@ public class ShapeFillTests : SCTest
     public void SetColor_sets_green_color()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(0, 0, 100, 100);
         var shape = slide.Shapes.Last();

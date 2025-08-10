@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -382,8 +381,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             );
         }
     }
-
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    
     private IShape CreateChart(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
