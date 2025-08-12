@@ -158,7 +158,7 @@ public class GroupTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("077 grouped shape.pptx"));
-        var groupedShape = pres.Slide(1)
+        var groupShape = pres.Slide(1)
             .Shape("Group 19")
             .GroupedShape("Group 86")
             .GroupedShape("Group 1")
@@ -166,8 +166,8 @@ public class GroupTests : SCTest
             .GroupedShape("Rectangle 4");
         
         // Act & Assert
-        groupedShape.Width.Should().BeApproximately(290, 1m);
-        groupedShape.Height.Should().BeApproximately(36, 1m);
+        groupShape.Width.Should().BeApproximately(290, 1m);
+        groupShape.Height.Should().BeApproximately(36, 1m);
     }
     
     [Test]

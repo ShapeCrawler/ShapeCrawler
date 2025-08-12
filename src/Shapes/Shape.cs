@@ -286,5 +286,19 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public virtual void SetFontColor(string colorHex) => throw new SCException("The shape doesn't contain text content");
 
     public virtual void SetVideo(Stream video) => throw new SCException("The shape doesn't support video content");
-    public IShape GroupedShape(string name) => throw new SCException("The shape is not a group shape and does not contain grouped shape.");
+    public IShape GroupedShape(string name)
+    {
+        if (this.GroupedShapes == null)
+        {
+            throw new SCException("The current shape is not a group shape.");
+        }
+
+        var groupedShape = this.GroupedShapes.FirstOrDefault(shape => shape.Name == name);
+        if (groupedShape == null)
+        {
+            throw new SCException($"Grouped shape with name '{name}' not found.");
+        }
+
+        return groupedShape;
+    }
 }
