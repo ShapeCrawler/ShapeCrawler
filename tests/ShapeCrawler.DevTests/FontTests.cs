@@ -332,7 +332,7 @@ public class FontTests : SCTest
             });
         });
         var slide = pres.Slide(1);
-        var table = (ITable)slide.Shapes.Last();
+        var table = (ITable)slide.Shapes.Last().Table;
         var cell = table[1, 2];
         cell.TextBox.SetText("Test");
         var font = cell.TextBox.Paragraphs.First().Portions.First().Font!;

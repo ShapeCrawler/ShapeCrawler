@@ -13,20 +13,20 @@ internal sealed class GroupShape : Shape
     internal GroupShape(P.GroupShape pGroupShape): base(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape)
     {
         this.pGroupShape = pGroupShape;
-        this.Shapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
+        this.GroupedShapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
         var pShapeProperties = pGroupShape.Descendants<P.ShapeProperties>().First();
     }
 
-    public IShapeCollection Shapes { get; }
-
     public override Geometry GeometryType => Geometry.Rectangle;
+    
+    public override IShapeCollection GroupedShapes { get; }
 
     public bool HasOutline => true;
 
     public bool HasFill => true;
     
-    public IShape Shape(string groupedShapeName) => this.Shapes.Shape(groupedShapeName);
+    public IShape Shape(string groupedShapeName) => this.GroupedShapes.Shape(groupedShapeName);
 
     public T Shape<T>(string groupedShapeName) =>
-        (T)this.Shapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);
+        (T)this.GroupedShapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);
 }

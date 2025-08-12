@@ -35,10 +35,10 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
     private List<IShape> GetGroupedShapes()
     {
         var groupedShapes = new List<IShape>();
-        foreach (var pGroupChild in pGroupElements)
+        foreach (var pGroupShapeElement in pGroupElements)
         {
             IShape? shape = null;
-            switch (pGroupChild)
+            switch (pGroupShapeElement)
             {
                 case P.GroupShape pGroupShape:
                     shape = new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape);

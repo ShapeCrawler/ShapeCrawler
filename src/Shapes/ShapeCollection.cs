@@ -215,7 +215,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     private static IEnumerable<IShape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
-        yield return new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape);
+        // yield return new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape);
+        yield return new GroupShape(pGroupShape);
     }
 
     private static IEnumerable<IShape> CreateShapes(P.Shape pShape)
