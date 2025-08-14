@@ -22,7 +22,7 @@ public interface ILine
     Point EndPoint { get; }
 }
 
-internal sealed class LineContent(P.ConnectionShape pConnectionShape, LineShape parentLineShape) : ILine
+internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentLineShape) : ILine
 {
     public Geometry GeometryType
     {
