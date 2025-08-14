@@ -170,7 +170,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             grouping.Remove();
         }
 
-        return new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape);
+        return new GroupShape(pGroupShape);
     }
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)

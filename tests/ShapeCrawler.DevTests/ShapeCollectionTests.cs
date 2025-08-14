@@ -63,10 +63,10 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("009_table.pptx"));
-        var shape = pres.Slide(2).Shapes.First(sp => sp.Id == 3);
+        var shape = pres.Slide(2).Shape(3);
 
         // Act-Assert
-        var picture = shape as IPicture;
+        var picture = shape.Picture;
         picture.Should().NotBeNull();
     }
 
@@ -74,15 +74,10 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Media_Shape()
     {
         // Arrange
-        var pptxStream = TestAsset("audio-case001.pptx");
-        var pres = new Presentation(pptxStream);
-        IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
+        var pres = new Presentation(TestAsset("audio-case001.pptx"));
 
-        // Act
-        bool isMediaShape = shape is IMedia;
-
-        // Assert
-        isMediaShape.Should().BeTrue();
+        // Act-Assert
+        pres.Slide(1).Shape(8).Media.Should().NotBeNull();
     }
 
     [Test]
@@ -99,10 +94,10 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("040_video.pptx"));
-        var shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
+        var shape = pres.Slide(1).Shape(8);
 
-        // Act - Assert
-        shape.Chart.Should().NotBeNull();
+        // Act-Assert
+        shape.Media.Should().NotBeNull();
     }
 
     [Test]
@@ -111,7 +106,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new Presentation(p => p.Slide());
         var xml = StringOf("line-shape.xml");
-        var shapes = pres.Slides[0].Shapes;
+        var shapes = pres.Slide(1).Shapes;
 
         // Act
         shapes.AddLine(xml);
@@ -676,7 +671,7 @@ public class ShapeCollectionTests : SCTest
     public void Group_groups_shapes()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slide(1).Shapes;
         shapes.AddShape(100, 100, 100, 100, Geometry.Rectangle, "Shape 1");
         shapes.AddShape(100, 200, 100, 100, Geometry.Rectangle, "Shape 2");

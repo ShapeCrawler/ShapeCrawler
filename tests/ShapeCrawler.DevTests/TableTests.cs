@@ -820,7 +820,7 @@ public class TableTests : SCTest
     public void Rows_Count_returns_number_of_rows(IShape shape, int expectedCount)
     {
         // Arrange
-        var table = (ITable)shape;
+        var table = shape.Table;
 
         // Act
         var rowsCount = table.Rows.Count;
@@ -902,7 +902,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
+        var table = pres.Slide(2).Shape(4).Table;
         var mStream = new MemoryStream();
 
         // Act
@@ -914,7 +914,7 @@ public class TableTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
+        table = pres.Slide(2).Shape(4).Table;
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
     }
