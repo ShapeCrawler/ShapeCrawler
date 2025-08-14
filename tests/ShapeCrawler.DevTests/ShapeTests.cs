@@ -94,11 +94,10 @@ public class ShapeTests : SCTest
     public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
     {
         // Arrange
-        var pptx = TestAsset("009_table.pptx");
         var image = TestAsset("10 png image.png");
-        IPresentation presentation = new Presentation(pptx);
-        IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
-        IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
+        var pres = new Presentation(TestAsset("009_table.pptx"));
+        var picture5 = pres.Slide(4).Shape(5).Picture;
+        var picture6 = pres.Slide(4).Shape(6).Picture;
         int pic6LengthBefore = picture6.Image.AsByteArray().Length;
         MemoryStream modifiedPresentation = new();
 
@@ -109,9 +108,9 @@ public class ShapeTests : SCTest
         int pic6LengthAfter = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
 
-        presentation.Save(modifiedPresentation);
-        presentation = new Presentation(modifiedPresentation);
-        picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
+        pres.Save(modifiedPresentation);
+        pres = new Presentation(modifiedPresentation);
+        picture6 = pres.Slide(4).Shape(6).Picture;
         pic6LengthBefore = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
     }
@@ -480,7 +479,7 @@ public class ShapeTests : SCTest
     public void CornerSize_Getter_corner_size()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
@@ -525,7 +524,7 @@ public class ShapeTests : SCTest
     public void CornerSize_Setter_sets_corner_size()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10, 20, 100, 200, Geometry.RoundedRectangle);
         var shape = shapes[0];
@@ -571,7 +570,7 @@ public class ShapeTests : SCTest
     public void Geometry_setter_wont_set_custom()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -587,7 +586,7 @@ public class ShapeTests : SCTest
     public void Geometry_setter_resets_old_adjustments()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -768,7 +767,7 @@ public class ShapeTests : SCTest
     public void Adjustments_setter_setting_only_one_value_when_multiple_allowed_on_new_shape()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70, Geometry.Snip2SameRectangle);
         var shape = shapes.Last();
@@ -790,7 +789,7 @@ public class ShapeTests : SCTest
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(10, 20, 30, 40);
         var addedShape = shapes.Single();
