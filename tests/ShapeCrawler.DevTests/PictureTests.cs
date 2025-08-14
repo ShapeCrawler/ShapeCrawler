@@ -20,9 +20,8 @@ public class PictureTests : SCTest
     public async Task Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var shapePicture1 =
-            (IPicture)new Presentation(TestAsset("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
-        var shapePicture2 = (IPicture)new Presentation(TestAsset("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
+        var shapePicture1 = new Presentation(TestAsset("009_table.pptx")).Slide(2).Shape(3).Picture;
+        var shapePicture2 = new Presentation(TestAsset("018.pptx")).Slide(1).Shape(7).Picture;
 
         // Act
         var shapePictureContentCase1 = shapePicture1.Image.AsByteArray();
@@ -177,7 +176,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var expectedCrop = CroppingFrame.Parse(expectedCropStr);
-        var picture = shape.As<IPicture>();
+        var picture = shape.Picture;
 
         // Act-Assert
         picture.Crop.Should().Be(expectedCrop);
@@ -247,7 +246,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("063 vector image.svg");
         image.Position = 0;
@@ -267,7 +266,7 @@ public class PictureTests : SCTest
     public void CornerSize_Setter_sets_corner_size(string geometryName)
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("063 vector image.svg");
         shapes.AddPicture(image);
@@ -310,7 +309,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var expectedTransparency = decimal.Parse(expectedTransparencyStr);
-        var picture = shape.As<IPicture>();
+        var picture = shape.Picture;
 
         // Act-Assert
         picture.Transparency.Should().Be(expectedTransparency);
