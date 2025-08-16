@@ -257,22 +257,14 @@ internal abstract class Slide : ISlide
 
     public IList<ITextBox> GetTextBoxes()
     {
-        var textBoxes = this.Shapes
-            .Where(shape => shape.TextBox is not null)
-            .Select(shape => shape.TextBox!)
-            .ToList();
+        var collectedTextBoxes = new List<ITextBox>();
 
-        var tableTextboxes = this.Shapes.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
-            .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
-        textBoxes.AddRange(tableTextboxes);
-
-        var groupShapes = this.Shapes.Where(shape => shape.GroupedShapes is not null);
-        foreach (var groupShape in groupShapes)
+        foreach (var shape in this.Shapes)
         {
-            this.AddGroupTextBoxes(groupShape, textBoxes);
+            this.CollectTextBoxes(shape, collectedTextBoxes);
         }
 
-        return textBoxes;
+        return collectedTextBoxes;
     }
 
     /// <inheritdoc/>
@@ -296,17 +288,26 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove(); 
 
-    private void AddGroupTextBoxes(IShape groupShape, List<ITextBox> textBoxes)
+    private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
-        foreach (var groupShapeShape in groupShape.GroupedShapes!)
+        if (shape.TextBox is not null)
         {
-            if (groupShapeShape.GroupedShapes is not null)
+            buffer.Add(shape.TextBox);
+        }
+
+        if (shape.Table is not null)
+        {
+            foreach (var cell in shape.Table.Rows.SelectMany(row => row.Cells))
             {
-                this.AddGroupTextBoxes(groupShapeShape, textBoxes);
+                buffer.Add(cell.TextBox);
             }
-            else if (groupShapeShape.TextBox is not null)
+        }
+
+        if (shape.GroupedShapes is not null)
+        {
+            foreach (var innerShape in shape.GroupedShapes)
             {
-                textBoxes.Add(groupShapeShape.TextBox);
+                this.CollectTextBoxes(innerShape, buffer);
             }
         }
     }
