@@ -235,7 +235,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public virtual IShapeCollection? GroupedShapes => null;
     public ISmartArt? SmartArt => null;
 
-    public double Rotation
+    public virtual double Rotation
     {
         get
         {

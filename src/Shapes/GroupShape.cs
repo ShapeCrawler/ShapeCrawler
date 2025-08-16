@@ -20,6 +20,16 @@ internal sealed class GroupShape : Shape
     public override Geometry GeometryType => Geometry.Rectangle;
     
     public override IShapeCollection GroupedShapes { get; }
+    
+    public override double Rotation
+    {
+        get
+        {
+            var aTransformGroup = this.pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var rotation = aTransformGroup.Rotation?.Value ?? 0;
+            return rotation / 60000d;
+        }
+    }
 
     public bool HasOutline => true;
 

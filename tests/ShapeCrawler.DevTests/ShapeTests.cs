@@ -223,11 +223,14 @@ public class ShapeTests : SCTest
     [TestCase("autoshape-case018_rotation.pptx", 2, "VerticalTextPH", 281.97)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "NoRotationGroup", 0)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 55.60)]
-    public void Rotation_returns_shape_rotation_in_degrees(string presentationName, int slideNumber, string shapeName,
+    public void Rotation_returns_shape_rotation_in_degrees(
+        string presName, 
+        int slideNumber, 
+        string shapeName,
         double expectedAngle)
     {
         // Arrange
-        var pres = new Presentation(TestAsset(presentationName));
+        var pres = new Presentation(TestAsset(presName));
         var shape = pres.Slide(slideNumber).Shape(shapeName);
 
         // Act
@@ -821,16 +824,23 @@ public class ShapeTests : SCTest
     public void SetVideo()
     {
         // Arrange
-        var pres = TestPresentation("082.json");
-        var videoShape = pres.Slide(1).Shape("Video");
-        var newVideoContent = TestAsset("083 mp4 video.mp4");
+        var video = TestAsset("081 mp4 video.mp4");
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.Video("Video 1", x: 100, y: 100, elementWidth: 200, elementHeight: 150, content: video);
+            });
+        });
+        var videoShape = pres.Slide(1).Shape("Video 1");
+        var newVideo = TestAsset("083 mp4 video.mp4");
 
         // Act
-        videoShape.SetVideo(newVideoContent);
+        videoShape.SetVideo(newVideo);
 
         // Assert
-        newVideoContent.Position = 0;
-        var newVideoBytes = newVideoContent.ToArray();
+        newVideo.Position = 0;
+        var newVideoBytes = newVideo.ToArray();
         videoShape.Media.AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
     }
 }
