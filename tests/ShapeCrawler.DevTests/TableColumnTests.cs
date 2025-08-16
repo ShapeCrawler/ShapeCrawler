@@ -185,7 +185,7 @@ public class TableColumnTests : SCTest
     public void ColumnsCount_ReturnsNumberOfColumnsInTheTable()
     {
         // Arrange
-        ITable table = (ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        var table = new Presentation(TestAsset("001.pptx")).Slide(2).Shape(4).Table;
 
         // Act
         int columnsCount = table.Columns.Count;
@@ -199,7 +199,7 @@ public class TableColumnTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
+        var table = pres.Slide(2).Shape(4).Table;
 
         // Act & Assert
         table.Columns[0].Width.Should().BeApproximately(275.99m, 0.01m);
@@ -210,7 +210,7 @@ public class TableColumnTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
+        var table = pres.Slide(2).Shape(3).Table;
         const int newColumnWidth = 427;
         var mStream = new MemoryStream();
 
@@ -222,7 +222,7 @@ public class TableColumnTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
+        table = pres.Slide(2).Shape(3).Table;
         table.Columns[0].Width.Should().Be(newColumnWidth);
     }
 }

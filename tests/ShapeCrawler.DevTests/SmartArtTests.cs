@@ -11,7 +11,7 @@ public class SmartArtTests : SCTest
     public void AddSmartArt_CreatesBasicBlockList_WhenCalled()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slide(1);
         const int x = 50;
         const int y = 50;
@@ -19,22 +19,22 @@ public class SmartArtTests : SCTest
         const int height = 300;
         
         // Act
-        var smartArt = slide.Shapes.AddSmartArt(x, y, width, height, SmartArtType.BasicBlockList);
+        var smartArtShape = slide.Shapes.AddSmartArt(x, y, width, height, SmartArtType.BasicBlockList);
         
         // Assert
         pres.Validate();
-        smartArt.Should().BeOfType<SmartArt>();
-        smartArt.X.Should().Be(x);
-        smartArt.Y.Should().Be(y);
-        smartArt.Width.Should().Be(width);
-        smartArt.Height.Should().Be(height);
+        smartArtShape.SmartArt.Should().NotBeNull();
+        smartArtShape.X.Should().Be(x);
+        smartArtShape.Y.Should().Be(y);
+        smartArtShape.Width.Should().Be(width);
+        smartArtShape.Height.Should().Be(height);
     }
     
     [Test]
     public void AddSmartArt_AddsOneShapeInShapeCollection()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slide(1);
         var shapes = slide.Shapes;
         
@@ -49,7 +49,7 @@ public class SmartArtTests : SCTest
     public void SmartArtNodes_AddNode_AddsTextToSmartArt()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var smartArt = pres.Slide(1).Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList).SmartArt;
         
         // Act
@@ -74,7 +74,7 @@ public class SmartArtTests : SCTest
     public void SmartArtNodes_ModifyNodeText_UpdatesNodeText()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList).SmartArt;
         var node = smartArt.Nodes.AddNode("Original Text");
@@ -93,7 +93,7 @@ public class SmartArtTests : SCTest
     public void SmartArtNodes_Enumeration_ReturnsAllNodes()
     {
         // Arrange
-        var pres = new Presentation();
+        var pres = new Presentation(p=>p.Slide());
         var slide = pres.Slides[0];
         var smartArt = slide.Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList).SmartArt;
         var expectedTexts = new[] { "Node 1", "Node 2", "Node 3" };

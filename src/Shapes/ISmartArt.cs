@@ -16,7 +16,7 @@ public interface ISmartArt
 
 internal sealed class SmartArt : ISmartArt
 {
-    internal SmartArt( SmartArtNodeCollection nodeCollection)
+    internal SmartArt(SmartArtNodeCollection nodeCollection)
     {
         this.Nodes = nodeCollection;
     }
