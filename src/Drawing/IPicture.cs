@@ -14,9 +14,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a picture shape.
+///     Represents picture.
 /// </summary>
-public interface IPicture : IShape
+public interface IPicture
 {
     /// <summary>
     ///     Gets image. Returns <see langword="null"/> if the content of the picture element is not a binary image. 
@@ -44,25 +44,17 @@ public interface IPicture : IShape
     void SendToBack();
 }
 
-internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : IPicture
+internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
 {
     public IImage Image => new SlidePictureImage(aBlip);
 
     public string? SvgContent => this.GetSvgContent();
 
-    public ShapeContent ShapeContent => ShapeContent.Image;
-
     public bool HasOutline => true;
 
-    public bool Removable => true;
-
-    public IShapeOutline Outline => shape.Outline;
-
     public bool HasFill => true;
-
-    public IShapeFill Fill => shape.Fill;
-
-    public ITextBox? TextBox => null;
+    
+    public bool HasText => false;
 
     public CroppingFrame Crop
     {
@@ -109,106 +101,6 @@ internal sealed class Picture(Shape shape, P.Picture pPicture, A.Blip aBlip) : I
 
             aAlphaModFix.Amount = Convert.ToInt32((100m - value) * 1000m);
         }
-    }
-
-    public bool IsGroup => false;
-
-    public Geometry GeometryType
-    {
-        get => shape.GeometryType;
-        set => shape.GeometryType = value;
-    }
-
-    public decimal CornerSize
-    {
-        get => shape.CornerSize;
-        set => shape.CornerSize = value;
-    }
-
-    public decimal[] Adjustments
-    {
-        get => shape.Adjustments;
-        set => shape.Adjustments = value;
-    }
-
-    public decimal Width
-    {
-        get => shape.Width;
-        set => shape.Width = value;
-    }
-
-    public decimal Height
-    {
-        get => shape.Height;
-        set => shape.Height = value;
-    }
-
-    public decimal X
-    {
-        get => shape.X;
-        set => shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => shape.Y;
-        set => shape.Y = value;
-    }
-
-    public int Id => shape.Id;
-
-    public string Name
-    {
-        get => shape.Name;
-        set => shape.Name = value;
-    }
-
-    public string AltText
-    {
-        get => shape.AltText;
-        set => shape.AltText = value;
-    }
-
-    public bool Hidden => shape.Hidden;
-
-    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
-
-    public string? CustomData
-    {
-        get => shape.CustomData;
-        set => shape.CustomData = value;
-    }
-
-    public double Rotation => shape.Rotation;
-
-    public string SDKXPath => shape.SDKXPath;
-
-    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
-
-    public IShapeCollection GroupedShapes => throw new SCException(
-        $"Picture is not a group. Use {nameof(IShape.ShapeContent)} property to check if the shape is a group.");
-
-    public IPresentation Presentation => shape.Presentation;
-
-    public void Remove() => shape.Remove();
-
-    public ITable AsTable() => shape.AsTable();
-
-    public IMediaShape AsMedia() => shape.AsMedia();
-
-    public void Duplicate() => shape.Duplicate();
-
-    public void SetText(string text) => shape.SetText(text);
-
-    public void SetFontName(string fontName) => shape.SetFontName(fontName);
-
-    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
-
-    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
-
-    public void SetVideo(Stream video)
-    {
-        throw new NotImplementedException();
     }
 
     public void SendToBack()

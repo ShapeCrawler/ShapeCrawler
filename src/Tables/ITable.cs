@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -13,9 +12,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a table on a slide.
+///     Represents table.
 /// </summary>
-public interface ITable : IShape
+public interface ITable
 {
     /// <summary>
     ///     Gets table columns.
@@ -59,29 +58,12 @@ public interface ITable : IShape
 }
 
 internal sealed class Table(
-    Shape shape,
     TableRowCollection rows,
     TableColumnCollection columns,
     TableStyleOptions styleOptions,
     P.GraphicFrame pGraphicFrame) : ITable
 {
     private ITableStyle? tableStyle;
-
-    public ShapeContent ShapeContent => ShapeContent.Table;
-
-    public IShapeOutline Outline => shape.Outline;
-
-    public IShapeFill Fill => shape.Fill;
-
-    public ITextBox? TextBox => shape.TextBox;
-
-    public double Rotation => shape.Rotation;
-
-    public string SDKXPath => shape.SDKXPath;
-
-    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
-
-    public IPresentation Presentation => shape.Presentation;
 
     public ITableColumnCollection Columns => columns;
 
@@ -93,86 +75,7 @@ internal sealed class Table(
         set => this.SetTableStyle(value);
     }
 
-    public decimal Width
-    {
-        get => shape.Width;
-        set => shape.Width = value;
-    }
-
-    public decimal Height
-    {
-        get => shape.Height;
-        set
-        {
-            var percentNewHeight = value / shape.Height;
-
-            shape.Height = value;
-
-            foreach (var tableRow in this.Rows)
-            {
-                var row = (TableRow)tableRow;
-                row.SetHeight((int)(row.Height * percentNewHeight));
-            }
-        }
-    }
-
-    public int Id => shape.Id;
-
-    public string Name
-    {
-        get => shape.Name;
-        set => shape.Name = value;
-    }
-
-    public string AltText
-    {
-        get => shape.AltText;
-        set => shape.AltText = value;
-    }
-
-    public bool Hidden => shape.Hidden;
-
-    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
-
-    public string? CustomData
-    {
-        get => shape.CustomData;
-        set => shape.CustomData = value;
-    }
-
     public ITableStyleOptions StyleOptions => styleOptions;
-
-    public bool Removable => true;
-
-    public Geometry GeometryType
-    {
-        get => Geometry.Rectangle;
-        set => throw new SCException("Updating geometry is not supported for table.");
-    }
-
-    public decimal CornerSize
-    {
-        get => shape.CornerSize;
-        set => shape.CornerSize = value;
-    }
-
-    public decimal[] Adjustments
-    {
-        get => shape.Adjustments;
-        set => shape.Adjustments = value;
-    }
-
-    public decimal X
-    {
-        get => shape.X;
-        set => shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => shape.Y;
-        set => shape.Y = value;
-    }
 
     private A.Table ATable => pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
 
@@ -224,30 +127,10 @@ internal sealed class Table(
 
     public void Remove() => pGraphicFrame.Remove();
 
-    public ITable AsTable() => this;
-
-    public IMediaShape AsMedia() => shape.AsMedia();
-
-    public void Duplicate() => shape.Duplicate();
-
-    public void SetText(string text) => shape.SetText(text);
-
-    public void SetImage(string imagePath) => shape.SetImage(imagePath);
-
-    public void SetFontName(string fontName) => shape.SetFontName(fontName);
-
-    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
-
-    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
-
     public void SetVideo(Stream video)
     {
         throw new NotImplementedException();
     }
-
-    internal void SetTableHeight(decimal value) => shape.Height = value;
-    
-    internal void CopyTo(P.ShapeTree pShapeTree) => shape.CopyTo(pShapeTree);
 
     private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
     {
@@ -292,11 +175,16 @@ internal sealed class Table(
             if (firstCellSpan > 1 && cells.All(cell => cell.ATableCell.RowSpan?.Value == firstCellSpan))
             {
                 int deleteRowsCount = firstCellSpan.Value - 1;
+                var targetRow = (TableRow)this.Rows[rowIdx];
+                var newHeight = targetRow.Height;
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
                     ((TableRow)row).ATableRow.Remove();
-                    this.Rows[rowIdx].Height += row.Height;
+                    newHeight += row.Height;
                 }
+
+                // Update the target row height directly without affecting the table shape size
+                targetRow.SetHeight(newHeight);
 
                 rowIdx += firstCellSpan.Value;
             }

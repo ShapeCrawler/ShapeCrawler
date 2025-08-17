@@ -70,7 +70,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var table = pres.Slides[1].Shapes.GetById<ITable>(4);
+        var table = pres.Slide(2).Shape(4).Table;
         var fontColor = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert

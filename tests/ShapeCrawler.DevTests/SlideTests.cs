@@ -193,15 +193,11 @@ public class SlideTests : SCTest
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
         // Arrange
-        var pptx = TestAsset("039.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(TestAsset("039.pptx"));
         var slide = pres.Slides.First();
 
-        // Act
-        var textboxes = slide.GetTextBoxes();
-
-        // Assert
-        textboxes.Count.Should().Be(11);
+        // Act-Assert
+        slide.GetTextBoxes().Count.Should().Be(11);
     }
 
     [Test]

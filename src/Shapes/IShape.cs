@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Shapes;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
@@ -49,11 +50,6 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets or sets custom data string for the shape.
     /// </summary>
     string? CustomData { get; set; }
-
-    /// <summary>
-    ///     Gets the shape content type.
-    /// </summary>
-    ShapeContent ShapeContent { get; }
     
     /// <summary>
     ///     Gets outline of the shape. Returns <see langword="null"/> if the shape cannot be outlined, for example, a picture.
@@ -64,11 +60,46 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets the fill of the shape. Returns <see langword="null"/> if the shape cannot be filled, for example, a line.
     /// </summary>
     IShapeFill? Fill { get; }
-
+    
     /// <summary>
-    ///     Gets Text Box. Returns <c>null</c> if the slide element doesn't contain text content. Use <see cref="ShapeContent"/> property to check content type.
+    ///     Gets Text Box. Returns <c>null</c> if the shape is not a text holder.
     /// </summary>
     ITextBox? TextBox { get; }
+    
+    /// <summary>
+    ///     Gets picture. Returns <c>null</c> if the shape doesn't contain image content.
+    /// </summary>
+    IPicture? Picture { get; }
+    
+    /// <summary>
+    ///     Gets chart. Returns <c>null</c> if the shape doesn't contain image content.
+    /// </summary>
+    IChart? Chart { get; }
+    
+    /// <summary>
+    ///     Gets table. Returns <c>null</c> if the shape doesn't contain table content.
+    /// </summary>
+    ITable? Table { get; }
+    
+    /// <summary>
+    ///     Gets OLE object. Returns <c>null</c> if the shape doesn't contain OLE object content.
+    /// </summary>
+    IOleObject? OleObject { get; }
+    
+    /// <summary>
+    ///     Gets media. Returns <c>null</c> if the shape doesn't contain media content.
+    /// </summary>
+    IMedia? Media { get; }
+    
+    /// <summary>
+    ///     Gets line. Returns <c>null</c> if the shape is not a line.
+    /// </summary>
+    ILine? Line { get; }
+    
+    /// <summary>
+    ///     Gets SmartArt. Returns <c>null</c> if the shape doesn't contain SmartArt graphic.
+    /// </summary>
+    ISmartArt? SmartArt { get; }
     
     /// <summary>
     ///     Gets the rotation of the shape in degrees.
@@ -91,20 +122,14 @@ public interface IShape : IPosition, IShapeGeometry
     IPresentation Presentation { get; }
 
     /// <summary>
+    ///     Gets grouped shapes. Returns <c>null</c> if the shape is not a group shape.
+    /// </summary>
+    IShapeCollection? GroupedShapes { get; }
+
+    /// <summary>
     ///     Removes the shape from the slide.
     /// </summary>
     void Remove();
-    
-    /// <summary>
-    ///     Gets the table if the shape is a table. Use <see cref="ShapeContent"/> property to check if the shape is a table.
-    /// </summary>
-    ITable AsTable();
-    
-    /// <summary>
-    ///     Gets the media shape which is an audio or video.
-    ///     Use <see cref="ShapeContent"/> property to check if the shape is an audio or video.    
-    /// </summary>
-    IMediaShape AsMedia();
 
     /// <summary>
     ///     Duplicates the shape.
@@ -112,15 +137,24 @@ public interface IShape : IPosition, IShapeGeometry
     void Duplicate();
 
     /// <summary>
-    ///     Sets the text content. Throws <see cref="SCException"/> if text content cannot be set for this element.
-    ///     Use <see cref="ShapeContent"/> property to check element content type.
+    ///     Sets text content. 
+    ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
     /// </summary>
+    /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
     void SetText(string text);
+    
+    /// <summary>
+    ///     Sets text content. 
+    ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
+    /// </summary>
+    /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
+    void SetMarkdownText(string text);
 
     /// <summary>
-    ///     Sets the image content. Throws <see cref="SCException"/> if image content cannot be set for this element.
-    ///     Use <see cref="ShapeContent"/> property to check element content type.
+    ///     Sets image content.
+    ///     Use <see cref="Picture"/> property to check whether shape contains image content.
     /// </summary>
+    /// <exception cref="SCException">Thrown if the shape doesn't contain image content.</exception>
     void SetImage(string imagePath);
     
     /// <summary>
@@ -143,4 +177,10 @@ public interface IShape : IPosition, IShapeGeometry
     /// </summary>
     /// <exception cref="SCException">Thrown if the shape is not video content holder.</exception>
     void SetVideo(Stream video);
+
+    /// <summary>
+    ///     Gets grouped shape by its name.
+    /// </summary>
+    /// <exception cref="SCException">Thrown if the current shape is not a group shape.</exception>
+    IShape GroupedShape(string name);
 }

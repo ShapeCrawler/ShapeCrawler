@@ -12,18 +12,4 @@ public class ShapeCollection
         
         var group = shapes.Group([shape1, shape2]);
     }
-    
-    [Test]
-    public void Check_whether_the_shape_is_group()
-    {
-        using var pres = new Presentation("pres.pptx");
-
-        foreach (var shape in pres.Slide(1).Shapes)
-        {
-            if (shape is IGroup group)
-            {
-                Console.WriteLine($"Shape {group.Name} is a group.");
-            }
-        }
-    }
 }

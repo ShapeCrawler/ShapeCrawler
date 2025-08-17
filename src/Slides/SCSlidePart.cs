@@ -5,13 +5,12 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using Position = ShapeCrawler.Positions.Position;
-using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.Slides;
 
 internal readonly ref struct SCSlidePart(SlidePart slidePart)
 {
-    internal ISmartArt AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
+    internal IShape AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
     {
         var pGraphicFrame = new GraphicFrame();
 
@@ -48,14 +47,11 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGraphicFrame);
 
         return
-            new SmartArt(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame),
-                new SmartArtNodeCollection()
-            );
+            new SmartArtShape(
+                new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
+                pGraphicFrame);
     }
     
     private uint GetNextShapeId()

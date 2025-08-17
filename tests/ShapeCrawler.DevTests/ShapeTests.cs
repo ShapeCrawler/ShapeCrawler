@@ -14,7 +14,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptx = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptx);
-        var audioShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Audio 1");
+        var audioShape = pres.Slides[0].Shape("Audio 1").Media;
 
         // Act
         var bytes = audioShape.AsByteArray();
@@ -29,7 +29,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("audio-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var audioShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Audio 1");
+        var audioShape = pres.Slide(1).Shape("Audio 1").Media;
 
         // Act
         var mime = audioShape.MIME;
@@ -47,14 +47,14 @@ public class ShapeTests : SCTest
         var mp3 = TestAsset("064 mp3.mp3");
         var shapes = pres.Slide(1).Shapes;
         shapes.AddAudio(x: 300, y: 100, mp3, AudioType.MP3);
-        var addedAudio = pres.Slide(1).First<IMediaShape>();
+        var addedAudio = pres.Slide(1).First<IMedia>();
 
         // Act
         addedAudio.StartMode = AudioStartMode.Automatically;
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
-        addedAudio = pres.Slide(1).First<IMediaShape>();
+        addedAudio = pres.Slide(1).First<IMedia>();
         pres.Validate();
         addedAudio.StartMode.Should().Be(AudioStartMode.Automatically);
     }
@@ -66,7 +66,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Video 1");
+        var videoShape = pres.Slide(1).Shape("Video 1").Media;
 
         // Act
         var bytes = videoShape.AsByteArray();
@@ -81,7 +81,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = TestAsset("video-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.Shape<IMediaShape>("Video 1");
+        var videoShape = pres.Slide(1).Shape("Video 1").Media;
 
         // Act
         var mime = videoShape.MIME;
@@ -94,11 +94,10 @@ public class ShapeTests : SCTest
     public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
     {
         // Arrange
-        var pptx = TestAsset("009_table.pptx");
         var image = TestAsset("10 png image.png");
-        IPresentation presentation = new Presentation(pptx);
-        IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
-        IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
+        var pres = new Presentation(TestAsset("009_table.pptx"));
+        var picture5 = pres.Slide(4).Shape(5).Picture;
+        var picture6 = pres.Slide(4).Shape(6).Picture;
         int pic6LengthBefore = picture6.Image.AsByteArray().Length;
         MemoryStream modifiedPresentation = new();
 
@@ -109,9 +108,9 @@ public class ShapeTests : SCTest
         int pic6LengthAfter = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
 
-        presentation.Save(modifiedPresentation);
-        presentation = new Presentation(modifiedPresentation);
-        picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
+        pres.Save(modifiedPresentation);
+        pres = new Presentation(modifiedPresentation);
+        picture6 = pres.Slide(4).Shape(6).Picture;
         pic6LengthBefore = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
     }
@@ -224,12 +223,15 @@ public class ShapeTests : SCTest
     [TestCase("autoshape-case018_rotation.pptx", 2, "VerticalTextPH", 281.97)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "NoRotationGroup", 0)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 55.60)]
-    public void Rotation_returns_shape_rotation_in_degrees(string presentationName, int slideNumber, string shapeName,
+    public void Rotation_returns_shape_rotation_in_degrees(
+        string presName, 
+        int slideNumber, 
+        string shapeName,
         double expectedAngle)
     {
         // Arrange
-        var pres = new Presentation(TestAsset(presentationName));
-        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
+        var pres = new Presentation(TestAsset(presName));
+        var shape = pres.Slide(slideNumber).Shape(shapeName);
 
         // Act
         var rotation = shape.Rotation;
@@ -369,22 +371,7 @@ public class ShapeTests : SCTest
         // Assert
         shapeId.Should().Be(expectedShapeId);
     }
-
-    [Test]
-    public void AsTable_returns_ITable()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var slide = pres.Slides[0];
-        var table = slide.Shapes.Shape<ITable>("Table 1");
-
-        // Act
-        var castingToITable = () => table.AsTable();
-
-        // Assert
-        castingToITable.Should().NotThrow();
-    }
-
+    
     [Test]
     [SlideShape("021.pptx", 4, 2, 287.68)]
     [SlideShape("008.pptx", 1, 3, 49.5)]
@@ -569,10 +556,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var expected = (Geometry)Enum.Parse(typeof(Geometry), expectedStr);
-        var pres = new Presentation(p =>
-        {
-            p.Slide();
-        });
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70);
         var shape = shapes.Last();
@@ -747,10 +731,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var geometry = (Geometry)Enum.Parse(typeof(Geometry), geometryStr);
-        var pres = new Presentation(p =>
-        {
-            p.Slide();
-        });
+        var pres = new Presentation(p=>p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(50, 60, 100, 70, geometry);
         var shape = shapes.Last();
@@ -851,15 +832,15 @@ public class ShapeTests : SCTest
                 s.Video("Video 1", x: 100, y: 100, elementWidth: 200, elementHeight: 150, content: video);
             });
         });
-        var videoElement = pres.Slide(1).Shape("Video 1");
+        var videoShape = pres.Slide(1).Shape("Video 1");
         var newVideo = TestAsset("083 mp4 video.mp4");
 
         // Act
-        videoElement.SetVideo(newVideo);
+        videoShape.SetVideo(newVideo);
 
         // Assert
         newVideo.Position = 0;
         var newVideoBytes = newVideo.ToArray();
-        videoElement.AsMedia().AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
+        videoShape.Media.AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
     }
 }

@@ -546,7 +546,7 @@ public class PresentationTests : SCTest
         });
 
         // Assert
-        pres.Slide(1).Picture("Picture").Should().NotBeNull();
+        pres.Slide(1).Shape("Picture").Should().NotBeNull();
     }
     
     [Test]

@@ -12,7 +12,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
@@ -32,17 +31,17 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
         switch (addingShape)
         {
-            case Picture picture:
+            case PictureShape picture:
                 picture.CopyTo(pShapeTree);
-                break;
-            case Shape shape:
-                shape.CopyTo(pShapeTree);
                 break;
             case TextShape textShape:
                 textShape.CopyTo(pShapeTree);
                 break;
-            case Table table:
+            case TableShape table:
                 table.CopyTo(pShapeTree);
+                break;
+            case Shape shape:
+                shape.CopyTo(pShapeTree);
                 break;
             default:
                 throw new SCException("Unsupported shape type for adding.");
@@ -93,7 +92,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         IList<string> seriesNames
     ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
     
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,
@@ -101,10 +100,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes)
+    public IShape Group(IShape[] groupingShapes)
     {
-        var groupShape = new P.GroupShape();
-
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
         var idAndName = this.GenerateIdAndName();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
@@ -146,8 +143,9 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
         groupShapeProperties.Append(transformGroup);
 
-        groupShape.Append(nonVisualGroupShapeProperties);
-        groupShape.Append(groupShapeProperties);
+        var pGroupShape = new P.GroupShape();
+        pGroupShape.Append(nonVisualGroupShapeProperties);
+        pGroupShape.Append(groupShapeProperties);
 
         foreach (var groupingShape in groupingShapes)
         {
@@ -160,24 +158,17 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
                 openXmlElement.Remove();
             }
             
-            groupShape.Append(openXmlElement);
+            pGroupShape.Append(openXmlElement);
         }
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(groupShape);
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGroupShape);
 
         foreach (var grouping in groupingShapes)
         {
             grouping.Remove();
         }
 
-        return new Group(
-            new Shape(
-                new Position(groupShape),
-                new ShapeSize(groupShape),
-                new ShapeId(groupShape),
-                groupShape
-            ),
-            groupShape);
+        return new GroupShape(pGroupShape);
     }
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)

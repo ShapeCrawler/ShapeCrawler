@@ -157,7 +157,7 @@ internal sealed class PictureCollection(
         IList<string> seriesNames
     ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,
@@ -165,7 +165,10 @@ internal sealed class PictureCollection(
         SmartArtType smartArtType
     ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
+    public IShape Group(IShape[] groupingShapes)
+    {
+        throw new NotImplementedException();
+    }
 
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 

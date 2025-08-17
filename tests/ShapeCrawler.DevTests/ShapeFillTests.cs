@@ -229,8 +229,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(file));
-        var shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
-        var table = (ITable)shape;
+        var table = pres.Slide(slideNumber).Shape(shapeName).Table;
         var shapeFill = table[0, 0].Fill;
 
         // Act

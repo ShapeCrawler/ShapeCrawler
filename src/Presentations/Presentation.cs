@@ -491,11 +491,10 @@ public sealed class Presentation : IPresentation
         {
             this.actions.Add(slide =>
             {
-                // Add the picture
                 slide.Shapes.AddPicture(image);
 
                 // Modify the last added picture
-                var picture = slide.Shapes.Last<IPicture>();
+                var picture = slide.Shapes.Last();
                 picture.Name = name;
                 picture.X = x;
                 picture.Y = y;
@@ -516,7 +515,7 @@ public sealed class Presentation : IPresentation
                 var b = new DraftPicture();
                 configure(b);
                 slide.Shapes.AddPicture(b.ImageStream);
-                var pic = slide.Shapes.Last<IPicture>();
+                var pic = slide.Shapes.Last();
                 pic.Name = b.DraftName;
                 pic.X = b.DraftX;
                 pic.Y = b.DraftY;
@@ -575,7 +574,7 @@ public sealed class Presentation : IPresentation
             this.actions.Add(slide =>
             {
                 slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
-                var line = slide.Shapes.Last<ILine>();
+                var line = slide.Shapes.Last();
                 line.Name = name;
             });
 
@@ -596,7 +595,7 @@ public sealed class Presentation : IPresentation
             this.actions.Add(slide =>
             {
                 slide.Shapes.AddVideo(x, y, content);
-                var media = slide.Shapes.Last<IMediaShape>();
+                var media = slide.Shapes.Last();
                 media.Name = name;
                 media.X = x;
                 media.Y = y;

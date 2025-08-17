@@ -1,6 +1,4 @@
-﻿using System.IO;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
@@ -9,7 +7,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a line shape.
 /// </summary>
-public interface ILine : IShape
+public interface ILine
 {
     /// <summary>
     ///    Gets the start point of the line.
@@ -22,76 +20,12 @@ public interface ILine : IShape
     Point EndPoint { get; }
 }
 
-internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape) : ILine
+internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentLineShape) : ILine
 {
-    public decimal Width
-    {
-        get => shape.Width;
-        set => shape.Width = value;
-    }
-
-    public decimal Height
-    {
-        get => shape.Height;
-        set => shape.Height = value;
-    }
-
-    public int Id => shape.Id;
-
-    public string Name
-    {
-        get => shape.Name;
-        set => shape.Name = value;
-    }
-
-    public string AltText
-    {
-        get => shape.AltText;
-        set => shape.AltText = value;
-    }
-
-    public bool Hidden => shape.Hidden;
-
-    public PlaceholderType? PlaceholderType => shape.PlaceholderType;
-
-    public string? CustomData
-    {
-        get => shape.CustomData;
-        set => shape.CustomData = value;
-    }
-
-    public ShapeContent ShapeContent => ShapeContent.Line;
-
-    public IShapeOutline Outline => shape.Outline;
-
-    public IShapeFill Fill => shape.Fill;
-
-    public ITextBox? TextBox => shape.TextBox;
-
-    public double Rotation => shape.Rotation;
-
-    public string SDKXPath => shape.SDKXPath;
-
-    public OpenXmlElement SDKOpenXmlElement => shape.SDKOpenXmlElement;
-
-    public IPresentation Presentation => shape.Presentation;
-
     public Geometry GeometryType
     {
         get => Geometry.Line;
         set => throw new SCException("Unable to set geometry type for line shape.");
-    }
-
-    public decimal CornerSize
-    {
-        get => shape.CornerSize;
-        set => shape.CornerSize = value;
-    }
-
-    public decimal[] Adjustments
-    {
-        get => shape.Adjustments;
-        set => shape.Adjustments = value;
     }
 
     public Point StartPoint
@@ -104,17 +38,17 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (flipH && (this.Height == 0 || flipV))
+            if (flipH && (parentLineShape.Height == 0 || flipV))
             {
-                return new Point(this.X, this.Y);
+                return new Point(parentLineShape.X, parentLineShape.Y);
             }
 
             if (flipH)
             {
-                return new Point(this.X + this.Width, this.Y);
+                return new Point(parentLineShape.X + parentLineShape.Width, parentLineShape.Y);
             }
 
-            return new Point(this.X, this.Y);
+            return new Point(parentLineShape.X, parentLineShape.Y);
         }
     }
 
@@ -128,64 +62,27 @@ internal sealed class SlideLine(Shape shape, P.ConnectionShape pConnectionShape)
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (this.Width == 0)
+            if (parentLineShape.Width == 0)
             {
-                return new Point(this.X, this.Height);
+                return new Point(parentLineShape.X, parentLineShape.Height);
             }
 
-            if (flipH && this.Height == 0)
+            if (flipH && parentLineShape.Height == 0)
             {
-                return new Point(this.X - this.Width, this.Y);
+                return new Point(parentLineShape.X - parentLineShape.Width, parentLineShape.Y);
             }
 
             if (flipV)
             {
-                return new Point(this.Width, this.Height);
+                return new Point(parentLineShape.Width, parentLineShape.Height);
             }
 
             if (flipH)
             {
-                return new Point(this.X, this.Height);
+                return new Point(parentLineShape.X, parentLineShape.Height);
             }
 
-            return new Point(this.Width, this.Y);
+            return new Point(parentLineShape.Width, parentLineShape.Y);
         }
-    }
-    
-    public decimal X
-    {
-        get => shape.X;
-        set => shape.X = value;
-    }
-
-    public decimal Y
-    {
-        get => shape.Y;
-        set => shape.Y = value;
-    }
-
-    public bool Removable => true;
-
-    public void Remove() => pConnectionShape.Remove();
-
-    public ITable AsTable() => shape.AsTable();
-
-    public IMediaShape AsMedia() => shape.AsMedia();
-
-    public void Duplicate() => shape.Duplicate();
-
-    public void SetText(string text) => shape.SetText(text);
-
-    public void SetImage(string imagePath) => shape.SetImage(imagePath);
-
-    public void SetFontName(string fontName) => shape.SetFontName(fontName);
-
-    public void SetFontSize(decimal fontSize) => shape.SetFontSize(fontSize);
-
-    public void SetFontColor(string colorHex) => shape.SetFontColor(colorHex);
-
-    public void SetVideo(Stream video)
-    {
-        throw new System.NotImplementedException();
     }
 }

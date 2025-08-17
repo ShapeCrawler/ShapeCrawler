@@ -10,9 +10,8 @@ public class ParagraphPortionTests : SCTest
     public void Text_Getter_returns_text_of_paragraph_portion()
     {
         // Arrange
-        var pptx = TestAsset("009_table");
-        var pres = new Presentation(pptx);
-        IParagraphPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var pres = new Presentation(TestAsset("009_table"));
+        var portion = pres.Slide(3).Shape(3).Table.Rows[0].Cells[0]
             .TextBox
             .Paragraphs[0].Portions[0];
 
@@ -117,7 +116,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slides[0].Shapes.Shape<ITable>("Table 1");
+        var table = pres.Slides[0].Shape("Table 1").Table;
         var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act

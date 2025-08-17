@@ -9,7 +9,6 @@ using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Slides;
-using ShapeCrawler.Tables;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -141,7 +140,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         IList<string> seriesNames
     ) => throw new NotImplementedException();
 
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,
@@ -149,7 +148,10 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         SmartArtType smartArtType
     ) => throw new NotImplementedException();
 
-    public IGroup Group(IShape[] groupingShapes) => throw new NotImplementedException();
+    public IShape Group(IShape[] groupingShapes)
+    {
+        throw new NotImplementedException();
+    }
 
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
@@ -199,33 +201,27 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         return false;
     }
 
-    private static IEnumerable<IShape> CreateConnectionShape(P.ConnectionShape pConnectionShape)
+    private static IEnumerable<IShape> CreateLineShapes(P.ConnectionShape pConnectionShape)
     {
-        yield return new SlideLine(
-            new Shape(
-                new Position(pConnectionShape),
-                new ShapeSize(pConnectionShape),
-                new ShapeId(pConnectionShape),
-                pConnectionShape
-            ),
+        yield return new LineShape(
+            new Position(pConnectionShape),
+            new ShapeSize(pConnectionShape),
+            new ShapeId(pConnectionShape),
             pConnectionShape
         );
     }
 
-    private static IEnumerable<IShape> CreateGroupShape(P.GroupShape pGroupShape)
+    private static IEnumerable<IShape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
-        yield return new Group(
-            new Shape(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape),
-            pGroupShape
-        );
+        yield return new GroupShape(pGroupShape);
     }
 
-    private static IEnumerable<IShape> CreateShape(P.Shape pShape)
+    private static IEnumerable<IShape> CreateShapes(P.Shape pShape)
     {
         if (pShape.TextBody is not null)
         {
             yield return new TextShape(
-                new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape),
+                pShape,
                 new TextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
             );
         }
@@ -249,9 +245,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         if (element is A.AudioFromFile or A.VideoFromFile)
         {
             yield return new MediaShape(
-                new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                new SlideShapeOutline(pPicture.ShapeProperties!),
-                new ShapeFill(pPicture.ShapeProperties!),
+                new Position(pPicture),
+                new ShapeSize(pPicture),
+                new ShapeId(pPicture),
                 pPicture
             );
             yield break;
@@ -260,10 +256,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
         if (aBlip?.Embed != null)
         {
-            yield return new Picture(
-                new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                pPicture,
-                aBlip
+            yield return new PictureShape(
+                new Picture(pPicture, aBlip),
+                pPicture
             );
         }
     }
@@ -293,9 +288,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
     {
         return element switch
         {
-            P.GroupShape pGroupShape => CreateGroupShape(pGroupShape),
-            P.ConnectionShape pConnectionShape => CreateConnectionShape(pConnectionShape),
-            P.Shape pShape => CreateShape(pShape),
+            P.GroupShape pGroupShape => CreateGroupShapes(pGroupShape),
+            P.ConnectionShape pConnectionShape => CreateLineShapes(pConnectionShape),
+            P.Shape pShape => CreateShapes(pShape),
             P.GraphicFrame pGraphicFrame => this.CreateGraphicFrameShapes(pGraphicFrame),
             P.Picture pPicture => CreatePictureShapes(pPicture),
             _ => []
@@ -312,16 +307,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
         if (IsOLEObject(aGraphicData))
         {
-            var pShapeProperties = pGraphicFrame.Descendants<P.ShapeProperties>().First();
-            yield return new OLEObject(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new SlideShapeOutline(pShapeProperties),
-                new ShapeFill(pShapeProperties)
+            yield return new OleObjectShape(
+                new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
+                pGraphicFrame
             );
             yield break;
         }
@@ -333,11 +323,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
             if (aBlip?.Embed != null)
             {
-                yield return new Picture(
-                    new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                    pPicture,
-                    aBlip
-                );
+                yield return new PictureShape(new Picture(pPicture, aBlip), pPicture);
             }
 
             yield break;
@@ -351,37 +337,27 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
         if (IsSmartArtPGraphicFrame(pGraphicFrame))
         {
-            yield return new SmartArt(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new SmartArtNodeCollection()
+            yield return new SmartArtShape(
+                new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
+                pGraphicFrame
             );
+
             yield break;
         }
 
         if (IsTablePGraphicFrame(pGraphicFrame))
         {
-            var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!
-                .GetFirstChild<A.Table>() !;
-            yield return new Table(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new TableRowCollection(pGraphicFrame),
-                new TableColumnCollection(pGraphicFrame),
-                new TableStyleOptions(aTable.TableProperties!),
+            yield return new TableShape(
+                new Position(pGraphicFrame),
+                new ShapeSize(pGraphicFrame),
+                new ShapeId(pGraphicFrame),
                 pGraphicFrame
             );
         }
     }
-    
+
     private IShape CreateChart(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
@@ -396,23 +372,18 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            return new AxisChart(
-                new CategoryChart(
-                    new Chart(
-                        new Shape(
-                            new Position(pGraphicFrame),
-                            new ShapeSize(pGraphicFrame),
-                            new ShapeId(pGraphicFrame),
-                            pGraphicFrame
-                        ),
-                        new SeriesCollection(chartPart, cXCharts),
-                        new SlideShapeOutline(cShapeProperties),
-                        new ShapeFill(cShapeProperties),
-                        chartPart
-                    ),
-                    new Categories(chartPart)
+
+
+            return new ChartShape(
+                new Chart(
+                    new SeriesCollection(chartPart, cXCharts),
+                    new SlideShapeOutline(cShapeProperties),
+                    new ShapeFill(cShapeProperties),
+                    chartPart,
+                    new Categories(chartPart),
+                    new XAxis(chartPart)
                 ),
-                new XAxis(chartPart)
+                pGraphicFrame
             );
         }
 
@@ -421,90 +392,72 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         // With axis and categories
         if (chartTypeName is "lineChart" or "barChart")
         {
-            var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            return new AxisChart(
-                new CategoryChart(
-                    new Chart(
-                        new Shape(
-                            new Position(pGraphicFrame),
-                            new ShapeSize(pGraphicFrame),
-                            new ShapeId(pGraphicFrame),
-                            pGraphicFrame
-                        ),
-                        new SeriesCollection(chartPart, cXCharts),
-                        new SlideShapeOutline(cShapeProperties),
-                        new ShapeFill(cShapeProperties),
-                        chartPart
-                    ),
-                    new Categories(chartPart)
+            return new ChartShape(
+                new Chart(
+                    new SeriesCollection(chartPart, cXCharts),
+                    new SlideShapeOutline(cShapeProperties),
+                    new ShapeFill(cShapeProperties),
+                    chartPart,
+                    new Categories(chartPart),
+                    new XAxis(chartPart)
                 ),
-                new XAxis(chartPart)
+                pGraphicFrame
             );
         }
 
         // With categories
         if (chartTypeName is "pieChart")
         {
-            var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            return new CategoryChart(
+            return new ChartShape(
                 new Chart(
-                    new Shape(
-                        new Position(pGraphicFrame),
-                        new ShapeSize(pGraphicFrame),
-                        new ShapeId(pGraphicFrame),
-                        pGraphicFrame
-                    ),
                     new SeriesCollection(chartPart, cXCharts),
                     new SlideShapeOutline(cShapeProperties),
                     new ShapeFill(cShapeProperties),
-                    chartPart
+                    chartPart,
+                    new Categories(chartPart)
                 ),
-                new Categories(chartPart)
+                pGraphicFrame
             );
         }
 
         // With axis
         if (chartTypeName is "scatterChart" or "bubbleChart")
         {
-            var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
             var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-            return new AxisChart(
+            return new ChartShape(
                 new Chart(
-                    new Shape(
-                        new Position(pGraphicFrame),
-                        new ShapeSize(pGraphicFrame),
-                        new ShapeId(pGraphicFrame),
-                        pGraphicFrame
-                    ),
                     new SeriesCollection(chartPart, cXCharts),
                     new SlideShapeOutline(cShapeProperties),
                     new ShapeFill(cShapeProperties),
-                    chartPart
+                    chartPart,
+                    new XAxis(chartPart)
                 ),
-                new XAxis(chartPart)
+                pGraphicFrame
             );
         }
 
         // Other
-        var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+        var otherChartCShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        var otherChartCXCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        return new Chart(
-            new Shape(
-                new Position(pGraphicFrame),
-                new ShapeSize(pGraphicFrame),
-                new ShapeId(pGraphicFrame),
-                pGraphicFrame
+        var otherChartCxCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+
+        return new ChartShape(
+            new Chart(
+                new SeriesCollection(chartPart, otherChartCxCharts),
+                new SlideShapeOutline(otherChartCShapeProperties),
+                new ShapeFill(otherChartCShapeProperties),
+                chartPart,
+                new XAxis(chartPart)
             ),
-            new SeriesCollection(chartPart, otherChartCXCharts),
-            new SlideShapeOutline(otherChartCShapeProperties),
-            new ShapeFill(otherChartCShapeProperties),
-            chartPart
+            pGraphicFrame
         );
     }
 }

@@ -64,7 +64,7 @@ public class Tables
     {
         using var pres = new Presentation("table.pptx");
         var slide = pres.Slide(1);
-        var table = slide.Shapes.Shape<ITable>("Table 1");
+        var table = slide.Shapes.Shape("Table 1").Table;
 
         table.Rows.RemoveAt(0);
     }
@@ -73,7 +73,7 @@ public class Tables
     {
         using var pres = new Presentation("presentation.pptx");
         var slide = pres.Slide(1);
-        var table = slide.Shapes.Shape<ITable>("Table 1");
+        var table = slide.Shapes.Shape("Table 1").Table;
 
         // Add a new row at the 1 index using row with the index 0 as a template
         table.Rows.Add(1,0);

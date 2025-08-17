@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
@@ -55,12 +54,6 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
                     var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
                     var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
                     var table = new Table(
-                        new Shape(
-                            new Position(pGraphicFrame),
-                            new ShapeSize(pGraphicFrame),
-                            new ShapeId(pGraphicFrame),
-                            pGraphicFrame
-                        ),
                         new TableRowCollection(pGraphicFrame),
                         new TableColumnCollection(pGraphicFrame),
                         new TableStyleOptions(aTable.TableProperties!),
@@ -95,33 +88,15 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
                 return;
             }
 
+            // Update the row height
             var newEmu = new Points(value).AsEmus();
             this.ATableRow.Height!.Value = newEmu;
-            var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-            var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
-            var parentTable = new Table(
-                new Shape(
-                    new Position(pGraphicFrame),
-                    new ShapeSize(pGraphicFrame),
-                    new ShapeId(pGraphicFrame),
-                    pGraphicFrame
-                ),
-                new TableRowCollection(pGraphicFrame),
-                new TableColumnCollection(pGraphicFrame),
-                new TableStyleOptions(aTable.TableProperties!),
-                pGraphicFrame
-            );
 
-            if (value > currentPoints)
-            {
-                var diffPoints = value - currentPoints;
-                parentTable.SetTableHeight(parentTable.Height + diffPoints);
-            }
-            else
-            {
-                var diffPoints = currentPoints - value;
-                parentTable.SetTableHeight(parentTable.Height - diffPoints);
-            }
+            // Adjust the table shape height directly to avoid triggering proportional row scaling
+            var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
+            var shapeSize = new ShapeSize(pGraphicFrame);
+            var diffPoints = value - currentPoints;
+            shapeSize.Height += diffPoints;
         }
     }
 
@@ -138,6 +113,18 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
         var currentPixels = new Emus(this.ATableRow.Height!.Value).AsPoints();
 
         if (currentPixels == newPoints)
+        {
+            return;
+        }
+
+        var newEmu = new Points(newPoints).AsEmus();
+        this.ATableRow.Height!.Value = newEmu;
+    }
+
+    internal void SetHeight(decimal newPoints)
+    {
+        var currentPoints = new Emus(this.ATableRow.Height!.Value).AsPoints();
+        if (currentPoints == newPoints)
         {
             return;
         }

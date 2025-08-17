@@ -130,7 +130,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
 
     public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
 
-    public ISmartArt AddSmartArt(
+    public IShape AddSmartArt(
         int x,
         int y,
         int width,
@@ -138,7 +138,10 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         SmartArtType smartArtType
     ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
 
-    public IGroup Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
+    public IShape Group(IShape[] groupingShapes)
+    {
+        throw new System.NotImplementedException();
+    }
 
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 

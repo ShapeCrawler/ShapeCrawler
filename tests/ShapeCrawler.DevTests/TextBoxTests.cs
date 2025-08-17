@@ -11,20 +11,15 @@ namespace ShapeCrawler.DevTests
         public void Text_Getter_returns_text_of_table_Cell()
         {
             // Arrange
-            var textFrame1 = new Presentation(TestAsset("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3)
+            var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(3) .TextBox;
+            var textBox2 = new Presentation(TestAsset("001.pptx")).Slide(2).Shape(3) .Table.Rows[0].Cells[0]
                 .TextBox;
-            var textFrame2 = ((ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3))
-                .Rows[0].Cells[0]
-                .TextBox;
-            var textFrame3 =
-                ((ITable)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0]
-                .Cells[0]
-                .TextBox;
+            var textBox3 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table.Rows[0].Cells[0].TextBox;
 
             // Act
-            var text1 = textFrame1.Text;
-            var text2 = textFrame2.Text;
-            var text3 = textFrame3.Text;
+            var text1 = textBox1.Text;
+            var text2 = textBox2.Text;
+            var text3 = textBox3.Text;
 
             // Act
             text1.Should().NotBeEmpty();
@@ -120,7 +115,7 @@ namespace ShapeCrawler.DevTests
         public void SetMarkdownText()
         {
             // Arrange
-            var pres = new Presentation(p=>p.Slide());
+            var pres = new Presentation(p => p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddShape(100, 100, 200, 200);
             var shape = shapes.Last();
@@ -138,7 +133,7 @@ namespace ShapeCrawler.DevTests
         public void SetMarkdownText_sets_list()
         {
             // Arrange
-            var pres = new Presentation(p=>p.Slide());
+            var pres = new Presentation(p => p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddShape(100, 100, 200, 200);
             var shape = shapes.Last();
@@ -199,7 +194,7 @@ namespace ShapeCrawler.DevTests
         public void SetText_sets_text_for_New_Shape()
         {
             // Arrange
-            var pres = new Presentation(p=>p.Slide());
+            var pres = new Presentation(p => p.Slide());
             var shapes = pres.Slides[0].Shapes;
             shapes.AddShape(50, 60, 100, 70);
             var textBox = shapes.Last().TextBox!;
@@ -474,10 +469,10 @@ namespace ShapeCrawler.DevTests
         public void SetText_adds_two_paragraphs_in_the_table_cell()
         {
             // Arrange
-            var pres = new Presentation(p=>p.Slide());
+            var pres = new Presentation(p => p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddTable(50, 50, 2, 2);
-            var cellTextBox = pres.Slide(1).First<ITable>()[0, 0].TextBox!;
+            var cellTextBox = pres.Slide(1).Shapes.First().Table[0, 0].TextBox;
 
             // Act
             cellTextBox.SetText($"Text 1{Environment.NewLine}Text 2");
@@ -543,7 +538,7 @@ namespace ShapeCrawler.DevTests
         {
             // Arrange
             var pres = new Presentation(TestAsset("009_table.pptx"));
-            var textFrame = pres.Slides[2].Shapes.GetById<ITable>(3).Rows[0].Cells[0].TextBox;
+            var textFrame = pres.Slide(3).Shape(3).Table.Rows[0].Cells[0].TextBox;
 
             // Act
             var paragraphsCount = textFrame.Paragraphs.Count;
@@ -638,7 +633,7 @@ namespace ShapeCrawler.DevTests
         [Test]
         [TestCase("001.pptx", 1, "TextBox 4")]
         public void TextDirection_Getter_returns_textbox_text_direction(
-            string presName, 
+            string presName,
             int slideNumber,
             string shapeName)
         {
@@ -653,13 +648,13 @@ namespace ShapeCrawler.DevTests
         [Test]
         [TestCase("001.pptx", 2, "Table 5")]
         public void TextDirection_Getter_returns_cell_textbox_text_direction(
-            string presName, 
+            string presName,
             int slideNumber,
             string shapeName)
         {
             // Arrange
             var pres = new Presentation(TestAsset(presName));
-            var textbox = pres.Slide(slideNumber).Shape<ITable>(shapeName)[0, 0].TextBox;
+            var textbox = pres.Slide(slideNumber).Shape(shapeName).Table[0, 0].TextBox;
 
             // Act & Assert
             textbox.TextDirection.Should().Be(Texts.TextDirection.Rotate90);
@@ -668,7 +663,7 @@ namespace ShapeCrawler.DevTests
         [Test]
         [TestCase("001.pptx", 1, "TextBox 4")]
         public void TextDirection_Setter_sets_textbox_text_direction(
-            string presName, 
+            string presName,
             int slideNumber,
             string shapeName)
         {
@@ -685,7 +680,8 @@ namespace ShapeCrawler.DevTests
 
             pres.Save(mStream);
             pres = new Presentation(mStream);
-            pres.Slide(slideNumber).Shape<IShape>(shapeName).TextBox!.TextDirection.Should().Be(TextDirection.Rotate270);
+            pres.Slide(slideNumber).Shape<IShape>(shapeName).TextBox!.TextDirection.Should()
+                .Be(TextDirection.Rotate270);
         }
 
         [Test]

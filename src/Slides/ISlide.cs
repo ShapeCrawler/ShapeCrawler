@@ -69,21 +69,6 @@ public interface ISlide
     bool Hidden();
 
     /// <summary>
-    ///     Gets table by name.
-    /// </summary>
-    ITable Table(string name);
-
-    /// <summary>
-    ///     Gets picture by name.
-    /// </summary>
-    IPicture Picture(string name);
-    
-    /// <summary>
-    ///     Gets picture by ID.
-    /// </summary>
-    IPicture Picture(int id);
-
-    /// <summary>
     ///     Adds specified lines to the slide notes.
     /// </summary>
     void AddNotes(IEnumerable<string> lines);
@@ -110,16 +95,6 @@ public interface ISlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
-
-    /// <summary>
-    ///     Gets chart by name.
-    /// </summary>
-    IChart Chart(string name);
-
-    /// <summary>
-    ///     Gets chart by ID.
-    /// </summary>
-    IChart Chart(int id);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -263,12 +238,6 @@ internal abstract class Slide : ISlide
         }
     }
 
-    public ITable Table(string name) => this.Shapes.Shape<ITable>(name);
-
-    public IPicture Picture(string name) => this.Shapes.Shape<IPicture>(name);
-
-    public IPicture Picture(int id) => this.Shapes.GetById<IPicture>(id);
-
     public IShape Shape(string name) => this.Shapes.Shape<IShape>(name);
 
     public IShape Shape(int id) => this.Shapes.GetById<IShape>(id);
@@ -276,10 +245,6 @@ internal abstract class Slide : ISlide
     public T Shape<T>(string name)
         where T : IShape
         => this.Shapes.Shape<T>(name);
-
-    public IChart Chart(string name) => this.Shapes.Shape<IChart>(name);
-
-    public IChart Chart(int id) => this.Shapes.GetById<IChart>(id);
 
     public PresentationPart GetSDKPresentationPart()
     {
@@ -292,22 +257,14 @@ internal abstract class Slide : ISlide
 
     public IList<ITextBox> GetTextBoxes()
     {
-        var textBoxes = this.Shapes
-            .Where(shape => shape.TextBox is not null)
-            .Select(shape => shape.TextBox!)
-            .ToList();
+        var collectedTextBoxes = new List<ITextBox>();
 
-        var tableTextboxes = this.Shapes.OfType<ITable>().SelectMany(table => table.Rows.SelectMany(row => row.Cells))
-            .Where(cell => cell.TextBox is not null).Select(cell => cell.TextBox);
-        textBoxes.AddRange(tableTextboxes);
-
-        var groupShapes = this.Shapes.OfType<Group>().ToList();
-        foreach (var groupShape in groupShapes)
+        foreach (var shape in this.Shapes)
         {
-            this.AddGroupTextBoxes(groupShape, textBoxes);
+            this.CollectTextBoxes(shape, collectedTextBoxes);
         }
 
-        return textBoxes;
+        return collectedTextBoxes;
     }
 
     /// <inheritdoc/>
@@ -331,17 +288,26 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove(); 
 
-    private void AddGroupTextBoxes(IGroup groupShape, List<ITextBox> textBoxes)
+    private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
-        foreach (var shape in groupShape.Shapes)
+        if (shape.TextBox is not null)
         {
-            if (shape is IGroup group)
+            buffer.Add(shape.TextBox);
+        }
+
+        if (shape.Table is not null)
+        {
+            foreach (var cell in shape.Table.Rows.SelectMany(row => row.Cells))
             {
-                this.AddGroupTextBoxes(group, textBoxes);
+                buffer.Add(cell.TextBox);
             }
-            else if (shape.TextBox is not null)
+        }
+
+        if (shape.GroupedShapes is not null)
+        {
+            foreach (var innerShape in shape.GroupedShapes)
             {
-                textBoxes.Add(shape.TextBox);
+                this.CollectTextBoxes(innerShape, buffer);
             }
         }
     }

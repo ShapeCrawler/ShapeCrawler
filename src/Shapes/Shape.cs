@@ -12,31 +12,30 @@ using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, OpenXmlElement pShapeTreeElement)
-    : IShape
+internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
-    public decimal X
+    public virtual decimal X
     {
         get => position.X;
         set => position.X = value;
     }
 
-    public decimal Y
+    public virtual decimal Y
     {
         get => position.Y;
         set => position.Y = value;
     }
 
-    public decimal Width
+    public virtual decimal Width
     {
-        get => size.Width;
-        set => size.Width = value;
+        get => shapeSize.Width;
+        set => shapeSize.Width = value;
     }
 
-    public decimal Height
+    public virtual decimal Height
     {
-        get => size.Height;
-        set => size.Height = value;
+        get => shapeSize.Height;
+        set => shapeSize.Height = value;
     }
 
     public IPresentation Presentation
@@ -45,7 +44,7 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
         {
             var stream = new MemoryStream();
             new SCOpenXmlElement(pShapeTreeElement).PresentationDocument.Clone(stream);
-            
+
             return new Presentation(stream);
         }
     }
@@ -134,7 +133,7 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
         }
     }
 
-    public Geometry GeometryType
+    public virtual Geometry GeometryType
     {
         get
         {
@@ -208,13 +207,11 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
         }
     }
 
-    public ShapeContent ShapeContent => ShapeContent.Shape;
-
     public IShapeOutline Outline
     {
         get
         {
-            var pShapeProperties = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pShapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new SlideShapeOutline(pShapeProperties);
         }
     }
@@ -223,14 +220,30 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
     {
         get
         {
-            var pShapeProperties = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pShapeProperties = pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             return new ShapeFill(pShapeProperties);
         }
     }
 
-    public ITextBox? TextBox => null;
+    public virtual ITextBox? TextBox => null;
 
-    public double Rotation
+    public virtual IPicture? Picture => null;
+
+    public virtual IChart? Chart => null;
+
+    public virtual ITable? Table => null;
+
+    public virtual IOleObject? OleObject => null;
+
+    public virtual IMedia? Media => null;
+
+    public virtual ILine? Line => null;
+
+    public virtual ISmartArt? SmartArt => null;
+
+    public virtual IShapeCollection? GroupedShapes => null;
+
+    public virtual double Rotation
     {
         get
         {
@@ -259,40 +272,40 @@ internal sealed class Shape(Position position, ShapeSize size, ShapeId shapeId, 
 
     public OpenXmlElement SDKOpenXmlElement => pShapeTreeElement.CloneNode(true);
 
-    public ITable AsTable() => throw new SCException(
-        $"The shape is not a table. Use {nameof(IShape.ShapeContent)} property to check if the shape is a table.");
-
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a media (audio, video, etc.");
-
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)pShapeTreeElement.Parent!;
         new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
     }
 
-    public void SetText(string text) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
-
-    public void SetImage(string imagePath) => throw new SCException(
-        $"The shape is not an image shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is an image shape.");
-
     public void Remove() => pShapeTreeElement.Remove();
 
-    public void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
+    public virtual void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
 
-    public void SetFontName(string fontName) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public virtual void SetText(string text) => throw new SCException("The shape doesn't contain text content");
 
-    public void SetFontSize(decimal fontSize) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public virtual void SetMarkdownText(string text) => throw new SCException("The shape doesn't contain text content");
 
-    public void SetFontColor(string colorHex) => throw new SCException(
-        $"The shape is not a text shape. Use {nameof(IShape.ShapeContent)} property to check if the shape is a text shape.");
+    public virtual void SetImage(string imagePath) => throw new SCException();
 
-    public void SetVideo(Stream video)
+    public virtual void SetFontName(string fontName) => throw new SCException("The shape doesn't contain text content");
+
+    public virtual void SetFontSize(decimal fontSize) =>
+        throw new SCException("The shape doesn't contain text content");
+
+    public virtual void SetFontColor(string colorHex) =>
+        throw new SCException("The shape doesn't contain text content");
+
+    public virtual void SetVideo(Stream video) => throw new SCException("The shape doesn't support video content");
+
+    public IShape GroupedShape(string name)
     {
-        throw new NotImplementedException();
+        if (this.GroupedShapes == null)
+        {
+            throw new SCException("The current shape is not a group shape.");
+        }
+
+        var groupedShape = this.GroupedShapes.FirstOrDefault(shape => shape.Name == name);
+        return groupedShape ?? throw new SCException($"Grouped shape with name '{name}' not found.");
     }
 }
