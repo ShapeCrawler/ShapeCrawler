@@ -128,4 +128,16 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
         var newEmu = new Points(newPoints).AsEmus();
         this.ATableRow.Height!.Value = newEmu;
     }
+
+    internal void SetHeight(decimal newPoints)
+    {
+        var currentPoints = new Emus(this.ATableRow.Height!.Value).AsPoints();
+        if (currentPoints == newPoints)
+        {
+            return;
+        }
+
+        var newEmu = new Points(newPoints).AsEmus();
+        this.ATableRow.Height!.Value = newEmu;
+    }
 }

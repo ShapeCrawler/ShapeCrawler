@@ -176,11 +176,16 @@ internal sealed class Table(
             if (firstCellSpan > 1 && cells.All(cell => cell.ATableCell.RowSpan?.Value == firstCellSpan))
             {
                 int deleteRowsCount = firstCellSpan.Value - 1;
+                var targetRow = (TableRow)this.Rows[rowIdx];
+                var newHeight = targetRow.Height;
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
                     ((TableRow)row).ATableRow.Remove();
-                    this.Rows[rowIdx].Height += row.Height;
+                    newHeight += row.Height;
                 }
+
+                // Update the target row height directly without affecting the table shape size
+                targetRow.SetHeight(newHeight);
 
                 rowIdx += firstCellSpan.Value;
             }

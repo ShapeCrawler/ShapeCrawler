@@ -641,6 +641,7 @@ public class TableTests : SCTest
 
         // Act
         table.MergeCells(table[0, 0], table[1, 1]);
+        pres.Save(@"c:\temp\output.pptx");
 
         // Assert
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
