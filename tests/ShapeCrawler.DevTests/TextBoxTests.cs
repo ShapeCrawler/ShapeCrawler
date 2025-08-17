@@ -11,20 +11,15 @@ namespace ShapeCrawler.DevTests
         public void Text_Getter_returns_text_of_table_Cell()
         {
             // Arrange
-            var textFrame1 = new Presentation(TestAsset("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3)
+            var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(3) .TextBox;
+            var textBox2 = new Presentation(TestAsset("001.pptx")).Slide(2).Shape(3) .Table.Rows[0].Cells[0]
                 .TextBox;
-            var textFrame2 = ((ITable)new Presentation(TestAsset("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3))
-                .Rows[0].Cells[0]
-                .TextBox;
-            var textFrame3 =
-                ((ITable)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0]
-                .Cells[0]
-                .TextBox;
+            var textBox3 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table.Rows[0].Cells[0].TextBox;
 
             // Act
-            var text1 = textFrame1.Text;
-            var text2 = textFrame2.Text;
-            var text3 = textFrame3.Text;
+            var text1 = textBox1.Text;
+            var text2 = textBox2.Text;
+            var text3 = textBox3.Text;
 
             // Act
             text1.Should().NotBeEmpty();
@@ -477,7 +472,7 @@ namespace ShapeCrawler.DevTests
             var pres = new Presentation(p => p.Slide());
             var shapes = pres.Slide(1).Shapes;
             shapes.AddTable(50, 50, 2, 2);
-            var cellTextBox = pres.Slide(1).First<ITable>()[0, 0].TextBox!;
+            var cellTextBox = pres.Slide(1).Shapes.First().Table[0, 0].TextBox;
 
             // Act
             cellTextBox.SetText($"Text 1{Environment.NewLine}Text 2");

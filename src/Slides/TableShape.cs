@@ -21,4 +21,20 @@ internal sealed class TableShape:Shape
     }
     
     public override ITable? Table { get; }
+
+    public override decimal Height
+    {
+        get => base.Height;
+        set
+        {
+            var percentNewHeight = value / this.Height;
+            base.Height = value;
+
+            foreach (var tableRow in this.Table!.Rows)
+            {
+                var row = (TableRow)tableRow;
+                row.SetHeight((int)(row.Height * percentNewHeight));
+            }
+        }
+    }
 }
