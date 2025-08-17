@@ -5,7 +5,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using Position = ShapeCrawler.Positions.Position;
-using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.Slides;
 

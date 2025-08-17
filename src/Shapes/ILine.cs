@@ -1,6 +1,4 @@
-﻿using System.IO;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130

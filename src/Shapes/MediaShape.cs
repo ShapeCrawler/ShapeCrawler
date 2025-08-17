@@ -13,8 +13,8 @@ internal sealed class MediaShape : Shape
 {
     private readonly P.Picture pPicture;
 
-    internal MediaShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.Picture pPicture):
-        base(position, shapeSize, shapeId, pPicture)
+    internal MediaShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.Picture pPicture)
+        : base(position, shapeSize, shapeId, pPicture)
     {
         this.pPicture = pPicture;
         this.Media = new Media(new SlideShapeOutline(pPicture.ShapeProperties!), new ShapeFill(pPicture.ShapeProperties!), pPicture);
@@ -36,10 +36,10 @@ internal sealed class MediaShape : Shape
         }
 
         // Locate the Open XML part that contains this picture
-        var openXmlPart = pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var openXmlPart = this.pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
 
         // The <p14:media> element stores a relationship ID pointing to the media data part
-        var p14Media = pPicture.NonVisualPictureProperties!
+        var p14Media = this.pPicture.NonVisualPictureProperties!
             .ApplicationNonVisualDrawingProperties!
             .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>()
             .Single();

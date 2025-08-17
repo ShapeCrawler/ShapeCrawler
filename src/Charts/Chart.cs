@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -69,7 +67,7 @@ internal sealed class Chart : IChart
     {
         get
         {
-            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var plotArea = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             if (cXCharts.Count() > 1)
             {
@@ -83,9 +81,9 @@ internal sealed class Chart : IChart
         }
     }
 
-    public IShapeOutline Outline => outline;
+    public IShapeOutline Outline => this.outline;
 
-    public IShapeFill Fill => fill;
+    public IShapeFill Fill => this.fill;
 
     public string? Title
     {
@@ -96,11 +94,11 @@ internal sealed class Chart : IChart
         }
     }
 
-    public IReadOnlyList<ICategory>? Categories => categories;
+    public IReadOnlyList<ICategory>? Categories => this.categories;
 
-    public IXAxis? XAxis => xAxis;
+    public IXAxis? XAxis => this.xAxis;
 
-    public ISeriesCollection SeriesCollection => seriesCollection;
+    public ISeriesCollection SeriesCollection => this.seriesCollection;
 
     public Geometry GeometryType
     {
@@ -108,11 +106,11 @@ internal sealed class Chart : IChart
         set => throw new SCException("It is not possible to set the geometry type for the chart shape.");
     }
 
-    public byte[] GetWorksheetByteArray() => new Workbook(chartPart.EmbeddedPackagePart!).AsByteArray();
+    public byte[] GetWorksheetByteArray() => new Workbook(this.chartPart.EmbeddedPackagePart!).AsByteArray();
 
     private string? GetTitleOrNull()
     {
-        var cTitle = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -136,7 +134,7 @@ internal sealed class Chart : IChart
         // However, it can have store multiple series data in the spreadsheet.
         if (this.Type == ChartType.PieChart)
         {
-            return seriesCollection.First().Name;
+            return this.seriesCollection.First().Name;
         }
 
         return null;

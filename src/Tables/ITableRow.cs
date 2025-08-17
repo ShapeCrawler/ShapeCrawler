@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -90,21 +88,15 @@ internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
                 return;
             }
 
+            // Update the row height
             var newEmu = new Points(value).AsEmus();
             this.ATableRow.Height!.Value = newEmu;
-            var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
-            var parentTableShape = new TableShape(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame);
 
-            if (value > currentPoints)
-            {
-                var diffPoints = value - currentPoints;
-                parentTableShape.Height += diffPoints;
-            }
-            else
-            {
-                var diffPoints = currentPoints - value;
-                parentTableShape.Height -= diffPoints;
-            }
+            // Adjust the table shape height directly to avoid triggering proportional row scaling
+            var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
+            var shapeSize = new ShapeSize(pGraphicFrame);
+            var diffPoints = value - currentPoints;
+            shapeSize.Height += diffPoints;
         }
     }
 

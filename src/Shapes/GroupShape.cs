@@ -10,11 +10,11 @@ internal sealed class GroupShape : Shape
 {
     private readonly P.GroupShape pGroupShape;
 
-    internal GroupShape(P.GroupShape pGroupShape): base(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape)
+    internal GroupShape(P.GroupShape pGroupShape)
+        : base(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape)
     {
         this.pGroupShape = pGroupShape;
         this.GroupedShapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
-        var pShapeProperties = pGroupShape.Descendants<P.ShapeProperties>().First();
     }
 
     public override Geometry GeometryType => Geometry.Rectangle;

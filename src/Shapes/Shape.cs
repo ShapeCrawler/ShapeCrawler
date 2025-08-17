@@ -44,7 +44,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         {
             var stream = new MemoryStream();
             new SCOpenXmlElement(pShapeTreeElement).PresentationDocument.Clone(stream);
-            
+
             return new Presentation(stream);
         }
     }
@@ -226,13 +226,21 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     }
 
     public virtual ITextBox? TextBox => null;
+
     public virtual IPicture? Picture => null;
+
     public virtual IChart? Chart => null;
+
     public virtual ITable? Table => null;
-    public virtual IOLEObject? OLEObject => null;
+
+    public virtual IOleObject? OleObject => null;
+
     public virtual IMedia? Media => null;
+
     public virtual ILine? Line => null;
+
     public virtual ISmartArt? SmartArt => null;
+
     public virtual IShapeCollection? GroupedShapes => null;
 
     public virtual double Rotation
@@ -273,19 +281,23 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     public void Remove() => pShapeTreeElement.Remove();
 
     public virtual void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
-    
+
     public virtual void SetText(string text) => throw new SCException("The shape doesn't contain text content");
 
     public virtual void SetMarkdownText(string text) => throw new SCException("The shape doesn't contain text content");
-    
+
     public virtual void SetImage(string imagePath) => throw new SCException();
+
     public virtual void SetFontName(string fontName) => throw new SCException("The shape doesn't contain text content");
 
-    public virtual void SetFontSize(decimal fontSize) => throw new SCException("The shape doesn't contain text content");
+    public virtual void SetFontSize(decimal fontSize) =>
+        throw new SCException("The shape doesn't contain text content");
 
-    public virtual void SetFontColor(string colorHex) => throw new SCException("The shape doesn't contain text content");
+    public virtual void SetFontColor(string colorHex) =>
+        throw new SCException("The shape doesn't contain text content");
 
     public virtual void SetVideo(Stream video) => throw new SCException("The shape doesn't support video content");
+
     public IShape GroupedShape(string name)
     {
         if (this.GroupedShapes == null)
@@ -294,11 +306,6 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         }
 
         var groupedShape = this.GroupedShapes.FirstOrDefault(shape => shape.Name == name);
-        if (groupedShape == null)
-        {
-            throw new SCException($"Grouped shape with name '{name}' not found.");
-        }
-
-        return groupedShape;
+        return groupedShape ?? throw new SCException($"Grouped shape with name '{name}' not found.");
     }
 }

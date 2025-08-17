@@ -57,7 +57,7 @@ internal sealed class GroupedShape : Shape
         set
         {
             base.X = value;
-            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
+            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
@@ -93,7 +93,7 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
             {
                 return base.Y;
@@ -129,7 +129,7 @@ internal sealed class GroupedShape : Shape
         set
         {
             base.Y = value;
-            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
+            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
@@ -164,7 +164,7 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
             {
                 return base.Width;
@@ -195,7 +195,7 @@ internal sealed class GroupedShape : Shape
         set
         {
             base.Width = value;
-            var pGroupShape = pShape.Ancestors<P.GroupShape>().First();
+            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
             var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
             var aOffset = aTransformGroup.Offset!;
             var aExtents = aTransformGroup.Extents!;
@@ -228,7 +228,7 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = pShape.Ancestors<P.GroupShape>().ToList();
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
             if (pGroupShapes.Count == 0)
             {
                 return base.Height;

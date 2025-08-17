@@ -84,7 +84,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets OLE object. Returns <c>null</c> if the shape doesn't contain OLE object content.
     /// </summary>
-    IOLEObject? OLEObject { get; }
+    IOleObject? OleObject { get; }
     
     /// <summary>
     ///     Gets media. Returns <c>null</c> if the shape doesn't contain media content.

@@ -1,5 +1,4 @@
 ﻿using ShapeCrawler.Positions;
-using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;

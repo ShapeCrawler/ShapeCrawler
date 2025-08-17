@@ -63,11 +63,6 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                         if (blipEmbed is not null)
                         {
                             shape = new PictureShape(new Picture(pPicture, aBlip!), pPicture);
-                            // shape = new Picture(
-                            //     new Shape(new Position(pPicture), new ShapeSize(pPicture), new ShapeId(pPicture), pPicture),
-                            //     pPicture,
-                            //     aBlip!
-                            // );
                         }
 
                         break;

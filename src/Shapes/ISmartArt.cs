@@ -1,6 +1,3 @@
-using DocumentFormat.OpenXml;
-using ShapeCrawler.Positions;
-
 namespace ShapeCrawler.Shapes;
 
 /// <summary>
@@ -20,5 +17,6 @@ internal sealed class SmartArt : ISmartArt
     {
         this.Nodes = nodeCollection;
     }
+
     public ISmartArtNodeCollection Nodes { get; }
 }
