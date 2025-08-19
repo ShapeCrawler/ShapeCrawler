@@ -118,6 +118,10 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         var clonedSlidePart = presentationPart.AddNewPart<SlidePart>(newSlideRelId);
         CopySlideContent(sourceSlidePart, clonedSlidePart);
         CopyCustomXmlParts(sourceSlidePart, clonedSlidePart);
+
+        // Ensure all image relationships used by the slide XML are present in the cloned slide
+        // so that PowerPoint can resolve picture blips correctly.
+        CopyImageParts(sourceSlidePart, clonedSlidePart);
         FixHyperlinkRelationships(sourceSlidePart, clonedSlidePart, presentationPart);
         LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, number);
@@ -186,6 +190,51 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             sourceStream.Position = 0;
             using var destStream = newCustomXmlPart.GetStream(FileMode.Create, FileAccess.Write);
             sourceStream.CopyTo(destStream);
+        }
+    }
+
+    private static void CopyImageParts(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        // The slide XML we copied contains a:blip/@r:embed IDs. We must make sure
+        // the cloned slide part has relationships with the SAME IDs pointing to
+        // valid image parts. Otherwise PowerPoint shows "The picture can't be displayed".
+        var blips = clonedSlidePart.Slide.CommonSlideData!
+            .ShapeTree!
+            .Descendants<A.Blip>()
+            .ToList();
+
+        foreach (var blip in blips)
+        {
+            var relId = blip.Embed?.Value;
+            if (string.IsNullOrWhiteSpace(relId))
+            {
+                continue;
+            }
+
+            // If relationship already exists on the cloned slide, skip
+            if (clonedSlidePart.Parts.Any(p => p.RelationshipId == relId))
+            {
+                continue;
+            }
+
+            // Get the source image part using the same relationship id
+            if (sourceSlidePart.TryGetPartById(relId!, out var openXmlPart) && openXmlPart is ImagePart srcImage)
+            {
+                // If the source and target belong to the same package we can share the part.
+                // Otherwise, create a new part and copy the bytes.
+                if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
+                {
+                    clonedSlidePart.AddPart(srcImage, relId);
+                }
+                else
+                {
+                    var dstImage = clonedSlidePart.AddNewPart<ImagePart>(srcImage.ContentType, relId);
+                    using var s = srcImage.GetStream();
+                    s.Position = 0;
+                    using var d = dstImage.GetStream(FileMode.Create, FileAccess.Write);
+                    s.CopyTo(d);
+                }
+            }
         }
     }
 
