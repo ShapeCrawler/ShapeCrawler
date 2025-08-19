@@ -224,7 +224,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                 // Otherwise, create a new part and copy the bytes.
                 if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
                 {
-                    clonedSlidePart.AddPart(srcImage, relId);
+                    clonedSlidePart.AddPart(srcImage, relId!);
                 }
                 else
                 {
