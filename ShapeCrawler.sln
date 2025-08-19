@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.CITests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fixture", "Fixture\Fixture.csproj", "{2A87F0D1-C39A-459B-9D7A-C956FCC8E819}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B5769F5-F536-447D-98BF-29957D8B60B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A87F0D1-C39A-459B-9D7A-C956FCC8E819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A87F0D1-C39A-459B-9D7A-C956FCC8E819}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A87F0D1-C39A-459B-9D7A-C956FCC8E819}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A87F0D1-C39A-459B-9D7A-C956FCC8E819}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

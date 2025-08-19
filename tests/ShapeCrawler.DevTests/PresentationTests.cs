@@ -2,8 +2,10 @@ using System.Globalization;
 using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Presentations;
+using Fixture;
 
 namespace ShapeCrawler.DevTests;
 
@@ -411,7 +413,35 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-
+    
+    [Test]
+    public void Slides_Add_adds_slide_at_position()
+    {
+        // Arrange
+        var fixtures = new Fixtures();
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+            p.Slide(s =>
+            {
+                s.Picture(
+                    "Picture 1", 
+                    fixtures.Int(), 
+                    fixtures.Int(), 
+                    fixtures.Int(), 
+                    fixtures.Int(),
+                    fixtures.Image());
+            });
+        });
+        var copyingSlide = pres.Slide(2);
+        
+        // Act
+        pres.Slides.Add(copyingSlide, 1);
+        
+        // Assert
+        pres.Slide(1).Shapes.Shape("Picture 1").Picture.Image!.AsByteArray().Should().NotBeEmpty();
+    }
+    
     [Test]
     [TestCase("007_2 slides.pptx", 1)]
     [TestCase("006_1 slides.pptx", 0)]

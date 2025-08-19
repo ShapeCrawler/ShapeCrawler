@@ -623,19 +623,15 @@ public sealed class Presentation : IPresentation
         
         internal void ApplyTo(Presentation presentation)
         {
-            // Ensure there is at least one slide
-            if (presentation.Slides.Count == 0)
-            {
-                // Ensure SlideIdList exists in the SDK presentation
-                var sdkPres = presentation.presDocument.PresentationPart!.Presentation;
-                sdkPres.SlideIdList ??= new P.SlideIdList();
+            // Always add a new slide for each DraftSlide application
+            var sdkPres = presentation.presDocument.PresentationPart!.Presentation;
+            sdkPres.SlideIdList ??= new P.SlideIdList();
 
-                var blankLayout = presentation.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
-                presentation.Slides.Add(blankLayout.Number);
-            }
+            var blankLayout = presentation.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+            presentation.Slides.Add(blankLayout.Number);
 
-            // Target the first slide
-            var slide = presentation.Slides[0];
+            // Target the newly added slide
+            var slide = presentation.Slides[presentation.Slides.Count - 1];
             foreach (var action in this.actions)
             {
                 action(slide);
