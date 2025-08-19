@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.71.2 - Unreleased
+🐞Fixed adding slide at the specified position [#1080](https://github.com/ShapeCrawler/ShapeCrawler/issues/1080)
+
 ## Version 0.71.1 - 2025-07-25
 🐞Fixed CVE-2025-53015 vulnerability.
 

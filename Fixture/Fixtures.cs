@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
-using ImageMagick;
+﻿using ImageMagick;
 
 namespace Fixture;
 
 public class Fixtures
 {
-    private readonly Random random = new Random();
+    private readonly Random random = new();
 
     public int Int()
     {
