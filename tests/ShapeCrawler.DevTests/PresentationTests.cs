@@ -2,8 +2,10 @@ using System.Globalization;
 using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Presentations;
+using Fixture;
 
 namespace ShapeCrawler.DevTests;
 
@@ -616,5 +618,24 @@ public class PresentationTests : SCTest
             destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    public void Reproduce_issue_1080()
+    {
+        var fixtures = new Fixtures();
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.Picture(
+                    "Picture 1", 
+                    fixtures.Int(), 
+                    fixtures.Int(), 
+                    fixtures.Int(), 
+                    fixtures.Int(),
+                    fixtures.Image());
+            });
+        });
     }
 }
