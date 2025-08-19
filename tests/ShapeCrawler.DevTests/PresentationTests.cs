@@ -637,5 +637,7 @@ public class PresentationTests : SCTest
                     fixtures.Image());
             });
         });
+        
+        pres.Save(@"c:\temp\output.pptx");
     }
 }
