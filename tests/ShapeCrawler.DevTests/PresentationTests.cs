@@ -626,6 +626,7 @@ public class PresentationTests : SCTest
         var fixtures = new Fixtures();
         var pres = new Presentation(p =>
         {
+            p.Slide();
             p.Slide(s =>
             {
                 s.Picture(

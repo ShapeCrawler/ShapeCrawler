@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -9,5 +8,14 @@
     <ItemGroup>
         <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.7.0" />
     </ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <TargetFrameworks>net9.0;net48;net472</TargetFrameworks>
+        <WarningsAsErrors>NU1608</WarningsAsErrors>
+    </PropertyGroup>
 
 </Project>
