@@ -62,21 +62,17 @@ pres.Save("my pres.pptx");
 
 ### Update picture
 ```C#
-using var pres = new Presentation("pres.pptx");
-
-// get picture shape
-var picture = pres.Slide(1).Picture("Picture 1");
+var pres = new Presentation("presentation.pptx");
+var picture = pres.Slide(1).Shape("Picture 1").Picture!;
 
 // change image
 var image = System.IO.File.OpenRead("new-image.png");
 picture.Image!.Update(image);
-
-// get MIME type of image, eg. "image/png"
-var mimeType = picture.Image!.Mime;
-
 pres.Save();
-```
 
+// get MIME type of image, e.g. "image/png"
+var mimeType = picture.Image!.Mime;
+```
 
 ### More samples
 You can find more usage samples by visiting the [**Wiki page**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) or [**Examples**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples).
@@ -103,7 +99,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.71.1 - 2025-07-25
-🐞Fixed CVE-2025-53015 vulnerability.
+### Version 0.71.2 - 2025-08-25
+🐞Fixed adding slide at the specified position [#1080](https://github.com/ShapeCrawler/ShapeCrawler/issues/1080)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
