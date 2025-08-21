@@ -37,6 +37,11 @@ internal sealed class PictureCollection(
     {
         try
         {
+            if (imageStream.CanSeek)
+            {
+                imageStream.Position = 0;
+            }
+
             using var image = CreateMagickImage(imageStream);
             var originalFormat = image.Format;
 
@@ -49,12 +54,26 @@ internal sealed class PictureCollection(
                 ResizeSvgImageIfNeeded(image, ref width, ref height);
             }
 
-            var rasterStream = PrepareRasterStream(image);
-            imageStream.Position = rasterStream.Position = 0;
-
-            var pPicture = originalFormat == MagickFormat.Svg
-                ? this.CreateSvgPPicture(rasterStream, imageStream, "Picture")
-                : this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
+            P.Picture pPicture;
+            if (originalFormat == MagickFormat.Svg)
+            {
+                var rasterStream = PrepareRasterStream(image);
+                imageStream.Position = rasterStream.Position = 0;
+                pPicture = this.CreateSvgPPicture(rasterStream, imageStream, "Picture");
+            }
+            else if (originalFormat is MagickFormat.Gif or MagickFormat.Jpeg or MagickFormat.Png or MagickFormat.Tif or MagickFormat.Tiff)
+            {
+                // Preserve original bytes for supported formats to ensure deterministic dedup across slides
+                imageStream.Position = 0;
+                pPicture = this.CreatePPicture(imageStream, "Picture", GetMimeType(originalFormat));
+            }
+            else
+            {
+                // For formats we convert (e.g., WebP/AVIF/BMP), write a deterministic raster representation
+                var rasterStream = PrepareRasterStream(image);
+                imageStream.Position = rasterStream.Position = 0;
+                pPicture = this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
+            }
 
             SetPictureTransform(pPicture, width, height);
         }
