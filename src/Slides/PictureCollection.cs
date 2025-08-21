@@ -49,12 +49,25 @@ internal sealed class PictureCollection(
                 ResizeSvgImageIfNeeded(image, ref width, ref height);
             }
 
-            var rasterStream = PrepareRasterStream(image);
-            imageStream.Position = rasterStream.Position = 0;
-
-            var pPicture = originalFormat == MagickFormat.Svg
-                ? this.CreateSvgPPicture(rasterStream, imageStream, "Picture")
-                : this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
+            P.Picture pPicture;
+            if (originalFormat == MagickFormat.Svg)
+            {
+                var rasterStream = PrepareRasterStream(image);
+                imageStream.Position = rasterStream.Position = 0;
+                pPicture = this.CreateSvgPPicture(rasterStream, imageStream, "Picture");
+            }
+            else if (originalFormat == MagickFormat.Gif)
+            {
+                // Preserve animated GIF by embedding the original bytes and correct MIME
+                imageStream.Position = 0;
+                pPicture = this.CreatePPicture(imageStream, "Picture", "image/gif");
+            }
+            else
+            {
+                var rasterStream = PrepareRasterStream(image);
+                imageStream.Position = rasterStream.Position = 0;
+                pPicture = this.CreatePPicture(rasterStream, "Picture", GetMimeType(image.Format));
+            }
 
             SetPictureTransform(pPicture, width, height);
         }
