@@ -3,7 +3,6 @@ using Fixture;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
-using ImageMagick;
 
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -15,8 +14,8 @@ namespace ShapeCrawler.DevTests;
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 public class ShapeCollectionTests : SCTest
 {
-    private Fixtures fixture = new Fixtures();
-    
+    private readonly Fixtures fixture = new();
+
     [Test]
     public void Add_adds_shape()
     {
@@ -47,18 +46,18 @@ public class ShapeCollectionTests : SCTest
         var addedShape = shapes.Last();
         addedShape.Table.Should().NotBeNull();
     }
-    
+
     [Test]
     public void AddPicture_adds_picture_with_gif_image()
     {
         // Arrange
         var pres = new Presentation(p => p.Slide());
-        var gif = new MemoryStream(File.ReadAllBytes(@"c:\temp\gif.gif"));
+        var gif = fixture.Image(i => i.Format("GIF"));
         var shapes = pres.Slide(1).Shapes;
-        
+
         // Act
         shapes.AddPicture(gif);
-        
+
         // Assert
         var picture = shapes.Last().Picture;
         picture.Image.Mime.Should().Be("image/gif");
@@ -691,7 +690,7 @@ public class ShapeCollectionTests : SCTest
     public void Group_groups_shapes()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var shapes = pres.Slide(1).Shapes;
         shapes.AddShape(100, 100, 100, 100, Geometry.Rectangle, "Shape 1");
         shapes.AddShape(100, 200, 100, 100, Geometry.Rectangle, "Shape 2");
