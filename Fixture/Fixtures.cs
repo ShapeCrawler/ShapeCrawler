@@ -73,12 +73,6 @@ public class Fixtures
 
             collection.Write(stream, MagickFormat.Gif);
         }
-        else if (formatUpper is "PNG")
-        {
-            using var image = new MagickImage(background, (uint)width, (uint)height);
-            image.Format = MagickFormat.Png;
-            image.Write(stream);
-        }
         else if (formatUpper is "JPG" or "JPEG")
         {
             using var image = new MagickImage(background, (uint)width, (uint)height);
