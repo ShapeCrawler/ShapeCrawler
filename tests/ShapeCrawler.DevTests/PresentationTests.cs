@@ -1,16 +1,17 @@
 using System.Globalization;
 using DocumentFormat.OpenXml.Presentation;
+using Fixture;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Presentations;
-using Fixture;
 
 namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
+    private Fixtures fixtures = new();
+    
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
@@ -418,7 +419,6 @@ public class PresentationTests : SCTest
     public void Slides_Add_adds_slide_at_position()
     {
         // Arrange
-        var fixtures = new Fixtures();
         var pres = new Presentation(p =>
         {
             p.Slide();
@@ -478,6 +478,27 @@ public class PresentationTests : SCTest
         // Assert
         destPres.Slide(2).CustomData.Should().Be(sourceSlideId);
     }
+    
+    [Test]
+    public void Slides_Add_adds_a_new_slide_at_the_specified_position_using_specified_layout()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.String());
+            });
+        });
+        var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;
+        
+        // Act
+        pres.Slides.Add(layoutNumber, 1);
+
+        // Assert
+        pres.Slide(2).Shapes.Count.Should().Be(1);
+    }
+
 
     [Test]
     public void FileProperties_Title_Setter_sets_title()

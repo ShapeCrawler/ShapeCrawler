@@ -5,6 +5,7 @@ namespace Fixture;
 public class Fixtures
 {
     private readonly Random random = new();
+    private readonly List<string> files = new();
 
     public int Int()
     {
@@ -29,4 +30,19 @@ public class Fixtures
         stream.Position = 0;
         return stream;
     }
+
+    public string File()
+    {
+        var file = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
+        var stream = System.IO.File.Create(file);
+        stream.Close();
+        
+        this.files.Add(file);
+
+        return file;
+    }
+
+    public void Clean() => files.ForEach(System.IO.File.Delete);
+
+    public string String() => Guid.NewGuid().ToString();
 }

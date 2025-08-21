@@ -102,11 +102,11 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         pSlideIdList.Append(pSlideId);
     }
 
-    public void Add(ISlide slide, int number)
+    public void Add(ISlide slide, int slideNumber)
     {
-        if (number < 1 || number > this.Count + 1)
+        if (slideNumber < 1 || slideNumber > this.Count + 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(number));
+            throw new ArgumentOutOfRangeException(nameof(slideNumber));
         }
 
         var sourceSlidePresPart = slide.GetSDKPresentationPart();
@@ -124,9 +124,77 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         CopyImageParts(sourceSlidePart, clonedSlidePart);
         FixHyperlinkRelationships(sourceSlidePart, clonedSlidePart, presentationPart);
         LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
-        InsertSlideAtPosition(presentationPart, newSlideRelId, number);
+        InsertSlideAtPosition(presentationPart, newSlideRelId, slideNumber);
 
         presentationPart.Presentation.Save();
+    }
+
+    public void Add(int layoutNumber, int slideNumber)
+    {
+        if (slideNumber < 1 || slideNumber > this.Count + 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(slideNumber));
+        }
+
+        var newRelId = new SCOpenXmlPart(presPart).NextRelationshipId();
+        var slidePart = presPart.AddNewPart<SlidePart>(newRelId);
+        slidePart.Slide = new P.Slide(
+            new P.CommonSlideData(
+                new P.ShapeTree(
+                    new P.NonVisualGroupShapeProperties(
+                        new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = string.Empty },
+                        new P.NonVisualGroupShapeDrawingProperties(),
+                        new P.ApplicationNonVisualDrawingProperties()),
+                    new P.GroupShapeProperties(new A.TransformGroup()))),
+            new P.ColorMapOverride(new A.MasterColorMapping()));
+
+        var layout = new SlideMasterCollection(presPart.SlideMasterParts)
+            .SlideMaster(1)
+            .InternalSlideLayout(layoutNumber);
+        slidePart.AddPart(layout.SlideLayoutPart, "rId1");
+
+        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
+            commonSlideData.ShapeTree is P.ShapeTree shapeTree)
+        {
+            var placeholderShapes = shapeTree.ChildElements
+                .OfType<P.Shape>()
+                .Where(shape => shape.NonVisualShapeProperties!
+                    .OfType<P.ApplicationNonVisualDrawingProperties>()
+                    .Any(anvdp => anvdp.PlaceholderShape is not null))
+                .Where(shape =>
+                {
+                    var placeholderType = shape.NonVisualShapeProperties!
+                        .OfType<P.ApplicationNonVisualDrawingProperties>()
+                        .FirstOrDefault()?.PlaceholderShape?.Type?.Value;
+
+                    return placeholderType != P.PlaceholderValues.Footer &&
+                           placeholderType != P.PlaceholderValues.DateAndTime &&
+                           placeholderType != P.PlaceholderValues.SlideNumber;
+                })
+                .Select(shape => new P.Shape
+                {
+                    NonVisualShapeProperties =
+                        (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
+                    TextBody = ResolveTextBody(shape),
+                    ShapeProperties = new P.ShapeProperties()
+                });
+
+            slidePart.Slide.CommonSlideData = new P.CommonSlideData()
+            {
+                ShapeTree = new P.ShapeTree(placeholderShapes)
+                {
+                    GroupShapeProperties = (P.GroupShapeProperties)shapeTree.GroupShapeProperties!.CloneNode(true),
+                    NonVisualGroupShapeProperties =
+                        (P.NonVisualGroupShapeProperties)shapeTree.NonVisualGroupShapeProperties!.CloneNode(true)
+                }
+            };
+        }
+
+        presPart.Presentation.SlideIdList ??= new P.SlideIdList();
+
+        InsertSlideAtPosition(presPart, newRelId, slideNumber);
+
+        presPart.Presentation.Save();
     }
 
     public void Add(ISlide slide)
