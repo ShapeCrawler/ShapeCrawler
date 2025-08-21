@@ -41,6 +41,7 @@ internal sealed class PictureCollection(
             {
                 imageStream.Position = 0;
             }
+
             using var image = CreateMagickImage(imageStream);
             var originalFormat = image.Format;
 
