@@ -36,8 +36,13 @@ internal readonly record struct SCATableRow
         var bodyProperties = new A.BodyProperties();
         var listStyle = new A.ListStyle();
         var paragraph = new A.Paragraph();
+        // Insert a default run so that paragraphs have at least one portion with font properties
+        var runProperties = new A.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
+        var text = new A.Text { Text = string.Empty };
+        var run = new A.Run(runProperties, text);
         var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
 
+        paragraph.Append(run);
         paragraph.Append(endParagraphRunProperties);
         textBody.Append(bodyProperties);
         textBody.Append(listStyle);

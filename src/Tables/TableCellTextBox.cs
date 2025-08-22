@@ -3,8 +3,10 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables;
 
@@ -223,6 +225,68 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
             
             // Add the text for this line
             newParagraph.Portions.AddText(textLines[i]);
+        }
+
+        // Adjust the row height if the text wraps to multiple lines
+        var aTableRow = aTableCell.Ancestors<A.TableRow>().FirstOrDefault();
+        if (aTableRow != null)
+        {
+            var graphicFrame = aTableRow.Ancestors<P.GraphicFrame>().FirstOrDefault();
+            var aTable = graphicFrame?.GetFirstChild<A.Graphic>()?.GraphicData?.GetFirstChild<A.Table>();
+            if (aTable?.TableGrid != null)
+            {
+                var cellsInRow = aTableRow.Elements<A.TableCell>().ToList();
+                var colIndex = cellsInRow.IndexOf(aTableCell);
+                if (colIndex >= 0)
+                {
+                    var gridColumns = aTable.TableGrid.Elements<A.GridColumn>().ToList();
+                    if (colIndex < gridColumns.Count)
+                    {
+                        var columnWidthPts = new Emus(gridColumns[colIndex].Width!.Value).AsPoints();
+                        var widthCapacity = columnWidthPts - this.LeftMargin - this.RightMargin;
+
+                        if (widthCapacity > 0)
+                        {
+                            decimal textHeight = 0;
+                            foreach (var paragraph in this.Paragraphs)
+                            {
+                                var paragraphPortions = paragraph.Portions.OfType<TextParagraphPortion>();
+                                if (!paragraphPortions.Any())
+                                {
+                                    continue;
+                                }
+
+                                var popularPortion = paragraphPortions
+                                    .GroupBy(p => p.Font.Size)
+                                    .OrderByDescending(g => g.Count())
+                                    .First().First();
+                                var scFont = popularPortion.Font;
+
+                                var paragraphText = paragraph.Text.ToUpper();
+                                // SkiaSharp uses 72 DPI while ShapeCrawler uses 96 DPI; adjust width accordingly (96/72 ≈ 1.4)
+                                var paragraphTextWidth = new Text(paragraphText, scFont).Width * 1.4M;
+                                var requiredRowsCount = paragraphTextWidth / widthCapacity;
+                                var intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
+                                if (intRequiredRowsCount == 0 && paragraphTextWidth > 0)
+                                {
+                                    intRequiredRowsCount = 1;
+                                }
+
+                                textHeight += intRequiredRowsCount * (int)scFont.Size;
+                            }
+
+                            var requiredHeight = textHeight + this.TopMargin + this.BottomMargin;
+                            var currentRowHeight = new Emus(aTableRow.Height!.Value).AsPoints();
+                            if (requiredHeight > currentRowHeight)
+                            {
+                                var rowIndex = aTable.Elements<A.TableRow>().ToList().IndexOf(aTableRow);
+                                var scRow = new ShapeCrawler.TableRow(aTableRow, rowIndex);
+                                scRow.SetHeight(requiredHeight);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
