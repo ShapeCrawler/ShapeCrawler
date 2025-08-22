@@ -173,120 +173,161 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
     public void SetText(string text)
     {
-        // Split text by newlines to handle multiple paragraphs
-        var textLines = text.Split([Environment.NewLine, "\n"], StringSplitOptions.None);
-        
-        // Clear all existing paragraphs
-        var existingParagraphs = this.Paragraphs.ToList();
-        var firstParagraph = existingParagraphs.FirstOrDefault();
-        
-        // Keep only the first paragraph and clear all its portions
-        if (firstParagraph == null)
-        {
-            // Create a paragraph if none exists
-            this.Paragraphs.Add();
-            firstParagraph = this.Paragraphs[0];
-        }
-        else
-        {
-            // Remove all paragraphs after the first one
-            foreach (var p in existingParagraphs.Skip(1))
-            {
-                p.Remove();
-            }
-            
-            // Clear all portions in the first paragraph
-            foreach (var portion in firstParagraph.Portions.ToList())
-            {
-                portion.Remove();
-            }
-        }
-        
-        // Add the first line of text to the first paragraph
+        var textLines = this.SplitLines(text);
+
+        var firstParagraph = this.EnsureFirstParagraph();
+        this.RemoveExtraParagraphs();
+        this.ClearParagraphPortions(firstParagraph);
+
         if (textLines.Length > 0)
         {
             firstParagraph.Portions.AddText(textLines[0]);
         }
-        
-        // Create a new paragraph for each additional line
-        for (int i = 1; i < textLines.Length; i++)
+
+        this.AddRemainingLinesAsParagraphs(textLines);
+
+        this.AdjustRowHeightForCurrentContent();
+    }
+
+    private string[] SplitLines(string text)
+    {
+        return text.Split([Environment.NewLine, "\n"], StringSplitOptions.None);
+    }
+
+    private IParagraph EnsureFirstParagraph()
+    {
+        var existingParagraphs = this.Paragraphs.ToList();
+        var firstParagraph = existingParagraphs.FirstOrDefault();
+        if (firstParagraph != null)
         {
-            // Add a new paragraph
+            return firstParagraph;
+        }
+
+        this.Paragraphs.Add();
+        return this.Paragraphs[0];
+    }
+
+    private void RemoveExtraParagraphs()
+    {
+        var existingParagraphs = this.Paragraphs.ToList();
+        foreach (var paragraph in existingParagraphs.Skip(1))
+        {
+            paragraph.Remove();
+        }
+    }
+
+    private void ClearParagraphPortions(IParagraph paragraph)
+    {
+        foreach (var portion in paragraph.Portions.ToList())
+        {
+            portion.Remove();
+        }
+    }
+
+    private void AddRemainingLinesAsParagraphs(string[] textLines)
+    {
+        for (var i = 1; i < textLines.Length; i++)
+        {
             this.Paragraphs.Add();
-            
-            // Get the newly created paragraph
-            var newParagraph = this.Paragraphs[i];
-            
-            // Clear any existing portions (since it was cloned from the previous paragraph)
-            foreach (var portion in newParagraph.Portions.ToList())
-            {
-                portion.Remove();
-            }
-            
-            // Add the text for this line
+            var newParagraph = this.Paragraphs[this.Paragraphs.Count - 1];
+            this.ClearParagraphPortions(newParagraph);
             newParagraph.Portions.AddText(textLines[i]);
         }
+    }
 
-        // Adjust the row height if the text wraps to multiple lines
+    private void AdjustRowHeightForCurrentContent()
+    {
         var aTableRow = aTableCell.Ancestors<A.TableRow>().FirstOrDefault();
-        if (aTableRow != null)
+        if (aTableRow == null)
         {
-            var graphicFrame = aTableRow.Ancestors<P.GraphicFrame>().FirstOrDefault();
-            var aTable = graphicFrame?.GetFirstChild<A.Graphic>()?.GraphicData?.GetFirstChild<A.Table>();
-            if (aTable?.TableGrid != null)
-            {
-                var cellsInRow = aTableRow.Elements<A.TableCell>().ToList();
-                var colIndex = cellsInRow.IndexOf(aTableCell);
-                if (colIndex >= 0)
-                {
-                    var gridColumns = aTable.TableGrid.Elements<A.GridColumn>().ToList();
-                    if (colIndex < gridColumns.Count)
-                    {
-                        var columnWidthPts = new Emus(gridColumns[colIndex].Width!.Value).AsPoints();
-                        var widthCapacity = columnWidthPts - this.LeftMargin - this.RightMargin;
-
-                        if (widthCapacity > 0)
-                        {
-                            decimal textHeight = 0;
-                            foreach (var paragraph in this.Paragraphs)
-                            {
-                                var paragraphPortions = paragraph.Portions.OfType<TextParagraphPortion>();
-                                if (!paragraphPortions.Any())
-                                {
-                                    continue;
-                                }
-
-                                var popularPortion = paragraphPortions
-                                    .GroupBy(p => p.Font.Size)
-                                    .OrderByDescending(g => g.Count())
-                                    .First().First();
-                                var scFont = popularPortion.Font;
-
-                                var paragraphText = paragraph.Text.ToUpper();
-                                var paragraphTextWidth = new Text(paragraphText, scFont).Width * 1.4M;
-                                var requiredRowsCount = paragraphTextWidth / widthCapacity;
-                                var intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
-                                if (intRequiredRowsCount == 0 && paragraphTextWidth > 0)
-                                {
-                                    intRequiredRowsCount = 1;
-                                }
-
-                                textHeight += intRequiredRowsCount * (int)scFont.Size;
-                            }
-
-                            var requiredHeight = textHeight + this.TopMargin + this.BottomMargin;
-                            var currentRowHeight = new Emus(aTableRow.Height!.Value).AsPoints();
-                            if (requiredHeight > currentRowHeight)
-                            {
-                                var rowIndex = aTable.Elements<A.TableRow>().ToList().IndexOf(aTableRow);
-                                var scRow = new ShapeCrawler.TableRow(aTableRow, rowIndex);
-                                scRow.SetHeight(requiredHeight);
-                            }
-                        }
-                    }
-                }
-            }
+            return;
         }
+
+        var aTable = this.GetATable(aTableRow);
+        if (aTable?.TableGrid == null)
+        {
+            return;
+        }
+
+        var colIndex = this.GetColumnIndex(aTableRow);
+        if (colIndex < 0)
+        {
+            return;
+        }
+
+        var widthCapacity = this.GetWidthCapacityPoints(aTable, colIndex);
+        if (widthCapacity <= 0)
+        {
+            return;
+        }
+
+        var textHeight = this.CalculateTextHeight(widthCapacity);
+        var requiredHeight = textHeight + this.TopMargin + this.BottomMargin;
+        var currentRowHeight = new Emus(aTableRow.Height!.Value).AsPoints();
+        if (requiredHeight <= currentRowHeight)
+        {
+            return;
+        }
+
+        var rowIndex = aTable.Elements<A.TableRow>().ToList().IndexOf(aTableRow);
+        var scRow = new ShapeCrawler.TableRow(aTableRow, rowIndex);
+        scRow.SetHeight(requiredHeight);
+    }
+
+    private A.Table? GetATable(A.TableRow aTableRow)
+    {
+        var graphicFrame = aTableRow.Ancestors<P.GraphicFrame>().FirstOrDefault();
+        return graphicFrame?.GetFirstChild<A.Graphic>()?.GraphicData?.GetFirstChild<A.Table>();
+    }
+
+    private int GetColumnIndex(A.TableRow aTableRow)
+    {
+        var cellsInRow = aTableRow.Elements<A.TableCell>().ToList();
+        return cellsInRow.IndexOf(aTableCell);
+    }
+
+    private decimal GetWidthCapacityPoints(A.Table aTable, int colIndex)
+    {
+        var gridColumns = aTable.TableGrid!.Elements<A.GridColumn>().ToList();
+        if (colIndex >= gridColumns.Count)
+        {
+            return 0;
+        }
+
+        var columnWidthPts = new Emus(gridColumns[colIndex].Width!.Value).AsPoints();
+        return columnWidthPts - this.LeftMargin - this.RightMargin;
+    }
+
+    private decimal CalculateTextHeight(decimal widthCapacity)
+    {
+        decimal textHeight = 0;
+        foreach (var paragraph in this.Paragraphs)
+        {
+            var paragraphPortions = paragraph.Portions.OfType<TextParagraphPortion>();
+            if (!paragraphPortions.Any())
+            {
+                continue;
+            }
+
+            var popularPortion = paragraphPortions
+                .GroupBy(p => p.Font.Size)
+                .OrderByDescending(g => g.Count())
+                .First().First();
+            var scFont = popularPortion.Font;
+
+            var paragraphText = paragraph.Text.ToUpper();
+            var paragraphTextWidth = new Text(paragraphText, scFont).Width * 1.4M;
+            var requiredRowsCount = paragraphTextWidth / widthCapacity;
+            var intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
+            if (intRequiredRowsCount == 0 && paragraphTextWidth > 0)
+            {
+                intRequiredRowsCount = 1;
+            }
+
+            textHeight += intRequiredRowsCount * (int)scFont.Size;
+        }
+
+        return textHeight;
     }
     
     private void SetTextDirection(TextDirection value)
