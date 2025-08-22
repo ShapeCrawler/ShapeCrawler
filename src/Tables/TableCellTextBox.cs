@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Texts;
 using ShapeCrawler.Paragraphs;
+using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -263,7 +263,6 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
                                 var scFont = popularPortion.Font;
 
                                 var paragraphText = paragraph.Text.ToUpper();
-                                // SkiaSharp uses 72 DPI while ShapeCrawler uses 96 DPI; adjust width accordingly (96/72 ≈ 1.4)
                                 var paragraphTextWidth = new Text(paragraphText, scFont).Width * 1.4M;
                                 var requiredRowsCount = paragraphTextWidth / widthCapacity;
                                 var intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
