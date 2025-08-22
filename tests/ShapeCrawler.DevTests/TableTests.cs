@@ -1,3 +1,4 @@
+using Fixture;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
@@ -8,6 +9,8 @@ namespace ShapeCrawler.DevTests;
 
 public class TableTests : SCTest
 {
+    private readonly Fixtures fixtures = new();
+    
     [Test]
     public void TableStyle_Getter_return_style_of_table()
     {
@@ -287,6 +290,29 @@ public class TableTests : SCTest
 
         // Act-Assert
         cell.TopBorder.Width.Should().Be(1);
+    }
+    
+    [Test]
+    public void Row_Cell_TextBox_SetText_should_not_change_font_size()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.Table(fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1);
+            });
+        });
+        var row = pres.Slide(1).Shapes.First().Table.Rows.First();
+        var text = fixtures.String(s => s.Length(75));
+        var textBox = row.Cells[0].TextBox; 
+        var expectedFontSize = textBox.Paragraphs.First().Portions.First().Font.Size;
+        
+        // Act
+        textBox.SetText(text);
+        
+        // Arrange
+        textBox.Paragraphs.First().Portions.First().Font.Size.Should().Be(expectedFontSize);
     }
 
     [Test]
