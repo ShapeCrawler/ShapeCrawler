@@ -314,6 +314,28 @@ public class TableTests : SCTest
         // Arrange
         textBox.Paragraphs.First().Portions.First().Font.Size.Should().Be(expectedFontSize);
     }
+    
+    [Test, Ignore("Should be fixed")]
+    public void Row_Cell_TextBox_SetText_increases_row_height_when_the_new_text_doesnt_fit_on_one_line()
+    {
+        // Arrange
+        var shapeName = fixtures.String();
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.Table(shapeName, fixtures.Int(), fixtures.Int(), 1, 1);
+            });
+        });
+        var row = pres.Slide(1).Shape(shapeName).Table.Rows.First();
+        var text = fixtures.String(s => s.Length(75));
+
+        // Act
+        row.Cells.First().TextBox.SetText(text);
+
+        // Arrange
+        row.Height.Should().BeApproximately(50, 0.9m);
+    }
 
     [Test]
     public void Row_Clone_cloning_row_increases_row_count_by_one()
