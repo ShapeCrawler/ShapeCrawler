@@ -13,7 +13,8 @@ jobs:
         include:
           - os: ubuntu-latest
             framework_version: 'net9.0'
-      fail-fast: false    
+          - os: windows-latest
+            framework_version: 'net9.0'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
