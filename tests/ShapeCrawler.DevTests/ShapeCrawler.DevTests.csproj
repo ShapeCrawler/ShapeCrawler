@@ -281,8 +281,6 @@
     <EmbeddedResource Include="Assets\082.json" />
     <None Remove="Assets\078.json" />
     <EmbeddedResource Include="Assets\078.json" />
-    <None Remove="assets\084 charts.pptx" />
-    <EmbeddedResource Include="assets\084 charts.pptx" />
   </ItemGroup>
 
 </Project>
