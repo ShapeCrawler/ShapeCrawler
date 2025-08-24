@@ -1,4 +1,6 @@
-﻿using ImageMagick;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
+using ImageMagick;
 
 namespace Fixture;
 
@@ -96,6 +98,10 @@ public class Fixtures
         return stream;
     }
 
+    /// <summary>
+    ///     Gets a path to a temporary file.
+    /// </summary>
+    /// <returns></returns>
     public string File()
     {
         var file = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
@@ -144,6 +150,32 @@ public class Fixtures
         }
 
         return new string(buffer);
+    }
+
+    public Stream AssemblyFile(string file)
+    {
+        var stream = GetResourceStream(Assembly.GetCallingAssembly(), file);
+        var mStream = new MemoryStream();
+        stream.CopyTo(mStream);
+        mStream.Position = 0;
+
+        return mStream;
+    }
+    
+    private static MemoryStream GetResourceStream(Assembly assembly, string fileName)
+    {
+        var pattern = $@"\.{Regex.Escape(fileName)}";
+        var path = assembly.GetManifestResourceNames().First(r =>
+        {
+            var matched = Regex.Match(r, pattern);
+            return matched.Success;
+        });
+        var stream = assembly.GetManifestResourceStream(path);
+        var mStream = new MemoryStream();
+        stream!.CopyTo(mStream);
+        mStream.Position = 0;
+
+        return mStream;
     }
 }
 
