@@ -167,7 +167,7 @@ public class Fixtures
         var pattern = $@"\.{Regex.Escape(fileName)}";
         var path = assembly.GetManifestResourceNames().First(r =>
         {
-            var matched = Regex.Match(r, pattern);
+            var matched = Regex.Match(r, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
             return matched.Success;
         });
         var stream = assembly.GetManifestResourceStream(path);
