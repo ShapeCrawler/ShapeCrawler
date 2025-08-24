@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using ImageMagick;
 
@@ -152,6 +153,7 @@ public class Fixtures
         return new string(buffer);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public Stream AssemblyFile(string file)
     {
         var stream = GetResourceStream(Assembly.GetCallingAssembly(), file);
