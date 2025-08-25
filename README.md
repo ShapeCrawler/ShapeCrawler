@@ -99,7 +99,8 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.71.2 - 2025-08-25
-🐞Fixed adding slide at the specified position [#1080](https://github.com/ShapeCrawler/ShapeCrawler/issues/1080)
+### Version 0.71.3 - 2025-08-25
+🐞Fixed adding picture with GIF [#1094](https://github.com/ShapeCrawler/ShapeCrawler/issues/1094)  
+🐞Resolved issue CVE-2025-55004
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
