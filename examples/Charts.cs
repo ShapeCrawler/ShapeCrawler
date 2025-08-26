@@ -29,7 +29,7 @@ public class Charts
     [Test, Explicit]
     public void Add_Scatter_chart()
     {
-        var pres = new Presentation();
+        var pres = new Presentation(p => p.Slide());
         var shapes = pres.Slide(1).Shapes;
         int x = 100;
         int y = 100;
@@ -51,7 +51,7 @@ public class Charts
     [Test, Explicit]
     public void Add_Stacked_Column_chart()
     {
-        var pres = new Presentation();
+        var pres = new Presentation(p => p.Slide());
         var shapes = pres.Slide(1).Shapes;
         int x = 100;
         int y = 100;

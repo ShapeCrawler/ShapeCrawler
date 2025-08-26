@@ -153,7 +153,15 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public ISlide Slide(int number) => this.Slides[number - 1];
+    public ISlide Slide(int number)
+    {
+        if (number < 0)
+        {
+            throw new SCException($"Specified slide number is must {number} be more than zero.");
+        }
+        
+        return number > this.Slides.Count ? throw new SCException($"Specified slide number {number} exceeds the number of slides {this.Slides.Count} in the presentation.") : this.Slides[number - 1];
+    }
 
     /// <summary>
     ///     Gets Slide Master by number.
