@@ -31,7 +31,7 @@ ShapeCrawler is a .NET library for manipulating PowerPoint presentations. It pro
 > `dotnet add package ShapeCrawler`
 
 ```C#
-using var pres = new Presentation("pres.pptx");
+var pres = new Presentation("pres.pptx");
 var shapes = pres.Slide(1).Shapes;
 
 var shapesCount = shapes.Count;
@@ -46,36 +46,32 @@ var text = shape.TextBox!.Text;
 ### Create presentation
 
 ```C#
-// create a new presentation
-var pres = new Presentation();
+var pres = new Presentation(p => p.Slide());
 
 var shapes = pres.Slide(1).Shapes;
 
-// add new shape
 shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
 var addedShape = shapes.Last();
 
 addedShape.TextBox!.SetText("Hello World!");
 
-pres.Save("my pres.pptx");
+pres.Save("pres.pptx");
 ```
 
 ### Update picture
 ```C#
-var pres = new Presentation("presentation.pptx");
+var pres = new Presentation("pres.pptx");
 var picture = pres.Slide(1).Shape("Picture 1").Picture!;
 
-// change image
 var image = System.IO.File.OpenRead("new-image.png");
 picture.Image!.Update(image);
 pres.Save();
 
-// get MIME type of image, e.g. "image/png"
 var mimeType = picture.Image!.Mime;
 ```
 
 ### More samples
-You can find more usage samples by visiting the [**Wiki page**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) or [**Examples**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples).
+You can find more usage samples in [**Examples**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples).
 
 ## Prerelease Version
 To access the latest prerelease builds from the branch `master`, use the NuGet package source `https://www.myget.org/F/shape/api/v3/index.json`.

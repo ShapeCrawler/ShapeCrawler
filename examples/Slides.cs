@@ -23,8 +23,17 @@ public class Slides
     {
         using var sourcePres = new Presentation("source.pptx");
         using var targetPres = new Presentation("target.pptx");
-        var copyingSlide = sourcePres.Slides[1];
+        var copyingSlide = sourcePres.Slide(2);
         
         targetPres.Slides.Add(copyingSlide);
+    }
+
+    [Test, Explicit]
+    public void Access_slide_background()
+    {
+        var pres = new Presentation("slide.pptx");
+        var slide = pres.Slide(1);
+        
+        var bytes = slide.Fill.Picture!.AsByteArray();
     }
 }

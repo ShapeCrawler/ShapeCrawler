@@ -5,7 +5,7 @@ public class Tests
     [Test, Explicit]
     public void Add_paragraph()
     {
-        var pres = new Presentation();
+        var pres = new Presentation(p => p.Slide());
         var shapes = pres.Slides[0].Shapes;
         shapes.AddShape(100, 100, 200, 200);
         var addedShape = shapes.Last();
