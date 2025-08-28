@@ -1,4 +1,8 @@
 # Changelog  
+
+## Version 0.71.4 - 2025-08-28
+🐞Resolved issue CVE-2025-55298
+
 ## Version 0.71.3 - 2025-08-25
 🐞Fixed adding picture with GIF [#1094](https://github.com/ShapeCrawler/ShapeCrawler/issues/1094)  
 🐞Resolved issue CVE-2025-55004
