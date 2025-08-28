@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using DocumentFormat.OpenXml.Presentation;
 using Fixture;
 using FluentAssertions;
@@ -10,7 +11,7 @@ namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
-    private Fixtures fixtures = new();
+    private Fixtures fixtures = new(Assembly.GetExecutingAssembly());
 
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()

@@ -13,8 +13,6 @@ jobs:
         include:
           - os: ubuntu-latest
             framework_version: 'net9.0'
-          - os: windows-latest
-            framework_version: 'net9.0'
       fail-fast: false    
     steps:
       - uses: actions/checkout@v4

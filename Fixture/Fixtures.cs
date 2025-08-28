@@ -9,6 +9,17 @@ public class Fixtures
 {
     private readonly Random random = new();
     private readonly List<string> files = new();
+    private readonly Assembly? assembly;
+
+    public Fixtures()
+    {
+        
+    }
+    
+    public Fixtures(Assembly assembly)
+    {
+        this.assembly = assembly;
+    }
 
     public int Int()
     {
@@ -152,11 +163,10 @@ public class Fixtures
 
         return new string(buffer);
     }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    
     public Stream AssemblyFile(string file)
     {
-        var stream = GetResourceStream(Assembly.GetCallingAssembly(), file);
+        var stream = GetResourceStream(file);
         var mStream = new MemoryStream();
         stream.CopyTo(mStream);
         mStream.Position = 0;
@@ -164,10 +174,10 @@ public class Fixtures
         return mStream;
     }
     
-    private static MemoryStream GetResourceStream(Assembly assembly, string fileName)
+    private MemoryStream GetResourceStream(string fileName)
     {
         var pattern = $@"\.{Regex.Escape(fileName)}";
-        var path = assembly.GetManifestResourceNames().First(r =>
+        var path = this.assembly.GetManifestResourceNames().First(r =>
         {
             var matched = Regex.Match(r, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
             return matched.Success;
@@ -178,25 +188,5 @@ public class Fixtures
         mStream.Position = 0;
 
         return mStream;
-    }
-}
-
-public sealed class ImageOptions
-{
-    public string? FormatName { get; private set; }
-
-    public void Format(string format)
-    {
-        this.FormatName = format;
-    }
-}
-
-public sealed class StringOptions
-{
-    public int? LengthValue { get; private set; }
-
-    public void Length(int length)
-    {
-        this.LengthValue = length;
     }
 }
