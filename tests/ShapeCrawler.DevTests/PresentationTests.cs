@@ -11,7 +11,7 @@ namespace ShapeCrawler.DevTests;
 public class PresentationTests : SCTest
 {
     private Fixtures fixtures = new();
-    
+
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
@@ -357,10 +357,7 @@ public class PresentationTests : SCTest
     public void Footer_AddSlideNumber_adds_slide_number()
     {
         // Arrange
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide();
-        });
+        var pres = new Presentation(pres => { pres.Slide(); });
 
         // Act
         pres.Footer.AddSlideNumber();
@@ -414,7 +411,7 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-    
+
     [Test]
     public void Slides_Add_adds_slide_at_position()
     {
@@ -425,23 +422,23 @@ public class PresentationTests : SCTest
             p.Slide(s =>
             {
                 s.Picture(
-                    "Picture 1", 
-                    fixtures.Int(), 
-                    fixtures.Int(), 
-                    fixtures.Int(), 
+                    "Picture 1",
+                    fixtures.Int(),
+                    fixtures.Int(),
+                    fixtures.Int(),
                     fixtures.Int(),
                     fixtures.Image());
             });
         });
         var copyingSlide = pres.Slide(2);
-        
+
         // Act
         pres.Slides.Add(copyingSlide, 1);
-        
+
         // Assert
         pres.Slide(1).Shapes.Shape("Picture 1").Picture.Image!.AsByteArray().Should().NotBeEmpty();
     }
-    
+
     [Test]
     [TestCase("007_2 slides.pptx", 1)]
     [TestCase("006_1 slides.pptx", 0)]
@@ -478,7 +475,7 @@ public class PresentationTests : SCTest
         // Assert
         destPres.Slide(2).CustomData.Should().Be(sourceSlideId);
     }
-    
+
     [Test]
     public void Slides_Add_adds_a_new_slide_at_the_specified_position_using_specified_layout()
     {
@@ -487,11 +484,12 @@ public class PresentationTests : SCTest
         {
             p.Slide(s =>
             {
-                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.String());
+                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
+                    fixtures.String());
             });
         });
         var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;
-        
+
         // Act
         pres.Slides.Add(layoutNumber, 1);
 
@@ -599,7 +597,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Slide(1).Shape("Picture").Should().NotBeNull();
     }
-    
+
     [Test]
     public void Constructor_creates_presentation()
     {
@@ -610,7 +608,7 @@ public class PresentationTests : SCTest
         pres.Should().NotBeNull();
         pres.Validate();
     }
-    
+
     [Test]
     public void Constructor_creates_empty_presentation()
     {
@@ -674,11 +672,39 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        
+
         // Act
         var accessUnavailableSlide = () => pres.Slide(1);
-        
+
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
+    }
+
+    [Test]
+    public void Reproduce_issue_1103()
+    {
+        var pres = new Presentation(p => { p.Slide(s => { s.Table("Table 1", 100, 100, 10, 2); }); });
+        var rows = pres.Slide(1).Shape("Table 1").Table.Rows;
+        for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
+        {
+            for (var cellIndex = 0; cellIndex < rows[rowIndex].Cells.Count; cellIndex++)
+            {
+                rows[rowIndex].Cells[cellIndex].TextBox.SetText($"R{rowIndex}C{cellIndex}");
+            }
+        }
+
+        pres.Save(@"c:\temp\output.pptx");
+    }
+    
+    [Test]
+    public void Reproduce_issue_1103_2()
+    {
+        var pres = new Presentation(p => { p.Slide(s => { s.Table("Table 1", 100, 100, 10, 2); }); });
+        var tableShape = pres.Slide(1).Shape("Table 1");
+        
+        // tableShape.Height *= 2;
+        tableShape.Width *= 2;  
+        
+        pres.Save(@"c:\temp\output 2.pptx");
     }
 }
