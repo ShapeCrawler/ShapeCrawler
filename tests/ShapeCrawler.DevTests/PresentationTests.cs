@@ -683,4 +683,17 @@ public class PresentationTests : SCTest
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
     }
+
+    [Test]
+    public void Slide_throws_exception()
+    {
+        // Arrange
+        var pres = new Presentation();
+        
+        // Act
+        var accessUnavailableSlide = () => pres.Slide(1);
+        
+        // Assert
+        accessUnavailableSlide.Should().Throw<Exception>();
+    }
 }

@@ -5,7 +5,7 @@ public class Font
     [Test, Explicit]
     public void Set_Latin_font()
     {
-        var pres = new Presentation();
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slide(1);
         slide.Shapes.AddShape(0, 0, 100, 100, Geometry.Rectangle, "Test");
         var addedShape = slide.Shapes.Last();

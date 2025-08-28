@@ -1,7 +1,11 @@
 # Changelog  
-## Version 0.71.3 - Unreleased
+
+## Version 0.71.4 - 2025-08-28
+🐞Resolved issue CVE-2025-55298
+
+## Version 0.71.3 - 2025-08-25
 🐞Fixed adding picture with GIF [#1094](https://github.com/ShapeCrawler/ShapeCrawler/issues/1094)  
-🐞Fixed copying slide [#1082](https://github.com/ShapeCrawler/ShapeCrawler/issues/1082)
+🐞Resolved issue CVE-2025-55004
 
 ## Version 0.71.2 - 2025-08-20
 🐞Fixed adding slide at the specified position [#1080](https://github.com/ShapeCrawler/ShapeCrawler/issues/1080)
