@@ -320,15 +320,14 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
     {
-        return slidePart.Slide.CommonSlideData!
+        return [.. slidePart.Slide.CommonSlideData!
             .ShapeTree!
             .Descendants<A.GraphicData>()
             .Where(gd => gd.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
             .Select(gd => gd.GetFirstChild<C.ChartReference>())
             .Where(cr => cr?.Id?.Value != null)
             .Select(cr => cr!.Id!.Value!)
-            .Distinct()
-            .ToList();
+            .Distinct()];
     }
 
     private static void EnsureChartRelationship(
@@ -395,12 +394,10 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
     {
-        using (var s = sourcePart.GetStream())
-        {
-            s.Position = 0;
-            using var d = targetPart.GetStream(FileMode.Create, FileAccess.Write);
-            s.CopyTo(d);
-        }
+        using var s = sourcePart.GetStream();
+        s.Position = 0;
+        using var d = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+        s.CopyTo(d);
     }
 
     private static void CopyChartChildParts(ChartPart sourceChartPart, ChartPart targetChartPart)
@@ -429,12 +426,10 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         var destinationPart = targetChartPart.AddNewPart<EmbeddedPackagePart>(
             sourceEmbeddedPackagePart.ContentType,
             relationshipId);
-        using (var es = sourceEmbeddedPackagePart.GetStream())
-        {
-            es.Position = 0;
-            using var ed = destinationPart.GetStream(FileMode.Create, FileAccess.Write);
-            es.CopyTo(ed);
-        }
+        using var es = sourceEmbeddedPackagePart.GetStream();
+        es.Position = 0;
+        using var ed = destinationPart.GetStream(FileMode.Create, FileAccess.Write);
+        es.CopyTo(ed);
     }
 
     private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
