@@ -43,9 +43,12 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                 return placeholderType == P.PlaceholderValues.Footer ||
                        placeholderType == P.PlaceholderValues.DateAndTime ||
                        placeholderType == P.PlaceholderValues.SlideNumber;
-            }).ToList();
-        removingShapes.ForEach(shape => shape.Remove());
-
+            });
+        foreach (var removingShape in removingShapes)
+        {
+            removingShape.Remove();    
+        }
+        
         // Ensure SlideIdList exists for presentations that don't initialize it
         presPart.Presentation.SlideIdList ??= new P.SlideIdList();
 
