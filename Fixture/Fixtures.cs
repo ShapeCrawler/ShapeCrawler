@@ -9,11 +9,11 @@ public class Fixtures
 {
     private readonly Random random = new();
     private readonly List<string> files = new();
-    private readonly Assembly? assembly;
+    private readonly Assembly assembly;
 
     public Fixtures()
     {
-        
+        this.assembly = Assembly.GetExecutingAssembly();
     }
     
     public Fixtures(Assembly assembly)
@@ -182,9 +182,13 @@ public class Fixtures
             var matched = Regex.Match(r, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
             return matched.Success;
         });
-        var stream = assembly.GetManifestResourceStream(path);
+        var stream = this.assembly.GetManifestResourceStream(path);
+        if (stream is null)
+        {
+            throw new InvalidOperationException($"Resource '{path}' was not found in assembly '{this.assembly.FullName}'.");
+        }
         var mStream = new MemoryStream();
-        stream!.CopyTo(mStream);
+        stream.CopyTo(mStream);
         mStream.Position = 0;
 
         return mStream;
