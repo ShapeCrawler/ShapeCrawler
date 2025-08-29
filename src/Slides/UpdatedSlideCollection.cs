@@ -27,73 +27,27 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     public void Add(int layoutNumber)
     {
         var rId = new SCOpenXmlPart(presPart).NextRelationshipId();
-        var slidePart = presPart.AddNewPart<SlidePart>(rId);
-        slidePart.Slide = new P.Slide(
-            new P.CommonSlideData(
-                new P.ShapeTree(
-                    new P.NonVisualGroupShapeProperties(
-                        new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = string.Empty },
-                        new P.NonVisualGroupShapeDrawingProperties(),
-                        new P.ApplicationNonVisualDrawingProperties()),
-                    new P.GroupShapeProperties(new A.TransformGroup()))),
-            new P.ColorMapOverride(new A.MasterColorMapping()));
+        var newSlidePart = presPart.AddNewPart<SlidePart>(rId);
         var layout = new SlideMasterCollection(presPart.SlideMasterParts).SlideMaster(1)
             .InternalSlideLayout(layoutNumber);
-        slidePart.AddPart(layout.SlideLayoutPart, "rId1");
+        newSlidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
-        // Check if we're using a blank layout - if so, don't copy any shapes
-        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
-            commonSlideData.ShapeTree is P.ShapeTree shapeTree)
-        {
-            var placeholderShapes = shapeTree.ChildElements
-                .OfType<P.Shape>()
-
-                // Select all shapes with placeholder.
-                .Where(shape => shape.NonVisualShapeProperties!
-                    .OfType<P.ApplicationNonVisualDrawingProperties>()
-                    .Any(anvdp => anvdp.PlaceholderShape is not null))
-
-                // Different handling based on layout type
-                .Where(shape =>
-                {
-                    var placeholderType = shape.NonVisualShapeProperties!
-                        .OfType<P.ApplicationNonVisualDrawingProperties>()
-                        .FirstOrDefault()?.PlaceholderShape?.Type?.Value;
-
-
-                    return placeholderType != P.PlaceholderValues.Footer &&
-                           placeholderType != P.PlaceholderValues.DateAndTime &&
-                           placeholderType != P.PlaceholderValues.SlideNumber;
-                })
-
-                // And creates a new shape with the placeholder.
-                .Select(shape => new P.Shape
-                {
-                    // Clone placeholder
-                    NonVisualShapeProperties =
-                        (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
-
-                    // Creates a new TextBody with no content.
-                    TextBody = ResolveTextBody(shape),
-                    ShapeProperties = new P.ShapeProperties()
-                });
-
-            slidePart.Slide.CommonSlideData = new P.CommonSlideData()
+        newSlidePart.Slide = new P.Slide(layout.SlideLayoutPart.SlideLayout.CommonSlideData!.CloneNode(true));
+        var removingShapes = newSlidePart.Slide.CommonSlideData!.ShapeTree!.OfType<P.Shape>()
+            .Where(shape =>
             {
-                ShapeTree = new P.ShapeTree(placeholderShapes)
-                {
-                    GroupShapeProperties = (P.GroupShapeProperties)shapeTree.GroupShapeProperties!.CloneNode(true),
-                    NonVisualGroupShapeProperties =
-                        (P.NonVisualGroupShapeProperties)shapeTree.NonVisualGroupShapeProperties!.CloneNode(true)
-                }
-            };
-        }
+                var placeholderType = shape.NonVisualShapeProperties!
+                    .OfType<P.ApplicationNonVisualDrawingProperties>()
+                    .FirstOrDefault()?.PlaceholderShape?.Type?.Value;
+
+                return placeholderType == P.PlaceholderValues.Footer ||
+                       placeholderType == P.PlaceholderValues.DateAndTime ||
+                       placeholderType == P.PlaceholderValues.SlideNumber;
+            }).ToList();
+        removingShapes.ForEach(shape => shape.Remove());
 
         // Ensure SlideIdList exists for presentations that don't initialize it
-        if (presPart.Presentation.SlideIdList == null)
-        {
-            presPart.Presentation.SlideIdList = new P.SlideIdList();
-        }
+        presPart.Presentation.SlideIdList ??= new P.SlideIdList();
 
         var pSlideIdList = presPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
@@ -107,7 +61,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     {
         if (slideNumber < 1 || slideNumber > this.Count + 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(slideNumber));
+            throw new SCException(nameof(slideNumber));
         }
 
         var sourceSlidePresPart = slide.GetSDKPresentationPart();
@@ -157,8 +111,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             .InternalSlideLayout(layoutNumber);
         slidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
-        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData &&
-            commonSlideData.ShapeTree is P.ShapeTree shapeTree)
+        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is { ShapeTree: { } shapeTree })
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()
@@ -269,7 +222,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     {
         // The slide XML we copied contains a:blip/@r:embed IDs. We must make sure
         // the cloned slide part has relationships with the SAME IDs pointing to
-        // valid image parts. Otherwise PowerPoint shows "The picture can't be displayed".
+        // valid image parts. Otherwise, PowerPoint shows "The picture can't be displayed".
         var blips = clonedSlidePart.Slide.CommonSlideData!
             .ShapeTree!
             .Descendants<A.Blip>()
@@ -320,14 +273,17 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
     {
-        return [.. slidePart.Slide.CommonSlideData!
-            .ShapeTree!
-            .Descendants<A.GraphicData>()
-            .Where(gd => gd.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
-            .Select(gd => gd.GetFirstChild<C.ChartReference>())
-            .Where(cr => cr?.Id?.Value != null)
-            .Select(cr => cr!.Id!.Value!)
-            .Distinct()];
+        return
+        [
+            .. slidePart.Slide.CommonSlideData!
+                .ShapeTree!
+                .Descendants<A.GraphicData>()
+                .Where(gd => gd.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
+                .Select(gd => gd.GetFirstChild<C.ChartReference>())
+                .Where(cr => cr?.Id?.Value != null)
+                .Select(cr => cr!.Id!.Value!)
+                .Distinct()
+        ];
     }
 
     private static void EnsureChartRelationship(
@@ -603,7 +559,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     }
 
     private static void LinkToLayoutPart(
-        SlidePart sourceSlidePart, 
+        SlidePart sourceSlidePart,
         SlidePart clonedSlidePart,
         PresentationPart presentationPart)
     {
@@ -670,7 +626,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     }
 
     private static void FixHyperlinkRelationships(
-        SlidePart sourceSlidePart, 
+        SlidePart sourceSlidePart,
         SlidePart clonedSlidePart,
         PresentationPart targetPresentationPart)
     {
