@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using DocumentFormat.OpenXml.Presentation;
 using Fixture;
 using FluentAssertions;
@@ -10,8 +11,8 @@ namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
-    private Fixtures fixtures = new();
-    
+    private Fixtures fixtures = new(Assembly.GetExecutingAssembly());
+
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
     {
@@ -416,6 +417,21 @@ public class PresentationTests : SCTest
     }
     
     [Test]
+    public void Slides_Add_copies_slide_with_chart()
+    {
+        // Arrange
+        var file = fixtures.AssemblyFile("084 charts.pptx");
+        var pres = new Presentation(file);
+        var slide = pres.Slides.Last();
+
+        // Act
+        pres.Slides.Add(slide, 1);
+
+        // Assert
+        pres.Validate();
+    }
+
+    [Test]
     public void Slides_Add_adds_slide_at_position()
     {
         // Arrange
@@ -434,14 +450,14 @@ public class PresentationTests : SCTest
             });
         });
         var copyingSlide = pres.Slide(2);
-        
+
         // Act
         pres.Slides.Add(copyingSlide, 1);
-        
+
         // Assert
         pres.Slide(1).Shapes.Shape("Picture 1").Picture.Image!.AsByteArray().Should().NotBeEmpty();
     }
-    
+
     [Test]
     [TestCase("007_2 slides.pptx", 1)]
     [TestCase("006_1 slides.pptx", 0)]
@@ -478,7 +494,7 @@ public class PresentationTests : SCTest
         // Assert
         destPres.Slide(2).CustomData.Should().Be(sourceSlideId);
     }
-    
+
     [Test]
     public void Slides_Add_adds_a_new_slide_at_the_specified_position_using_specified_layout()
     {
@@ -491,7 +507,7 @@ public class PresentationTests : SCTest
             });
         });
         var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;
-        
+
         // Act
         pres.Slides.Add(layoutNumber, 1);
 
@@ -599,7 +615,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Slide(1).Shape("Picture").Should().NotBeNull();
     }
-    
+
     [Test]
     public void Constructor_creates_presentation()
     {
@@ -610,7 +626,7 @@ public class PresentationTests : SCTest
         pres.Should().NotBeNull();
         pres.Validate();
     }
-    
+
     [Test]
     public void Constructor_creates_empty_presentation()
     {

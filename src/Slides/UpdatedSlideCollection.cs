@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Presentations;
 using A = DocumentFormat.OpenXml.Drawing;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
@@ -122,6 +123,9 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         // Ensure all image relationships used by the slide XML are present in the cloned slide
         // so that PowerPoint can resolve picture blips correctly.
         CopyImageParts(sourceSlidePart, clonedSlidePart);
+
+        // Ensure any chart parts referenced by the slide are present and correctly linked
+        CopyChartParts(sourceSlidePart, clonedSlidePart);
         FixHyperlinkRelationships(sourceSlidePart, clonedSlidePart, presentationPart);
         LinkToLayoutPart(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, slideNumber);
@@ -304,6 +308,128 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                 }
             }
         }
+    }
+
+    private static void CopyChartParts(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
+    {
+        foreach (var relId in GetChartRelationshipIds(clonedSlidePart))
+        {
+            EnsureChartRelationship(relId, sourceSlidePart, clonedSlidePart);
+        }
+    }
+
+    private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
+    {
+        return [.. slidePart.Slide.CommonSlideData!
+            .ShapeTree!
+            .Descendants<A.GraphicData>()
+            .Where(gd => gd.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
+            .Select(gd => gd.GetFirstChild<C.ChartReference>())
+            .Where(cr => cr?.Id?.Value != null)
+            .Select(cr => cr!.Id!.Value!)
+            .Distinct()];
+    }
+
+    private static void EnsureChartRelationship(
+        string relationshipId,
+        SlidePart sourceSlidePart,
+        SlidePart targetSlidePart)
+    {
+        if (RelationshipExists(targetSlidePart, relationshipId))
+        {
+            return;
+        }
+
+        if (!TryGetSourceChartPart(sourceSlidePart, relationshipId, out var sourceChartPart))
+        {
+            return;
+        }
+
+        if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, targetSlidePart.OpenXmlPackage))
+        {
+            ShareChartPartWithinSamePackage(sourceChartPart!, targetSlidePart, relationshipId);
+            return;
+        }
+
+        CloneChartPartAcrossPackages(sourceChartPart!, targetSlidePart, relationshipId);
+    }
+
+    private static bool RelationshipExists(SlidePart slidePart, string relationshipId)
+    {
+        return slidePart.Parts.Any(p => p.RelationshipId == relationshipId);
+    }
+
+    private static bool TryGetSourceChartPart(
+        SlidePart sourceSlidePart,
+        string relationshipId,
+        out ChartPart? sourceChartPart)
+    {
+        sourceChartPart = null;
+        if (sourceSlidePart.TryGetPartById(relationshipId, out var part) && part is ChartPart cp)
+        {
+            sourceChartPart = cp;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void ShareChartPartWithinSamePackage(
+        ChartPart sourceChartPart,
+        SlidePart targetSlidePart,
+        string relationshipId)
+    {
+        targetSlidePart.AddPart(sourceChartPart, relationshipId);
+    }
+
+    private static void CloneChartPartAcrossPackages(
+        ChartPart sourceChartPart,
+        SlidePart targetSlidePart,
+        string relationshipId)
+    {
+        var targetChartPart = targetSlidePart.AddNewPart<ChartPart>(sourceChartPart.ContentType, relationshipId);
+        CopyStream(sourceChartPart, targetChartPart);
+        CopyChartChildParts(sourceChartPart, targetChartPart);
+    }
+
+    private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
+    {
+        using var s = sourcePart.GetStream();
+        s.Position = 0;
+        using var d = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+        s.CopyTo(d);
+    }
+
+    private static void CopyChartChildParts(ChartPart sourceChartPart, ChartPart targetChartPart)
+    {
+        foreach (var child in sourceChartPart.Parts)
+        {
+            var childRelId = child.RelationshipId;
+            var childPart = child.OpenXmlPart;
+            if (childPart is EmbeddedPackagePart embeddedPackagePart)
+            {
+                CopyEmbeddedPackagePart(embeddedPackagePart, targetChartPart, childRelId);
+            }
+            else
+            {
+                // Best-effort: link existing part into the new chart
+                targetChartPart.AddPart(childPart, childRelId);
+            }
+        }
+    }
+
+    private static void CopyEmbeddedPackagePart(
+        EmbeddedPackagePart sourceEmbeddedPackagePart,
+        ChartPart targetChartPart,
+        string relationshipId)
+    {
+        var destinationPart = targetChartPart.AddNewPart<EmbeddedPackagePart>(
+            sourceEmbeddedPackagePart.ContentType,
+            relationshipId);
+        using var es = sourceEmbeddedPackagePart.GetStream();
+        es.Position = 0;
+        using var ed = destinationPart.GetStream(FileMode.Create, FileAccess.Write);
+        es.CopyTo(ed);
     }
 
     private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
