@@ -312,8 +312,15 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
 
     private static void CopyChartParts(SlidePart sourceSlidePart, SlidePart clonedSlidePart)
     {
-        // Find all chart relationship IDs referenced by the cloned slide XML
-        var chartRelIds = clonedSlidePart.Slide.CommonSlideData!
+        foreach (var relId in GetChartRelationshipIds(clonedSlidePart))
+        {
+            EnsureChartRelationship(relId, sourceSlidePart, clonedSlidePart);
+        }
+    }
+
+    private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
+    {
+        return slidePart.Slide.CommonSlideData!
             .ShapeTree!
             .Descendants<A.GraphicData>()
             .Where(gd => gd.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
@@ -322,59 +329,111 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             .Select(cr => cr!.Id!.Value!)
             .Distinct()
             .ToList();
+    }
 
-        foreach (var relId in chartRelIds)
+    private static void EnsureChartRelationship(
+        string relationshipId,
+        SlidePart sourceSlidePart,
+        SlidePart targetSlidePart)
+    {
+        if (RelationshipExists(targetSlidePart, relationshipId))
         {
-            // If relationship already exists on the cloned slide, skip
-            if (clonedSlidePart.Parts.Any(p => p.RelationshipId == relId))
+            return;
+        }
+
+        if (!TryGetSourceChartPart(sourceSlidePart, relationshipId, out var sourceChartPart))
+        {
+            return;
+        }
+
+        if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, targetSlidePart.OpenXmlPackage))
+        {
+            ShareChartPartWithinSamePackage(sourceChartPart!, targetSlidePart, relationshipId);
+            return;
+        }
+
+        CloneChartPartAcrossPackages(sourceChartPart!, targetSlidePart, relationshipId);
+    }
+
+    private static bool RelationshipExists(SlidePart slidePart, string relationshipId)
+    {
+        return slidePart.Parts.Any(p => p.RelationshipId == relationshipId);
+    }
+
+    private static bool TryGetSourceChartPart(
+        SlidePart sourceSlidePart,
+        string relationshipId,
+        out ChartPart? sourceChartPart)
+    {
+        sourceChartPart = null;
+        if (sourceSlidePart.TryGetPartById(relationshipId, out var part) && part is ChartPart cp)
+        {
+            sourceChartPart = cp;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void ShareChartPartWithinSamePackage(
+        ChartPart sourceChartPart,
+        SlidePart targetSlidePart,
+        string relationshipId)
+    {
+        targetSlidePart.AddPart(sourceChartPart, relationshipId);
+    }
+
+    private static void CloneChartPartAcrossPackages(
+        ChartPart sourceChartPart,
+        SlidePart targetSlidePart,
+        string relationshipId)
+    {
+        var targetChartPart = targetSlidePart.AddNewPart<ChartPart>(sourceChartPart.ContentType, relationshipId);
+        CopyStream(sourceChartPart, targetChartPart);
+        CopyChartChildParts(sourceChartPart, targetChartPart);
+    }
+
+    private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
+    {
+        using (var s = sourcePart.GetStream())
+        {
+            s.Position = 0;
+            using var d = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+            s.CopyTo(d);
+        }
+    }
+
+    private static void CopyChartChildParts(ChartPart sourceChartPart, ChartPart targetChartPart)
+    {
+        foreach (var child in sourceChartPart.Parts)
+        {
+            var childRelId = child.RelationshipId;
+            var childPart = child.OpenXmlPart;
+            if (childPart is EmbeddedPackagePart embeddedPackagePart)
             {
-                continue;
+                CopyEmbeddedPackagePart(embeddedPackagePart, targetChartPart, childRelId);
             }
-
-            // Try get the corresponding chart part from the source slide by the same rel id
-            if (sourceSlidePart.TryGetPartById(relId, out var part) && part is ChartPart sourceChartPart)
+            else
             {
-                // If both slide parts belong to the same package, share the chart part with the same rel id
-                if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
-                {
-                    clonedSlidePart.AddPart(sourceChartPart, relId);
-                }
-                else
-                {
-                    // Cross-package: create a new chart part and copy content, then copy child parts as needed
-                    var targetChartPart = clonedSlidePart.AddNewPart<ChartPart>(sourceChartPart.ContentType, relId);
-                    using (var s = sourceChartPart.GetStream())
-                    {
-                        s.Position = 0;
-                        using var d = targetChartPart.GetStream(FileMode.Create, FileAccess.Write);
-                        s.CopyTo(d);
-                    }
-
-                    // Copy common child parts (e.g., embedded workbook)
-                    foreach (var child in sourceChartPart.Parts)
-                    {
-                        var childRelId = child.RelationshipId;
-                        var childPart = child.OpenXmlPart;
-                        switch (childPart)
-                        {
-                            case EmbeddedPackagePart epp:
-                                var dst = targetChartPart.AddNewPart<EmbeddedPackagePart>(epp.ContentType, childRelId);
-                                using (var es = epp.GetStream())
-                                {
-                                    es.Position = 0;
-                                    using var ed = dst.GetStream(FileMode.Create, FileAccess.Write);
-                                    es.CopyTo(ed);
-                                }
-
-                                break;
-                            default:
-                                // Best-effort: link existing part into the new chart
-                                targetChartPart.AddPart(childPart, childRelId);
-                                break;
-                        }
-                    }
-                }
+                // Best-effort: link existing part into the new chart
+                targetChartPart.AddPart(childPart, childRelId);
             }
+        }
+    }
+
+    private static void CopyEmbeddedPackagePart(
+        EmbeddedPackagePart sourceEmbeddedPackagePart,
+        ChartPart targetChartPart,
+        string relationshipId)
+    {
+        var destinationPart = targetChartPart.AddNewPart<EmbeddedPackagePart>(
+            sourceEmbeddedPackagePart.ContentType,
+            relationshipId);
+        using (var es = sourceEmbeddedPackagePart.GetStream())
+        {
+            es.Position = 0;
+            using var ed = destinationPart.GetStream(FileMode.Create, FileAccess.Write);
+            es.CopyTo(ed);
         }
     }
 
