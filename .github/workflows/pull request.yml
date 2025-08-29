@@ -21,5 +21,5 @@ jobs:
           dotnet-version: 9.0.x      
       - name: Run tests
         run: |
-          dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj -c Release -f ${{ matrix.framework_version }} -v detailed
-          dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj -c Release -f ${{ matrix.framework_version }} -v detailed
+          dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj -c Release -f ${{ matrix.framework_version }}
+          dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj -c Release -f ${{ matrix.framework_version }}
