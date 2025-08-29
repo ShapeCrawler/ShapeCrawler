@@ -61,7 +61,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
     {
         if (slideNumber < 1 || slideNumber > this.Count + 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(slideNumber));
+            throw new SCException(nameof(slideNumber));
         }
 
         var sourceSlidePresPart = slide.GetSDKPresentationPart();
