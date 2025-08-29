@@ -99,7 +99,7 @@ internal sealed class SlideMaster : ISlideMaster
 
     public ISlideLayout SlideLayout(string name) => this.layouts.First(l => l.Name == name);
 
-    public ISlideLayout SlideLayout(int number) => InternalSlideLayout(number);
+    public ISlideLayout SlideLayout(int number) => this.InternalSlideLayout(number);
 
     internal SlideLayout InternalSlideLayout(int number) => this.layouts.Layout(number);
 
