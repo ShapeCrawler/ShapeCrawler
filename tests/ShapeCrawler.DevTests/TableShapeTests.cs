@@ -11,11 +11,11 @@ public class TableShapeTests
         // Arrange
         var pres = new Presentation(p => { p.Slide(s => { s.Table("Table 1", 100, 100, 2, 1); }); });
         var tableShape = pres.Slide(1).Shape("Table 1");
-        var newWidth = tableShape.Width * 1.25m;
+        var newWidth = tableShape.Height * 1.25m;
         var columnWidthBefore = tableShape.Table.Columns.First().Width;
 
         // Act
-        tableShape.Width = newWidth;
+        tableShape.Height = newWidth;
 
         // Assert
         tableShape.Table.Columns.First().Width.Should().BeGreaterThan(columnWidthBefore);
