@@ -9,7 +9,7 @@ public sealed class Fixtures
 {
     private readonly Random random = new();
     private readonly List<string> files = [];
-    private readonly Assembly assembly = Assembly.GetExecutingAssembly();
+    private readonly Assembly assembly = Assembly.GetCallingAssembly();
 
     public int Int() => this.random.Next(1, 400);
 
