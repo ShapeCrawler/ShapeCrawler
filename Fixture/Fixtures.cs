@@ -125,8 +125,6 @@ public class Fixtures
         return file;
     }
 
-    public void Clean() => files.ForEach(System.IO.File.Delete);
-
     public string String() => Guid.NewGuid().ToString();
 
     public string String(Action<StringOptions> configure)
@@ -164,7 +162,7 @@ public class Fixtures
         return new string(buffer);
     }
     
-    public Stream AssemblyFile(string file)
+    public Stream AssemblyStream(string file)
     {
         var stream = GetResourceStream(file);
         var mStream = new MemoryStream();
@@ -173,6 +171,21 @@ public class Fixtures
 
         return mStream;
     }
+    
+    public string AssemblyFile(string assemblyFile)
+    {
+        var localFile = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid() + Path.GetExtension(assemblyFile));
+        var localFileStream = System.IO.File.Create(localFile);
+        var assemblyStream = GetResourceStream(assemblyFile);
+        assemblyStream.CopyTo(localFileStream);
+        localFileStream.Close();
+        
+        this.files.Add(localFile);
+
+        return localFile;
+    }
+    
+    public void Clean() => files.ForEach(System.IO.File.Delete);
     
     private MemoryStream GetResourceStream(string fileName)
     {

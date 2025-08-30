@@ -417,7 +417,7 @@ public class PresentationTests : SCTest
     public void Slides_Add_copies_slide_with_chart()
     {
         // Arrange
-        var file = fixtures.AssemblyFile("084 charts.pptx");
+        var file = fixtures.AssemblyStream("084 charts.pptx");
         var pres = new Presentation(file);
         var slide = pres.Slides.Last();
 
