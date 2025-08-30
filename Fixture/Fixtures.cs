@@ -113,7 +113,7 @@ public sealed class Fixtures
         return file;
     }
 
-    public static string String() => Guid.NewGuid().ToString();
+    public string String() => Guid.NewGuid().ToString();
 
     public string String(Action<StringOptions> configure)
     {

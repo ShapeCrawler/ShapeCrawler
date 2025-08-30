@@ -300,7 +300,7 @@ public class TableTests : SCTest
         {
             p.Slide(s =>
             {
-                s.Table(Fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1);
+                s.Table(fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1);
             });
         });
         var row = pres.Slide(1).Shapes.First().Table.Rows.First();
@@ -319,7 +319,7 @@ public class TableTests : SCTest
     public void Row_Cell_TextBox_SetText_increases_row_height_when_the_new_text_doesnt_fit_on_one_line()
     {
         // Arrange
-        var shapeName = Fixtures.String();
+        var shapeName = fixtures.String();
         var pres = new Presentation(p =>
         {
             p.Slide(s =>
