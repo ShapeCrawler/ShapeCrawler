@@ -20,12 +20,11 @@ using ShapeCrawler.Extensions;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
-#pragma warning restore IDE0130
 
 /// <inheritdoc />
 public sealed class Presentation : IPresentation
 {
-    private readonly PresentationDocument presDocument;
+    internal readonly PresentationDocument PresDocument;
     private readonly SlideSize slideSize;
     private readonly MemoryStream presStream = new();
     private readonly Stream? inputPresStream;
@@ -40,18 +39,18 @@ public sealed class Presentation : IPresentation
         this.inputPresStream.Position = 0;
         this.inputPresStream.CopyTo(this.presStream);
         
-        this.presDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
+        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
-            this.presDocument.PresentationPart);
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
-            this.presDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            this.PresDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
     }
 
@@ -64,18 +63,18 @@ public sealed class Presentation : IPresentation
         using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
         fileStream.CopyTo(this.presStream);
         
-        this.presDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
+        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
-            this.presDocument.PresentationPart);
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
-            this.presDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            this.PresDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
     }
 
@@ -86,18 +85,18 @@ public sealed class Presentation : IPresentation
     {
         this.presStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx");
         
-        this.presDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
+        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
-            this.presDocument.PresentationPart);
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
-            this.presDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            this.PresDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
@@ -173,15 +172,15 @@ public sealed class Presentation : IPresentation
     {
         // Materialize initial template slide if SlideIdList is empty but slide parts exist
         this.EnsureInitialSlideId();
-        this.presDocument.PresentationPart!.Presentation.Save();
-        this.presDocument.Save();
+        this.PresDocument.PresentationPart!.Presentation.Save();
+        this.PresDocument.Save();
         if (this.inputPresStream is not null)
         {
-            this.presDocument.Clone(this.inputPresStream);
+            this.PresDocument.Clone(this.inputPresStream);
         }
         else if (this.inputPresFile is not null)
         {
-            var savedPres = this.presDocument.Clone(this.inputPresFile);
+            var savedPres = this.PresDocument.Clone(this.inputPresFile);
             savedPres.Dispose();
         }
     }
@@ -191,18 +190,18 @@ public sealed class Presentation : IPresentation
     {
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
         this.EnsureInitialSlideId();
-        this.presDocument.PresentationPart!.Presentation.Save();
+        this.PresDocument.PresentationPart!.Presentation.Save();
 
         if (stream is FileStream fileStream)
         {
             var mStream = new MemoryStream();
-            this.presDocument.Clone(mStream);
+            this.PresDocument.Clone(mStream);
             mStream.Position = 0;
             mStream.CopyTo(fileStream);
         }
         else
         {
-            this.presDocument.Clone(stream);
+            this.PresDocument.Clone(stream);
         }
     }
 
@@ -256,12 +255,12 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public PresentationDocument GetSDKPresentationDocument() => this.presDocument.Clone();
+    public PresentationDocument GetSDKPresentationDocument() => this.PresDocument.Clone();
 
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>
-    public void Dispose() => this.presDocument.Dispose();
+    public void Dispose() => this.PresDocument.Dispose();
 
     internal void Validate()
     {
@@ -277,7 +276,7 @@ public sealed class Presentation : IPresentation
             "The element has unexpected child element 'http://schemas.microsoft.com/office/drawing/2012/chart:leaderLines'."
         };
         var sdkValidationErrorInfoCollection =
-            new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
+            new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.PresDocument);
         sdkValidationErrorInfoCollection =
             sdkValidationErrorInfoCollection.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
         sdkValidationErrorInfoCollection =
@@ -295,8 +294,8 @@ public sealed class Presentation : IPresentation
             sdkErrors.Add(xmlError.ToString());
         }
 
-        var customErrors = ATableRowErrors(this.presDocument)
-            .Concat(ASolidFillErrors(this.presDocument))
+        var customErrors = ATableRowErrors(this.PresDocument)
+            .Concat(ASolidFillErrors(this.PresDocument))
             .Concat(sdkErrors);
         if (customErrors.Any())
         {
@@ -374,7 +373,7 @@ public sealed class Presentation : IPresentation
     
     private void EnsureInitialSlideId()
     {
-        var presentationPart = this.presDocument.PresentationPart!;
+        var presentationPart = this.PresDocument.PresentationPart!;
         var presentation = presentationPart.Presentation;
         presentation.SlideIdList ??= new P.SlideIdList();
 #if NETSTANDARD2_0
@@ -404,416 +403,6 @@ public sealed class Presentation : IPresentation
     }
 
     #region Fluent API
-
-    /// <summary>
-    ///     Represents a draft for building a presentation with a fluent API.
-    /// </summary>
-    public sealed class DraftPresentation
-    {
-        private readonly List<Action<Presentation>> actions = [];
-
-        /// <summary>
-        ///     Configures a slide within the presentation draft.
-        ///     For a new presentation this targets the first slide.
-        /// </summary>
-        public DraftPresentation Slide()
-        {
-            var slideDraft = new DraftSlide();
-            this.actions.Add(p => slideDraft.ApplyTo(p));
-            return this;
-        }
-        
-        /// <summary>
-        ///     Configures a slide within the presentation draft.
-        ///     For a new presentation this targets the first slide.
-        /// </summary>
-        public DraftPresentation Slide(Action<DraftSlide> configure)
-        {
-            var slideDraft = new DraftSlide();
-            configure(slideDraft);
-            this.actions.Add(p => slideDraft.ApplyTo(p));
-            return this;
-        }
-        
-        /// <summary>
-        ///     Adds a new slide using the specified layout.
-        /// </summary>
-        public DraftPresentation Slide(ISlideLayout layout)
-        {
-            this.actions.Add(p =>
-            {
-                // If no slides yet, create the initial slide first to ensure consistent numbering
-                if (p.Slides.Count == 0)
-                {
-                    var blank = p.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
-                    p.Slides.Add(blank.Number);
-                }
-
-                p.Slides.Add(layout.Number);
-            });
-            return this;
-        }
-
-        /// <summary>
-        ///     Adds a new slide using the slide layout found by name on the first slide master.
-        /// </summary>
-        public DraftPresentation Slide(string layoutName)
-        {
-            if (string.IsNullOrWhiteSpace(layoutName))
-            {
-                throw new ArgumentException("Layout name must be provided", nameof(layoutName));
-            }
-
-            this.actions.Add(p =>
-            {
-                var layout = p.SlideMaster(1).SlideLayout(layoutName);
-                if (p.Slides.Count == 0)
-                {
-                    // Ensure initial slide id list and add via layout
-                }
-
-                p.Slides.Add(layout.Number);
-            });
-            return this;
-        }
-        
-        internal void ApplyTo(Presentation presentation)
-        {
-            foreach (var action in this.actions)
-            {
-                action(presentation);
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Represents a draft for building a slide.
-    /// </summary>
-    public sealed class DraftSlide
-    {
-        private readonly List<Action<ISlide>> actions = [];
-        
-        /// <summary>
-        ///     Adds a picture to the slide with the specified name and geometry in points.
-        /// </summary>
-        public DraftSlide Picture(string name, int x, int y, int width, int height, Stream image)
-        {
-            this.actions.Add(slide =>
-            {
-                slide.Shapes.AddPicture(image);
-
-                // Modify the last added picture
-                var picture = slide.Shapes.Last();
-                picture.Name = name;
-                picture.X = x;
-                picture.Y = y;
-                picture.Width = width;
-                picture.Height = height;
-            });
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Configures a picture using a nested builder.
-        /// </summary>
-        public DraftSlide Picture(Action<DraftPicture> configure)
-        {
-            this.actions.Add(slide =>
-            {
-                var b = new DraftPicture();
-                configure(b);
-                slide.Shapes.AddPicture(b.ImageStream);
-                var pic = slide.Shapes.Last();
-                pic.Name = b.DraftName;
-                pic.X = b.DraftX;
-                pic.Y = b.DraftY;
-                pic.Width = b.DraftWidth;
-                pic.Height = b.DraftHeight;
-                if (!string.IsNullOrEmpty(b.GeometryName))
-                {
-                    pic.GeometryType = (Geometry)Enum.Parse(typeof(Geometry), b.GeometryName!.Replace(" ", string.Empty));
-                }
-            });
-
-            return this;
-        }
-        
-        /// <summary>
-        ///     Adds a text box (auto shape) and sets its content.
-        /// </summary>
-        public DraftSlide TextBox(string name, int x, int y, int width, int height, string content)
-        {
-            this.actions.Add(slide =>
-            {
-                slide.Shapes.AddShape(x, y, width, height, Geometry.Rectangle, content);
-                var addedShape = slide.Shapes.Last<IShape>();
-                addedShape.Name = name;
-            });
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Configures a text box using a nested builder.
-        /// </summary>
-        public DraftSlide TextBox(Action<DraftTextBox> configure)
-        {
-            this.actions.Add(slide =>
-            {
-                var builder = new DraftTextBox();
-                configure(builder);
-                slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, Geometry.Rectangle);
-                var addedShape = slide.Shapes.Last<IShape>();
-                addedShape.Name = builder.TextBoxName;
-                if (!string.IsNullOrEmpty(builder.Content))
-                {
-                    addedShape.TextBox!.SetText(builder.Content!);
-                }
-            });
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Adds a line shape.
-        /// </summary>
-        public DraftSlide Line(string name, int startPointX, int startPointY, int endPointX, int endPointY)
-        {
-            this.actions.Add(slide =>
-            {
-                slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
-                var line = slide.Shapes.Last();
-                line.Name = name;
-            });
-
-            return this;
-        }
-        
-        /// <summary>
-        ///     Adds a video shape and sets its properties.
-        /// </summary>
-        /// <param name="name">Requested shape name (ignored to keep a stable "Video" name as used by tests/examples).</param>
-        /// <param name="x">X coordinate in points.</param>
-        /// <param name="y">Y coordinate in points.</param>
-        /// <param name="elementWidth">Width in points.</param>
-        /// <param name="elementHeight">Height in points.</param>
-        /// <param name="content">Video stream.</param>
-        public DraftSlide Video(string name, int x, int y, int elementWidth, int elementHeight, Stream content)
-        {
-            this.actions.Add(slide =>
-            {
-                slide.Shapes.AddVideo(x, y, content);
-                var media = slide.Shapes.Last();
-                media.Name = name;
-                media.X = x;
-                media.Y = y;
-                media.Width = elementWidth;
-                media.Height = elementHeight;
-            });
-
-            return this;
-        }
-        
-        /// <summary>
-        ///     Adds a table with specified size.
-        /// </summary>
-        public DraftSlide Table(string name, int x, int y, int columnsCount, int rowsCount)
-        {
-            this.actions.Add(slide =>
-            {
-                slide.Shapes.AddTable(x, y, columnsCount, rowsCount);
-                var table = slide.Shapes.Last<IShape>();
-                table.Name = name;
-            });
-
-            return this;
-        }
-        
-        internal void ApplyTo(Presentation presentation)
-        {
-            // Always add a new slide for each DraftSlide application
-            var sdkPres = presentation.presDocument.PresentationPart!.Presentation;
-            sdkPres.SlideIdList ??= new P.SlideIdList();
-
-            var blankLayout = presentation.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
-            presentation.Slides.Add(blankLayout.Number);
-
-            // Target the newly added slide
-            var slide = presentation.Slides[presentation.Slides.Count - 1];
-            foreach (var action in this.actions)
-            {
-                action(slide);
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Represents a draft text box.
-    /// </summary>
-    public sealed class DraftTextBox
-    {
-        internal string TextBoxName { get; private set; } = "Text Box";
-
-        internal int PosX { get; private set; }
-
-        internal int PosY { get; private set; }
-
-        internal int BoxWidth { get; private set; } = 100;
-
-        internal int BoxHeight { get; private set; } = 50;
-
-        internal string? Content { get; private set; }
-        
-        /// <summary>
-        ///     Sets name.
-        /// </summary>
-        public DraftTextBox Name(string name) => this.NameMethod(name);
-
-        /// <summary>
-        ///     Sets X-position.
-        /// </summary>
-        public DraftTextBox X(int x)
-        {
-            this.PosX = x;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets Y-position.
-        /// </summary>
-        public DraftTextBox Y(int y)
-        {
-            this.PosY = y;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets width.
-        /// </summary>
-        public DraftTextBox Width(int width)
-        {
-            this.BoxWidth = width;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets height.
-        /// </summary>
-        public DraftTextBox Height(int height)
-        {
-            this.BoxHeight = height;
-            return this;
-        }
-
-        /// <summary>
-        ///     Adds paragraph.
-        /// </summary>
-        public DraftTextBox Paragraph(string content)
-        {
-            this.Content = AppendParagraph(this.Content, content);
-            return this;
-        }
-        
-        internal DraftTextBox NameMethod(string name)
-        {
-            this.TextBoxName = name;
-            return this;
-        }
-
-        private static string AppendParagraph(string? current, string next)
-        {
-            if (string.IsNullOrEmpty(current))
-            {
-                return next;
-            }
-
-            return current + Environment.NewLine + next;
-        }
-    }
-
-    /// <summary>
-    ///     Represents a draft picture.
-    /// </summary>
-    public sealed class DraftPicture
-    {
-        internal string DraftName { get; private set; } = "Picture";
-
-        internal int DraftX { get; private set; }
-
-        internal int DraftY { get; private set; }
-
-        internal int DraftWidth { get; private set; } = 100;
-
-        internal int DraftHeight { get; private set; } = 100;
-
-        internal Stream ImageStream { get; private set; } = new MemoryStream();
-
-        internal string? GeometryName { get; private set; }
-
-        /// <summary>
-        ///     Sets name.
-        /// </summary>
-        public DraftPicture Name(string name)
-        {
-            this.DraftName = name;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets X-position.
-        /// </summary>
-        public DraftPicture X(int x)
-        {
-            this.DraftX = x;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets Y-position.
-        /// </summary>
-        public DraftPicture Y(int y) 
-        {
-            this.DraftY = y;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets width.
-        /// </summary>
-        public DraftPicture Width(int width)
-        {
-            this.DraftWidth = width;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets height.
-        /// </summary>
-        public DraftPicture Height(int height)
-        {
-            this.DraftHeight = height;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets image.
-        /// </summary>
-        public DraftPicture Image(Stream image)
-        {
-            this.ImageStream = image;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets geometry form.
-        /// </summary>
-        public DraftPicture GeometryType(string geometry)
-        {
-            this.GeometryName = geometry;
-            return this;
-        }
-    }
 
     #endregion
 }
