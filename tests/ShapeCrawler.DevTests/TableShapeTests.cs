@@ -12,7 +12,7 @@ public class TableShapeTests
     public void Width_Setter_increases_column_widths_proportionally()
     {
         // Arrange
-        var shapeName = fixtures.String();
+        var shapeName = Fixtures.String();
         var pres = new Presentation(p =>
         {
             p.Slide(s =>

@@ -5,27 +5,13 @@ using ImageMagick;
 
 namespace Fixture;
 
-public class Fixtures
+public sealed class Fixtures
 {
     private readonly Random random = new();
-    private readonly List<string> files = new();
-    private readonly Assembly assembly;
+    private readonly List<string> files = [];
+    private readonly Assembly assembly = Assembly.GetCallingAssembly();
 
-    public Fixtures()
-    {
-        this.assembly = Assembly.GetExecutingAssembly();
-    }
-    
-    public Fixtures(Assembly assembly)
-    {
-        this.assembly = assembly;
-    }
-
-    public int Int()
-    {
-        // Return a positive random integer within a sane range for slide coordinates/sizes
-        return this.random.Next(1, 400);
-    }
+    public int Int() => this.random.Next(1, 400);
 
     public Stream Image()
     {
@@ -34,7 +20,8 @@ public class Fixtures
 
         var stream = new MemoryStream();
 
-        var background = new MagickColor((byte)this.random.Next(256), (byte)this.random.Next(256), (byte)this.random.Next(256));
+        var background = new MagickColor((byte)this.random.Next(256), (byte)this.random.Next(256),
+            (byte)this.random.Next(256));
         using (var image = new MagickImage(background, (uint)width, (uint)height))
         {
             image.Format = MagickFormat.Png;
@@ -42,6 +29,7 @@ public class Fixtures
         }
 
         stream.Position = 0;
+        
         return stream;
     }
 
@@ -54,7 +42,8 @@ public class Fixtures
         var height = this.random.Next(32, 256);
         var stream = new MemoryStream();
 
-        var background = new MagickColor((byte)this.random.Next(256), (byte)this.random.Next(256), (byte)this.random.Next(256));
+        var background = new MagickColor((byte)this.random.Next(256), (byte)this.random.Next(256),
+            (byte)this.random.Next(256));
 
         var formatUpper = (options.FormatName ?? "PNG").ToUpperInvariant();
         if (formatUpper == "GIF")
@@ -76,12 +65,12 @@ public class Fixtures
             {
                 using var frame = new MagickImage(colors[i], (uint)width, (uint)height);
                 frame.Format = MagickFormat.Gif;
-                
+
                 // Set animation timing - 50 centiseconds = 0.5 seconds per frame
                 frame.AnimationDelay = 50;
                 frame.AnimationIterations = 0; // Infinite loop
                 frame.GifDisposeMethod = GifDisposeMethod.Background;
-                
+
                 collection.Add(frame.Clone());
             }
 
@@ -113,21 +102,18 @@ public class Fixtures
     /// <summary>
     ///     Gets a path to a temporary file.
     /// </summary>
-    /// <returns></returns>
     public string File()
     {
         var file = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
         var stream = System.IO.File.Create(file);
         stream.Close();
-        
+
         this.files.Add(file);
 
         return file;
     }
 
-    public void Clean() => files.ForEach(System.IO.File.Delete);
-
-    public string String() => Guid.NewGuid().ToString();
+    public static string String() => Guid.NewGuid().ToString();
 
     public string String(Action<StringOptions> configure)
     {
@@ -163,8 +149,8 @@ public class Fixtures
 
         return new string(buffer);
     }
-    
-    public Stream AssemblyFile(string file)
+
+    public Stream AssemblyStream(string file)
     {
         var stream = GetResourceStream(file);
         var mStream = new MemoryStream();
@@ -173,7 +159,21 @@ public class Fixtures
 
         return mStream;
     }
-    
+
+    public string AssemblyFile(string assemblyFile)
+    {
+        var localFile = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid() + Path.GetExtension(assemblyFile));
+        using var localFileStream = System.IO.File.Create(localFile);
+        var assemblyStream = GetResourceStream(assemblyFile);
+        assemblyStream.CopyTo(localFileStream);
+
+        this.files.Add(localFile);
+
+        return localFile;
+    }
+
+    public void Clean() => files.ForEach(System.IO.File.Delete);
+
     private MemoryStream GetResourceStream(string fileName)
     {
         var pattern = $@"\.{Regex.Escape(fileName)}";
@@ -185,8 +185,10 @@ public class Fixtures
         var stream = this.assembly.GetManifestResourceStream(path);
         if (stream is null)
         {
-            throw new InvalidOperationException($"Resource '{path}' was not found in assembly '{this.assembly.FullName}'.");
+            throw new InvalidOperationException(
+                $"Resource '{path}' was not found in assembly '{this.assembly.FullName}'.");
         }
+
         var mStream = new MemoryStream();
         stream.CopyTo(mStream);
         mStream.Position = 0;

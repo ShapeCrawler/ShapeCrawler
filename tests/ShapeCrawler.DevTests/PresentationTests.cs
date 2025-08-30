@@ -11,7 +11,7 @@ namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
-    private readonly Fixtures fixtures = new(Assembly.GetExecutingAssembly());
+    private readonly Fixtures fixtures = new();
 
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
@@ -417,7 +417,7 @@ public class PresentationTests : SCTest
     public void Slides_Add_copies_slide_with_chart()
     {
         // Arrange
-        var file = fixtures.AssemblyFile("084 charts.pptx");
+        var file = fixtures.AssemblyStream("084 charts.pptx");
         var pres = new Presentation(file);
         var slide = pres.Slides.Last();
 
@@ -501,8 +501,8 @@ public class PresentationTests : SCTest
         {
             p.Slide(s =>
             {
-                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
-                    fixtures.String());
+                s.TextBox(Fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
+                    Fixtures.String());
             });
         });
         var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;
