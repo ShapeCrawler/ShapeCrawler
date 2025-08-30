@@ -175,10 +175,9 @@ public class Fixtures
     public string AssemblyFile(string assemblyFile)
     {
         var localFile = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid() + Path.GetExtension(assemblyFile));
-        var localFileStream = System.IO.File.Create(localFile);
+        using var localFileStream = System.IO.File.Create(localFile);
         var assemblyStream = GetResourceStream(assemblyFile);
         assemblyStream.CopyTo(localFileStream);
-        localFileStream.Close();
         
         this.files.Add(localFile);
 
