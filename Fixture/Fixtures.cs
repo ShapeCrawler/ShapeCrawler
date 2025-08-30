@@ -113,7 +113,6 @@ public class Fixtures
     /// <summary>
     ///     Gets a path to a temporary file.
     /// </summary>
-    /// <returns></returns>
     public string File()
     {
         var file = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
