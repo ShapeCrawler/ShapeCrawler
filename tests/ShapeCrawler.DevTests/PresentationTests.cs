@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using DocumentFormat.OpenXml.Presentation;
 using Fixture;
 using FluentAssertions;
@@ -10,7 +11,7 @@ namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
-    private Fixtures fixtures = new(Assembly.GetExecutingAssembly());
+    private readonly Fixtures fixtures = new(Assembly.GetExecutingAssembly());
 
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
@@ -710,17 +711,5 @@ public class PresentationTests : SCTest
         }
 
         pres.Save(@"c:\temp\output.pptx");
-    }
-    
-    [Test]
-    public void Reproduce_issue_1103_2()
-    {
-        var pres = new Presentation(p => { p.Slide(s => { s.Table("Table 1", 100, 100, 10, 2); }); });
-        var tableShape = pres.Slide(1).Shape("Table 1");
-        
-        // tableShape.Height *= 2;
-        tableShape.Width *= 2;  
-        
-        pres.Save(@"c:\temp\output 2.pptx");
     }
 }
