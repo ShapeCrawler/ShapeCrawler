@@ -1,24 +1,35 @@
-﻿using FluentAssertions;
+﻿using Fixture;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace ShapeCrawler.DevTests;
 
 public class TableShapeTests
 {
+    private readonly Fixtures fixtures = new();
+
     [Test]
     public void Width_Setter_increases_column_widths_proportionally()
     {
         // Arrange
-        var pres = new Presentation(p => { p.Slide(s => { s.Table("Table 1", 100, 100, 2, 1); }); });
-        var tableShape = pres.Slide(1).Shape("Table 1");
-        var newWidth = tableShape.Height * 1.25m;
-        var columnWidthBefore = tableShape.Table.Columns.First().Width;
+        var shapeName = fixtures.String();
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.Table(shapeName,fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int());
+            });
+        });
+        var tableShape = pres.Slide(1).Shape(shapeName);
+        var newShapeWidth = tableShape.Width + fixtures.Int();
+        var column = tableShape.Table.Columns.First();
+        var columnWidthBefore = column.Width;
 
         // Act
-        tableShape.Height = newWidth;
+        tableShape.Width = newShapeWidth;
 
         // Assert
-        tableShape.Table.Columns.First().Width.Should().BeGreaterThan(columnWidthBefore);
+        column.Width.Should().BeGreaterThan(columnWidthBefore);
         pres.Validate();
     }
 }
