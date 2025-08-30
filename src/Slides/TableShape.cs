@@ -22,6 +22,21 @@ internal sealed class TableShape:Shape
     
     public override ITable? Table { get; }
 
+    public override decimal Width
+    {
+        get => base.Width;
+        set
+        {
+            var percentNewWidth = value / this.Width;
+            base.Width = value;
+
+            foreach (var tableColumn in this.Table!.Columns)
+            {
+                tableColumn.Width *= percentNewWidth;
+            }
+        }
+    }
+
     public override decimal Height
     {
         get => base.Height;
