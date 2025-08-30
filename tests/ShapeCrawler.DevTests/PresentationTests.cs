@@ -11,7 +11,7 @@ namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
-    private Fixtures fixtures = new(Assembly.GetExecutingAssembly());
+    private readonly Fixtures fixtures = new(Assembly.GetExecutingAssembly());
 
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
@@ -358,10 +358,7 @@ public class PresentationTests : SCTest
     public void Footer_AddSlideNumber_adds_slide_number()
     {
         // Arrange
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide();
-        });
+        var pres = new Presentation(pres => { pres.Slide(); });
 
         // Act
         pres.Footer.AddSlideNumber();
@@ -431,6 +428,7 @@ public class PresentationTests : SCTest
         pres.Validate();
     }
 
+
     [Test]
     public void Slides_Add_adds_slide_at_position()
     {
@@ -441,10 +439,10 @@ public class PresentationTests : SCTest
             p.Slide(s =>
             {
                 s.Picture(
-                    "Picture 1", 
-                    fixtures.Int(), 
-                    fixtures.Int(), 
-                    fixtures.Int(), 
+                    "Picture 1",
+                    fixtures.Int(),
+                    fixtures.Int(),
+                    fixtures.Int(),
                     fixtures.Int(),
                     fixtures.Image());
             });
@@ -503,7 +501,8 @@ public class PresentationTests : SCTest
         {
             p.Slide(s =>
             {
-                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.String());
+                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
+                    fixtures.String());
             });
         });
         var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;
@@ -690,10 +689,10 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        
+
         // Act
         var accessUnavailableSlide = () => pres.Slide(1);
-        
+
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
     }

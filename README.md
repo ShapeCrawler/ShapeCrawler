@@ -95,7 +95,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.71.4 - 2025-08-28
-🐞Resolved issue CVE-2025-55298
+### Version 0.71.5 - 2025-08-30
+🐞Fixed update table shape width [#1103](https://github.com/ShapeCrawler/ShapeCrawler/issues/1103)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.

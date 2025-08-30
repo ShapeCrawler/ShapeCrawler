@@ -10,13 +10,31 @@ internal sealed class ShapeSize(OpenXmlElement pShapeTreeElement)
     internal decimal Width
     {
         get => new Emus(this.GetAExtents().Cx!).AsPoints();
-        set => this.GetAExtents().Cx = new Points(value).AsEmus();
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            if (emus > int.MaxValue)
+            {
+                emus = int.MaxValue;
+            }
+
+            this.GetAExtents().Cx = emus;
+        }
     }
 
     internal decimal Height
     {
         get => new Emus(this.GetAExtents().Cy!).AsPoints();
-        set => this.GetAExtents().Cy = new Points(value).AsEmus();
+        set
+        {
+            var emus = new Points(value).AsEmus();
+            if (emus > int.MaxValue)
+            {
+                emus = int.MaxValue;
+            }
+
+            this.GetAExtents().Cy = emus;
+        }
     }
 
     private A.Extents GetAExtents()
