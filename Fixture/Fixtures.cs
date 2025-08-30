@@ -1,4 +1,7 @@
-﻿using ImageMagick;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using ImageMagick;
 
 namespace Fixture;
 
@@ -6,6 +9,17 @@ public class Fixtures
 {
     private readonly Random random = new();
     private readonly List<string> files = new();
+    private readonly Assembly assembly;
+
+    public Fixtures()
+    {
+        this.assembly = Assembly.GetExecutingAssembly();
+    }
+    
+    public Fixtures(Assembly assembly)
+    {
+        this.assembly = assembly;
+    }
 
     public int Int()
     {
@@ -96,6 +110,10 @@ public class Fixtures
         return stream;
     }
 
+    /// <summary>
+    ///     Gets a path to a temporary file.
+    /// </summary>
+    /// <returns></returns>
     public string File()
     {
         var file = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
@@ -145,24 +163,34 @@ public class Fixtures
 
         return new string(buffer);
     }
-}
-
-public sealed class ImageOptions
-{
-    public string? FormatName { get; private set; }
-
-    public void Format(string format)
+    
+    public Stream AssemblyFile(string file)
     {
-        this.FormatName = format;
+        var stream = GetResourceStream(file);
+        var mStream = new MemoryStream();
+        stream.CopyTo(mStream);
+        mStream.Position = 0;
+
+        return mStream;
     }
-}
-
-public sealed class StringOptions
-{
-    public int? LengthValue { get; private set; }
-
-    public void Length(int length)
+    
+    private MemoryStream GetResourceStream(string fileName)
     {
-        this.LengthValue = length;
+        var pattern = $@"\.{Regex.Escape(fileName)}";
+        var path = this.assembly.GetManifestResourceNames().First(r =>
+        {
+            var matched = Regex.Match(r, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
+            return matched.Success;
+        });
+        var stream = this.assembly.GetManifestResourceStream(path);
+        if (stream is null)
+        {
+            throw new InvalidOperationException($"Resource '{path}' was not found in assembly '{this.assembly.FullName}'.");
+        }
+        var mStream = new MemoryStream();
+        stream.CopyTo(mStream);
+        mStream.Position = 0;
+
+        return mStream;
     }
 }

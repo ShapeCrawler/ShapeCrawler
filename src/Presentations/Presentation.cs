@@ -273,7 +273,8 @@ public sealed class Presentation : IPresentation
             "The 'uri' attribute is not declared.",
             "The 'mod' attribute is not declared.",
             "The 'mod' attribute is not declared.",
-            "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'."
+            "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'.",
+            "The element has unexpected child element 'http://schemas.microsoft.com/office/drawing/2012/chart:leaderLines'."
         };
         var sdkValidationErrorInfoCollection =
             new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);

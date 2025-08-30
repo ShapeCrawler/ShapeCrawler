@@ -10,7 +10,7 @@ namespace ShapeCrawler.DevTests;
 
 public class PresentationTests : SCTest
 {
-    private Fixtures fixtures = new();
+    private Fixtures fixtures = new(Assembly.GetExecutingAssembly());
 
     [Test]
     public void SlideWidth_Getter_returns_presentation_Slides_Width()
@@ -411,6 +411,22 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
+    
+    [Test]
+    public void Slides_Add_copies_slide_with_chart()
+    {
+        // Arrange
+        var file = fixtures.AssemblyFile("084 charts.pptx");
+        var pres = new Presentation(file);
+        var slide = pres.Slides.Last();
+
+        // Act
+        pres.Slides.Add(slide, 1);
+
+        // Assert
+        pres.Validate();
+    }
+
 
     [Test]
     public void Slides_Add_adds_slide_at_position()
