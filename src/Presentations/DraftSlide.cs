@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Presentations;
 
 /// <summary>
 ///     Represents a draft for building a slide.
@@ -36,11 +36,11 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a picture using a nested builder.
     /// </summary>
-    public DraftSlide Picture(Action<Presentation.DraftPicture> configure)
+    public DraftSlide Picture(Action<DraftPicture> configure)
     {
         this.actions.Add(slide =>
         {
-            var b = new Presentation.DraftPicture();
+            var b = new DraftPicture();
             configure(b);
             slide.Shapes.AddPicture(b.ImageStream);
             var pic = slide.Shapes.Last();
@@ -76,11 +76,11 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a text box using a nested builder.
     /// </summary>
-    public DraftSlide TextBox(Action<Presentation.DraftTextBox> configure)
+    public DraftSlide TextBox(Action<DraftTextBox> configure)
     {
         this.actions.Add(slide =>
         {
-            var builder = new Presentation.DraftTextBox();
+            var builder = new DraftTextBox();
             configure(builder);
             slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, Geometry.Rectangle);
             var addedShape = slide.Shapes.Last<IShape>();
@@ -152,7 +152,7 @@ public sealed class DraftSlide
     internal void ApplyTo(Presentation presentation)
     {
         // Always add a new slide for each DraftSlide application
-        var sdkPres = presentation.presDocument.PresentationPart!.Presentation;
+        var sdkPres = presentation.PresDocument.PresentationPart!.Presentation;
         sdkPres.SlideIdList ??= new DocumentFormat.OpenXml.Presentation.SlideIdList();
 
         var blankLayout = presentation.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");

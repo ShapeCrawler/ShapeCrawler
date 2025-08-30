@@ -22,9 +22,9 @@ using ShapeCrawler.Extensions;
 namespace ShapeCrawler;
 
 /// <inheritdoc />
-public sealed partial class Presentation : IPresentation
+public sealed class Presentation : IPresentation
 {
-    internal readonly PresentationDocument presDocument;
+    internal readonly PresentationDocument PresDocument;
     private readonly SlideSize slideSize;
     private readonly MemoryStream presStream = new();
     private readonly Stream? inputPresStream;
@@ -39,18 +39,18 @@ public sealed partial class Presentation : IPresentation
         this.inputPresStream.Position = 0;
         this.inputPresStream.CopyTo(this.presStream);
         
-        this.presDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
+        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
-            this.presDocument.PresentationPart);
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
-            this.presDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            this.PresDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
     }
 
@@ -63,18 +63,18 @@ public sealed partial class Presentation : IPresentation
         using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
         fileStream.CopyTo(this.presStream);
         
-        this.presDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
+        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
-            this.presDocument.PresentationPart);
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
-            this.presDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            this.PresDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
     }
 
@@ -85,18 +85,18 @@ public sealed partial class Presentation : IPresentation
     {
         this.presStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx");
         
-        this.presDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.presDocument.PresentationPart!.Presentation.SlideSize!);
-        this.SlideMasters = new SlideMasterCollection(this.presDocument.PresentationPart!.SlideMasterParts);
-        this.Sections = new SectionCollection(this.presDocument);
+        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts),
-            this.presDocument.PresentationPart);
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.presDocument.PresentationPart.SlideParts), this.presDocument.PresentationPart));
+            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
-            this.presDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.presDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
+            this.PresDocument.CoreFilePropertiesPart != null
+                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
                 : new PresentationProperties(new DefaultPackageProperties());
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
@@ -172,15 +172,15 @@ public sealed partial class Presentation : IPresentation
     {
         // Materialize initial template slide if SlideIdList is empty but slide parts exist
         this.EnsureInitialSlideId();
-        this.presDocument.PresentationPart!.Presentation.Save();
-        this.presDocument.Save();
+        this.PresDocument.PresentationPart!.Presentation.Save();
+        this.PresDocument.Save();
         if (this.inputPresStream is not null)
         {
-            this.presDocument.Clone(this.inputPresStream);
+            this.PresDocument.Clone(this.inputPresStream);
         }
         else if (this.inputPresFile is not null)
         {
-            var savedPres = this.presDocument.Clone(this.inputPresFile);
+            var savedPres = this.PresDocument.Clone(this.inputPresFile);
             savedPres.Dispose();
         }
     }
@@ -190,18 +190,18 @@ public sealed partial class Presentation : IPresentation
     {
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
         this.EnsureInitialSlideId();
-        this.presDocument.PresentationPart!.Presentation.Save();
+        this.PresDocument.PresentationPart!.Presentation.Save();
 
         if (stream is FileStream fileStream)
         {
             var mStream = new MemoryStream();
-            this.presDocument.Clone(mStream);
+            this.PresDocument.Clone(mStream);
             mStream.Position = 0;
             mStream.CopyTo(fileStream);
         }
         else
         {
-            this.presDocument.Clone(stream);
+            this.PresDocument.Clone(stream);
         }
     }
 
@@ -255,12 +255,12 @@ public sealed partial class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public PresentationDocument GetSDKPresentationDocument() => this.presDocument.Clone();
+    public PresentationDocument GetSDKPresentationDocument() => this.PresDocument.Clone();
 
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>
-    public void Dispose() => this.presDocument.Dispose();
+    public void Dispose() => this.PresDocument.Dispose();
 
     internal void Validate()
     {
@@ -276,7 +276,7 @@ public sealed partial class Presentation : IPresentation
             "The element has unexpected child element 'http://schemas.microsoft.com/office/drawing/2012/chart:leaderLines'."
         };
         var sdkValidationErrorInfoCollection =
-            new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.presDocument);
+            new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(this.PresDocument);
         sdkValidationErrorInfoCollection =
             sdkValidationErrorInfoCollection.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
         sdkValidationErrorInfoCollection =
@@ -294,8 +294,8 @@ public sealed partial class Presentation : IPresentation
             sdkErrors.Add(xmlError.ToString());
         }
 
-        var customErrors = ATableRowErrors(this.presDocument)
-            .Concat(ASolidFillErrors(this.presDocument))
+        var customErrors = ATableRowErrors(this.PresDocument)
+            .Concat(ASolidFillErrors(this.PresDocument))
             .Concat(sdkErrors);
         if (customErrors.Any())
         {
@@ -373,7 +373,7 @@ public sealed partial class Presentation : IPresentation
     
     private void EnsureInitialSlideId()
     {
-        var presentationPart = this.presDocument.PresentationPart!;
+        var presentationPart = this.PresDocument.PresentationPart!;
         var presentation = presentationPart.Presentation;
         presentation.SlideIdList ??= new P.SlideIdList();
 #if NETSTANDARD2_0
