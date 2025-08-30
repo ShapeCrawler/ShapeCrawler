@@ -696,20 +696,4 @@ public class PresentationTests : SCTest
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
     }
-
-    [Test]
-    public void Reproduce_issue_1103()
-    {
-        var pres = new Presentation(p => { p.Slide(s => { s.Table("Table 1", 100, 100, 10, 2); }); });
-        var rows = pres.Slide(1).Shape("Table 1").Table.Rows;
-        for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
-        {
-            for (var cellIndex = 0; cellIndex < rows[rowIndex].Cells.Count; cellIndex++)
-            {
-                rows[rowIndex].Cells[cellIndex].TextBox.SetText($"R{rowIndex}C{cellIndex}");
-            }
-        }
-
-        pres.Save(@"c:\temp\output.pptx");
-    }
 }
