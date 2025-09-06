@@ -43,8 +43,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </PropertyGroup>  
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\$(TargetFramework)\ShapeCrawler.xml</DocumentationFile>
     <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
+    <WarningsAsErrors>AD0001</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -72,7 +73,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.8.1" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.8.2" />
     <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="3.3.0" />
     <PackageReference Include="PolySharp" Version="1.15.0">
       <PrivateAssets>all</PrivateAssets>
