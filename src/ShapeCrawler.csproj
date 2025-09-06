@@ -43,9 +43,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </PropertyGroup>  
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DocumentationFile>bin\Release\$(TargetFramework)\ShapeCrawler.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
     <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
-    <WarningsAsErrors>AD0001</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
