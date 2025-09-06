@@ -26,8 +26,8 @@ jobs:
             framework_version: 'net9.0'
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
       - name: Run tests
@@ -40,7 +40,7 @@ jobs:
     runs-on: windows-latest
     needs: test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Generate version
         id: versioning
         run: echo "PACKAGE_VERSION=${{ vars.VERSION }}-beta.$(Get-Date -Format 'yyyyMMddHHmm')" >> $env:GITHUB_ENV

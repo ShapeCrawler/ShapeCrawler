@@ -10,7 +10,7 @@ jobs:
     name: Publish
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create package
         run: dotnet pack ./src/ShapeCrawler.csproj --configuration Release /p:Version=${{ vars.VERSION }}
       - name: Publish package
