@@ -315,7 +315,7 @@ public class TableTests : SCTest
         textBox.Paragraphs.First().Portions.First().Font.Size.Should().Be(expectedFontSize);
     }
     
-    [Test, Ignore("Should be fixed")]
+  [Test]
     public void Row_Cell_TextBox_SetText_increases_row_height_when_the_new_text_doesnt_fit_on_one_line()
     {
         // Arrange
