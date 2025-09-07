@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using ImageMagick;
 using ShapeCrawler.Shapes;
 
 #pragma warning disable IDE0130
@@ -77,7 +78,7 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds picture.
     /// </summary>
-    void AddPicture(Stream imageStream);
+    void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown);
 
     /// <summary>
     ///     Adds Pie Chart.

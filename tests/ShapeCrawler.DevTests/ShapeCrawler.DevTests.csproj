@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -254,6 +254,8 @@
     <EmbeddedResource Include="Assets\images\04 heic image.heic" />
     <None Remove="Assets\images\reference image.png" />
     <EmbeddedResource Include="Assets\images\reference image.png" />
+	<None Remove="Assets\images\reference ico.png" />
+    <EmbeddedResource Include="Assets\images\reference ico.png" />
     <None Remove="Assets\images\reference image.jpg" />
     <EmbeddedResource Include="Assets\images\reference image.jpg" />
     <None Remove="Assets\images\test-image.eps" />

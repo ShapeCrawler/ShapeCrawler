@@ -33,7 +33,7 @@ internal sealed class PictureCollection(
 
     #endregion Shapes Properties
 
-    public void AddPicture(Stream imageStream)
+    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown)
     {
         try
         {
@@ -42,7 +42,7 @@ internal sealed class PictureCollection(
                 imageStream.Position = 0;
             }
 
-            using var image = CreateMagickImage(imageStream);
+            using var image = CreateMagickImage(imageStream, format);
             var originalFormat = image.Format;
 
             EnsureSupportedImageFormat(image);
@@ -208,11 +208,15 @@ internal sealed class PictureCollection(
 
     #endregion Shapes Public Methods
 
-    private static MagickImage CreateMagickImage(Stream imageStream)
+    private static MagickImage CreateMagickImage(Stream imageStream, MagickFormat format)
     {
         return new MagickImage(
             imageStream,
-            new MagickReadSettings { BackgroundColor = MagickColors.Transparent });
+            new MagickReadSettings
+            {
+                Format = format,
+                BackgroundColor = MagickColors.Transparent,
+            });
     }
 
     private static void EnsureSupportedImageFormat(MagickImage image)

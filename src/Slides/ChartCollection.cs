@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ImageMagick;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
@@ -128,7 +129,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         ITableStyle style
     ) => shapes.AddTable(x, y, columnsCount, rowsCount, style);
 
-    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown) => shapes.AddPicture(imageStream, format);
 
     public IShape AddSmartArt(
         int x,

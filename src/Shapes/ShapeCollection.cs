@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ImageMagick;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Positions;
@@ -102,7 +103,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         ITableStyle style
     ) => throw new NotImplementedException();
 
-    public void AddPicture(Stream imageStream) => throw new NotImplementedException();
+    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown) => throw new NotImplementedException();
 
     public void AddPieChart(
         int x,

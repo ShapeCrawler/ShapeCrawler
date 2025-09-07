@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ImageMagick;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
@@ -54,7 +55,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     public void AddVideo(int x, int y, Stream stream) => shapes.AddVideo(x, y, stream);
 
-    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown) => shapes.AddPicture(imageStream, format);
 
     public void AddPieChart(
         int x,

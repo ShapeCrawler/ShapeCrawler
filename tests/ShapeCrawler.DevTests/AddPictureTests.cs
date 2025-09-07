@@ -288,13 +288,13 @@ public class AddPictureTests : SCTest
         var image = TestAsset("05 ico image.ico");
 
         // Act
-        shapes.AddPicture(image);
+        shapes.AddPicture(image, MagickFormat.Ico);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
+        var picture = shapes.Last().Picture;
         picture.Image!.Mime.Should().Be("image/png");
         var actualImage = new MagickImage(picture.Image!.AsByteArray());
-        var expectedImage = new MagickImage(TestAsset("reference image.png"));
+        var expectedImage = new MagickImage(TestAsset("reference ico.png"));
         actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
         pres.Validate();
