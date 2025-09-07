@@ -287,7 +287,7 @@ public class AddPictureTests : SCTest
         var image = TestAsset("05 ico image.ico");
 
         // Act
-        shapes.AddPicture(image, MagickFormat.Ico);
+        shapes.AddPicture(image);
 
         // Assert
         var picture = shapes.Last().Picture;

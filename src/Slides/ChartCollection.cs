@@ -130,8 +130,6 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
     ) => shapes.AddTable(x, y, columnsCount, rowsCount, style);
 
     public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
-    
-    public void AddPicture(Stream imageStream, MagickFormat format) => shapes.AddPicture(imageStream, format);
 
     public IShape AddSmartArt(
         int x,

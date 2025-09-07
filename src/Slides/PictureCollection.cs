@@ -33,7 +33,7 @@ internal sealed class PictureCollection(
 
     #endregion Shapes Properties
 
-    public void AddPicture(Stream imageStream, MagickFormat format)
+    public void AddPicture(Stream imageStream)
     {
         try
         {
@@ -42,7 +42,7 @@ internal sealed class PictureCollection(
                 imageStream.Position = 0;
             }
 
-            using var image = CreateMagickImage(imageStream, format);
+            using var image = CreateMagickImage(imageStream);
             var originalFormat = image.Format;
 
             EnsureSupportedImageFormat(image);
@@ -88,8 +88,6 @@ internal sealed class PictureCollection(
                 "The stream is not an image or a non-supported image type. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
-
-    public void AddPicture(Stream imageStream) => this.AddPicture(imageStream, MagickFormat.Unknown);
 
     #region Shapes Public Methods
 
@@ -210,8 +208,12 @@ internal sealed class PictureCollection(
 
     #endregion Shapes Public Methods
 
-    private static MagickImage CreateMagickImage(Stream imageStream, MagickFormat format)
+    private static MagickImage CreateMagickImage(Stream imageStream)
     {
+        var format = IsIco(imageStream)
+            ? MagickFormat.Ico
+            : MagickFormat.Unknown;
+
         return new MagickImage(
             imageStream,
             new MagickReadSettings
@@ -219,6 +221,39 @@ internal sealed class PictureCollection(
                 Format = format,
                 BackgroundColor = MagickColors.Transparent,
             });
+    }
+
+    private static bool IsIco(Stream stream)
+    {
+        if (stream.Length < 6)
+            return false;
+    
+        var originalPosition = stream.Position;
+        stream.Seek(0, SeekOrigin.Begin);
+    
+        try
+        {
+            var header = new byte[6];
+            var bytesRead = stream.Read(header, 0, 6);
+        
+            if (bytesRead < 6)
+                return false;
+
+            // ICO file signature:
+            // Bytes 0-1: Reserved (must be 0x00 0x00)
+            // Bytes 2-3: Image type (must be 0x01 0x00 for ICO)
+            // Bytes 4-5: Number of images (must be > 0)
+            // https://docs.fileformat.com/image/ico/#header
+            return header[0] == 0x00 && 
+                   header[1] == 0x00 && 
+                   header[2] == 0x01 && 
+                   header[3] == 0x00 &&
+                   (header[4] > 0 || header[5] > 0);
+        }
+        finally
+        {
+            stream.Seek(originalPosition, SeekOrigin.Begin);
+        }
     }
 
     private static void EnsureSupportedImageFormat(MagickImage image)

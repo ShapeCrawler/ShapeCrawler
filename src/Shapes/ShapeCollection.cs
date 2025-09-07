@@ -105,8 +105,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     public void AddPicture(Stream imageStream) => throw new NotImplementedException();
 
-    public void AddPicture(Stream imageStream, MagickFormat format) => throw new NotImplementedException();
-
     public void AddPieChart(
         int x,
         int y,

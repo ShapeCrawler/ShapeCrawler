@@ -178,8 +178,6 @@ internal sealed class AudioVideoShapeCollection(
 
     public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
 
-    public void AddPicture(Stream imageStream, MagickFormat format) => shapes.AddPicture(imageStream, format);
-
     public void Add(IShape addingShape) => shapes.Add(addingShape);
 
     public void AddShape(
