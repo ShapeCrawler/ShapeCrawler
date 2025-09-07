@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using ImageMagick;
 using ShapeCrawler.Shapes;
 
 #pragma warning disable IDE0130

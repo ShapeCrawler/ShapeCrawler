@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ImageMagick;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;

@@ -80,12 +80,12 @@ internal sealed class PictureCollection(
         catch (Exception ex) when (ex is MagickDelegateErrorException mex && mex.Message.Contains("ghostscript"))
         {
             throw new SCException(
-                "The stream is an image type that requires GhostScript which is not installed on your system.", ex);
+                "The stream is an image format that requires GhostScript which is not installed on your system.", ex);
         }
         catch (MagickException)
         {
             throw new SCException(
-                "The stream is not an image or a non-supported image type. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
+                "The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
 
@@ -226,7 +226,9 @@ internal sealed class PictureCollection(
     private static bool IsIco(Stream stream)
     {
         if (stream.Length < 6)
+        {
             return false;
+        }
     
         var originalPosition = stream.Position;
         stream.Seek(0, SeekOrigin.Begin);
@@ -237,7 +239,9 @@ internal sealed class PictureCollection(
             var bytesRead = stream.Read(header, 0, 6);
         
             if (bytesRead < 6)
+            {
                 return false;
+            }
 
             // ICO file signature:
             // Bytes 0-1: Reserved (must be 0x00 0x00)
