@@ -279,7 +279,6 @@ public class AddPictureTests : SCTest
     }
     
     [Test]
-    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/892")]
     public void AddPicture_adds_picture_from_ico_image()
     {
         // Arrange
