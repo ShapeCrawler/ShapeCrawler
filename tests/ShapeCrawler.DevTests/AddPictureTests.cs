@@ -279,7 +279,6 @@ public class AddPictureTests : SCTest
     }
     
     [Test]
-    [Explicit("Should be fixed with https://github.com/ShapeCrawler/ShapeCrawler/issues/892")]
     public void AddPicture_adds_picture_from_ico_image()
     {
         // Arrange
@@ -291,10 +290,10 @@ public class AddPictureTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
+        var picture = shapes.Last().Picture;
         picture.Image!.Mime.Should().Be("image/png");
         var actualImage = new MagickImage(picture.Image!.AsByteArray());
-        var expectedImage = new MagickImage(TestAsset("reference image.png"));
+        var expectedImage = new MagickImage(TestAsset("reference ico.png"));
         actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
         pres.Validate();
