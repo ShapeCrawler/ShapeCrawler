@@ -103,7 +103,9 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         ITableStyle style
     ) => throw new NotImplementedException();
 
-    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown) => throw new NotImplementedException();
+    public void AddPicture(Stream imageStream) => throw new NotImplementedException();
+
+    public void AddPicture(Stream imageStream, MagickFormat format) => throw new NotImplementedException();
 
     public void AddPieChart(
         int x,

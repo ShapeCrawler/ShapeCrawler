@@ -176,7 +176,9 @@ internal sealed class AudioVideoShapeCollection(
 
     #region Shapes Public Methods
 
-    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown) => shapes.AddPicture(imageStream, format);
+    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
+
+    public void AddPicture(Stream imageStream, MagickFormat format) => shapes.AddPicture(imageStream, format);
 
     public void Add(IShape addingShape) => shapes.Add(addingShape);
 

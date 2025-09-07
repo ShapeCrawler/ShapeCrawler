@@ -55,7 +55,9 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     public void AddVideo(int x, int y, Stream stream) => shapes.AddVideo(x, y, stream);
 
-    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown) => shapes.AddPicture(imageStream, format);
+    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
+
+    public void AddPicture(Stream imageStream, MagickFormat format) => shapes.AddPicture(imageStream, format);
 
     public void AddPieChart(
         int x,

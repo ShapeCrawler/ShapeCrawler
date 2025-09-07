@@ -33,7 +33,7 @@ internal sealed class PictureCollection(
 
     #endregion Shapes Properties
 
-    public void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown)
+    public void AddPicture(Stream imageStream, MagickFormat format)
     {
         try
         {
@@ -88,6 +88,8 @@ internal sealed class PictureCollection(
                 "The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
+
+    public void AddPicture(Stream imageStream) => this.AddPicture(imageStream, MagickFormat.Unknown);
 
     #region Shapes Public Methods
 

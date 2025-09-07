@@ -78,7 +78,12 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds picture.
     /// </summary>
-    void AddPicture(Stream imageStream, MagickFormat format = MagickFormat.Unknown);
+    void AddPicture(Stream imageStream);
+
+    /// <summary>
+    /// Adds picture with specified format.
+    /// </summary>
+    void AddPicture(Stream imageStream, MagickFormat format);
 
     /// <summary>
     ///     Adds Pie Chart.
