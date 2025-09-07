@@ -80,12 +80,12 @@ internal sealed class PictureCollection(
         catch (Exception ex) when (ex is MagickDelegateErrorException mex && mex.Message.Contains("ghostscript"))
         {
             throw new SCException(
-                "The stream is an image format that requires GhostScript which is not installed on your system.", ex);
+                "The stream is an image type that requires GhostScript which is not installed on your system.", ex);
         }
         catch (MagickException)
         {
             throw new SCException(
-                "The stream is not an image or a non-supported image format. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
+                "The stream is not an image or a non-supported image type. Contact us for support: https://github.com/ShapeCrawler/ShapeCrawler/discussions");
         }
     }
 
