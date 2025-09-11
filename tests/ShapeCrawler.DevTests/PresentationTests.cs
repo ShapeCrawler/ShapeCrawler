@@ -392,6 +392,67 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Footer_AddFooterText_adds_footer_text()
+    {
+        // Arrange
+        var pres = new Presentation(pres => { pres.Slide(); });
+
+        // Act
+        pres.Footer.AddFooterText("To infinity and beyond");
+
+        // Assert
+        pres.Slides.Should().AllSatisfy(slide =>
+        {
+            slide.Shapes
+                .Should()
+                .Contain(shape =>
+                    shape.PlaceholderType == PlaceholderType.Footer
+                    && shape.TextBox.Text == "To infinity and beyond");
+        });
+
+    }
+
+    [Test]
+    public void Footer_RemoveFooterText_removes_footer_text()
+    {
+        // Arrange
+        var pres = new Presentation(pres => { pres.Slide(); });
+
+        // Act
+        pres.Footer.AddFooterText("To infinity and beyond");
+        pres.Footer.RemoveFooterText();
+
+        // Assert
+        pres.Slides.Should().AllSatisfy(slide =>
+        {
+            slide.Shapes
+                .Should()
+                .Contain(shape =>
+                    shape.PlaceholderType == PlaceholderType.Footer
+                    && shape.TextBox.Text == string.Empty);
+        });
+    }
+
+    [Test]
+    public void Footer_RemoveFooter_removes_footer_shape()
+    {
+        // Arrange
+        var pres = new Presentation(pres => { pres.Slide(); });
+
+        // Act
+        pres.Footer.AddFooterText("To infinity and beyond");
+        pres.Footer.RemoveFooter();
+
+        // Assert
+        pres.Slides.Should().AllSatisfy(slide =>
+        {
+            slide.Shapes
+                .Should()
+                .NotContain(shape => shape.PlaceholderType == PlaceholderType.Footer);
+        });
+    }
+
+    [Test]
     public void Slides_Add_adds_slide()
     {
         // Arrange
