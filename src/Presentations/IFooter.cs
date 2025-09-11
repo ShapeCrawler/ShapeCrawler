@@ -110,10 +110,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
         foreach (var slide in slides)
         {
             var footerShape = slide.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
-            if (footerShape != null && footerShape.TextBox != null)
-            {
-                footerShape.TextBox.SetText(string.Empty);
-            }
+            footerShape?.TextBox?.SetText(string.Empty);
         }
     }
 
