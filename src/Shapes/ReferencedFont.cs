@@ -86,7 +86,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         return openXmlPart switch
         {
             SlidePart slidePart => this.SlideALatinFontOrNull(slidePart),
-            SlideMasterPart => this.SlideMasterALatinFont(),
+            SlideLayoutPart or SlideMasterPart => this.SlideMasterALatinFont(),
             NotesSlidePart notesSlidePart => this.NotesSlideALatinFontOrNull(notesSlidePart),
             _ => throw new SCException("Not implemented.")
         };
