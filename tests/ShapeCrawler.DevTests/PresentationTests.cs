@@ -392,6 +392,46 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Footer_AddText_adds_text_footers_in_all_slides()
+    {
+        // Arrange
+        var pres = new Presentation(pres => { pres.Slide(); });
+
+        // Act
+        pres.Footer.AddText("To infinity and beyond");
+
+        // Assert
+        pres.Slides.Should().AllSatisfy(slide =>
+        {
+            slide.Shapes
+                .Should()
+                .Contain(shape =>
+                    shape.PlaceholderType == PlaceholderType.Footer
+                    && shape.TextBox.Text == "To infinity and beyond");
+        });
+
+    }
+
+    [Test]
+    public void Footer_RemoveText_removes_text_footers_from_all_slides()
+    {
+        // Arrange
+        var pres = new Presentation(pres => { pres.Slide(); });
+
+        // Act
+        pres.Footer.AddText("To infinity and beyond");
+        pres.Footer.RemoveText();
+
+        // Assert
+        pres.Slides.Should().AllSatisfy(slide =>
+        {
+            slide.Shapes
+                .Should()
+                .NotContain(shape => shape.PlaceholderType == PlaceholderType.Footer);
+        });
+    }
+
+    [Test]
     public void Slides_Add_adds_slide()
     {
         // Arrange
