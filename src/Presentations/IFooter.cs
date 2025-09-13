@@ -104,7 +104,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
     {
         for (var i = 1; i <= slides.Count; i++)
         {
-            AddTextOnSlide(i, text);
+            this.AddTextOnSlide(i, text);
         }
     }
 
@@ -112,7 +112,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
     {
         for (var i = 1; i <= slides.Count; i++)
         {
-            RemoveTextOnSlide(i);
+            this.RemoveTextOnSlide(i);
         }
     }
         
