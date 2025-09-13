@@ -26,19 +26,14 @@ public interface IFooter
     void RemoveSlideNumber();
 
     /// <summary>
-    ///     Set footer text on all slides.
+    ///     Adds text footer on all slides with specified content. If a slide already has a text footer, the content will be replaced.
     /// </summary>
-    void AddFooterText(string text);
+    void AddText(string text);
 
     /// <summary>
-    ///     Removes footer text from all slides.
+    ///     Removes text footers from all slides.
     /// </summary>
-    void RemoveFooterText();
-
-    /// <summary>
-    ///     Removes footer shape from all slides.
-    /// </summary>
-    void RemoveFooter();
+    void RemoveText();
 }
 
 internal sealed class Footer(UpdatedSlideCollection slides): IFooter
@@ -84,7 +79,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
         }
     }
 
-    public void AddFooterText(string text)
+    public void AddText(string text)
     {
         foreach (var slide in slides)
         {
@@ -105,16 +100,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
         }
     }
 
-    public void RemoveFooterText()
-    {
-        foreach (var slide in slides)
-        {
-            var footerShape = slide.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
-            footerShape?.TextBox?.SetText(string.Empty);
-        }
-    }
-
-    public void RemoveFooter()
+    public void RemoveText()
     {
         foreach (var slide in slides)
         {
