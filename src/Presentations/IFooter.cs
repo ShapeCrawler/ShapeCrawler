@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ShapeCrawler.Slides;
 
 #pragma warning disable IDE0130
@@ -28,12 +29,32 @@ public interface IFooter
     /// <summary>
     ///     Adds text footer on all slides with specified content. If a slide already has a text footer, the content will be replaced.
     /// </summary>
+    /// <param name="text">Text content.</param>
     void AddText(string text);
 
     /// <summary>
     ///     Removes text footers from all slides.
     /// </summary>
     void RemoveText();
+
+    /// <summary>
+    ///     Adds text footer on a specific slide with specified content. If the slide already has a text footer, the content will be replaced.
+    /// </summary>
+    /// <param name="slideNumber">Slide number.</param>
+    /// <param name="text">Text content.</param>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="slideNumber"/> is less than 1 or greater than the number of slides.
+    /// </exception>
+    void AddTextOnSlide(int slideNumber, string text);
+
+    /// <summary>
+    ///     Removes text footer from a specific slide.
+    /// </summary>
+    /// <param name="slideNumber">Slide number.</param>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="slideNumber"/> is less than 1 or greater than the number of slides.
+    /// </exception>
+    void RemoveTextOnSlide(int slideNumber);
 }
 
 internal sealed class Footer(UpdatedSlideCollection slides): IFooter
@@ -81,31 +102,54 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
 
     public void AddText(string text)
     {
-        foreach (var slide in slides)
+        for (var i = 1; i <= slides.Count; i++)
         {
-            var footerShape = slide.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
-            if (footerShape != null && footerShape.TextBox != null)
-            {
-                footerShape.TextBox.SetText(text);
-            }
-            else
-            {
-                var layoutFooterShape = slide.SlideLayout.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
-                if (layoutFooterShape != null)
-                {
-                    layoutFooterShape.TextBox?.SetText(text);
-                    slide.Shapes.Add(layoutFooterShape);
-                }
-            }
+            AddTextOnSlide(i, text);
         }
     }
 
     public void RemoveText()
     {
-        foreach (var slide in slides)
+        for (var i = 1; i <= slides.Count; i++)
         {
-            var footerShape = slide.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
-            footerShape?.Remove();
+            RemoveTextOnSlide(i);
         }
+    }
+        
+    public void AddTextOnSlide(int slideNumber, string text)
+    {
+        if (slideNumber < 1 || slideNumber > slides.Count + 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(slideNumber));
+        }
+
+        var slide = slides[slideNumber - 1];
+        var existingFooterShape = slide.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
+
+        if (existingFooterShape?.TextBox != null)
+        {
+            existingFooterShape.TextBox.SetText(text);
+            return;
+        }
+
+        var layoutFooter = slide.SlideLayout.Shapes
+            .FirstOrDefault(s => s.PlaceholderType == PlaceholderType.Footer);
+
+        if (layoutFooter?.TextBox != null)
+        {
+            layoutFooter.TextBox.SetText(text);
+            slide.Shapes.Add(layoutFooter);
+        }
+    }
+
+    public void RemoveTextOnSlide(int slideNumber)
+    {
+        if (slideNumber < 1 || slideNumber > slides.Count + 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(slideNumber));
+        }
+
+        var footerShape = slides[slideNumber - 1].Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
+        footerShape?.Remove();
     }
 }
