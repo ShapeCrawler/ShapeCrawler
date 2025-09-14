@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.72.0 - 2025-09-14
+🍀Added support for adding and removing footer on a certain slide [#1119](https://github.com/ShapeCrawler/ShapeCrawler/issues/1119)
+
 ## Version 0.71.5 - 2025-08-30
 🐞Fixed update table shape width [#1103](https://github.com/ShapeCrawler/ShapeCrawler/issues/1103)
 
