@@ -395,10 +395,16 @@ public class PresentationTests : SCTest
     public void Footer_AddText_adds_text_footers_in_all_slides()
     {
         // Arrange
-        var pres = new Presentation(pres => { pres.Slide(); });
+        var pres = new Presentation(p =>
+        { 
+            p.Slide();
+            p.Slide();
+        });
+
+        var text = "To infinity and beyond!";
 
         // Act
-        pres.Footer.AddText("To infinity and beyond");
+        pres.Footer.AddText(text);
 
         // Assert
         pres.Slides.Should().AllSatisfy(slide =>
@@ -407,7 +413,7 @@ public class PresentationTests : SCTest
                 .Should()
                 .Contain(shape =>
                     shape.PlaceholderType == PlaceholderType.Footer
-                    && shape.TextBox.Text == "To infinity and beyond");
+                    && shape.TextBox.Text == text);
         });
 
     }
@@ -416,10 +422,16 @@ public class PresentationTests : SCTest
     public void Footer_RemoveText_removes_text_footers_from_all_slides()
     {
         // Arrange
-        var pres = new Presentation(pres => { pres.Slide(); });
+        var pres = new Presentation(p =>
+        { 
+            p.Slide();
+            p.Slide();
+        });
+
+        var text = "To infinity and beyond!";
 
         // Act
-        pres.Footer.AddText("To infinity and beyond");
+        pres.Footer.AddText(text);
         pres.Footer.RemoveText();
 
         // Assert
@@ -429,6 +441,53 @@ public class PresentationTests : SCTest
                 .Should()
                 .NotContain(shape => shape.PlaceholderType == PlaceholderType.Footer);
         });
+    }
+
+    [Test]
+    public void Footer_AddTextOnSlide_adds_text_footer_on_specific_slide()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+            p.Slide();
+        });
+
+        var text = "To infinity and beyond";
+
+        // Act
+        pres.Footer.AddTextOnSlide(2, text);
+
+        var addInOutOfRangeSlide = () => pres.Footer.AddTextOnSlide(3, "Ow snap!");
+
+        // Assert
+        pres.Slides[1].Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
+        pres.Slides[0].Shapes.Should().NotContain(s => s.PlaceholderType == PlaceholderType.Footer);
+
+        addInOutOfRangeSlide.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Test]
+    public void Footer_RemoveTextOnSlide_removes_text_footer_from_specific_slide()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+            p.Slide();
+        });
+        var text = "To infinity and beyond!";
+        pres.Footer.AddText(text);
+
+        // Act
+        pres.Footer.RemoveTextOnSlide(1);
+        var removeFromOutOfRangeSlide = () => pres.Footer.RemoveTextOnSlide(0);
+
+        // Assert
+        pres.Slides[0].Shapes.Should().NotContain(s => s.PlaceholderType == PlaceholderType.Footer);
+        pres.Slides[1].Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
+
+        removeFromOutOfRangeSlide.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
