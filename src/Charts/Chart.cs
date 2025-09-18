@@ -87,11 +87,8 @@ internal sealed class Chart : IChart
 
     public string? Title
     {
-        get
-        {
-            this.chartTitle = this.GetTitleOrNull();
-            return this.chartTitle;
-        }
+        get => this.GetTitleOrNull();
+        set => this.SetTitle(value);
     }
 
     public IReadOnlyList<ICategory>? Categories => this.categories;
@@ -158,5 +155,68 @@ internal sealed class Chart : IChart
         }
 
         return false;
+    }
+
+    private void SetTitle(string? value)
+    {
+        this.chartTitle = value;
+        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cTitle = cChart.Title;
+
+        if (string.IsNullOrEmpty(value))
+        {
+            cTitle?.Remove();
+            var plotArea = cChart.PlotArea!;
+            var autoTitleDeleted = plotArea.GetFirstChild<C.AutoTitleDeleted>();
+            if (autoTitleDeleted == null)
+            {
+                plotArea.InsertAt(new C.AutoTitleDeleted { Val = true }, 0);
+            }
+            else
+            {
+                autoTitleDeleted.Val = true;
+            }
+
+            return;
+        }
+
+        var autoTitleDeletedCheck = cChart.PlotArea!.GetFirstChild<C.AutoTitleDeleted>();
+        if (autoTitleDeletedCheck != null)
+        {
+            autoTitleDeletedCheck.Val = false;
+        }
+
+        if (cTitle == null)
+        {
+            cTitle = new C.Title();
+            cChart.InsertAt(cTitle, 0);
+        }
+
+        var cChartText = cTitle.GetFirstChild<C.ChartText>();
+        if (cChartText == null)
+        {
+            cChartText = cTitle.AppendChild(new C.ChartText());
+        }
+
+        var cRichText = cChartText.GetFirstChild<C.RichText>();
+        if (cRichText == null)
+        {
+            cRichText = cChartText.AppendChild(new C.RichText());
+            cRichText.Append(new A.BodyProperties());
+            cRichText.Append(new A.ListStyle());
+        }
+
+        cRichText.RemoveAllChildren<A.Paragraph>();
+        var aParagraph = cRichText.AppendChild(new A.Paragraph());
+        aParagraph.Append(new A.Run(new A.Text(value)));
+
+        if (cTitle.Layout == null)
+        {
+            cTitle.Append(new C.Layout());
+        }
+
+        var cOverlay = cTitle.GetFirstChild<C.Overlay>() ?? cTitle.AppendChild(new C.Overlay());
+
+        cOverlay.Val = false;
     }
 }
