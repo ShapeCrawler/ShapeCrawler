@@ -192,11 +192,7 @@ internal sealed class Chart : IChart
             cChart.InsertAt(cTitle, 0);
         }
 
-        var cChartText = cTitle.GetFirstChild<C.ChartText>();
-        if (cChartText == null)
-        {
-            cChartText = cTitle.AppendChild(new C.ChartText());
-        }
+        var cChartText = cTitle.GetFirstChild<C.ChartText>() ?? cTitle.AppendChild(new C.ChartText());
 
         var cRichText = cChartText.GetFirstChild<C.RichText>();
         if (cRichText == null)
@@ -208,7 +204,7 @@ internal sealed class Chart : IChart
 
         cRichText.RemoveAllChildren<A.Paragraph>();
         var aParagraph = cRichText.AppendChild(new A.Paragraph());
-        aParagraph.Append(new A.Run(new A.Text(value)));
+        aParagraph.Append(new A.Run(new A.Text(value!)));
 
         if (cTitle.Layout == null)
         {

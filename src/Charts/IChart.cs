@@ -17,7 +17,7 @@ public interface IChart
     ChartType Type { get; }
 
     /// <summary>
-    ///     Gets and sets title.
+    ///     Gets or sets title.
     ///     Returns <c>null</c> if the chart doesn't have a title.
     ///     If you set a title to null or empty, the existing title will be removed.
     /// </summary>
