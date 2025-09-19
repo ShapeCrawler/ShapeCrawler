@@ -78,6 +78,24 @@ public class ChartTests : SCTest
         charTitleCase10.Should().BeEquivalentTo("Sales4");
         charTitleCase11.Should().BeEquivalentTo("Sales5");
     }
+
+    [Test]
+    public void Title_Setter_updates_chart_title()
+    {
+        // Arrange
+        var chart1 = new Presentation(TestAsset("018.pptx")).Slide(1).Shape(6).Chart;
+        var chart2 = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(7).Chart;
+
+        var newTitle = "To infinity and beyond!";
+
+        // Act
+        chart1.Title = newTitle;
+        chart2.Title = null;
+
+        // Assert
+        chart1.Title.Should().Be(newTitle);
+        chart2.Title.Should().BeNull();
+    }
         
     [Test]
     public void SeriesCollection_Series_Points_returns_chart_point_collection()
