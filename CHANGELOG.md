@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.73.0 - Unreleased
+🍀Added setter for chart title [#50](https://github.com/ShapeCrawler/ShapeCrawler/issues/50)
+
 ## Version 0.72.0 - 2025-09-14
 🍀Added support for adding and removing footer on a certain slide [#1119](https://github.com/ShapeCrawler/ShapeCrawler/issues/1119)
 
