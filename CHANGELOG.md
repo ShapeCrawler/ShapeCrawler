@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.73.0 - Unreleased
+## Version 0.73.0 - 2025-09-21
 🍀Added setter for chart title [#50](https://github.com/ShapeCrawler/ShapeCrawler/issues/50)
 
 ## Version 0.72.0 - 2025-09-14
