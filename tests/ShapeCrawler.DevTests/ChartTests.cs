@@ -360,4 +360,20 @@ public class ChartTests : SCTest
         // Assert
         seriesCount.Should().Be(expectedSeriesCount);
     }
+
+    [Test]
+    public void WIP()
+    {
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var chart = pres.Slide(1).Shape("Bar Chart 1").Chart;
+        var title = chart.Title;
+        
+        // Act
+        title.FontColor = "#FF0000";
+        
+        title.FontSize = 14;
+        
+        title.Position.X = 100;
+        title.Position.Y = 100;
+    }
 }
