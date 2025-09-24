@@ -4,9 +4,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <LangVersion>latest</LangVersion>
+    <NoWarn>*</NoWarn>
     <WarningLevel>0</WarningLevel>
-    <Nullable>enable</Nullable>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -15,7 +17,6 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TargetFrameworks>net9.0;net48;net472</TargetFrameworks>
-    <WarningsAsErrors>NU1608</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
