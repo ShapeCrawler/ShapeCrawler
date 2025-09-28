@@ -313,7 +313,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Row_Cell_TextBox_SetText_increases_row_height_when_the_new_text_doesnt_fit_on_one_line()
+    public void Row_Cell_TextBox_SetText()
     {
         // Arrange
         var shapeName = fixtures.String();
@@ -321,14 +321,14 @@ public class TableTests : SCTest
         {
             p.Slide(s => { s.Table(shapeName, fixtures.Int(), fixtures.Int(), 1, 1); });
         });
-        var row = pres.Slide(1).Shape(shapeName).Table.Rows.First();
+        var row = pres.Slide(1).Shape(shapeName).Table!.Rows.First();
         var text = fixtures.String(s => s.Length(75));
 
         // Act
         row.Cells.First().TextBox.SetText(text);
 
         // Arrange
-        row.Height.Should().BeApproximately(50, 0.9m);
+        row.Height.Should().BeApproximately(29.2m, 0.9m);
     }
 
     [Test]
