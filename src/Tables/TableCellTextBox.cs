@@ -316,7 +316,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
             var scFont = popularPortion.Font;
 
             var paragraphText = paragraph.Text.ToUpper();
-            var paragraphTextWidth = new Text(paragraphText, scFont).Width * 2.0M;
+            var paragraphTextWidth = new Text(paragraphText, scFont).Width;
             var requiredRowsCount = paragraphTextWidth / widthCapacity;
             var intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
             if (intRequiredRowsCount == 0 && paragraphTextWidth > 0)
