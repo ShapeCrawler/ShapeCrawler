@@ -18,7 +18,7 @@ internal sealed class ChartTitle : IChartTitle
         this.getChartType = getChartType;
         this.getSeriesCollection = getSeriesCollection;
     }
-
+    
     public string? Text
     {
         get => this.GetTitleText();
@@ -30,7 +30,40 @@ internal sealed class ChartTitle : IChartTitle
         get => this.GetFontColor();
         set => this.SetFontColor(value);
     }
+    
+    public static implicit operator string?(ChartTitle? title) => title?.Text;
+    
+    public override string? ToString() => this.Text;
 
+    private static bool TryGetStaticTitle(C.ChartText? chartText, ChartType chartType, out string? staticTitle)
+    {
+        staticTitle = null;
+        if (chartText == null)
+        {
+            return false;
+        }
+
+        if (chartType == ChartType.Combination)
+        {
+            if (chartText.RichText != null)
+            {
+                var texts = chartText.RichText.Descendants<A.Text>().Select(t => t.Text);
+                staticTitle = string.Concat(texts);
+                return true;
+            }
+        }
+
+        var rRich = chartText.RichText;
+        if (rRich != null)
+        {
+            var texts = rRich.Descendants<A.Text>().Select(t => t.Text);
+            staticTitle = string.Concat(texts);
+            return true;
+        }
+
+        return false;
+    }
+    
     private string GetFontColor()
     {
         var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
@@ -128,7 +161,7 @@ internal sealed class ChartTitle : IChartTitle
         var chartType = this.getChartType();
         
         // Try static title
-        if (this.TryGetStaticTitle(cChartText!, chartType, out var staticTitle))
+        if (TryGetStaticTitle(cChartText!, chartType, out var staticTitle))
         {
             return staticTitle;
         }
@@ -150,35 +183,6 @@ internal sealed class ChartTitle : IChartTitle
         }
 
         return null;
-    }
-
-    private bool TryGetStaticTitle(C.ChartText? chartText, ChartType chartType, out string? staticTitle)
-    {
-        staticTitle = null;
-        if (chartText == null)
-        {
-            return false;
-        }
-
-        if (chartType == ChartType.Combination)
-        {
-            if (chartText.RichText != null)
-            {
-                var texts = chartText.RichText.Descendants<A.Text>().Select(t => t.Text);
-                staticTitle = string.Concat(texts);
-                return true;
-            }
-        }
-
-        var rRich = chartText.RichText;
-        if (rRich != null)
-        {
-            var texts = rRich.Descendants<A.Text>().Select(t => t.Text);
-            staticTitle = string.Concat(texts);
-            return true;
-        }
-
-        return false;
     }
 
     private void UpdateTitleText(string? value)
@@ -239,8 +243,4 @@ internal sealed class ChartTitle : IChartTitle
 
         cOverlay.Val = false;
     }
-
-    public override string? ToString() => this.Text;
-
-    public static implicit operator string?(ChartTitle? title) => title?.Text;
 }
