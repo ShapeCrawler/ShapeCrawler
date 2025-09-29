@@ -18,7 +18,7 @@ internal sealed class ChartTitle : IChartTitle
         this.getChartType = getChartType;
         this.getSeriesCollection = getSeriesCollection;
     }
-    
+
     public string? Text
     {
         get => this.GetTitleText();
@@ -30,9 +30,9 @@ internal sealed class ChartTitle : IChartTitle
         get => this.GetFontColor();
         set => this.SetFontColor(value);
     }
-    
+
     public static implicit operator string?(ChartTitle? title) => title?.Text;
-    
+
     public override string? ToString() => this.Text;
 
     private static bool TryGetStaticTitle(C.ChartText? chartText, ChartType chartType, out string? staticTitle)
@@ -43,14 +43,11 @@ internal sealed class ChartTitle : IChartTitle
             return false;
         }
 
-        if (chartType == ChartType.Combination)
+        if (chartType == ChartType.Combination && chartText.RichText != null)
         {
-            if (chartText.RichText != null)
-            {
-                var texts = chartText.RichText.Descendants<A.Text>().Select(t => t.Text);
-                staticTitle = string.Concat(texts);
-                return true;
-            }
+            var texts = chartText.RichText.Descendants<A.Text>().Select(t => t.Text);
+            staticTitle = string.Concat(texts);
+            return true;
         }
 
         var rRich = chartText.RichText;
@@ -63,7 +60,7 @@ internal sealed class ChartTitle : IChartTitle
 
         return false;
     }
-    
+
     private string GetFontColor()
     {
         var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
@@ -159,7 +156,7 @@ internal sealed class ChartTitle : IChartTitle
 
         var cChartText = cTitle.ChartText;
         var chartType = this.getChartType();
-        
+
         // Try static title
         if (TryGetStaticTitle(cChartText!, chartType, out var staticTitle))
         {
