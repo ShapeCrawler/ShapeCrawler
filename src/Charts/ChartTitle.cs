@@ -105,27 +105,24 @@ internal sealed class ChartTitle : IChartTitle
         }
 
         // Apply color to all existing runs
-        foreach (var aParagraph in cRichText.Elements<A.Paragraph>())
+        foreach (var aRun in cRichText.Elements<A.Paragraph>().SelectMany(p => p.Elements<A.Run>()))
         {
-            foreach (var aRun in aParagraph.Elements<A.Run>())
+            var aRunProperties = aRun.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
             {
-                var aRunProperties = aRun.GetFirstChild<A.RunProperties>();
-                if (aRunProperties == null)
-                {
-                    aRunProperties = new A.RunProperties();
-                    aRun.InsertAt(aRunProperties, 0);
-                }
-
-                // Remove existing solid fill
-                var existingSolidFill = aRunProperties.GetFirstChild<A.SolidFill>();
-                existingSolidFill?.Remove();
-
-                // Add new solid fill with color
-                var aSolidFill = new A.SolidFill();
-                var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
-                aSolidFill.AppendChild(rgbColorModelHex);
-                aRunProperties.InsertAt(aSolidFill, 0);
+                aRunProperties = new A.RunProperties();
+                aRun.InsertAt(aRunProperties, 0);
             }
+
+            // Remove existing solid fill
+            var existingSolidFill = aRunProperties.GetFirstChild<A.SolidFill>();
+            existingSolidFill?.Remove();
+
+            // Add new solid fill with color
+            var aSolidFill = new A.SolidFill();
+            var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
+            aSolidFill.AppendChild(rgbColorModelHex);
+            aRunProperties.InsertAt(aSolidFill, 0);
         }
     }
 
