@@ -113,6 +113,16 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         string seriesName
     ) => throw new NotImplementedException();
 
+    public void AddPieChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName,
+        string chartName
+    ) => throw new NotImplementedException();
+
     public void AddBarChart(
         int x,
         int y,

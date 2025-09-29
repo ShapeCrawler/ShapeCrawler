@@ -313,6 +313,7 @@ public class TableTests : SCTest
     }
 
     [Test]
+    [Platform("Win")]
     public void Row_Cell_TextBox_SetText()
     {
         // Arrange

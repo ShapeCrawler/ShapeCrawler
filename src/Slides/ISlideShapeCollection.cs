@@ -85,6 +85,11 @@ public interface ISlideShapeCollection : IShapeCollection
     void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
     
     /// <summary>
+    ///     Adds Pie Chart with specified name.
+    /// </summary>
+    void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName, string chartName);
+    
+    /// <summary>
     ///     Adds Bar Chart with specified parameters.
     /// </summary>
     void AddBarChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
