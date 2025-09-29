@@ -91,31 +91,14 @@ internal sealed class ChartTitle : IChartTitle
     private void SetFontColor(string hex)
     {
         var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
-        if (cChart == null)
+        var cRichText = cChart?.Title?.GetFirstChild<C.ChartText>()?.GetFirstChild<C.RichText>();
+        if (cRichText is null)
         {
             return;
         }
 
-        var cTitle = cChart.Title;
-        if (cTitle == null)
-        {
-            return; // Don't create title just to set font color
-        }
-
-        var cChartText = cTitle.GetFirstChild<C.ChartText>();
-        if (cChartText == null)
-        {
-            return; // No text content, don't create structure
-        }
-
-        var cRichText = cChartText.GetFirstChild<C.RichText>();
-        if (cRichText == null)
-        {
-            return; // No rich text, don't create structure
-        }
-
         // Process hex value
-        hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex;
+        hex = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
         if (hex.Length == 8)
         {
             hex = hex[..6];
