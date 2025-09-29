@@ -65,6 +65,16 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         string seriesName
     ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
+    public void AddPieChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName,
+        string chartName
+    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName, chartName);
+
     public void AddBarChart(
         int x,
         int y,

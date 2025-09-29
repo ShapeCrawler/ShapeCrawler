@@ -29,10 +29,22 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
+        this.AddPieChart(x, y, width, height, categoryValues, seriesName, "Pie Chart");
+    }
+
+    public void AddPieChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        Dictionary<string, double> categoryValues,
+        string seriesName,
+        string chartName)
+    {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
         GeneratePieChartContent(chartPart, categoryValues, seriesName);
-        this.InsertChartGraphicFrame(chartPart, x, y, width, height);
+        this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
 
     public void AddBarChart(

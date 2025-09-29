@@ -360,4 +360,21 @@ public class ChartTests : SCTest
         // Assert
         seriesCount.Should().Be(expectedSeriesCount);
     }
+
+    [Test]
+    public void Chart()
+    {
+        // Arrange-Act
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart 1");
+            });
+        });
+        pres.Save(@"c:\temp\output.pptx");
+        
+        // Assert
+        pres.Slide(1).Shape("Pie Chart 1").Chart.Should().NotBeNull();
+    }
 }

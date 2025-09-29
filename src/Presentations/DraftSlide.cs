@@ -149,6 +149,25 @@ public sealed class DraftSlide
         return this;
     }
 
+    /// <summary>
+    ///     Adds a pie chart with specified name.
+    /// </summary>
+    public DraftSlide PieChart(string name)
+    {
+        this.actions.Add(slide =>
+        {
+            var categoryValues = new Dictionary<string, double>
+            {
+                { "Category 1", 40 },
+                { "Category 2", 30 },
+                { "Category 3", 30 }
+            };
+            slide.Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Series 1", name);
+        });
+
+        return this;
+    }
+
     internal void ApplyTo(Presentation presentation)
     {
         // Always add a new slide for each DraftSlide application
