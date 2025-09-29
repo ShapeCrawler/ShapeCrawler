@@ -57,15 +57,15 @@ public class ChartTests : SCTest
         var chartCase11 = new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(5).Chart;
             
         // Act
-        string charTitleCase1 = chartCase1.Title;
-        string charTitleCase2 = chartCase2.Title;
-        string charTitleCase3 = chartCase3.Title;
-        string charTitleCase5 = chartCase5.Title;
-        string charTitleCase7 = chartCase7.Title;
-        string charTitleCase8 = chartCase8.Title;
-        string charTitleCase9 = chartCase9.Title;
-        string charTitleCase10 = chartCase10.Title;
-        string charTitleCase11 = chartCase11.Title;
+        string charTitleCase1 = chartCase1.Title!.Text!;
+        string charTitleCase2 = chartCase2.Title!.Text!;
+        string charTitleCase3 = chartCase3.Title!.Text!;
+        string charTitleCase5 = chartCase5.Title!.Text!;
+        string charTitleCase7 = chartCase7.Title!.Text!;
+        string charTitleCase8 = chartCase8.Title!.Text!;
+        string charTitleCase9 = chartCase9.Title!.Text!;
+        string charTitleCase10 = chartCase10.Title!.Text!;
+        string charTitleCase11 = chartCase11.Title!.Text!;
 
         // Assert
         charTitleCase1.Should().BeEquivalentTo("Test title");
@@ -89,12 +89,12 @@ public class ChartTests : SCTest
         var newTitle = "To infinity and beyond!";
 
         // Act
-        chart1.Title = newTitle;
-        chart2.Title = null;
+        chart1.Title!.Text = newTitle;
+        chart2.Title!.Text = null;
 
         // Assert
-        chart1.Title.Should().Be(newTitle);
-        chart2.Title.Should().BeNull();
+        chart1.Title.Text.Should().Be(newTitle);
+        chart2.Title.Text.Should().BeNull();
     }
         
     [Test]
@@ -362,9 +362,9 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void Chart()
+    public void Title_FontColor_Setter_update_chart_title_color()
     {
-        // Arrange-Act
+        // Arrange
         var pres = new Presentation(p =>
         {
             p.Slide(s =>
@@ -372,9 +372,15 @@ public class ChartTests : SCTest
                 s.PieChart("Pie Chart 1");
             });
         });
-        pres.Save(@"c:\temp\output.pptx");
+        const string green = "00ff00";
+        var chart = pres.Slide(1).Shape("Pie Chart 1").Chart!;
+        chart.Title!.Text = "Sales Chart";
+        
+        // Act
+        chart.Title.FontColor = green;
         
         // Assert
-        pres.Slide(1).Shape("Pie Chart 1").Chart.Should().NotBeNull();
+        chart.Title.FontColor.Should().Be(green);
+        chart.Title.Text.Should().Be("Sales Chart");
     }
 }
