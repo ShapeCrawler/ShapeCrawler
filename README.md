@@ -95,7 +95,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.73.0 - 2025-09-21
-🍀Added setter for chart title [#50](https://github.com/ShapeCrawler/ShapeCrawler/issues/50)
+### Version 0.74.0 - 2025-09-30
+🍀Added support for updating the color of chart title color [#1127](https://github.com/ShapeCrawler/ShapeCrawler/issues/1130)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
