@@ -1,7 +1,7 @@
 # Changelog  
 
 ## Version 0.74.0 - 2025-09-30
-🍀Added support for updating the color of chart title color [#1127](https://github.com/ShapeCrawler/ShapeCrawler/issues/1130)
+🍀Added support for updating the color of chart title color [#1130](https://github.com/ShapeCrawler/ShapeCrawler/issues/1130)
 
 ## Version 0.73.0 - 2025-09-21
 🍀Added setter for chart title [#50](https://github.com/ShapeCrawler/ShapeCrawler/issues/50)
