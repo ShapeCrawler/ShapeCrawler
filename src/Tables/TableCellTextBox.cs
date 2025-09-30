@@ -194,6 +194,20 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
         return text.Split([Environment.NewLine, "\n"], StringSplitOptions.None);
     }
 
+    private static A.Table? GetATable(A.TableRow aTableRow)
+    {
+        var graphicFrame = aTableRow.Ancestors<P.GraphicFrame>().FirstOrDefault();
+        return graphicFrame?.GetFirstChild<A.Graphic>()?.GraphicData?.GetFirstChild<A.Table>();
+    }
+    
+    private static void ClearParagraphPortions(IParagraph paragraph)
+    {
+        foreach (var portion in paragraph.Portions.ToList())
+        {
+            portion.Remove();
+        }
+    }
+    
     private IParagraph EnsureFirstParagraph()
     {
         var existingParagraphs = this.Paragraphs.ToList();
@@ -213,14 +227,6 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
         foreach (var paragraph in existingParagraphs.Skip(1))
         {
             paragraph.Remove();
-        }
-    }
-
-    private static void ClearParagraphPortions(IParagraph paragraph)
-    {
-        foreach (var portion in paragraph.Portions.ToList())
-        {
-            portion.Remove();
         }
     }
 
@@ -273,13 +279,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
         var scRow = new ShapeCrawler.TableRow(aTableRow, rowIndex);
         scRow.SetHeight(requiredHeight);
     }
-
-    private static A.Table? GetATable(A.TableRow aTableRow)
-    {
-        var graphicFrame = aTableRow.Ancestors<P.GraphicFrame>().FirstOrDefault();
-        return graphicFrame?.GetFirstChild<A.Graphic>()?.GraphicData?.GetFirstChild<A.Table>();
-    }
-
+    
     private int GetColumnIndex(A.TableRow aTableRow)
     {
         var cellsInRow = aTableRow.Elements<A.TableCell>().ToList();
