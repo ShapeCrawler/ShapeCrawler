@@ -31,6 +31,12 @@ internal sealed class ChartTitle : IChartTitle
         set => this.SetFontColor(value);
     }
 
+    public decimal FontSize
+    {
+        get => this.GetFontSize();
+        set => this.SetFontSize(value);
+    }
+
     public static implicit operator string?(ChartTitle? title) => title?.Text;
 
     public override string? ToString() => this.Text;
@@ -123,6 +129,55 @@ internal sealed class ChartTitle : IChartTitle
             var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
             aSolidFill.AppendChild(rgbColorModelHex);
             aRunProperties.InsertAt(aSolidFill, 0);
+        }
+    }
+
+    private decimal GetFontSize()
+    {
+        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cTitle = cChart?.Title;
+        if (cTitle == null)
+        {
+            return 18m; // default font size
+        }
+
+        var aText = cTitle.Descendants<A.Text>().FirstOrDefault();
+        if (aText == null)
+        {
+            return 18m;
+        }
+
+        var aRunProperties = aText.Parent?.GetFirstChild<A.RunProperties>();
+        var fontSize = aRunProperties?.FontSize;
+
+        if (fontSize?.Value != null)
+        {
+            return fontSize.Value / 100m;
+        }
+
+        return 18m;
+    }
+
+    private void SetFontSize(decimal value)
+    {
+        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cRichText = cChart?.Title?.GetFirstChild<C.ChartText>()?.GetFirstChild<C.RichText>();
+        if (cRichText is null)
+        {
+            return;
+        }
+
+        // Apply font size to all existing runs
+        foreach (var aRun in cRichText.Elements<A.Paragraph>().SelectMany(p => p.Elements<A.Run>()))
+        {
+            var aRunProperties = aRun.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
+            {
+                aRunProperties = new A.RunProperties();
+                aRun.InsertAt(aRunProperties, 0);
+            }
+
+            aRunProperties.FontSize = (int)(value * 100);
         }
     }
 

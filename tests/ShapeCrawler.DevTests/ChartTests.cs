@@ -383,4 +383,19 @@ public class ChartTests : SCTest
         chart.Title.FontColor.Should().Be(green);
         chart.Title.Text.Should().Be("Sales Chart");
     }
+
+    [Test]
+    public void Title_FontSize_Setter_updates_chart_title_font_size()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var title = pres.Slide(1).Shape("Bar Chart 1").Chart!.Title!;
+
+        // Act
+        title.FontSize = 14;
+
+        // Assert
+        title.FontSize.Should().Be(14);
+        pres.Validate();
+    }
 }
