@@ -27,7 +27,9 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         }
         else
         {
-            // Handle inline data (NumberLiteral)
+            // Inline data (NumberLiteral) occurs when chart data is embedded directly in the chart XML,
+            // rather than referenced from a worksheet via a formula. In this case, we return an empty
+            // collection because the current implementation only supports external references.
             this.chartPoints = [];
         }
     }
