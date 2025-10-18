@@ -1,0 +1,204 @@
+# AGENTS.md - AI Agent Guide for ShapeCrawler
+
+This document provides guidance for AI coding assistants working on the ShapeCrawler project.
+
+## Project Overview
+
+ShapeCrawler is a .NET library that provides a simplified object model for manipulating PowerPoint presentations. It wraps the Open XML SDK to offer a more intuitive API for processing `.pptx` files without requiring Microsoft Office installation.
+
+**Core Purpose**: Simplify PowerPoint presentation manipulation through an object-oriented API that abstracts away the complexity of the Open XML format.
+
+## Architecture
+
+### Project Structure
+
+```
+src/                        # Main source code
+tests/
+├── ShapeCrawler.DevTests/  # Fast developer tests to check for regression changes
+└── ShapeCrawler.CITests/   # Slow tests that are generally only run on GitHub Workflow along with fast developer tests
+
+```
+
+### Key Design Patterns
+
+1. **Interface-based API**: Public API is exposed through interfaces (e.g., `IPresentation`, `ISlide`, `IShape`)
+2. **Wrapper Pattern**: Internal classes wrap Open XML SDK elements
+3. **Object-Oriented Design**: Emphasis on nouns for class names, no static members in classes
+4. **Encapsulation**: Logic is encapsulated in constructors and internal/public methods
+
+## Code Style Guidelines
+
+### Mandatory Rules
+
+1. **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
+
+2. **Naming Conventions**:
+   - Class names must be **nouns** (e.g., `Slide`, `Slides`, not `SlideManager` or `SlideService`)
+   - No `-er`, `-or`, `-service` suffixes
+
+3. **Instance Members**: Use `this` prefix for all instance members
+   ```csharp
+   // Good
+   this.fieldName = value;
+   
+   // Bad
+   fieldName = value;
+   ```
+
+4. **No Public/Internal Static Members**: Classes should not have public or internal static members. Encapsulate behavior in instance methods.
+
+5. **File-Scoped Namespaces**: Always use file-scoped namespace declarations
+   ```csharp
+   namespace ShapeCrawler.Charts;
+   
+   public class Chart { }
+   ```
+
+6. **Primary Constructors**: Prefer primary constructors (C# 12+) where applicable
+
+7. **XML Documentation**: All public and internal members must have XML documentation comments
+
+### EditorConfig Enforcement
+
+The project uses strict `.editorconfig` rules. Key settings:
+- **Indentation**: 4 spaces
+- **Line Endings**: CRLF
+- **Nullable Reference Types**: Enabled and strictly enforced
+- **StyleCop**: Extensive StyleCop analyzers enabled
+- **Build**: Release configuration enforces all code style rules
+
+## Testing Guidelines
+
+### Test Project
+- **Always use**: `tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
+- **Never use**: Other test projects (they're for CI/CD)
+
+### Test Requirements
+- **Side-Effect Tests**: Tests that modify presentations must call `.Validate()` in assertions
+- **Quantity**: Write only ONE test when asked unless explicitly requested otherwise
+
+### Running Tests
+```bash
+dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
+```
+
+## Common Workflows
+
+### 1. Adding New Features
+1. Identify the appropriate namespace/folder (e.g., `Shapes/`, `Charts/`)
+2. Create interface first (if public API)
+3. Implement internal class
+4. Keep files under 500 lines
+5. Add XML documentation
+6. Write test(s)
+7. Build in Release configuration
+
+### 2. Bug Fixes
+1. Locate the issue in the codebase
+2. Write a failing test that reproduces the bug
+3. Fix the bug
+4. Ensure test passes and `.Validate()` is called if side effects exist
+5. Build in Release configuration
+
+### 3. Making Changes
+1. Read relevant files to understand context
+2. Make targeted changes
+3. Run tests: `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
+4. Build Release: `dotnet build src/ShapeCrawler.csproj -c Release`
+5. Fix any linter errors
+
+## Build and Validation
+
+### Development Build
+```bash
+# Debug configuration - lenient for development
+dotnet build src/ShapeCrawler.csproj -c Debug
+```
+
+### Release Build (Required Before PR)
+```bash
+# Release configuration - enforces all style rules
+dotnet build src/ShapeCrawler.csproj -c Release
+```
+
+**Critical**: Always build in Release configuration before completing work to ensure all code style checkers pass.
+
+## Working with OpenXML
+
+### PowerPoint Structure Complexity
+PowerPoint presentations have a complex internal structure:
+- A **Slide** is layered on top of **Slide Layout** and **Slide Master**
+- PPTX files are ZIP archives (rename `.pptx` → `.zip` to inspect)
+- Content is spread across multiple XML files in the package
+
+### Common Open XML Patterns in Codebase
+- Classes often wrap `OpenXmlElement` types
+- Use extension methods (see `Extensions/` folder) for common OpenXML operations
+- Leverage `TypedOpenXmlPartExtensions` for part access
+
+## Common Pitfalls to Avoid
+
+1. ❌ **Don't create Manager/Service/Helper classes**
+   - Use noun-based classes with instance methods
+
+2. ❌ **Don't exceed 500 lines per file**
+   - Extract into new files/classes
+
+3. ❌ **Don't skip `this` prefix**
+   - Always use for instance members
+
+4. ❌ **Don't forget XML documentation**
+   - Required for all public/internal members
+
+5. ❌ **Don't use static members in classes**
+   - Encapsulate in instance methods
+
+6. ❌ **Don't test with wrong project**
+   - Only use `ShapeCrawler.DevTests`
+
+7. ❌ **Don't skip Release build**
+   - Required to catch all linter/style issues
+
+## Useful Context
+
+### Typical User Operations
+- Load/create presentations
+- Access slides and shapes
+- Manipulate text, images, tables, charts
+- Save modifications
+
+### API Design Philosophy
+- Fluent and intuitive
+- Hide Open XML complexity
+- Null-safe with nullable reference types
+- Interface-based for testability
+
+### Example Code Patterns
+```csharp
+// Loading and accessing
+var pres = new Presentation("file.pptx");
+var shape = pres.Slide(1).Shapes.Shape("TextBox 1");
+var text = shape.TextBox!.Text;
+
+// Creating
+var pres = new Presentation(p => p.Slide());
+pres.Slide(1).Shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
+pres.Save("output.pptx");
+```
+
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| Run tests | `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj` |
+| Build (dev) | `dotnet build src/ShapeCrawler.csproj -c Debug` |
+| Build (release) | `dotnet build src/ShapeCrawler.csproj -c Release` |
+| Inspect PPTX | Rename to `.zip` and extract |
+
+## Resources
+
+- **Project Issues**: [GitHub Issues](https://github.com/ShapeCrawler/ShapeCrawler/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/ShapeCrawler/ShapeCrawler/discussions)
+- **Examples**: See `examples/` folder for usage patterns
+
