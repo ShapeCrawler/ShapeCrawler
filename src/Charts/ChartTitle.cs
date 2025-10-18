@@ -128,14 +128,29 @@ internal sealed class ChartTitle : IChartTitle
 
     private string? GetTitleText()
     {
-        var cTitle = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!.Title;
+        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cTitle = cChart.Title;
+        var chartType = this.getChartType();
+        
         if (cTitle == null)
         {
+            // Check if title was explicitly deleted
+            var autoTitleDeleted = cChart.PlotArea?.GetFirstChild<C.AutoTitleDeleted>();
+            if (autoTitleDeleted?.Val?.Value == true)
+            {
+                return null;
+            }
+            
+            // PieChart uses only one series for view when no title is set
+            if (chartType == ChartType.PieChart)
+            {
+                return this.getSeriesCollection().FirstOrDefault()?.Name;
+            }
+            
             return null;
         }
 
         var cChartText = cTitle.ChartText;
-        var chartType = this.getChartType();
 
         // Try static title
         if (TryGetStaticTitle(cChartText!, chartType, out var staticTitle))

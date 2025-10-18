@@ -190,10 +190,19 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         var pieChart = new PieChart();
         pieChart.Append(new VaryColors { Val = true });
 
+        var seriesText = new SeriesText();
+        var stringReference = new StringReference();
+        stringReference.Append(new Formula("Sheet1!$A$1"));
+        var stringCache = new StringCache();
+        stringCache.Append(new PointCount { Val = 1 });
+        stringCache.Append(new StringPoint(new NumericValue(seriesName)) { Index = 0 });
+        stringReference.Append(stringCache);
+        seriesText.Append(stringReference);
+        
         var series = new PieChartSeries(
             new Index { Val = 0 },
             new Order { Val = 0 },
-            new SeriesText(new NumericValue { Text = seriesName }));
+            seriesText);
 
         // --- Categories ---
         var categoriesCount = UInt32Value.FromUInt32((uint)categoryValues.Count);

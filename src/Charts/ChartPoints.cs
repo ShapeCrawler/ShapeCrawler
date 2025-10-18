@@ -19,10 +19,19 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         this.chartPart = chartPart;
         
         var numberReference = GetNumberReference(cSerXmlElement);
-        var (sheetName, addresses) = ParseFormulaAddresses(numberReference.Formula!);
-        var numericValues = GetNumericValues(numberReference);
-        
-        this.chartPoints = this.CreateChartPoints(addresses, numericValues, sheetName);
+        if (numberReference?.Formula != null)
+        {
+            var (sheetName, addresses) = ParseFormulaAddresses(numberReference.Formula);
+            var numericValues = GetNumericValues(numberReference);
+            this.chartPoints = this.CreateChartPoints(addresses, numericValues, sheetName);
+        }
+        else
+        {
+            // Inline data (NumberLiteral) occurs when chart data is embedded directly in the chart XML,
+            // rather than referenced from a worksheet via a formula. In this case, we return an empty
+            // collection because the current implementation only supports external references.
+            this.chartPoints = [];
+        }
     }
     
     public int Count => this.chartPoints.Count;
@@ -33,12 +42,16 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
     
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     
-    private static NumberReference GetNumberReference(OpenXmlElement cSerXmlElement)
+    private static NumberReference? GetNumberReference(OpenXmlElement cSerXmlElement)
     {
         var cVal = cSerXmlElement.GetFirstChild<Values>();
-        return cVal != null 
-            ? cVal.NumberReference! 
-            : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
+        if (cVal != null)
+        {
+            return cVal.NumberReference;
+        }
+        
+        var cYVal = cSerXmlElement.GetFirstChild<YValues>();
+        return cYVal?.NumberReference;
     }
 
     private static (string SheetName, List<string> Addresses) ParseFormulaAddresses(Formula formula)

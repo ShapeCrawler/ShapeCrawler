@@ -383,4 +383,20 @@ public class ChartTests : SCTest
         chart.Title.FontColor.Should().Be(green);
         chart.Title.Text.Should().Be("Sales Chart");
     }
+    
+    [Test]
+    public void Title_Text_Getter_returns_default_pie_chart_title()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart 1");
+            });
+        });
+        
+        // Act-Assert
+        pres.Slide(1).Shape("Pie Chart 1").Chart!.Title!.Text.Should().Be("Series 1");
+    }
 }
