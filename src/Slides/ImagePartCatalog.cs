@@ -21,7 +21,7 @@ internal sealed class ImagePartCatalog
     {
         foreach (var imagePart in existingParts)
         {
-            var hash = this.ComputeHash(imagePart);
+            var hash = ComputeHash(imagePart);
             if (!this.imageParts.ContainsKey(hash))
             {
                 this.imageParts.Add(hash, imagePart);
@@ -37,7 +37,7 @@ internal sealed class ImagePartCatalog
     {
         foreach (var imagePart in slidePart.ImageParts.ToList())
         {
-            var hash = this.ComputeHash(imagePart);
+            var hash = ComputeHash(imagePart);
             if (this.imageParts.TryGetValue(hash, out var existingPart) && !ReferenceEquals(existingPart, imagePart))
             {
                 var relId = slidePart.GetIdOfPart(imagePart);
@@ -50,7 +50,7 @@ internal sealed class ImagePartCatalog
         }
     }
 
-    private string ComputeHash(OpenXmlPart part)
+    private static string ComputeHash(OpenXmlPart part)
     {
         using var sha512 = SHA512.Create();
         using var stream = part.GetStream();
