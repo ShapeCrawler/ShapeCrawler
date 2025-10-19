@@ -16,4 +16,9 @@ public interface IChartTitle
     ///     Gets or sets the font color as hexadecimal representation.
     /// </summary>
     string FontColor { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the font size in points.
+    /// </summary>
+    int FontSize { get; set; }
 }

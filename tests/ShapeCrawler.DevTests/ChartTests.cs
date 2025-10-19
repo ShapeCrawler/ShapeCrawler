@@ -385,6 +385,26 @@ public class ChartTests : SCTest
     }
     
     [Test]
+    public void Title_FontSize_Setter_update_chart_title_font_size()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart 1");
+            });
+        });
+        var title= pres.Slide(1).Shape("Pie Chart 1").Chart!.Title!;
+        
+        // Act
+        title.FontSize = 14;
+        
+        // Assert
+        title.FontSize.Should().Be(14);
+    }
+    
+    [Test]
     public void Title_Text_Getter_returns_default_pie_chart_title()
     {
         // Arrange
