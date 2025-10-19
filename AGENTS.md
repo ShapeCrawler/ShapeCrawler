@@ -134,7 +134,7 @@ dotnet build src/ShapeCrawler.csproj -c Release
 
 **Critical**: Always build in Release configuration before completing work to ensure all code style checkers pass.
 
-## Working with OpenXML
+## Working with Open XML
 
 ### PowerPoint Structure Complexity
 PowerPoint presentations have a complex internal structure:
@@ -142,32 +142,28 @@ PowerPoint presentations have a complex internal structure:
 - PPTX files are ZIP archives (rename `.pptx` → `.zip` to inspect)
 - Content is spread across multiple XML files in the package
 
-### Common Open XML Patterns in Codebase
-- Classes often wrap `OpenXmlElement` types
-- Use extension methods (see `Extensions/` folder) for common OpenXML operations
-- Leverage `TypedOpenXmlPartExtensions` for part access
 
 ## Common Pitfalls to Avoid
 
-1. ❌ **Don't create Manager/Service/Helper classes**
+- ❌ **Don't create Manager/Service/Helper classes**
    - Use noun-based classes with instance methods
 
-2. ❌ **Don't exceed 500 lines per file**
+- ❌ **Don't exceed 500 lines per file**
    - Extract into new files/classes
 
-3. ❌ **Don't skip `this` prefix**
+- ❌ **Don't skip `this` prefix**
    - Always use for instance members
 
-4. ❌ **Don't forget XML documentation**
+- ❌ **Don't forget XML documentation**
    - Required for all public/internal members
 
-5. ❌ **Don't use static members in classes**
+- ❌ **Don't use static members in classes**
    - Encapsulate in instance methods
 
-6. ❌ **Don't test with wrong project**
+- ❌ **Don't test with wrong project**
    - Only use `ShapeCrawler.DevTests`
 
-7. ❌ **Don't skip Release build**
+- ❌ **Don't skip Release build**
    - Required to catch all linter/style issues
 
 ## Useful Context
