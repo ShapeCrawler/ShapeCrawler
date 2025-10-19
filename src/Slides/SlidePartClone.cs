@@ -23,7 +23,7 @@ internal sealed class SlidePartClone
         this.sourceSlidePart = sourceSlidePart;
     }
     
-    public static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
+    private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
     {
         using var sourceStream = sourcePart.GetStream();
         sourceStream.Position = 0;
@@ -138,7 +138,7 @@ internal sealed class SlidePartClone
 
         if (name1 != null && name2 != null)
         {
-            return string.Equals(name1, name2, System.StringComparison.Ordinal);
+            return string.Equals(name1, name2, StringComparison.Ordinal);
         }
 
         return false;
