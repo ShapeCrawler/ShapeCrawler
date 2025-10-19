@@ -148,7 +148,7 @@ internal sealed class SlidePartClone
     {
         var masterPart = GetOrCreateMasterPart(presentationPart, sourceLayoutPart);
         var targetLayoutPart = masterPart.AddNewPart<SlideLayoutPart>();
-        CopyPartContent(sourceLayoutPart, targetLayoutPart);
+        CopyStream(sourceLayoutPart, targetLayoutPart);
         return targetLayoutPart;
     }
 
@@ -163,18 +163,10 @@ internal sealed class SlidePartClone
         var sourceMasterPart = sourceLayoutPart.SlideMasterPart;
         if (sourceMasterPart != null)
         {
-            CopyPartContent(sourceMasterPart, masterPart);
+            CopyStream(sourceMasterPart, masterPart);
         }
 
         return masterPart;
-    }
-
-    private static void CopyPartContent(OpenXmlPart sourcePart, OpenXmlPart targetPart)
-    {
-        using var sourceStream = sourcePart.GetStream();
-        sourceStream.Position = 0;
-        using var destinationStream = targetPart.GetStream(FileMode.Create, FileAccess.Write);
-        sourceStream.CopyTo(destinationStream);
     }
 
     private bool TryGetSourceChartPart(string relationshipId, out ChartPart? sourceChartPart)
