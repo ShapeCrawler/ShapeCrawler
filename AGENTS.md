@@ -30,14 +30,11 @@ tests/
 ## Code Style Guidelines
 
 ### Mandatory Rules
-
-1. **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
-
-2. **Naming Conventions**:
+- **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
+- **Naming Conventions**:
    - Class names must be **nouns** (e.g., `Slide`, `Slides`, not `SlideManager` or `SlideService`)
    - No `-er`, `-or`, `-service` suffixes
-
-3. **Instance Members**: Use `this` prefix for all instance members
+- **Instance Members**: Use `this` prefix for all instance members
    ```csharp
    // Good
    this.fieldName = value;
@@ -45,19 +42,31 @@ tests/
    // Bad
    fieldName = value;
    ```
-
-4. **No Public/Internal Static Members**: Classes should not have public or internal static members. Encapsulate behavior in instance methods.
-
-5. **File-Scoped Namespaces**: Always use file-scoped namespace declarations
+- **Code comments:** Use WHY comment instead of WHAT comment
+   ```csharp
+   // Good
+   var cTitle = cChart?.Title;
+   if (cTitle == null)
+   { 
+        return 18; // used by the PowerPoint application as the default font size 
+   }
+   
+   // Bad
+   var cTitle = cChart?.Title;
+   if (cTitle == null)
+   { 
+        return 18; // default font size 
+   }
+   ```
+- **No Public/Internal Static Members**: Classes should not have public or internal static members. Encapsulate behavior in instance methods.
+- **File-Scoped Namespaces**: Always use file-scoped namespace declarations
    ```csharp
    namespace ShapeCrawler.Charts;
    
    public class Chart { }
    ```
-
-6. **Primary Constructors**: Prefer primary constructors (C# 12+) where applicable
-
-7. **XML Documentation**: All public and internal members must have XML documentation comments
+- **Primary Constructors**: Prefer primary constructors (C# 12+) where applicable
+- **XML Documentation**: All public and internal members must have XML documentation comments
 
 ### EditorConfig Enforcement
 
