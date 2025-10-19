@@ -31,6 +31,12 @@ internal sealed class ChartTitle : IChartTitle
         set => this.SetFontColor(value);
     }
 
+    public int FontSize
+    {
+        get => this.GetFontSize();
+        set => this.SetFontSize(value);
+    }
+
     public static implicit operator string?(ChartTitle? title) => title?.Text;
 
     public override string? ToString() => this.Text;
@@ -233,6 +239,74 @@ internal sealed class ChartTitle : IChartTitle
 
         var cOverlay = cTitle.GetFirstChild<C.Overlay>() ?? cTitle.AppendChild(new C.Overlay());
 
+        cOverlay.Val = false;
+    }
+
+    private int GetFontSize()
+    {
+        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cTitle = cChart?.Title;
+        if (cTitle == null)
+        {
+            return 18; // default font size
+        }
+
+        var aRunProperties = cTitle.Descendants<A.RunProperties>().FirstOrDefault();
+        if (aRunProperties?.FontSize?.Value != null)
+        {
+            return aRunProperties.FontSize.Value / 100;
+        }
+
+        return 18; // default font size
+    }
+
+    private void SetFontSize(int fontSize)
+    {
+        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cTitle = cChart.Title;
+
+        // Ensure title structure exists
+        if (cTitle == null)
+        {
+            cTitle = new C.Title();
+            cChart.InsertAt(cTitle, 0);
+        }
+
+        var cChartText = cTitle.GetFirstChild<C.ChartText>() ?? cTitle.AppendChild(new C.ChartText());
+
+        var cRichText = cChartText.GetFirstChild<C.RichText>();
+        if (cRichText == null)
+        {
+            // Create title structure with default text if it doesn't exist
+            var currentText = this.Text ?? "Chart Title";
+            cRichText = cChartText.AppendChild(new C.RichText());
+            cRichText.Append(new A.BodyProperties());
+            cRichText.Append(new A.ListStyle());
+            var aParagraph = cRichText.AppendChild(new A.Paragraph());
+            aParagraph.Append(new A.Run(new A.Text(currentText)));
+        }
+
+        var fontSizeInHundredthsOfPoint = fontSize * 100;
+
+        // Apply font size to all existing runs
+        foreach (var aRun in cRichText.Elements<A.Paragraph>().SelectMany(p => p.Elements<A.Run>()))
+        {
+            var aRunProperties = aRun.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
+            {
+                aRunProperties = new A.RunProperties();
+                aRun.InsertAt(aRunProperties, 0);
+            }
+
+            aRunProperties.FontSize = fontSizeInHundredthsOfPoint;
+        }
+
+        if (cTitle.Layout == null)
+        {
+            cTitle.Append(new C.Layout());
+        }
+
+        var cOverlay = cTitle.GetFirstChild<C.Overlay>() ?? cTitle.AppendChild(new C.Overlay());
         cOverlay.Val = false;
     }
 }

@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.75.0 - 2025-10-19
+🍀Added support for updating the font size of chart title [#1135](https://github.com/ShapeCrawler/ShapeCrawler/issues/1135)
+
 ## Version 0.74.0 - 2025-09-30
 🍀Added support for updating the color of chart title color [#1130](https://github.com/ShapeCrawler/ShapeCrawler/issues/1130)
 
