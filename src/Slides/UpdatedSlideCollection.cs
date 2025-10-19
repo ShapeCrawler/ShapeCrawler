@@ -66,7 +66,7 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
-        var clonedSlidePart = new SlidePartClone(sourceSlidePart).CloneTo(presentationPart, newSlideRelId);
+        var clonedSlidePart = new SCSlidePart(sourceSlidePart).CloneTo(presentationPart, newSlideRelId);
 
         SlideHyperlinkFix.FixSlideHyperlinks(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, slideNumber);
