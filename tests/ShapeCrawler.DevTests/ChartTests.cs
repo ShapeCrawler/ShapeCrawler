@@ -22,8 +22,7 @@ public class ChartTests : SCTest
         var scatterChart = pres.Slide(2).Shapes.GetById(5).Chart;
 
         // Act
-        // double xValue = chart.XValues[0];
-        double xValue = scatterChart.XAxis.Values[0];
+        double xValue = scatterChart!.XAxis.Values[0];
 
         // Assert
         xValue.Should().Be(10);

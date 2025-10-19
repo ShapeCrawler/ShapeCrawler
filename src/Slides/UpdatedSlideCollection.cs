@@ -45,7 +45,6 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
                        placeholderType == P.PlaceholderValues.SlideNumber;
             }).ToList();
         removingShapes.ForEach(shape => shape.Remove());
-
         // Ensure SlideIdList exists for presentations that don't initialize it
         presPart.Presentation.SlideIdList ??= new P.SlideIdList();
 
