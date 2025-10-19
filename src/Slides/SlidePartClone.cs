@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,27 +11,8 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 /// Provides helpers for cloning slide parts and reconnecting their dependent relationships.
 /// </summary>
-internal sealed class SlidePartClone
+internal sealed class SlidePartClone(SlidePart sourceSlidePart)
 {
-    private readonly SlidePart sourceSlidePart;
-    
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SlidePartClone"/> class.
-    /// </summary>
-    /// <param name="sourceSlidePart">Slide part that serves as the cloning origin.</param>
-    internal SlidePartClone(SlidePart sourceSlidePart)
-    {
-        this.sourceSlidePart = sourceSlidePart;
-    }
-    
-    private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
-    {
-        using var sourceStream = sourcePart.GetStream();
-        sourceStream.Position = 0;
-        using var destinationStream = targetPart.GetStream(FileMode.Create, FileAccess.Write);
-        sourceStream.CopyTo(destinationStream);
-    }
-
     /// <summary>
     /// Clones the wrapped slide part to the specified presentation part using the provided relationship id.
     /// </summary>
@@ -49,6 +31,13 @@ internal sealed class SlidePartClone
         return clonedSlidePart;
     }
     
+    private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
+    {
+        using var sourceStream = sourcePart.GetStream();
+        sourceStream.Position = 0;
+        using var destinationStream = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destinationStream);
+    }
     
     private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
     {
@@ -172,7 +161,7 @@ internal sealed class SlidePartClone
     private bool TryGetSourceChartPart(string relationshipId, out ChartPart? sourceChartPart)
     {
         sourceChartPart = null;
-        if (this.sourceSlidePart.TryGetPartById(relationshipId, out var part) && part is ChartPart chartPart)
+        if (sourceSlidePart.TryGetPartById(relationshipId, out var part) && part is ChartPart chartPart)
         {
             sourceChartPart = chartPart;
             return true;
@@ -183,7 +172,7 @@ internal sealed class SlidePartClone
 
     private void LinkToLayoutPart(PresentationPart presentationPart, SlidePart clonedSlidePart)
     {
-        var sourceLayoutPart = this.sourceSlidePart.SlideLayoutPart;
+        var sourceLayoutPart = sourceSlidePart.SlideLayoutPart;
         if (sourceLayoutPart == null)
         {
             return;
@@ -197,7 +186,7 @@ internal sealed class SlidePartClone
 
     private void CopySlideContent(SlidePart clonedSlidePart)
     {
-        using var sourceStream = this.sourceSlidePart.GetStream();
+        using var sourceStream = sourceSlidePart.GetStream();
         sourceStream.Position = 0;
         using var destinationStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write);
         sourceStream.CopyTo(destinationStream);
@@ -205,7 +194,7 @@ internal sealed class SlidePartClone
 
     private void CopyCustomXmlParts(SlidePart clonedSlidePart)
     {
-        var sourceCustomXmlParts = this.sourceSlidePart.CustomXmlParts.ToList();
+        var sourceCustomXmlParts = sourceSlidePart.CustomXmlParts.ToList();
         if (!sourceCustomXmlParts.Any())
         {
             return;
@@ -241,10 +230,10 @@ internal sealed class SlidePartClone
                 continue;
             }
 
-            if (this.sourceSlidePart.TryGetPartById(relId!, out var openXmlPart) &&
+            if (sourceSlidePart.TryGetPartById(relId!, out var openXmlPart) &&
                 openXmlPart is ImagePart sourceImage)
             {
-                if (ReferenceEquals(this.sourceSlidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
+                if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
                 {
                     clonedSlidePart.AddPart(sourceImage, relId!);
                 }
@@ -280,7 +269,7 @@ internal sealed class SlidePartClone
             return;
         }
 
-        if (ReferenceEquals(this.sourceSlidePart.OpenXmlPackage, targetSlidePart.OpenXmlPackage))
+        if (ReferenceEquals(sourceSlidePart.OpenXmlPackage, targetSlidePart.OpenXmlPackage))
         {
             ShareChartPartWithinSamePackage(sourceChartPart!, targetSlidePart, relationshipId);
             return;
