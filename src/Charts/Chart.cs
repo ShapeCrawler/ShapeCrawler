@@ -32,7 +32,7 @@ internal sealed class Chart : IChart
         this.chartPart = chartPart;
         this.categories = categories;
         this.xAxis = xAxis;
-        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, () => this.Type, () => this.SeriesCollection));
+        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, () => this.Type, () => this.SeriesCollection, new ChartTitleAlignment(chartPart)));
     }
     
     internal Chart(
@@ -47,7 +47,7 @@ internal sealed class Chart : IChart
         this.fill = fill;
         this.chartPart = chartPart;
         this.xAxis = xAxis;
-        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, () => this.Type, () => this.SeriesCollection));
+        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, () => this.Type, () => this.SeriesCollection, new ChartTitleAlignment(chartPart)));
     }
     
     internal Chart(
@@ -62,7 +62,7 @@ internal sealed class Chart : IChart
         this.fill = fill;
         this.chartPart = chartPart;
         this.categories = categories;
-        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, () => this.Type, () => this.SeriesCollection));
+        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, () => this.Type, () => this.SeriesCollection,  new ChartTitleAlignment(chartPart)));
     }
 
     public ChartType Type

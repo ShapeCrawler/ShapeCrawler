@@ -6,21 +6,8 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartTitle : IChartTitle
+internal sealed class ChartTitle(ChartPart chartPart, Func<ChartType> getChartType, Func<ISeriesCollection> getSeriesCollection, ChartTitleAlignment alignment) : IChartTitle
 {
-    private readonly ChartPart chartPart;
-    private readonly Func<ChartType> getChartType;
-    private readonly Func<ISeriesCollection> getSeriesCollection;
-    private readonly IChartTitleAlignment alignment;
-
-    internal ChartTitle(ChartPart chartPart, Func<ChartType> getChartType, Func<ISeriesCollection> getSeriesCollection)
-    {
-        this.chartPart = chartPart;
-        this.getChartType = getChartType;
-        this.getSeriesCollection = getSeriesCollection;
-        this.alignment = new ChartTitleAlignment(chartPart);
-    }
-
     public string? Text
     {
         get => this.GetTitleText();
@@ -39,7 +26,7 @@ internal sealed class ChartTitle : IChartTitle
         set => this.SetFontSize(value);
     }
 
-    public IChartTitleAlignment Alignment => this.alignment;
+    public IChartTitleAlignment Alignment => alignment;
 
     public static implicit operator string?(ChartTitle? title) => title?.Text;
 
@@ -73,7 +60,7 @@ internal sealed class ChartTitle : IChartTitle
 
     private string GetFontColor()
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -100,7 +87,7 @@ internal sealed class ChartTitle : IChartTitle
 
     private void SetFontColor(string hex)
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
         var cRichText = cChart?.Title?.GetFirstChild<C.ChartText>()?.GetFirstChild<C.RichText>();
         if (cRichText is null)
         {
@@ -138,9 +125,9 @@ internal sealed class ChartTitle : IChartTitle
 
     private string? GetTitleText()
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
-        var chartType = this.getChartType();
+        var chartType = getChartType();
         
         if (cTitle == null)
         {
@@ -154,7 +141,7 @@ internal sealed class ChartTitle : IChartTitle
             // PieChart uses only one series for view when no title is set
             if (chartType == ChartType.PieChart)
             {
-                return this.getSeriesCollection().FirstOrDefault()?.Name;
+                return getSeriesCollection().FirstOrDefault()?.Name;
             }
             
             return null;
@@ -181,7 +168,7 @@ internal sealed class ChartTitle : IChartTitle
         // PieChart uses only one series for view
         if (chartType == ChartType.PieChart)
         {
-            return this.getSeriesCollection().FirstOrDefault()?.Name;
+            return getSeriesCollection().FirstOrDefault()?.Name;
         }
 
         return null;
@@ -190,7 +177,7 @@ internal sealed class ChartTitle : IChartTitle
     private void UpdateTitleText(string? value)
     {
         // Delegate to the existing SetTitle method in Chart
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
 
         if (string.IsNullOrEmpty(value))
@@ -248,7 +235,7 @@ internal sealed class ChartTitle : IChartTitle
 
     private int GetFontSize()
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -266,7 +253,7 @@ internal sealed class ChartTitle : IChartTitle
 
     private void SetFontSize(int fontSize)
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
 
         // Ensure title structure exists
