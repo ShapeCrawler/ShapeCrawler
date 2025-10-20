@@ -70,6 +70,11 @@ internal sealed class ChartTitleAlignment : IChartTitleAlignment
             cChartText.AppendChild(cRichText);
             cRichText.Append(new A.BodyProperties());
             cRichText.Append(new A.ListStyle());
+            
+            // Add at least one paragraph with empty text to satisfy OpenXML schema
+            var aParagraph = new A.Paragraph();
+            aParagraph.Append(new A.Run(new A.Text(string.Empty)));
+            cRichText.Append(aParagraph);
         }
 
         var aBodyProperties = cRichText.GetFirstChild<A.BodyProperties>();

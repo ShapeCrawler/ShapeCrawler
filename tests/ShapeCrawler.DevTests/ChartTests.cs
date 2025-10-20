@@ -421,7 +421,7 @@ public class ChartTests : SCTest
         title.Alignment.CustomAngle = 5;
 
         // Assert
-        decimal angle = title.Alignment.CustomAngle;
-        angle.Should().Be(5);
+        title.Alignment.CustomAngle.Should().Be(5);
+        pres.Validate();
     }
 }
