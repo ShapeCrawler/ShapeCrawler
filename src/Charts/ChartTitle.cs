@@ -6,7 +6,7 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartTitle(ChartPart chartPart, Func<ChartType> getChartType, Func<ISeriesCollection> getSeriesCollection, ChartTitleAlignment alignment) : IChartTitle
+internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeriesCollection seriesCollection, ChartTitleAlignment alignment) : IChartTitle
 {
     public string? Text
     {
@@ -127,7 +127,6 @@ internal sealed class ChartTitle(ChartPart chartPart, Func<ChartType> getChartTy
     {
         var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
-        var chartType = getChartType();
         
         if (cTitle == null)
         {
@@ -141,7 +140,7 @@ internal sealed class ChartTitle(ChartPart chartPart, Func<ChartType> getChartTy
             // PieChart uses only one series for view when no title is set
             if (chartType == ChartType.PieChart)
             {
-                return getSeriesCollection().FirstOrDefault()?.Name;
+                return seriesCollection.FirstOrDefault()?.Name;
             }
             
             return null;
@@ -168,7 +167,7 @@ internal sealed class ChartTitle(ChartPart chartPart, Func<ChartType> getChartTy
         // PieChart uses only one series for view
         if (chartType == ChartType.PieChart)
         {
-            return getSeriesCollection().FirstOrDefault()?.Name;
+            return seriesCollection.FirstOrDefault()?.Name;
         }
 
         return null;
