@@ -73,7 +73,7 @@ internal sealed class ChartTitleAlignment : IChartTitleAlignment
             
             // Add at least one paragraph with empty text to satisfy OpenXML schema
             var aParagraph = new A.Paragraph();
-            aParagraph.Append(new A.Run(new A.Text(string.Empty)));
+            aParagraph.Append(new A.Run(new A.Text(" ")));
             cRichText.Append(aParagraph);
         }
 
