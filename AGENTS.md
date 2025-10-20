@@ -43,22 +43,25 @@ tests/
    // Bad
    fieldName = value;
    ```
-- **Code comments:** Use WHY comment instead of WHAT comment
-   ```csharp
-   // Good
-   var cTitle = cChart?.Title;
-   if (cTitle == null)
-   { 
-        return 18; // used by the PowerPoint application as the default font size 
-   }
+- **Code comments:** 
+  - Use WHY comment instead of WHAT comment
+    ```csharp
+    // Good
+    var cTitle = cChart?.Title;
+    if (cTitle == null)
+    { 
+          return 18; // used by the PowerPoint application as the default font size 
+    }
+    
+    // Bad
+    var cTitle = cChart?.Title;
+    if (cTitle == null)
+    { 
+          return 18; // default font size 
+    }
    
-   // Bad
-   var cTitle = cChart?.Title;
-   if (cTitle == null)
-   { 
-        return 18; // default font size 
-   }
-   ```
+  - Use "Open XML", not "OpenXML".
+
 - **No Public/Internal Static Members**: Classes should not have public or internal static members. Encapsulate behavior in instance methods.
 - **File-Scoped Namespaces**: Always use file-scoped namespace declarations
    ```csharp

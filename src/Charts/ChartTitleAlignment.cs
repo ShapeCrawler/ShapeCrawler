@@ -4,15 +4,8 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartTitleAlignment : IChartTitleAlignment
+internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlignment
 {
-    private readonly ChartPart chartPart;
-
-    internal ChartTitleAlignment(ChartPart chartPart)
-    {
-        this.chartPart = chartPart;
-    }
-
     public decimal CustomAngle
     {
         get => this.GetCustomAngle();
@@ -21,7 +14,7 @@ internal sealed class ChartTitleAlignment : IChartTitleAlignment
 
     private decimal GetCustomAngle()
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -37,7 +30,7 @@ internal sealed class ChartTitleAlignment : IChartTitleAlignment
         var aBodyProperties = cRichText.GetFirstChild<A.BodyProperties>();
         if (aBodyProperties?.Rotation?.Value != null)
         {
-            // OpenXML rotation angles are stored in units of 1/60,000th of a degree
+            // Open XML rotation angles are stored in units of 1/60,000th of a degree
             return aBodyProperties.Rotation.Value / 60000m;
         }
 
@@ -46,7 +39,7 @@ internal sealed class ChartTitleAlignment : IChartTitleAlignment
 
     private void SetCustomAngle(decimal angle)
     {
-        var cChart = this.chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
 
         // Ensure title structure exists
