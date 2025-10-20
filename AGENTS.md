@@ -42,7 +42,7 @@ tests/
    
    // Bad
    fieldName = value;
-   ```
+
 - **Code comments:** 
   - Use WHY comment instead of WHAT comment
     ```csharp
