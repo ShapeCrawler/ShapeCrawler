@@ -11,12 +11,14 @@ internal sealed class ChartTitle : IChartTitle
     private readonly ChartPart chartPart;
     private readonly Func<ChartType> getChartType;
     private readonly Func<ISeriesCollection> getSeriesCollection;
+    private readonly IChartTitleAlignment alignment;
 
     internal ChartTitle(ChartPart chartPart, Func<ChartType> getChartType, Func<ISeriesCollection> getSeriesCollection)
     {
         this.chartPart = chartPart;
         this.getChartType = getChartType;
         this.getSeriesCollection = getSeriesCollection;
+        this.alignment = new ChartTitleAlignment(chartPart);
     }
 
     public string? Text
@@ -36,6 +38,8 @@ internal sealed class ChartTitle : IChartTitle
         get => this.GetFontSize();
         set => this.SetFontSize(value);
     }
+
+    public IChartTitleAlignment Alignment => this.alignment;
 
     public static implicit operator string?(ChartTitle? title) => title?.Text;
 

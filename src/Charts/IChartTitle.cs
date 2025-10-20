@@ -21,4 +21,9 @@ public interface IChartTitle
     ///     Gets or sets the font size in points.
     /// </summary>
     int FontSize { get; set; }
+
+    /// <summary>
+    ///     Gets the alignment properties of the chart title.
+    /// </summary>
+    IChartTitleAlignment Alignment { get; }
 }
