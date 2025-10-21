@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Slides;
+namespace ShapeCrawler.Charts;
 
 /// <summary>
 ///     Represents the content of a scatter chart.
@@ -24,7 +24,7 @@ internal sealed class ScatterChartContent(
         chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
         chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-        var chart = new Chart();
+        var chart = new DocumentFormat.OpenXml.Drawing.Charts.Chart();
         chart.AppendChild(new AutoTitleDeleted { Val = false });
 
         // Create series
