@@ -7,7 +7,6 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -84,7 +83,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
-        new StackedColumnChartContent(chartPart, categoryValues, seriesNames).Generate();
+        new StackedColumnChart(chartPart, categoryValues, seriesNames).Generate();
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Stacked Column Chart");
     }
 

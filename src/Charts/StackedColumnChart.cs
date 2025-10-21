@@ -5,12 +5,12 @@ using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Slides;
+namespace ShapeCrawler.Charts;
 
 /// <summary>
 ///     Represents the content of a stacked column chart.
 /// </summary>
-internal sealed class StackedColumnChartContent(
+internal sealed class StackedColumnChart(
     ChartPart chartPart,
     IDictionary<string, IList<double>> categoryValues,
     IList<string> seriesNames)
@@ -26,7 +26,7 @@ internal sealed class StackedColumnChartContent(
         chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
         chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-        var chart = new Chart();
+        var chart = new DocumentFormat.OpenXml.Drawing.Charts.Chart();
         chart.AppendChild(new AutoTitleDeleted { Val = false });
 
         // Create a plot area
@@ -43,7 +43,7 @@ internal sealed class StackedColumnChartContent(
         var categories = categoryValues.Keys.ToList();
 
         // Add series
-        for (int i = 0; i < seriesNames.Count; i++)
+        for (var i = 0; i < seriesNames.Count; i++)
         {
             var series = new BarChartSeries(
                 new Index { Val = (uint)i },
