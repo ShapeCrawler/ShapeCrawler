@@ -3,12 +3,12 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Slides;
+namespace ShapeCrawler.Charts;
 
 /// <summary>
 ///     Represents the content of a bar chart.
 /// </summary>
-internal sealed class BarChartContent(
+internal sealed class BarChart(
     ChartPart chartPart,
     Dictionary<string, double> categoryValues,
     string seriesName)
@@ -24,7 +24,7 @@ internal sealed class BarChartContent(
         chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
         chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-        var chart = new Chart();
+        var chart = new DocumentFormat.OpenXml.Drawing.Charts.Chart();
         chart.AppendChild(new AutoTitleDeleted { Val = false });
 
         // Create series
@@ -74,7 +74,7 @@ internal sealed class BarChartContent(
 
         // Add the bar chart to the plot area
         var plotArea = new PlotArea(
-            new Layout(), new BarChart(
+            new Layout(), new DocumentFormat.OpenXml.Drawing.Charts.BarChart(
                 new BarDirection { Val = BarDirectionValues.Column },
                 new BarGrouping { Val = BarGroupingValues.Clustered },
                 new VaryColors { Val = false },

@@ -8,7 +8,7 @@ namespace ShapeCrawler.Charts;
 /// <summary>
 ///     Represents the content of a scatter chart.
 /// </summary>
-internal sealed class ScatterChartContent(
+internal sealed class ScatterChart(
     ChartPart chartPart,
     Dictionary<double, double> pointValues,
     string seriesName)
@@ -82,7 +82,7 @@ internal sealed class ScatterChartContent(
         // Create the scatter chart and add it to the plot area
         var plotArea = new PlotArea(
             new Layout(),
-            new ScatterChart(
+            new DocumentFormat.OpenXml.Drawing.Charts.ScatterChart(
                 new ScatterStyle { Val = ScatterStyleValues.LineMarker },
                 new VaryColors { Val = false },
                 series,

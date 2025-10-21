@@ -34,7 +34,7 @@ internal sealed class StackedColumnChartContent(
         plotArea.AppendChild(new Layout());
 
         // Create the bar chart
-        var barChart = new BarChart(
+        var barChart = new DocumentFormat.OpenXml.Drawing.Charts.BarChart(
             new BarDirection { Val = BarDirectionValues.Column },
             new BarGrouping { Val = BarGroupingValues.Stacked },
             new VaryColors { Val = false });

@@ -5,13 +5,13 @@ using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Slides;
+namespace ShapeCrawler.Charts;
 
 internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart slidePart)
     : ISlideShapeCollection
@@ -42,7 +42,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
-        new PieChartContent(chartPart, categoryValues, seriesName).Generate();
+        new PieChart(chartPart, categoryValues, seriesName).Generate();
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
 
@@ -56,7 +56,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
-        new BarChartContent(chartPart, categoryValues, seriesName).Generate();
+        new BarChart(chartPart, categoryValues, seriesName).Generate();
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Bar Chart");
     }
 
@@ -70,7 +70,7 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
-        new ScatterChartContent(chartPart, pointValues, seriesName).Generate();
+        new ScatterChart(chartPart, pointValues, seriesName).Generate();
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Scatter Chart");
     }
 

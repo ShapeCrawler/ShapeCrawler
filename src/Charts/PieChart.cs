@@ -3,12 +3,12 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.Slides;
+namespace ShapeCrawler.Charts;
 
 /// <summary>
 ///     Represents the content of a pie chart.
 /// </summary>
-internal sealed class PieChartContent(
+internal sealed class PieChart(
     ChartPart chartPart,
     Dictionary<string, double> categoryValues,
     string seriesName)
@@ -19,13 +19,13 @@ internal sealed class PieChartContent(
     public void Generate()
     {
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
-        var chart = new Chart();
+        var chart = new DocumentFormat.OpenXml.Drawing.Charts.Chart();
         chart.AppendChild(new AutoTitleDeleted { Val = false });
 
         var plotArea = new PlotArea();
         plotArea.Append(new Layout());
 
-        var pieChart = new PieChart();
+        var pieChart = new DocumentFormat.OpenXml.Drawing.Charts.PieChart();
         pieChart.Append(new VaryColors { Val = true });
 
         var seriesText = new SeriesText();
