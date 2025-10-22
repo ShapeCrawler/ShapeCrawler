@@ -19,13 +19,9 @@ internal sealed class PictureCollection(
     SlidePart slidePart
 ) : ISlideShapeCollection
 {
-    #region Shapes Properties
-
     public int Count => shapes.Count;
 
     public IShape this[int index] => shapes[index];
-
-    #endregion Shapes Properties
 
     public void AddPicture(Stream imageStream)
     {
@@ -52,7 +48,7 @@ internal sealed class PictureCollection(
                 }
 
                 var xmlPicture = new XmlPicture(slidePart, (uint)this.GetNextShapeId(), "Picture");
-                pPicture = xmlPicture.CreateSvg(imgPartRId, svgPartRId);
+                pPicture = xmlPicture.CreateSvgPPicture(imgPartRId, svgPartRId);
             }
             else
             {
@@ -75,7 +71,7 @@ internal sealed class PictureCollection(
                 }
 
                 var xmlPicture = new XmlPicture(slidePart, (uint)this.GetNextShapeId(), "Picture");
-                pPicture = xmlPicture.CreateStandard(imgPartRId);
+                pPicture = xmlPicture.CreatePPicture(imgPartRId);
             }
 
             XmlPicture.SetTransform(pPicture, imageContent.Width, imageContent.Height);

@@ -15,7 +15,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
     /// <summary>
     ///     Sets the transform (position and size) of a picture element.
     /// </summary>
-    public static void SetTransform(P.Picture pPicture, uint width, uint height)
+    internal static void SetTransform(P.Picture pPicture, uint width, uint height)
     {
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = transform2D.Offset!.Y = 952500;
@@ -26,7 +26,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
     /// <summary>
     ///     Creates a standard P.Picture element.
     /// </summary>
-    public P.Picture CreateStandard(string imgPartRId)
+    internal P.Picture CreatePPicture(string imagePartRId)
     {
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
@@ -41,7 +41,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
 
         var blipFill = new P.BlipFill();
-        var blip = new A.Blip { Embed = imgPartRId };
+        var blip = new A.Blip { Embed = imagePartRId };
         var stretch = new A.Stretch();
         blipFill.Append(blip);
         blipFill.Append(stretch);
@@ -68,7 +68,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
     /// <summary>
     ///     Creates an SVG P.Picture element with both vector and raster representations.
     /// </summary>
-    public P.Picture CreateSvg(string imgPartRId, string svgPartRId)
+    internal P.Picture CreateSvgPPicture(string imagePartRId, string svgPartRId)
     {
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
@@ -102,7 +102,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         nonVisualPictureProperties.AppendChild(appNonVisualDrawingProperties);
 
         var blipFill = new P.BlipFill();
-        var aBlip = new A.Blip { Embed = imgPartRId };
+        var aBlip = new A.Blip { Embed = imagePartRId };
         var aBlipExtensionList = new A.BlipExtensionList();
         var aBlipExtension = new A.BlipExtension { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
         var a14UseLocalDpi = new A14.UseLocalDpi();
