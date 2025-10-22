@@ -53,8 +53,10 @@ internal sealed class PictureCollection(
             else
             {
                 var imageForPart =
+
                     // Preserve original bytes for supported formats to ensure deterministic dedup across slides
                     imageContent.IsOriginalFormatPreserved ? imageContent.GetOriginalStream() :
+
                     // For formats we convert (e.g., WebP/AVIF/BMP), write a deterministic raster representation
                     imageContent.GetRasterStream();
 
