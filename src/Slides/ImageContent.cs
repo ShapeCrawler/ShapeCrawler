@@ -13,28 +13,28 @@ namespace ShapeCrawler.Slides;
 internal sealed class ImageContent
 {
     private readonly MagickImage image;
-    private readonly Stream originalStream;
-    private readonly MagickFormat originalFormat;
+    private readonly Stream stream;
+    private readonly MagickFormat format;
 
-    public ImageContent(Stream imageStream)
+    internal ImageContent(Stream stream)
     {
-        this.originalStream = imageStream;
+        this.stream = stream;
 
-        if (imageStream.CanSeek)
+        if (stream.CanSeek)
         {
-            imageStream.Position = 0;
+            stream.Position = 0;
         }
 
-        this.image = CreateMagickImage(imageStream);
-        this.originalFormat = this.image.Format;
+        this.image = CreateMagickImage(stream);
+        this.format = this.image.Format;
 
         EnsureSupportedImageFormat(this.image);
-        HandleSvgFormat(this.image, this.originalFormat);
+        HandleSvgFormat(this.image, this.format);
 
         var width = this.image.Width;
         var height = this.image.Height;
 
-        if (this.originalFormat == MagickFormat.Svg)
+        if (this.format == MagickFormat.Svg)
         {
             ResizeSvgImageIfNeeded(this.image, ref width, ref height);
         }
@@ -43,25 +43,26 @@ internal sealed class ImageContent
         this.Height = height;
     }
 
-    public uint Width { get; private set; }
+    internal uint Width { get; private set; }
 
-    public uint Height { get; }
+    internal uint Height { get; }
 
-    public bool IsSvg => this.originalFormat == MagickFormat.Svg;
+    internal bool IsSvg => this.format == MagickFormat.Svg;
 
-    public bool IsOriginalFormatPreserved =>
-        this.originalFormat is MagickFormat.Gif or MagickFormat.Jpeg or MagickFormat.Png or MagickFormat.Tif or MagickFormat.Tiff;
+    internal bool IsOriginalFormatPreserved =>
+        this.format is MagickFormat.Gif or MagickFormat.Jpeg or MagickFormat.Png or MagickFormat.Tif
+            or MagickFormat.Tiff;
 
-    public string MimeType => GetMimeType(this.IsOriginalFormatPreserved ? this.originalFormat : this.image.Format);
+    internal string MimeType => GetMimeType(this.IsOriginalFormatPreserved ? this.format : this.image.Format);
 
-    public string Hash
+    internal string Hash
     {
         get
         {
             if (this.IsOriginalFormatPreserved)
             {
-                this.originalStream.Position = 0;
-                return new ImageStream(this.originalStream).Base64Hash;
+                this.stream.Position = 0;
+                return new ImageStream(this.stream).Base64Hash;
             }
 
             using var rasterStream = this.GetRasterStream();
@@ -69,19 +70,19 @@ internal sealed class ImageContent
         }
     }
 
-    public string SvgHash
+    internal string SvgHash
     {
         get
         {
-            this.originalStream.Position = 0;
-            return new ImageStream(this.originalStream).Base64Hash;
+            this.stream.Position = 0;
+            return new ImageStream(this.stream).Base64Hash;
         }
     }
 
     /// <summary>
     ///     Gets the raster stream for the image.
     /// </summary>
-    public MemoryStream GetRasterStream()
+    internal MemoryStream GetRasterStream()
     {
         var rasterStream = new MemoryStream();
         this.image.Settings.SetDefines(new PngWriteDefines { ExcludeChunks = PngChunkFlags.date });
@@ -94,10 +95,10 @@ internal sealed class ImageContent
     /// <summary>
     ///     Gets the original stream for formats that are preserved as-is.
     /// </summary>
-    public Stream GetOriginalStream()
+    internal Stream GetOriginalStream()
     {
-        this.originalStream.Position = 0;
-        return this.originalStream;
+        this.stream.Position = 0;
+        return this.stream;
     }
 
     private static MagickImage CreateMagickImage(Stream imageStream)
@@ -108,11 +109,7 @@ internal sealed class ImageContent
 
         return new MagickImage(
             imageStream,
-            new MagickReadSettings
-            {
-                Format = format,
-                BackgroundColor = MagickColors.Transparent,
-            });
+            new MagickReadSettings { Format = format, BackgroundColor = MagickColors.Transparent, });
     }
 
     private static bool IsIco(Stream stream)
@@ -176,7 +173,9 @@ internal sealed class ImageContent
         {
             image.Format = MagickFormat.Png;
             image.Density =
-                new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                new Density(384,
+                    DensityUnit
+                        .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
         }
     }
 
