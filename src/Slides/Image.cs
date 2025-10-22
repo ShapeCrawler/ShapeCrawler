@@ -49,8 +49,8 @@ internal sealed class Image
     internal bool IsSvg => this.format == MagickFormat.Svg;
 
     internal bool IsOriginalFormatPreserved =>
-        this.format is MagickFormat.Gif or MagickFormat.Jpeg or MagickFormat.Png or MagickFormat.Tif
-            or MagickFormat.Tiff;
+        (this.format is MagickFormat.Gif or MagickFormat.Jpeg or MagickFormat.Png) ||
+        (this.format is MagickFormat.Tif or MagickFormat.Tiff);
 
     internal string MimeType => GetMimeType(this.IsOriginalFormatPreserved ? this.format : this.image.Format);
 
