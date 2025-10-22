@@ -15,7 +15,7 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class PictureCollection(
     ISlideShapeCollection shapes,
-    PresentationImageFiles presentationImageFiles,
+    PresentationImageFiles imageFiles,
     SlidePart slidePart
 ) : ISlideShapeCollection
 {
@@ -229,7 +229,7 @@ internal sealed class PictureCollection(
 
     private bool TryGetImageRId(string hash, out string imgPartRId)
     {
-        var imagePart = presentationImageFiles.ImagePartByImageHashOrNull(hash);
+        var imagePart = imageFiles.ImagePartByImageHashOrNull(hash);
         if (imagePart is not null)
         {
             // Image already exists in the presentation so far.

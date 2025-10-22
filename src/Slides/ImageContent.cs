@@ -43,7 +43,7 @@ internal sealed class ImageContent
         this.Height = height;
     }
 
-    internal uint Width { get; private set; }
+    internal uint Width { get; }
 
     internal uint Height { get; }
 
@@ -173,9 +173,7 @@ internal sealed class ImageContent
         {
             image.Format = MagickFormat.Png;
             image.Density =
-                new Density(384,
-                    DensityUnit
-                        .PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
+                new Density(384, DensityUnit.PixelsPerInch); // in PowerPoint, the resolution of the rasterized version of SVG is set to 384 PPI
         }
     }
 
