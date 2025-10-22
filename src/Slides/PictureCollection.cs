@@ -27,7 +27,7 @@ internal sealed class PictureCollection(
     {
         try
         {
-            var imageContent = new ImageContent(imageStream);
+            var imageContent = new Image(imageStream);
 
             P.Picture pPicture;
             if (imageContent.IsSvg)
@@ -52,17 +52,11 @@ internal sealed class PictureCollection(
             }
             else
             {
-                Stream imageForPart;
-                if (imageContent.IsOriginalFormatPreserved)
-                {
+                var imageForPart =
                     // Preserve original bytes for supported formats to ensure deterministic dedup across slides
-                    imageForPart = imageContent.GetOriginalStream();
-                }
-                else
-                {
+                    imageContent.IsOriginalFormatPreserved ? imageContent.GetOriginalStream() :
                     // For formats we convert (e.g., WebP/AVIF/BMP), write a deterministic raster representation
-                    imageForPart = imageContent.GetRasterStream();
-                }
+                    imageContent.GetRasterStream();
 
                 var hash = imageContent.Hash;
                 if (!this.TryGetImageRId(hash, out var imgPartRId))

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using ImageMagick;
@@ -10,13 +9,13 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Represents processed image content ready for insertion into a PowerPoint slide.
 /// </summary>
-internal sealed class ImageContent
+internal sealed class Image
 {
     private readonly MagickImage image;
     private readonly Stream stream;
     private readonly MagickFormat format;
 
-    internal ImageContent(Stream stream)
+    internal Image(Stream stream)
     {
         this.stream = stream;
 
