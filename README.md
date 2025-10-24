@@ -13,89 +13,136 @@
 
 </h3>
 
-ShapeCrawler is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK), allowing users to process presentations without having Microsoft Office installed.
+<p align="center">
+  <strong>A .NET library for manipulating PowerPoint presentations without Microsoft Office</strong>
+</p>
 
-## Contents
+<p align="center">
+  ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making it easy to read, create, and modify <code>.pptx</code> files programmatically.
+</p>
 
-- [Quick Start](#quick-start)
-- [How To?](#how-to)
-  - [Create presentation](#create-presentation)
-  - [More samples](#more-samples)
-- [Prerelease Version](#prerelease-version)
-- [Have questions?](#have-questions)
-- [How to contribute](#how-to-contribute)
-  - [Bug Report](#bug-report)
-  - [Code Contributing](#code-contributing)
+---
 
-## Quick Start
-> `dotnet add package ShapeCrawler`
+## 🚀 Why ShapeCrawler?
 
-```C#
-var pres = new Presentation("pres.pptx");
-var shapes = pres.Slide(1).Shapes;
+- **No Office Required** – Process presentations on any platform without Microsoft Office installation
+- **Clean API** – Intuitive object model that hides the complexity of Open XML
+- **Production Ready** – Battle-tested in real-world applications with comprehensive test coverage
+- **Actively Maintained** – Regular updates and responsive to community feedback
 
-var shapesCount = shapes.Count;
+## 📦 Installation
 
-// Get text
-var shape = shapes.Shape("TextBox 1");
-var text = shape.TextBox!.Text;
+```bash
+dotnet add package ShapeCrawler
 ```
 
-## How To?
+## 🎯 Quick Start
 
-### Create presentation
+```csharp
+// Load an existing presentation
+var pres = new Presentation("presentation.pptx");
 
-```C#
+// Access shapes on a slide
+var shapes = pres.Slide(1).Shapes;
+var textBox = shapes.Shape("TextBox 1");
+
+// Read text content
+var text = textBox.TextBox!.Text;
+
+// Modify and save
+textBox.TextBox!.SetText("Updated content");
+pres.Save();
+```
+
+## 💡 Common Use Cases
+
+### Creating Presentations from Scratch
+
+```csharp
+// Create a new presentation with a slide
 var pres = new Presentation(p => p.Slide());
 
+// Add a shape with text
 var shapes = pres.Slide(1).Shapes;
-
 shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
-var addedShape = shapes.Last();
 
+var addedShape = shapes.Last();
 addedShape.TextBox!.SetText("Hello World!");
 
-pres.Save("pres.pptx");
+pres.Save("output.pptx");
 ```
 
-### Update picture
-```C#
-var pres = new Presentation("pres.pptx");
+### Updating Images
+
+```csharp
+var pres = new Presentation("presentation.pptx");
 var picture = pres.Slide(1).Shape("Picture 1").Picture!;
 
-var image = System.IO.File.OpenRead("new-image.png");
-picture.Image!.Update(image);
-pres.Save();
+// Replace the image
+using var newImage = File.OpenRead("new-image.png");
+picture.Image!.Update(newImage);
 
-var mimeType = picture.Image!.Mime;
+pres.Save();
 ```
 
-### More samples
-You can find more usage samples in [**Examples**](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples).
+### Working with Tables and Charts
 
-## Prerelease Version
-To access the latest prerelease builds from the branch `master`, use the NuGet package source `https://www.myget.org/F/shape/api/v3/index.json`.
+ShapeCrawler supports comprehensive manipulation of:
+- **Tables** – Create, modify cells, styling
+- **Charts** – Update data, titles, formatting
+- **Text** – Rich text formatting, fonts, paragraphs
+- **Media** – Images, audio, video
 
-## Have questions?
+**[📚 See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**
 
-If you have a question:
-- [Join](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/q-a) our Discussions Forum  and open a discussion;
-- You can always email the author at theadamo86@gmail.com
+## 🔧 Advanced Features
 
-## How to contribute?
-Give a star⭐ if you find this useful, please give it a star to show your support.
+- Full shape manipulation (position, size, rotation, styling)
+- Table operations (add/remove rows/columns, cell merging)
+- Chart data and formatting updates
+- Text and paragraph formatting
+- Slide master and layout access
+- Image cropping and replacement
+- Embedded media handling
 
-### Bug Report
-If you encounter an issue, report the bug on the [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
+## 🌟 Getting Help
 
-To be able to reproduce a bug, it's often necessary to have the original presentation file attached to the issue description. If this file contains confidential data and cannot be shared publicly, you can securely send it to theadamo86@gmail.com. Of course, if your security policy allow this. We assure you that only the maintainer will access this file, and it will not be shared publicly.
+**Have questions?** We're here to help!
 
-### Code contributing
-Pull Requests are welcome! Please read the [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) for more details.
+- 💬 [**Discussions Forum**](https://github.com/ShapeCrawler/ShapeCrawler/discussions) – Ask questions and share ideas
+- 📧 **Email** – Reach out to theadamo86@gmail.com
+- 🐛 [**Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues) – Report bugs or request features
 
-## Changelog  
+## 🤝 Contributing
+
+We love contributions! Here's how you can help:
+
+**⭐ Give us a star** – If you find ShapeCrawler useful, show your support with a star!
+
+### Reporting Bugs
+
+Found a bug? [Open an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with:
+- A clear description of the problem
+- Steps to reproduce
+- Expected vs. actual behavior
+
+**Need to share a confidential file?** Email it to theadamo86@gmail.com – only the maintainer will access it.
+
+### Contributing Code
+
+Pull requests are welcome! Check out our:
+- [**Good First Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) – Perfect for newcomers
+- [**Contribution Guide**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) – Guidelines and best practices
+
+## 🔄 Pre-release Versions
+
+Want to try the latest features? Access pre-release builds from the `master` branch:
+
+**NuGet Feed:** `https://www.myget.org/F/shape/api/v3/index.json`
+
+## 📝 Changelog
 
 ### Version 0.75.0 - 2025-10-19
-🍀Added support for updating the font size of chart title [#1135](https://github.com/ShapeCrawler/ShapeCrawler/issues/1135)
+Added support for updating the font size of chart title [#1135](https://github.com/ShapeCrawler/ShapeCrawler/issues/1135)
 
-Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full change history.
+[**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
