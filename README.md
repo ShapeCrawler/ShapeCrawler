@@ -1,6 +1,10 @@
 <h3 align="center">
 
-![ShapeCrawler](./assets/logo.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/logo-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/logo.png">
+  <img alt="ShapeCrawler" src="./assets/logo.png">
+</picture>
 
 </h3>
 
