@@ -21,7 +21,7 @@
   <strong>A .NET library for manipulating PowerPoint presentations without Microsoft Office</strong>
 </p>
 
-ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making it easy to read, create, and modify <code>.pptx</code> files programmatically.
+ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making it easy to read, create, and modify `.pptx` files programmatically.
 
 
 ---
