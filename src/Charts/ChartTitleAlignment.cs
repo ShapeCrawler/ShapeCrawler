@@ -12,6 +12,167 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
         set => this.SetCustomAngle(value);
     }
 
+    public decimal? X
+    {
+        get => this.GetX();
+        set => this.SetX(value);
+    }
+
+    public decimal? Y
+    {
+        get => this.GetY();
+        set => this.SetY(value);
+    }
+
+    private static void CleanupEmptyManualLayout(C.Layout? cLayout, C.ManualLayout? cManualLayout)
+    {
+        // If manual layout is now empty, remove it and the layout
+        if (cManualLayout?.ChildElements.Count == 0)
+        {
+            cManualLayout.Remove();
+            if (cLayout?.ChildElements.Count == 0)
+            {
+                cLayout.Remove();
+            }
+        }
+    }
+
+    private static void RemoveXValues(C.Layout cLayout, C.ManualLayout? cManualLayout)
+    {
+        // Remove Left and LeftMode
+        if (cManualLayout != null)
+        {
+            cManualLayout.GetFirstChild<C.LeftMode>()?.Remove();
+            cManualLayout.GetFirstChild<C.Left>()?.Remove();
+            CleanupEmptyManualLayout(cLayout, cManualLayout);
+        }
+    }
+
+    private static void EnsureLeftMode(C.ManualLayout cManualLayout)
+    {
+        // Ensure proper order: LeftMode, TopMode, Left, Top
+        // Get or create LeftMode
+        var cLeftMode = cManualLayout.GetFirstChild<C.LeftMode>();
+        if (cLeftMode == null)
+        {
+            cLeftMode = new C.LeftMode { Val = C.LayoutModeValues.Factor };
+
+            // Insert LeftMode before TopMode if it exists, otherwise at the beginning
+            var cTopMode = cManualLayout.GetFirstChild<C.TopMode>();
+            if (cTopMode != null)
+            {
+                cManualLayout.InsertBefore(cLeftMode, cTopMode);
+            }
+            else
+            {
+                cManualLayout.InsertAt(cLeftMode, 0);
+            }
+        }
+        else
+        {
+            cLeftMode.Val = C.LayoutModeValues.Factor;
+        }
+    }
+
+    private static void EnsureLeftValue(C.ManualLayout cManualLayout, decimal value)
+    {
+        // Get or create Left value
+        var cLeft = cManualLayout.GetFirstChild<C.Left>();
+        if (cLeft == null)
+        {
+            cLeft = new C.Left();
+            InsertLeftElement(cManualLayout, cLeft);
+        }
+
+        cLeft.Val = (double)value;
+    }
+
+    private static void InsertLeftElement(C.ManualLayout cManualLayout, C.Left cLeft)
+    {
+        // Insert Left after all Mode elements but before Top if it exists
+        var cTop = cManualLayout.GetFirstChild<C.Top>();
+        if (cTop != null)
+        {
+            cManualLayout.InsertBefore(cLeft, cTop);
+            return;
+        }
+
+        // Insert after TopMode if it exists, otherwise after LeftMode
+        var cTopMode = cManualLayout.GetFirstChild<C.TopMode>();
+        if (cTopMode != null)
+        {
+            cManualLayout.InsertAfter(cLeft, cTopMode);
+        }
+        else
+        {
+            cManualLayout.InsertAfter(cLeft, cManualLayout.GetFirstChild<C.LeftMode>()!);
+        }
+    }
+
+    private static void RemoveYValues(C.Layout cLayout, C.ManualLayout? cManualLayout)
+    {
+        // Remove Top and TopMode
+        if (cManualLayout != null)
+        {
+            cManualLayout.GetFirstChild<C.TopMode>()?.Remove();
+            cManualLayout.GetFirstChild<C.Top>()?.Remove();
+            CleanupEmptyManualLayout(cLayout, cManualLayout);
+        }
+    }
+
+    private static void EnsureTopMode(C.ManualLayout cManualLayout)
+    {
+        // Ensure proper order: LeftMode, TopMode, Left, Top
+        // Get or create TopMode
+        var cTopMode = cManualLayout.GetFirstChild<C.TopMode>();
+        if (cTopMode == null)
+        {
+            cTopMode = new C.TopMode { Val = C.LayoutModeValues.Factor };
+
+            // Insert TopMode after LeftMode if it exists, otherwise at the beginning
+            var cLeftMode = cManualLayout.GetFirstChild<C.LeftMode>();
+            if (cLeftMode != null)
+            {
+                cManualLayout.InsertAfter(cTopMode, cLeftMode);
+            }
+            else
+            {
+                cManualLayout.InsertAt(cTopMode, 0);
+            }
+        }
+        else
+        {
+            cTopMode.Val = C.LayoutModeValues.Factor;
+        }
+    }
+
+    private static void EnsureTopValue(C.ManualLayout cManualLayout, decimal value)
+    {
+        // Get or create Top value
+        var cTop = cManualLayout.GetFirstChild<C.Top>();
+        if (cTop == null)
+        {
+            cTop = new C.Top();
+            InsertTopElement(cManualLayout, cTop);
+        }
+
+        cTop.Val = (double)value;
+    }
+
+    private static void InsertTopElement(C.ManualLayout cManualLayout, C.Top cTop)
+    {
+        // Insert Top after Left if it exists, otherwise after TopMode
+        var cLeft = cManualLayout.GetFirstChild<C.Left>();
+        if (cLeft != null)
+        {
+            cManualLayout.InsertAfter(cTop, cLeft);
+        }
+        else
+        {
+            cManualLayout.InsertAfter(cTop, cManualLayout.GetFirstChild<C.TopMode>()!);
+        }
+    }
+
     private decimal GetCustomAngle()
     {
         var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
@@ -63,7 +224,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
             cChartText.AppendChild(cRichText);
             cRichText.Append(new A.BodyProperties());
             cRichText.Append(new A.ListStyle());
-            
+
             // Add at least one paragraph with empty text to satisfy OpenXML schema
             var aParagraph = new A.Paragraph();
             aParagraph.Append(new A.Run(new A.Text(" ")));
@@ -80,5 +241,108 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
         // OpenXML rotation angles are stored in units of 1/60,000th of a degree
         var rotationInSixtyThousandths = (int)(angle * 60000m);
         aBodyProperties.Rotation = rotationInSixtyThousandths;
+    }
+
+    private decimal? GetX()
+    {
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cTitle = cChart?.Title;
+        if (cTitle == null)
+        {
+            return null;
+        }
+
+        var cLayout = cTitle.GetFirstChild<C.Layout>();
+        var cManualLayout = cLayout?.GetFirstChild<C.ManualLayout>();
+        if (cManualLayout == null)
+        {
+            return null;
+        }
+
+        var cLeft = cManualLayout.GetFirstChild<C.Left>();
+        return cLeft?.Val?.Value != null ? (decimal)cLeft.Val.Value : null;
+    }
+
+    private void SetX(decimal? value)
+    {
+        var (cLayout, cManualLayout) = this.EnsureLayoutStructure();
+
+        if (value == null)
+        {
+            RemoveXValues(cLayout, cManualLayout);
+            return;
+        }
+
+        if (cManualLayout == null)
+        {
+            cManualLayout = new C.ManualLayout();
+            cLayout.AppendChild(cManualLayout);
+        }
+
+        EnsureLeftMode(cManualLayout);
+        EnsureLeftValue(cManualLayout, value.Value);
+    }
+
+    private (C.Layout cLayout, C.ManualLayout? cManualLayout) EnsureLayoutStructure()
+    {
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cTitle = cChart?.Title;
+
+        // Ensure title structure exists
+        if (cTitle == null)
+        {
+            cTitle = new C.Title();
+            cChart!.InsertAt(cTitle, 0);
+        }
+
+        var cLayout = cTitle.GetFirstChild<C.Layout>();
+        if (cLayout == null)
+        {
+            cLayout = new C.Layout();
+            cTitle.AppendChild(cLayout);
+        }
+
+        var cManualLayout = cLayout.GetFirstChild<C.ManualLayout>();
+        return (cLayout, cManualLayout);
+    }
+
+    private decimal? GetY()
+    {
+        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cTitle = cChart?.Title;
+        if (cTitle == null)
+        {
+            return null;
+        }
+
+        var cLayout = cTitle.GetFirstChild<C.Layout>();
+        var cManualLayout = cLayout?.GetFirstChild<C.ManualLayout>();
+        if (cManualLayout == null)
+        {
+            return null;
+        }
+
+        var cTop = cManualLayout.GetFirstChild<C.Top>();
+        return cTop?.Val?.Value != null ? (decimal)cTop.Val.Value : null;
+    }
+
+    private void SetY(decimal? value)
+    {
+        var (cLayout, cManualLayout) = this.EnsureLayoutStructure();
+
+        if (value == null)
+        {
+            RemoveYValues(cLayout, cManualLayout);
+            return;
+        }
+
+        if (cManualLayout == null)
+        {
+            cManualLayout = new C.ManualLayout();
+            cLayout.AppendChild(cManualLayout);
+        }
+
+        EnsureTopMode(cManualLayout);
+        EnsureTopValue(cManualLayout, value.Value);
     }
 }
