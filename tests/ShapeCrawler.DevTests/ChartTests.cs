@@ -484,4 +484,49 @@ public class ChartTests : SCTest
         title.Alignment.X.Should().BeNull();
         title.Alignment.Y.Should().BeNull();
     }
+
+    [Test]
+    public void Title_Alignment_X_and_Y_Setter_can_set_both_positions_simultaneously()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart");
+            });
+        });
+        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        
+        // Act
+        title.Alignment.X = 0.3m;
+        title.Alignment.Y = 0.15m;
+
+        // Assert
+        title.Alignment.X.Should().Be(0.3m);
+        title.Alignment.Y.Should().Be(0.15m);
+        pres.Validate();
+    }
+
+    [Test]
+    public void Title_Alignment_X_Setter_resets_to_automatic_positioning_when_set_to_null()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart");
+            });
+        });
+        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        title.Alignment.X = 0.3m;
+        
+        // Act
+        title.Alignment.X = null;
+
+        // Assert
+        title.Alignment.X.Should().BeNull();
+        pres.Validate();
+    }
 }

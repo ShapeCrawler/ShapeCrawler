@@ -137,11 +137,21 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
         
         if (value == null)
         {
-            // Remove manual layout if setting to null (return to automatic positioning)
-            cManualLayout?.Remove();
-            if (cLayout.ChildElements.Count == 0)
+            // Remove Left and LeftMode
+            if (cManualLayout != null)
             {
-                cLayout.Remove();
+                cManualLayout.GetFirstChild<C.LeftMode>()?.Remove();
+                cManualLayout.GetFirstChild<C.Left>()?.Remove();
+                
+                // If manual layout is now empty, remove it and the layout
+                if (cManualLayout.ChildElements.Count == 0)
+                {
+                    cManualLayout.Remove();
+                    if (cLayout.ChildElements.Count == 0)
+                    {
+                        cLayout.Remove();
+                    }
+                }
             }
 
             return;
@@ -153,24 +163,54 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
             cLayout.AppendChild(cManualLayout);
         }
 
-        // Ensure LeftMode is set to factor
+        // Ensure proper order: LeftMode, TopMode, Left, Top
+        // Get or create LeftMode
         var cLeftMode = cManualLayout.GetFirstChild<C.LeftMode>();
         if (cLeftMode == null)
         {
             cLeftMode = new C.LeftMode { Val = C.LayoutModeValues.Factor };
-            cManualLayout.AppendChild(cLeftMode);
+
+            // Insert LeftMode before TopMode if it exists, otherwise at the beginning
+            var cTopMode = cManualLayout.GetFirstChild<C.TopMode>();
+            if (cTopMode != null)
+            {
+                cManualLayout.InsertBefore(cLeftMode, cTopMode);
+            }
+            else
+            {
+                cManualLayout.InsertAt(cLeftMode, 0);
+            }
         }
         else
         {
             cLeftMode.Val = C.LayoutModeValues.Factor;
         }
 
-        // Set the Left value
+        // Get or create Left value
         var cLeft = cManualLayout.GetFirstChild<C.Left>();
         if (cLeft == null)
         {
             cLeft = new C.Left();
-            cManualLayout.AppendChild(cLeft);
+
+            // Insert Left after all Mode elements but before Top if it exists
+            var cTop = cManualLayout.GetFirstChild<C.Top>();
+            if (cTop != null)
+            {
+                cManualLayout.InsertBefore(cLeft, cTop);
+            }
+            else
+            {
+                // Insert after TopMode if it exists, otherwise after LeftMode
+                var cTopMode = cManualLayout.GetFirstChild<C.TopMode>();
+                if (cTopMode != null)
+                {
+                    cManualLayout.InsertAfter(cLeft, cTopMode);
+                }
+                else
+                {
+                    cManualLayout.InsertAfter(cLeft, cLeftMode);
+                }
+            }
         }
 
         cLeft.Val = (double)value.Value;
@@ -219,11 +259,21 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
         
         if (value == null)
         {
-            // Remove manual layout if setting to null (return to automatic positioning)
-            cManualLayout?.Remove();
-            if (cLayout.ChildElements.Count == 0)
+            // Remove Top and TopMode
+            if (cManualLayout != null)
             {
-                cLayout.Remove();
+                cManualLayout.GetFirstChild<C.TopMode>()?.Remove();
+                cManualLayout.GetFirstChild<C.Top>()?.Remove();
+                
+                // If manual layout is now empty, remove it and the layout
+                if (cManualLayout.ChildElements.Count == 0)
+                {
+                    cManualLayout.Remove();
+                    if (cLayout.ChildElements.Count == 0)
+                    {
+                        cLayout.Remove();
+                    }
+                }
             }
 
             return;
@@ -235,24 +285,45 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
             cLayout.AppendChild(cManualLayout);
         }
 
-        // Ensure TopMode is set to factor
+        // Ensure proper order: LeftMode, TopMode, Left, Top
+        // Get or create TopMode
         var cTopMode = cManualLayout.GetFirstChild<C.TopMode>();
         if (cTopMode == null)
         {
             cTopMode = new C.TopMode { Val = C.LayoutModeValues.Factor };
-            cManualLayout.AppendChild(cTopMode);
+
+            // Insert TopMode after LeftMode if it exists, otherwise at the beginning
+            var cLeftMode = cManualLayout.GetFirstChild<C.LeftMode>();
+            if (cLeftMode != null)
+            {
+                cManualLayout.InsertAfter(cTopMode, cLeftMode);
+            }
+            else
+            {
+                cManualLayout.InsertAt(cTopMode, 0);
+            }
         }
         else
         {
             cTopMode.Val = C.LayoutModeValues.Factor;
         }
 
-        // Set the Top value
+        // Get or create Top value
         var cTop = cManualLayout.GetFirstChild<C.Top>();
         if (cTop == null)
         {
             cTop = new C.Top();
-            cManualLayout.AppendChild(cTop);
+
+            // Insert Top after Left if it exists, otherwise after TopMode
+            var cLeft = cManualLayout.GetFirstChild<C.Left>();
+            if (cLeft != null)
+            {
+                cManualLayout.InsertAfter(cTop, cLeft);
+            }
+            else
+            {
+                cManualLayout.InsertAfter(cTop, cTopMode);
+            }
         }
 
         cTop.Val = (double)value.Value;
