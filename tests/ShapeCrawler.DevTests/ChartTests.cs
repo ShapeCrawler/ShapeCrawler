@@ -424,4 +424,64 @@ public class ChartTests : SCTest
         title.Alignment.CustomAngle.Should().Be(5);
         pres.Validate();
     }
+
+    [Test]
+    public void Title_Alignment_X_Setter_updates_the_chart_title_horizontal_position()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart");
+            });
+        });
+        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        
+        // Act
+        title.Alignment.X = 0.2m;
+
+        // Assert
+        title.Alignment.X.Should().Be(0.2m);
+        pres.Validate();
+    }
+
+    [Test]
+    public void Title_Alignment_Y_Setter_updates_the_chart_title_vertical_position()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart");
+            });
+        });
+        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        
+        // Act
+        title.Alignment.Y = 0.1m;
+
+        // Assert
+        title.Alignment.Y.Should().Be(0.1m);
+        pres.Validate();
+    }
+
+    [Test]
+    public void Title_Alignment_X_and_Y_Getter_returns_null_when_using_automatic_positioning()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.PieChart("Pie Chart");
+            });
+        });
+        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+
+        // Act & Assert
+        title.Alignment.X.Should().BeNull();
+        title.Alignment.Y.Should().BeNull();
+    }
 }
