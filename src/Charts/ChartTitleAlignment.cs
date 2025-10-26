@@ -24,6 +24,19 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
         set => this.SetY(value);
     }
 
+    private static void CleanupEmptyManualLayout(C.Layout? cLayout, C.ManualLayout? cManualLayout)
+    {
+        // If manual layout is now empty, remove it and the layout
+        if (cManualLayout?.ChildElements.Count == 0)
+        {
+            cManualLayout.Remove();
+            if (cLayout?.ChildElements.Count == 0)
+            {
+                cLayout.Remove();
+            }
+        }
+    }
+
     private decimal GetCustomAngle()
     {
         var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
@@ -142,16 +155,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
             {
                 cManualLayout.GetFirstChild<C.LeftMode>()?.Remove();
                 cManualLayout.GetFirstChild<C.Left>()?.Remove();
-                
-                // If manual layout is now empty, remove it and the layout
-                if (cManualLayout.ChildElements.Count == 0)
-                {
-                    cManualLayout.Remove();
-                    if (cLayout.ChildElements.Count == 0)
-                    {
-                        cLayout.Remove();
-                    }
-                }
+                CleanupEmptyManualLayout(cLayout, cManualLayout);
             }
 
             return;
@@ -264,16 +268,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
             {
                 cManualLayout.GetFirstChild<C.TopMode>()?.Remove();
                 cManualLayout.GetFirstChild<C.Top>()?.Remove();
-                
-                // If manual layout is now empty, remove it and the layout
-                if (cManualLayout.ChildElements.Count == 0)
-                {
-                    cManualLayout.Remove();
-                    if (cLayout.ChildElements.Count == 0)
-                    {
-                        cLayout.Remove();
-                    }
-                }
+                CleanupEmptyManualLayout(cLayout, cManualLayout);
             }
 
             return;
