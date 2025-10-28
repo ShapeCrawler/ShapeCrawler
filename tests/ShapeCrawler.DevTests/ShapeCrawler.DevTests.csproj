@@ -24,9 +24,9 @@
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="FluentAssertions" Version="[7.2.0]" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.9.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="NUnit" Version="4.4.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />
     <PackageReference Include="NUnit.Analyzers" Version="4.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
