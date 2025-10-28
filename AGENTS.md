@@ -1,4 +1,4 @@
-# AGENTS.md - AI Agent Guide
+# AGENTS.md - AI Agent Guide for ShapeCrawler
 
 This document provides guidance for AI coding assistants working on the ShapeCrawler project.
 
