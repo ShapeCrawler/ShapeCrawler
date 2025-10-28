@@ -145,7 +145,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.75.0 - 2025-10-19
-Added support for updating the font size of chart title [#1135](https://github.com/ShapeCrawler/ShapeCrawler/issues/1135)
+### Version 0.75.1 - 2025-10-28
+🐞Upgraded dependencies to fix vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
