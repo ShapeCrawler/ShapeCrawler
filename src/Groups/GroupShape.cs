@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Groups;
 using ShapeCrawler.Positions;
+using ShapeCrawler.Shapes;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Groups;
 using P = DocumentFormat.OpenXml.Presentation;
 
 internal sealed class GroupShape : Shape

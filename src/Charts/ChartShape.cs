@@ -1,8 +1,8 @@
-﻿using ShapeCrawler.Charts;
-using ShapeCrawler.Positions;
+﻿using ShapeCrawler.Positions;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Charts;
 
 internal sealed class ChartShape : Shape
 {

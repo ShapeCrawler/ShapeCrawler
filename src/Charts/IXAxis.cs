@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts;
-using A = DocumentFormat.OpenXml.Drawing;
+
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 /// <summary>
