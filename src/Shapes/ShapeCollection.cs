@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Groups;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Texts;
