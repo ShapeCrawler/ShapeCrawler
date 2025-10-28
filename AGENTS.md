@@ -1,4 +1,4 @@
-# AGENTS.md - AI Agent Guide for ShapeCrawler
+# AGENTS.md - AI Agent Guide
 
 This document provides guidance for AI coding assistants working on the ShapeCrawler project.
 
@@ -31,13 +31,14 @@ tests/
 
 ### Mandatory Rules
 - **What is an Object?** The project follows the principle that the correct object is a representation of a real-world entity or concept. In its constructor, the class encapsulates properties or another object as “coordinates” that the class instance will use to refer to the real-world entity.
+- **Naming Conventions**:
+    - Class names must be **nouns** (e.g., `Slide`, `Slides`, not `SlideManager` or `SlideService`)
+    - No `-er`, `-or`, `-service` suffixes
 - **Method complexity**:
   - The maximum allowed method Cognitive Complexity is 15.
   - The maximum allowed method Cyclomatic Complexity is 10.
 - **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
-- **Naming Conventions**:
-   - Class names must be **nouns** (e.g., `Slide`, `Slides`, not `SlideManager` or `SlideService`)
-   - No `-er`, `-or`, `-service` suffixes
+
 - **Instance Members**: Use `this` prefix for all instance members
    ```csharp
    // Good
@@ -101,23 +102,23 @@ dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
 
 ## Common Workflows
 
-### 1. Adding New Features
+### Adding New Features
 1. Identify the appropriate namespace/folder (e.g., `Shapes/`, `Charts/`)
 2. Create interface first (if public API)
 3. Implement internal class
 4. Keep files under 500 lines
 5. Add XML documentation
-6. Write test(s)
+6. Write test
 7. Build in Release configuration
 
-### 2. Bug Fixes
+### Bug Fixes
 1. Locate the issue in the codebase
 2. Write a failing test that reproduces the bug
 3. Fix the bug
 4. Ensure test passes and `.Validate()` is called if side effects exist
 5. Build in Release configuration
 
-### 3. Making Changes
+### Making Changes
 1. Read relevant files to understand context
 2. Make targeted changes
 3. Run tests: `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
@@ -132,22 +133,13 @@ dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
 dotnet build src/ShapeCrawler.csproj -c Debug
 ```
 
-### Release Build (Required Before PR)
+### Release Build
 ```bash
 # Release configuration - enforces all style rules
 dotnet build src/ShapeCrawler.csproj -c Release
 ```
 
 **Critical**: Always build in Release configuration before completing work to ensure all code style checkers pass.
-
-## Working with Open XML
-
-### PowerPoint Structure Complexity
-PowerPoint presentations have a complex internal structure:
-- A **Slide** is layered on top of **Slide Layout** and **Slide Master**
-- PPTX files are ZIP archives (rename `.pptx` → `.zip` to inspect)
-- Content is spread across multiple XML files in the package
-
 
 ## Common Pitfalls to Avoid
 
@@ -206,7 +198,6 @@ pres.Save("output.pptx");
 | Run tests | `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj` |
 | Build (dev) | `dotnet build src/ShapeCrawler.csproj -c Debug` |
 | Build (release) | `dotnet build src/ShapeCrawler.csproj -c Release` |
-| Inspect PPTX | Rename to `.zip` and extract |
 
 ## Resources
 
