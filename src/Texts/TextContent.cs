@@ -4,36 +4,21 @@ using System.Linq;
 namespace ShapeCrawler.Texts;
 
 /// <summary>
-///     Represents the plain text content of a textbox with formatting preservation.
+///     Represents a plain text content.
 /// </summary>
-internal sealed class TextContent
+internal sealed class TextContent(
+    string text,
+    IParagraphCollection paragraphs,
+    Func<AutofitType> getAutofitType,
+    Action<string> shrinkFont,
+    Action applyResize)
 {
-    private readonly string text;
-    private readonly IParagraphCollection paragraphs;
-    private readonly Func<AutofitType> getAutofitType;
-    private readonly Action<string> shrinkFont;
-    private readonly Action applyResize;
-
-    internal TextContent(
-        string text,
-        IParagraphCollection paragraphs,
-        Func<AutofitType> getAutofitType,
-        Action<string> shrinkFont,
-        Action applyResize)
-    {
-        this.text = text;
-        this.paragraphs = paragraphs;
-        this.getAutofitType = getAutofitType;
-        this.shrinkFont = shrinkFont;
-        this.applyResize = applyResize;
-    }
-
     /// <summary>
     ///     Applies the text content to the paragraphs.
     /// </summary>
     internal void ApplyTo()
     {
-        var paragraphsList = this.paragraphs.ToList();
+        var paragraphsList = paragraphs.ToList();
         var firstParagraph = paragraphsList.FirstOrDefault();
 
         // Store LatinName from first portion if available
@@ -46,13 +31,13 @@ internal sealed class TextContent
         firstParagraph = this.PrepareContainer(firstParagraph, paragraphsList);
 
         // Add new text with preserved font
-        var paragraphLines = this.text.Split([Environment.NewLine], StringSplitOptions.None);
+        var paragraphLines = text.Split([Environment.NewLine], StringSplitOptions.None);
         this.AddToParagraphs(paragraphLines, firstParagraph, latinNameToPreserve);
         if (colorHexToPreserve != null)
         {
             for (int i = 0; i < paragraphLines.Length; i++)
             {
-                var portion = this.paragraphs[i].Portions.Last();
+                var portion = paragraphs[i].Portions.Last();
                 portion.Font!.Color.Set(colorHexToPreserve);
             }
         }
@@ -84,8 +69,8 @@ internal sealed class TextContent
     {
         if (firstParagraph == null)
         {
-            this.paragraphs.Add();
-            return this.paragraphs.First();
+            paragraphs.Add();
+            return paragraphs.First();
         }
         
         foreach (var paragraph in paragraphsList.Skip(1))
@@ -115,19 +100,19 @@ internal sealed class TextContent
         // Add remaining lines as new paragraphs
         for (int i = 1; i < paragraphLines.Length; i++)
         {
-            this.paragraphs.Add();
-            this.paragraphs[i].Portions.AddText(paragraphLines[i]);
-            ApplyLatinNameIfNeeded(this.paragraphs[i].Portions.Last(), latinNameToPreserve);
+            paragraphs.Add();
+            paragraphs[i].Portions.AddText(paragraphLines[i]);
+            ApplyLatinNameIfNeeded(paragraphs[i].Portions.Last(), latinNameToPreserve);
         }
     }
 
     private void ApplyFormatting()
     {
-        if (this.getAutofitType() == AutofitType.Shrink)
+        if (getAutofitType() == AutofitType.Shrink)
         {
-            this.shrinkFont(this.text);
+            shrinkFont(text);
         }
 
-        this.applyResize();
+        applyResize();
     }
 }

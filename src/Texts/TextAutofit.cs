@@ -8,48 +8,31 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler.Texts;
 
 /// <summary>
-///     Represents the autofit behavior that resizes text/shape to fit content.
+///     Represents an autofit behavior that resizes text/shape to fit content.
 /// </summary>
-internal sealed class TextAutofit
+internal sealed class TextAutofit(
+    IParagraphCollection paragraphs,
+    Func<AutofitType> getAutofitType,
+    ShapeSize shapeSize,
+    TextBoxMargins margins,
+    Func<bool> getTextWrapped,
+    OpenXmlElement textBody)
 {
-    private readonly IParagraphCollection paragraphs;
-    private readonly Func<AutofitType> getAutofitType;
-    private readonly ShapeSize shapeSize;
-    private readonly TextBoxMargins margins;
-    private readonly Func<bool> getTextWrapped;
-    private readonly OpenXmlElement textBody;
-
-    internal TextAutofit(
-        IParagraphCollection paragraphs,
-        Func<AutofitType> getAutofitType,
-        ShapeSize shapeSize,
-        TextBoxMargins margins,
-        Func<bool> getTextWrapped,
-        OpenXmlElement textBody)
-    {
-        this.paragraphs = paragraphs;
-        this.getAutofitType = getAutofitType;
-        this.shapeSize = shapeSize;
-        this.margins = margins;
-        this.getTextWrapped = getTextWrapped;
-        this.textBody = textBody;
-    }
-
     /// <summary>
-    ///     Applies autofit by resizing the parent shape on demand.
+    ///     Applies to autofit by resizing the parent shape on demand.
     /// </summary>
     internal void Apply()
     {
-        if (this.getAutofitType() != AutofitType.Resize)
+        if (getAutofitType() != AutofitType.Resize)
         {
             return;
         }
 
-        var shapeWidthCapacity = this.shapeSize.Width - this.margins.Left - this.margins.Right;
-        var shapeHeightCapacity = this.shapeSize.Height - this.margins.Top - this.margins.Bottom;
+        var shapeWidthCapacity = shapeSize.Width - margins.Left - margins.Right;
+        var shapeHeightCapacity = shapeSize.Height - margins.Top - margins.Bottom;
 
         decimal textHeight = 0;
-        foreach (var paragraph in this.paragraphs)
+        foreach (var paragraph in paragraphs)
         {
             var paragraphPortion = paragraph.Portions.OfType<TextParagraphPortion>();
             if (!paragraphPortion.Any())
@@ -77,7 +60,7 @@ internal sealed class TextAutofit
         }
 
         this.UpdateHeight(textHeight, shapeHeightCapacity);
-        if (!this.getTextWrapped())
+        if (!getTextWrapped())
         {
             this.UpdateWidth();
         }
@@ -88,44 +71,45 @@ internal sealed class TextAutofit
     /// </summary>
     internal void ShrinkFont(string newText)
     {
-        var firstParagraph = this.paragraphs.First();
+        var firstParagraph = paragraphs.First();
         var popularFont = firstParagraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
             .OrderByDescending(x => x.Count())
             .First().First().Font!;
         var text = new Text(newText, popularFont);
-        text.Fit(this.shapeSize.Width, this.shapeSize.Height);
+        text.Fit(shapeSize.Width, shapeSize.Height);
         firstParagraph.SetFontSize((int)text.FontSize);
     }
 
     private void UpdateWidth()
     {
-        var longerText = this.paragraphs
+        var longerText = paragraphs
             .Select(x => new { x.Text, x.Text.Length })
             .OrderByDescending(x => x.Length)
             .First().Text;
 
-        var baseParagraph = this.paragraphs.First();
+        var baseParagraph = paragraphs.First();
         var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
             .OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
 
         var textWidth = new Text(longerText, font).Width;
-        var leftMargin = this.margins.Left;
-        var rightMargin = this.margins.Right;
+        var leftMargin = margins.Left;
+        var rightMargin = margins.Right;
         var newWidth =
             (int)(textWidth *
                   1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
             + leftMargin + rightMargin;
-        this.shapeSize.Width = newWidth;
+        shapeSize.Width = newWidth;
     }
 
     private void UpdateHeight(decimal textHeight, decimal shapeHeightCapacity)
     {
-        var parentShape = this.textBody.Parent!;
-        var requiredHeight = textHeight + this.margins.Top + this.margins.Bottom;
-        var newHeight = requiredHeight + this.margins.Top + this.margins.Bottom + this.margins.Top + this.margins.Bottom;
-        this.shapeSize.Height = newHeight;
+        var parentShape = textBody.Parent!;
+        var requiredHeight = textHeight + margins.Top + margins.Bottom;
+        var newHeight = requiredHeight + margins.Top + margins.Bottom + margins.Top +
+                        margins.Bottom;
+        shapeSize.Height = newHeight;
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
         var position = new Position(parentShape);

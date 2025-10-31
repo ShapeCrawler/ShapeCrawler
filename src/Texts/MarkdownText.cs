@@ -5,46 +5,31 @@ using System.Text.RegularExpressions;
 namespace ShapeCrawler.Texts;
 
 /// <summary>
-///     Represents markdown-formatted text that can be applied to paragraphs.
+///     Represents Markdown text.
 /// </summary>
-internal sealed class MarkdownText
+internal sealed class MarkdownText(
+    string markdownText,
+    IParagraphCollection paragraphs,
+    Func<AutofitType> getAutofitType,
+    Action<string> shrinkFont,
+    Action applyResize)
 {
-    private readonly string markdownText;
-    private readonly IParagraphCollection paragraphs;
-    private readonly Func<AutofitType> getAutofitType;
-    private readonly Action<string> shrinkFont;
-    private readonly Action applyResize;
-
-    internal MarkdownText(
-        string markdownText,
-        IParagraphCollection paragraphs,
-        Func<AutofitType> getAutofitType,
-        Action<string> shrinkFont,
-        Action applyResize)
-    {
-        this.markdownText = markdownText;
-        this.paragraphs = paragraphs;
-        this.getAutofitType = getAutofitType;
-        this.shrinkFont = shrinkFont;
-        this.applyResize = applyResize;
-    }
-
     /// <summary>
     ///     Applies markdown-formatted text to the paragraphs.
     /// </summary>
     internal void ApplyTo()
     {
-        var lines = Regex.Split(this.markdownText, "\r\n|\r|\n", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
+        var lines = Regex.Split(markdownText, "\r\n|\r|\n", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
         if (IsList(lines))
         {
             this.RenderList(lines);
         }
         else
         {
-            this.RenderRegular(this.markdownText);
+            this.RenderRegular(markdownText);
         }
 
-        this.applyResize();
+        applyResize();
     }
 
     private static bool IsList(string[] lines) =>
@@ -52,7 +37,7 @@ internal sealed class MarkdownText
 
     private void RenderList(string[] lines)
     {
-        var paragraphsList = this.paragraphs.ToList();
+        var paragraphsList = paragraphs.ToList();
         var firstPara = paragraphsList.FirstOrDefault();
         if (firstPara == null)
         {
@@ -86,10 +71,10 @@ internal sealed class MarkdownText
             var content = line[2..];
             if (paraIndex > 0)
             {
-                this.paragraphs.Add();
+                paragraphs.Add();
             }
 
-            var paragraph = this.paragraphs[paraIndex];
+            var paragraph = paragraphs[paraIndex];
             foreach (var portion in paragraph.Portions.ToList())
             {
                 portion.Remove();
@@ -104,7 +89,7 @@ internal sealed class MarkdownText
 
     private void RenderRegular(string text)
     {
-        var paragraphsList = this.paragraphs.ToList();
+        var paragraphsList = paragraphs.ToList();
         var portionPara = paragraphsList.FirstOrDefault(p => p.Portions.Any()) ?? paragraphsList.First();
 
         // Clear other paragraphs
@@ -120,8 +105,8 @@ internal sealed class MarkdownText
 
         const string markdownPattern = @"(\*\*(?<bold>[^\*]+)\*\*)|(?<regular>[^\*]+)";
         var matches = Regex.Matches(
-            text, 
-            markdownPattern, 
+            text,
+            markdownPattern,
             RegexOptions.Singleline | RegexOptions.IgnoreCase,
             TimeSpan.FromMilliseconds(1000));
         foreach (Match match in matches)
@@ -138,9 +123,9 @@ internal sealed class MarkdownText
             }
         }
 
-        if (this.getAutofitType() == AutofitType.Shrink)
+        if (getAutofitType() == AutofitType.Shrink)
         {
-            this.shrinkFont(text);
+            shrinkFont(text);
         }
     }
 }
