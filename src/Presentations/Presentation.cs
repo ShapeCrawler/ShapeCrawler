@@ -107,7 +107,7 @@ public sealed class Presentation : IPresentation
     public Presentation(Action<DraftPresentation> configure)
         : this()
     {
-        var draft = new DraftPresentation();
+        var draft = new DraftPresentation(this);
         configure(draft);
         draft.ApplyTo(this);
     }

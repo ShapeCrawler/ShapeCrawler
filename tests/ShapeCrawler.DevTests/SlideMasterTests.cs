@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Fixture;
+using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 
@@ -6,6 +7,8 @@ namespace ShapeCrawler.DevTests;
 
 public class SlideMasterTests : SCTest
 {
+    private readonly Fixtures fixture = new();
+    
     [Test]
     [Presentation("new")]
     [Presentation("023.pptx")]
@@ -317,5 +320,21 @@ public class SlideMasterTests : SCTest
     {
         // Act & Assert
         new Presentation().SlideMaster(1).Number.Should().Be(1);
+    }
+    
+    [Test]
+    public void SlideLayout_Background_SolidFill_Color_Getter_returns_solid_color_of_the_slide_layout_background()
+    {
+        // Arrange
+        string expectedColor = fixture.Color(); // returns a random color in hex format, e.g., "00FF00"
+        var pres = new Presentation(p=>
+        {
+            p.SlideMaster(1).SlideLayout(1).Background.SolidFillColor(expectedColor);
+        });
+        var slideMaster = pres.SlideMaster(1);
+        pres.Save(@"c:\temp\output.pptx");
+        
+        // Assert
+        slideMaster.SlideLayout(1).Background.SolidFill.Color.Should().Be(expectedColor);
     }
 }
