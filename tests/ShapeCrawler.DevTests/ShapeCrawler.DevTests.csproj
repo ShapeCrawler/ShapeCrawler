@@ -287,6 +287,8 @@
     <EmbeddedResource Include="Assets\078.json" />
     <None Remove="Assets\084 charts.pptx" />
     <EmbeddedResource Include="Assets\084 charts.pptx" />
+    <None Remove="Assets\085_layout_with_background_image.pptx" />
+    <EmbeddedResource Include="Assets\085_layout_with_background_image.pptx" />
   </ItemGroup>
 
 </Project>

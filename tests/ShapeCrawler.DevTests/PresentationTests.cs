@@ -795,4 +795,38 @@ public class PresentationTests : SCTest
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
     }
+
+    [Test]
+    [Ignore("Reproduces issue #1156 - layout with background image produces invalid PPTX")]
+    public void Slides_Add_from_layout_with_background_image_and_footer_placeholders_should_validate()
+    {
+        // Arrange
+        // Reproduces issue #1156: When adding a slide from a layout that has:
+        // 1. A background image defined in the layout XML (via <p:bg><p:bgPr><a:blipFill r:embed="rIdX">)
+        // 2. Footer, date, and slide number placeholders
+        // The resulting PPTX should:
+        // - Validate without errors (no "PowerPoint found a problem" repair dialog)
+        // - Preserve all footer/date/slide-number placeholders from the layout
+        // - Not show a security/blocked overlay on the background image
+        var pres = new Presentation(TestAsset("085_layout_with_background_image.pptx"));
+        var layout = pres.SlideMaster(1).SlideLayouts[0];
+        var stream = new MemoryStream();
+
+        // Act
+        pres.Slides.Add(layout.Number);
+        pres.Save(stream);
+
+        // Assert
+        stream.Position = 0;
+        var reopenedPres = new Presentation(stream);
+        
+        // The presentation should validate without errors
+        reopenedPres.Validate();
+        
+        // The new slide should have footer placeholders from the layout
+        var newSlide = reopenedPres.Slides.Last();
+        newSlide.Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.Footer);
+        newSlide.Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.SlideNumber);
+        newSlide.Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.DateAndTime);
+    }
 }
