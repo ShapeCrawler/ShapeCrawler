@@ -326,13 +326,12 @@ public class SlideMasterTests : SCTest
     public void SlideLayout_Background_SolidFill_Color_Getter_returns_solid_color_of_the_slide_layout_background()
     {
         // Arrange
-        string expectedColor = fixture.Color(); // returns a random color in hex format, e.g., "00FF00"
+        var expectedColor = fixture.Color();
         var pres = new Presentation(p=>
         {
             p.SlideMaster(1).SlideLayout(1).Background.SolidFillColor(expectedColor);
         });
         var slideMaster = pres.SlideMaster(1);
-        pres.Save(@"c:\temp\output.pptx");
         
         // Assert
         slideMaster.SlideLayout(1).Background.SolidFill.Color.Should().Be(expectedColor);
