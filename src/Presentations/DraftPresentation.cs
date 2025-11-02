@@ -10,6 +10,16 @@ namespace ShapeCrawler.Presentations;
 public sealed class DraftPresentation
 {
     private readonly List<Action<Presentation>> actions = [];
+    private readonly Presentation? presentation;
+
+    internal DraftPresentation()
+    {
+    }
+
+    internal DraftPresentation(Presentation presentation)
+    {
+        this.presentation = presentation;
+    }
 
     /// <summary>
     ///     Configures a slide within the presentation draft.
@@ -76,11 +86,24 @@ public sealed class DraftPresentation
         return this;
     }
 
-    internal void ApplyTo(Presentation presentation)
+    /// <summary>
+    ///     Gets slide master by number.
+    /// </summary>
+    public ISlideMaster SlideMaster(int number)
+    {
+        if (this.presentation == null)
+        {
+            throw new InvalidOperationException("Presentation has not been initialized.");
+        }
+
+        return this.presentation.SlideMaster(number);
+    }
+
+    internal void ApplyTo(Presentation paramPresentation)
     {
         foreach (var action in this.actions)
         {
-            action(presentation);
+            action(paramPresentation);
         }
     }
 }

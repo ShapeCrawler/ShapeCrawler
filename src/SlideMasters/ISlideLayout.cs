@@ -31,14 +31,22 @@ public interface ISlideLayout
     ///     Gets layout number.
     /// </summary>
     int Number { get; }
+
+    /// <summary>
+    ///     Gets layout background.
+    /// </summary>
+    ISlideLayoutBackground Background { get; }
 }
 
 internal sealed class SlideLayout : ISlideLayout
 {
+    private readonly SlideLayoutBackground background;
+
     internal SlideLayout(SlideLayoutPart slideLayoutPart)
     {
         this.SlideLayoutPart = slideLayoutPart;
         this.Shapes = new ShapeCollection(slideLayoutPart);
+        this.background = new SlideLayoutBackground(slideLayoutPart);
     }
     
     public string Name => this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
@@ -55,6 +63,8 @@ internal sealed class SlideLayout : ISlideLayout
             return int.Parse(match.Value);
         }
     }
+
+    public ISlideLayoutBackground Background => this.background;
     
     internal SlideLayoutPart SlideLayoutPart { get; }
 }
