@@ -1,5 +1,6 @@
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130

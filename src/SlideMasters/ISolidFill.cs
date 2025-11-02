@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler;
+﻿namespace ShapeCrawler.SlideMasters;
 
 /// <summary>
 ///     Represents solid fill properties.
