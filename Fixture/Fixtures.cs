@@ -13,6 +13,14 @@ public sealed class Fixtures
 
     public int Int() => this.random.Next(1, 400);
 
+    public string Color()
+    {
+        var r = this.random.Next(256);
+        var g = this.random.Next(256);
+        var b = this.random.Next(256);
+        return $"{r:X2}{g:X2}{b:X2}";
+    }
+
     public Stream Image()
     {
         var width = this.random.Next(32, 256);
