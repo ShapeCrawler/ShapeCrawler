@@ -86,7 +86,7 @@ internal sealed class BackgroundSolidFill : ISolidFill
                     var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
                     if (aRgbColorModelHex != null)
                     {
-                        return aRgbColorModelHex.Val!.ToString()!;
+                        return aRgbColorModelHex.Val!.ToString();
                     }
                 }
             }
