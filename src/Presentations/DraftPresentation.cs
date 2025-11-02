@@ -99,11 +99,11 @@ public sealed class DraftPresentation
         return this.presentation.SlideMaster(number);
     }
 
-    internal void ApplyTo(Presentation presentation)
+    internal void ApplyTo(Presentation paramPresentation)
     {
         foreach (var action in this.actions)
         {
-            action(presentation);
+            action(paramPresentation);
         }
     }
 }
