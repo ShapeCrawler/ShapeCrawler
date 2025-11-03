@@ -1,6 +1,9 @@
+using System;
+using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.SlideMasters;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
@@ -21,6 +24,18 @@ public interface ISlideLayoutBackground
     /// </summary>
     /// <param name="hex">The color in hexadecimal format.</param>
     void SolidFillColor(string hex);
+
+    /// <summary>
+    ///     Sets the background to a picture.
+    /// </summary>
+    /// <param name="image">The image stream for the background picture.</param>
+    void Picture(Stream image);
+
+    /// <summary>
+    ///     Gets the background picture image stream.
+    /// </summary>
+    /// <returns>The image stream of the background picture.</returns>
+    MemoryStream Picture();
 }
 
 internal sealed class SlideLayoutBackground(SlideLayoutPart slideLayoutPart) : ISlideLayoutBackground
@@ -41,5 +56,39 @@ internal sealed class SlideLayoutBackground(SlideLayoutPart slideLayoutPart) : I
                                     ?? pBackground.AppendChild(new P.BackgroundProperties());
 
         pBackgroundProperties.AddSolidFill(hex);
+    }
+
+    public void Picture(Stream image)
+    {
+        var pCommonSlideData = slideLayoutPart.SlideLayout.CommonSlideData
+                               ?? slideLayoutPart.SlideLayout.AppendChild(new P.CommonSlideData());
+
+        var pBackground = pCommonSlideData.GetFirstChild<P.Background>()
+                          ?? pCommonSlideData.InsertAt(new P.Background(), 0);
+
+        var pBackgroundProperties = pBackground.GetFirstChild<P.BackgroundProperties>()
+                                    ?? pBackground.AppendChild(new P.BackgroundProperties());
+
+        var (rId, _) = slideLayoutPart.AddImagePart(image, "image/png");
+        pBackgroundProperties.AddBlipFill(rId);
+    }
+
+    public MemoryStream Picture()
+    {
+        var pBackground = slideLayoutPart.SlideLayout.CommonSlideData?.GetFirstChild<P.Background>();
+        var aBlipFill = pBackground?.GetFirstChild<P.BackgroundProperties>()?.GetFirstChild<A.BlipFill>();
+        var aBlip = aBlipFill?.Blip;
+        if (aBlip?.Embed?.Value is null)
+        {
+            throw new InvalidOperationException("Background picture not found.");
+        }
+
+        var imagePart = (ImagePart)slideLayoutPart.GetPartById(aBlip.Embed.Value);
+        using var stream = imagePart.GetStream();
+        var mStream = new MemoryStream();
+        stream.CopyTo(mStream);
+        mStream.Position = 0;
+
+        return mStream;
     }
 }
