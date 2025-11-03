@@ -833,10 +833,9 @@ public class PresentationTests : SCTest
     [Test]
     public void Reproduce_issue_1156()
     {
-        var fixtures = new Fixtures();
         var pres = new Presentation(p =>
         {
-            p.SlideMaster(1).SlideLayout(1).Background.SolidFillColor(fixtures.Color());
+            p.SlideMaster(1).SlideLayout(1).Background.Picture(fixtures.Image());
         });
         
         pres.Slides.Add(1);
