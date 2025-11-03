@@ -110,6 +110,23 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
+    
+    [Test]
+    public void Slides_Add()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.SlideMaster(1).SlideLayout(1).Background.Picture(fixtures.Image());
+        });
+        
+        // Act
+        pres.Slides.Add(1);
+        
+        // Assert
+        pres.Slides.Count.Should().Be(1);
+        pres.Validate();
+    }
 
     [Test]
     public void Slides_Add_should_copy_only_layout_of_copying_slide()
@@ -794,18 +811,5 @@ public class PresentationTests : SCTest
 
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
-    }
-    
-    [Test]
-    public void Reproduce_issue_1156()
-    {
-        var pres = new Presentation(p =>
-        {
-            p.SlideMaster(1).SlideLayout(1).Background.Picture(fixtures.Image());
-        });
-        
-        pres.Slides.Add(1);
-        
-        pres.Save(@"c:\temp\output.pptx");
     }
 }
