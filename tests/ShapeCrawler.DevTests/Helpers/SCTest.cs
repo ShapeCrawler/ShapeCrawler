@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
+using Fixture;
 using NUnit.Framework;
 using ShapeCrawler.Presentations;
 
@@ -9,6 +10,8 @@ namespace ShapeCrawler.DevTests.Helpers;
 
 public abstract class SCTest
 {
+    protected readonly Fixtures fixture = new();
+    
     protected static T GetShape<T>(string presentation, int slideNumber, int shapeId)
     {
         var scPresentation = GetPresentationFromAssembly(presentation);
