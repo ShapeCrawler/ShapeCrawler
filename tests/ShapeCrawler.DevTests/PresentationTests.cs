@@ -797,7 +797,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    [Ignore("Reproduces issue #1156 - layout with background image produces invalid PPTX")]
+    // [Ignore("Reproduces issue #1156 - layout with background image produces invalid PPTX")]
     public void Slides_Add_from_layout_with_background_image_and_footer_placeholders_should_validate()
     {
         // Arrange
@@ -828,5 +828,19 @@ public class PresentationTests : SCTest
         newSlide.Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.Footer);
         newSlide.Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.SlideNumber);
         newSlide.Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.DateAndTime);
+    }
+
+    [Test]
+    public void Reproduce_issue_1156()
+    {
+        var fixtures = new Fixtures();
+        var pres = new Presentation(p =>
+        {
+            p.SlideMaster(1).SlideLayout(1).Background.SolidFillColor(fixtures.Color());
+        });
+        
+        pres.Slides.Add(1);
+        
+        pres.Save(@"c:\temp\output.pptx");
     }
 }
