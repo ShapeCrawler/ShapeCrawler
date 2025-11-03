@@ -29,6 +29,18 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
             .InternalSlideLayout(layoutNumber);
         newSlidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
+        // Copy layout's other relationships (images, charts, etc.) with same relationship IDs
+        foreach (var layoutPartPair in layout.SlideLayoutPart.Parts)
+        {
+            // Skip the slide master relationship as slides cannot reference masters directly
+            if (layoutPartPair.OpenXmlPart is SlideMasterPart)
+            {
+                continue;
+            }
+
+            newSlidePart.AddPart(layoutPartPair.OpenXmlPart, layoutPartPair.RelationshipId);
+        }
+
         newSlidePart.Slide = new P.Slide(layout.SlideLayoutPart.SlideLayout.CommonSlideData!.CloneNode(true));
         var removingShapes = newSlidePart.Slide.CommonSlideData!.ShapeTree!.OfType<P.Shape>()
             .Where(shape =>
