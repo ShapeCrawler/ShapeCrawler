@@ -3,6 +3,7 @@ using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.SlideMasters;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
@@ -74,23 +75,20 @@ internal sealed class SlideLayoutBackground(SlideLayoutPart slideLayoutPart) : I
 
     public MemoryStream Picture()
     {
-        var pCommonSlideData = slideLayoutPart.SlideLayout.CommonSlideData;
-        var pBackground = pCommonSlideData?.GetFirstChild<P.Background>();
-        var pBackgroundProperties = pBackground?.GetFirstChild<P.BackgroundProperties>();
-        var aBlipFill = pBackgroundProperties?.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
+        var pBackground = slideLayoutPart.SlideLayout.CommonSlideData?.GetFirstChild<P.Background>();
+        var aBlipFill = pBackground?.GetFirstChild<P.BackgroundProperties>()?.GetFirstChild<A.BlipFill>();
         var aBlip = aBlipFill?.Blip;
-
         if (aBlip?.Embed?.Value is null)
         {
             throw new InvalidOperationException("Background picture not found.");
         }
 
         var imagePart = (ImagePart)slideLayoutPart.GetPartById(aBlip.Embed.Value);
-        var imageStream = imagePart.GetStream();
-        var memoryStream = new MemoryStream();
-        imageStream.CopyTo(memoryStream);
-        memoryStream.Position = 0;
+        using var stream = imagePart.GetStream();
+        var mStream = new MemoryStream();
+        stream.CopyTo(mStream);
+        mStream.Position = 0;
 
-        return memoryStream;
+        return mStream;
     }
 }
