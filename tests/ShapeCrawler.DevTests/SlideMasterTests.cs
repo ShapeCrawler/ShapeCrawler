@@ -153,7 +153,7 @@ public class SlideMasterTests : SCTest
     }
     
     [Test]
-    public void SlideLayout_Background_Picture_Getter_returns_slide_layout_Picture_background_in_bytes()
+    public void SlideLayout_Background_Picture_returns_slide_layout_background_picture_image()
     {
         // Arrange
         var expectedImage = fixture.Image();
@@ -161,9 +161,15 @@ public class SlideMasterTests : SCTest
         {
             p.SlideMaster(1).SlideLayout(1).Background.Picture(expectedImage);
         });
+        expectedImage.Position = 0;
+        var expectedStream = new MemoryStream();
+        expectedImage.CopyTo(expectedStream);
         var slideMaster = pres.SlideMaster(1);
         
+        // Act
+        var actualStream = slideMaster.SlideLayout(1).Background.Picture();
+
         // Assert
-        // ...
+        actualStream.ToArray().Should().Equal(expectedStream.ToArray());
     }
 }
