@@ -153,6 +153,8 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         throw new System.NotImplementedException();
     }
 
+    public IShape AddDateAndTime() => shapes.AddDateAndTime();
+
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
