@@ -125,4 +125,13 @@ public interface ISlideShapeCollection : IShapeCollection
     ///     Groups the specified shapes.
     /// </summary>
     IShape Group(IShape[] groupingShapes);
+
+    /// <summary>
+    ///     Adds "Date and time" placeholder.
+    /// </summary>
+    /// <returns>Added "Date and time" placeholder.</returns>
+    /// <exception cref="SCException">
+    /// Thrown when the slide already contains "Date and time" placeholder.
+    /// </exception>
+    IShape AddDateAndTime();
 }
