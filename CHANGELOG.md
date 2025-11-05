@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.75.2 - Unrelease
+## Version 0.75.2 - 2025-11-05
 🐞Fixed adding a slide with an image background slide layout [#1156](https://github.com/ShapeCrawler/ShapeCrawler/issues/1156)
 
 ## Version 0.75.1 - 2025-10-28
