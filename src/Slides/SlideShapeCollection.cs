@@ -375,6 +375,33 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
+    public IShape AddDateAndTime()
+    {
+        // Check if a DateAndTime placeholder already exists
+        var existingDateTimePlaceholder = shapes
+            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
+
+        if (existingDateTimePlaceholder != null)
+        {
+            throw new SCException("The slide already contains a Date and Time placeholder.");
+        }
+
+        // Load the date-time placeholder XML template
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = this.GetNextShapeId();
+
+        // Append the shape to the slide
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        // Get the added shape and set its properties
+        var addedShape = shapes.Last<TextShape>();
+        addedShape.Id = nextShapeId;
+        addedShape.Name = $"Date Placeholder {nextShapeId}";
+
+        return addedShape;
+    }
+
     private int GetNextShapeId()
     {
         if (shapes.Any())

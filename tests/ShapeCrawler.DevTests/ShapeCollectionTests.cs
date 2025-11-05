@@ -30,6 +30,21 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Shape("TextBox 2").Should().NotBeNull();
     }
+    
+    [Test]
+    public void AddDateAndTime_adds_Date_and_time_placeholder_shape()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slide(1).Shapes;
+
+        // Act
+        shapes.AddDateAndTime();
+
+        // Assert
+        shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
+        pres.Validate();
+    }
 
     [Test]
     public void Add_adds_table()
@@ -576,21 +591,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         slides[1].Shapes.Should().HaveCount(0);
     }
-
-    [Test]
-    public void Add_adds_slide()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("017.pptx"));
-        var layout = pres.SlideMaster(1).SlideLayout("Title and Content");
-
-        // Act
-        pres.Slides.Add(layout.Number);
-
-        // Assert
-        pres.Slide(2).Shapes.Count.Should().Be(2);
-    }
-
+    
     [Test]
     public void AddPieChart_adds_pie_chart()
     {

@@ -276,6 +276,8 @@ internal sealed class AudioVideoShapeCollection(
 
     public IShape Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
 
+    public IShape AddDateAndTime() => shapes.AddDateAndTime();
+
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();

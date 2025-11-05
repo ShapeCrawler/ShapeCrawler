@@ -110,19 +110,16 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-    
+
     [Test]
     public void Slides_Add()
     {
         // Arrange
-        var pres = new Presentation(p =>
-        {
-            p.SlideMaster(1).SlideLayout(1).Background.Picture(fixtures.Image());
-        });
-        
+        var pres = new Presentation(p => { p.SlideMaster(1).SlideLayout(1).Background.Picture(fixtures.Image()); });
+
         // Act
         pres.Slides.Add(1);
-        
+
         // Assert
         pres.Slides.Count.Should().Be(1);
         pres.Validate();
@@ -413,7 +410,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation(p =>
-        { 
+        {
             p.Slide();
             p.Slide();
         });
@@ -432,7 +429,6 @@ public class PresentationTests : SCTest
                     shape.PlaceholderType == PlaceholderType.Footer
                     && shape.TextBox.Text == text);
         });
-
     }
 
     [Test]
@@ -440,7 +436,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation(p =>
-        { 
+        {
             p.Slide();
             p.Slide();
         });
@@ -478,7 +474,8 @@ public class PresentationTests : SCTest
         var addInOutOfRangeSlide = () => pres.Footer.AddTextOnSlide(3, "Ow snap!");
 
         // Assert
-        pres.Slides[1].Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
+        pres.Slides[1].Shapes.Should()
+            .Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
         pres.Slides[0].Shapes.Should().NotContain(s => s.PlaceholderType == PlaceholderType.Footer);
 
         addInOutOfRangeSlide.Should().Throw<ArgumentOutOfRangeException>();
@@ -502,7 +499,8 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Slides[0].Shapes.Should().NotContain(s => s.PlaceholderType == PlaceholderType.Footer);
-        pres.Slides[1].Shapes.Should().Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
+        pres.Slides[1].Shapes.Should()
+            .Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
 
         removeFromOutOfRangeSlide.Should().Throw<ArgumentOutOfRangeException>();
     }
@@ -528,7 +526,22 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-    
+
+    [Test]
+    public void Add_adds_slide()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("017.pptx"));
+        var layout = pres.SlideMaster(1).SlideLayout("Title and Content");
+
+        // Act
+        pres.Slides.Add(layout.Number);
+
+        // Assert
+        pres.Slide(2).Shapes.Count.Should().Be(2);
+        pres.Validate();
+    }
+
     [Test]
     public void Slides_Add_copies_slide_with_chart()
     {

@@ -194,6 +194,8 @@ internal sealed class PictureCollection(
         throw new NotImplementedException();
     }
 
+    public IShape AddDateAndTime() => shapes.AddDateAndTime();
+
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
