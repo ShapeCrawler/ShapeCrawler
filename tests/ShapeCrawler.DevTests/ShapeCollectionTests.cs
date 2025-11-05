@@ -43,6 +43,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
+        pres.Validate();
     }
 
     [Test]

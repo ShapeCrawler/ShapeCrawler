@@ -539,6 +539,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Slide(2).Shapes.Count.Should().Be(2);
+        pres.Validate();
     }
 
     [Test]
