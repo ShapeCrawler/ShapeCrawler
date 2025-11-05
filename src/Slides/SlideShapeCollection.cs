@@ -387,7 +387,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         }
 
         // Load the date-time placeholder XML template
-        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date-time-placeholder.xml");
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.GetNextShapeId();
 
