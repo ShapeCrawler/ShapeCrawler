@@ -145,7 +145,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.75.1 - 2025-10-28
-🐞Upgraded dependencies to fix vulnerabilities
+### Version 0.75.2 - 2025-11-05
+🐞Fixed adding a slide with an image background slide layout [#1156](https://github.com/ShapeCrawler/ShapeCrawler/issues/1156)
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
