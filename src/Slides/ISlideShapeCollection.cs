@@ -136,20 +136,20 @@ public interface ISlideShapeCollection : IShapeCollection
     IShape AddDateAndTime();
 
     /// <summary>
-    ///     Adds "Footer" placeholder.
+    ///     Adds footer placeholder.
     /// </summary>
-    /// <returns>Added "Footer" placeholder.</returns>
+    /// <returns>Added footer placeholder.</returns>
     /// <exception cref="SCException">
-    /// Thrown when the slide already contains "Footer" placeholder.
+    /// Thrown when the slide already contains footer placeholder.
     /// </exception>
     IShape AddFooter();
 
     /// <summary>
-    ///     Adds "Slide Number" placeholder.
+    ///     Adds slide number placeholder.
     /// </summary>
-    /// <returns>Added "Slide Number" placeholder.</returns>
+    /// <returns>Added slide number placeholder.</returns>
     /// <exception cref="SCException">
-    /// Thrown when the slide already contains "Slide Number" placeholder.
+    /// Thrown when the slide already contains slide number placeholder.
     /// </exception>
     IShape AddSlideNumber();
 }
