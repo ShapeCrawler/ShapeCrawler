@@ -157,6 +157,8 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
 
     public IShape AddFooter() => shapes.AddFooter();
 
+    public IShape AddSlideNumber() => shapes.AddSlideNumber();
+
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();

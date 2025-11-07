@@ -1,0 +1,19 @@
+<p:sp xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:nvSpPr>
+    <p:cNvPr id="1" name="Slide Number Placeholder 1"/>
+    <p:cNvSpPr>
+      <a:spLocks noGrp="1"/>
+    </p:cNvSpPr>
+    <p:nvPr>
+      <p:ph type="sldNum" sz="half" idx="12"/>
+    </p:nvPr>
+  </p:nvSpPr>
+  <p:spPr/>
+  <p:txBody>
+    <a:bodyPr/>
+    <a:lstStyle/>
+    <a:p>
+      <a:endParaRPr lang="en-US"/>
+    </a:p>
+  </p:txBody>
+</p:sp>

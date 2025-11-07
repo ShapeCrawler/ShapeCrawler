@@ -60,6 +60,21 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.Footer);
         pres.Validate();
     }
+    
+    [Test]
+    public void AddSlideNumber_adds_Slide_number_placeholder_shape()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slide(1).Shapes;
+
+        // Act
+        shapes.AddSlideNumber();
+
+        // Assert
+        shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.SlideNumber);
+        pres.Validate();
+    }
 
     [Test]
     public void Add_adds_table()

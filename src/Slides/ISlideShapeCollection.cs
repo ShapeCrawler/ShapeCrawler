@@ -143,4 +143,13 @@ public interface ISlideShapeCollection : IShapeCollection
     /// Thrown when the slide already contains "Footer" placeholder.
     /// </exception>
     IShape AddFooter();
+
+    /// <summary>
+    ///     Adds "Slide Number" placeholder.
+    /// </summary>
+    /// <returns>Added "Slide Number" placeholder.</returns>
+    /// <exception cref="SCException">
+    /// Thrown when the slide already contains "Slide Number" placeholder.
+    /// </exception>
+    IShape AddSlideNumber();
 }

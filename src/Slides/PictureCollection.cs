@@ -198,6 +198,8 @@ internal sealed class PictureCollection(
 
     public IShape AddFooter() => shapes.AddFooter();
 
+    public IShape AddSlideNumber() => shapes.AddSlideNumber();
+
     public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
