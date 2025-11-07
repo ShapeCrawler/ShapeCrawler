@@ -60,6 +60,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EmbeddedResource Include="Assets\new line.xml" />
     <None Remove="Assets\date and time placeholder.xml" />
     <EmbeddedResource Include="Assets\date and time placeholder.xml" />
+    <None Remove="Assets\footer placeholder.xml" />
+    <EmbeddedResource Include="Assets\footer placeholder.xml" />
+    <None Remove="Assets\slide number placeholder.xml" />
+    <EmbeddedResource Include="Assets\slide number placeholder.xml" />
     <None Remove="Assets\video image.png" />
     <EmbeddedResource Include="Assets\video image.png" />
   </ItemGroup>

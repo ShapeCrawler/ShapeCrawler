@@ -402,6 +402,60 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         return addedShape;
     }
 
+    public IShape AddFooter()
+    {
+        // Check if a Footer placeholder already exists
+        var existingFooterPlaceholder = shapes
+            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
+
+        if (existingFooterPlaceholder != null)
+        {
+            throw new SCException("The slide already contains a Footer placeholder.");
+        }
+
+        // Load the footer placeholder XML template
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("footer placeholder.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = this.GetNextShapeId();
+
+        // Append the shape to the slide
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        // Get the added shape and set its properties
+        var addedShape = shapes.Last<TextShape>();
+        addedShape.Id = nextShapeId;
+        addedShape.Name = $"Footer Placeholder {nextShapeId}";
+
+        return addedShape;
+    }
+
+    public IShape AddSlideNumber()
+    {
+        // Check if a Slide Number placeholder already exists
+        var existingSlideNumberPlaceholder = shapes
+            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.SlideNumber);
+
+        if (existingSlideNumberPlaceholder != null)
+        {
+            throw new SCException("The slide already contains a Slide Number placeholder.");
+        }
+
+        // Load the slide number placeholder XML template
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("slide number placeholder.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = this.GetNextShapeId();
+
+        // Append the shape to the slide
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        // Get the added shape and set its properties
+        var addedShape = shapes.Last<TextShape>();
+        addedShape.Id = nextShapeId;
+        addedShape.Name = $"Slide Number Placeholder {nextShapeId}";
+
+        return addedShape;
+    }
+
     private int GetNextShapeId()
     {
         if (shapes.Any())
