@@ -36,4 +36,15 @@ public class Slides
         
         var bytes = slide.Fill.Picture!.AsByteArray();
     }
+    
+    [Test, Explicit]
+    public void Add_Date_Footer_and_Slide_Number()
+    {
+        var pres = new Presentation("pres.pptx");
+        var slide = pres.Slide(1);
+
+        slide.Shapes.AddDateAndTime();
+        slide.Shapes.AddFooter();
+        slide.Shapes.AddSlideNumber();
+    }
 }
