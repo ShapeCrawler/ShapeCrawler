@@ -402,6 +402,33 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         return addedShape;
     }
 
+    public IShape AddFooter()
+    {
+        // Check if a Footer placeholder already exists
+        var existingFooterPlaceholder = shapes
+            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
+
+        if (existingFooterPlaceholder != null)
+        {
+            throw new SCException("The slide already contains a Footer placeholder.");
+        }
+
+        // Load the footer placeholder XML template
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("footer placeholder.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = this.GetNextShapeId();
+
+        // Append the shape to the slide
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        // Get the added shape and set its properties
+        var addedShape = shapes.Last<TextShape>();
+        addedShape.Id = nextShapeId;
+        addedShape.Name = $"Footer Placeholder {nextShapeId}";
+
+        return addedShape;
+    }
+
     private int GetNextShapeId()
     {
         if (shapes.Any())

@@ -45,6 +45,21 @@ public class ShapeCollectionTests : SCTest
         shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
         pres.Validate();
     }
+    
+    [Test]
+    public void AddFooter_adds_Footer_placeholder_shape()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slide(1).Shapes;
+
+        // Act
+        shapes.AddFooter();
+
+        // Assert
+        shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.Footer);
+        pres.Validate();
+    }
 
     [Test]
     public void Add_adds_table()

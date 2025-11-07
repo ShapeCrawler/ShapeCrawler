@@ -166,6 +166,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     public IShape AddDateAndTime() => throw new NotImplementedException();
 
+    public IShape AddFooter() => throw new NotImplementedException();
+
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
