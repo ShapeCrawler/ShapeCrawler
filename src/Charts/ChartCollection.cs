@@ -92,8 +92,8 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         int y,
         int width,
         int height,
-        List<string> categories,
-        List<DraftChart.SeriesData> seriesData,
+        IList<string> categories,
+        IList<DraftChart.SeriesData> seriesData,
         string chartName)
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();

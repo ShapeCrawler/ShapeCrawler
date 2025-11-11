@@ -114,8 +114,8 @@ public interface ISlideShapeCollection : IShapeCollection
         int y,
         int width,
         int height,
-        List<string> categories,
-        List<DraftChart.SeriesData> seriesData,
+        IList<string> categories,
+        IList<DraftChart.SeriesData> seriesData,
         string chartName);
 
     /// <summary>

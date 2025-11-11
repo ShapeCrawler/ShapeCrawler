@@ -11,8 +11,8 @@ namespace ShapeCrawler.Charts;
 /// </summary>
 internal sealed class ClusteredBarChart(
     ChartPart chartPart,
-    List<string> categories,
-    List<(string Name, double[] Values)> seriesData)
+    IList<string> categories,
+    IList<(string Name, double[] Values)> seriesData)
 {
     /// <summary>
     ///     Generates the clustered bar chart content.

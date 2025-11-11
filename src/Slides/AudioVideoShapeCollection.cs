@@ -271,8 +271,8 @@ internal sealed class AudioVideoShapeCollection(
         int y,
         int width,
         int height,
-        List<string> categories,
-        List<Presentations.DraftChart.SeriesData> seriesData,
+        IList<string> categories,
+        IList<Presentations.DraftChart.SeriesData> seriesData,
         string chartName
     ) => shapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
 
