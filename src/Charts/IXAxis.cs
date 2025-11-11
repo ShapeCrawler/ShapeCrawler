@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml.Packaging;
 namespace ShapeCrawler.Charts;
 
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using A = DocumentFormat.OpenXml.Drawing;
 
 /// <summary>
 ///     Represents a chart X-axis.
@@ -28,6 +29,11 @@ public interface IXAxis
     ///     Gets or sets axis maximum value.
     /// </summary>
     double Maximum { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the X-axis title text. Returns <c>null</c> if not set.
+    /// </summary>
+    string? Title { get; set; }
 }
 
 internal class XAxis(ChartPart chartPart) : IXAxis
@@ -91,6 +97,53 @@ internal class XAxis(ChartPart chartPart) : IXAxis
         }
     }
 
+    public string? Title
+    {
+        get
+        {
+            var axis = this.GetXAxisElement();
+            if (axis == null)
+            {
+                return null;
+            }
+
+            var cTitle = axis.GetFirstChild<C.Title>();
+            return cTitle?.Descendants<A.Text>().FirstOrDefault()?.Text;
+        }
+
+        set
+        {
+            var axis = this.GetXAxisElement();
+            if (axis == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                axis.GetFirstChild<C.Title>()?.Remove();
+                return;
+            }
+
+            var cTitle = axis.GetFirstChild<C.Title>() ?? axis.AppendChild(new C.Title());
+            var chartText = cTitle.GetFirstChild<C.ChartText>() ?? cTitle.AppendChild(new C.ChartText());
+            var richText = chartText.GetFirstChild<C.RichText>();
+            if (richText == null)
+            {
+                richText = chartText.AppendChild(new C.RichText());
+                richText.Append(new A.BodyProperties());
+                richText.Append(new A.ListStyle());
+            }
+
+            richText.RemoveAllChildren<A.Paragraph>();
+            var paragraph = richText.AppendChild(new A.Paragraph());
+            paragraph.AppendChild(new A.Run(new A.Text(value!)));
+
+            var overlay = cTitle.GetFirstChild<C.Overlay>() ?? cTitle.AppendChild(new C.Overlay());
+            overlay.Val = false;
+        }
+    }
+
     private OpenXmlElement FirstSeries()
     {
         var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
@@ -98,5 +151,21 @@ internal class XAxis(ChartPart chartPart) : IXAxis
         
         return cXCharts.First().ChildElements
             .First(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
+    }
+
+    private OpenXmlCompositeElement? GetXAxisElement()
+    {
+        var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        var categoryAxis = plotArea.Elements<C.CategoryAxis>()
+            .FirstOrDefault(a => a.AxisPosition?.Val?.Value == C.AxisPositionValues.Bottom)
+            ?? plotArea.Elements<C.CategoryAxis>().FirstOrDefault();
+        if (categoryAxis != null)
+        {
+            return categoryAxis;
+        }
+
+        return plotArea.Elements<C.ValueAxis>()
+            .FirstOrDefault(a => a.AxisPosition?.Val?.Value == C.AxisPositionValues.Bottom)
+            ?? plotArea.Elements<C.ValueAxis>().FirstOrDefault();
     }
 }
