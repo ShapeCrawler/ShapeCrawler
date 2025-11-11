@@ -531,7 +531,7 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void Test()
+    public void XAxis_Title_Setter_sets_title_for_the_chart_x_axis()
     {
         // Arrange
         var pres = new Presentation(p =>
