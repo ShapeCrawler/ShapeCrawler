@@ -125,7 +125,32 @@ internal class XAxis(ChartPart chartPart) : IXAxis
                 return;
             }
 
-            var cTitle = axis.GetFirstChild<C.Title>() ?? axis.AppendChild(new C.Title());
+            var cTitle = axis.GetFirstChild<C.Title>();
+            if (cTitle == null)
+            {
+                cTitle = new C.Title();
+                var insertBefore = axis.Elements<OpenXmlElement>().FirstOrDefault(e =>
+                    e is C.NumberingFormat
+                        or C.MajorTickMark
+                        or C.MinorTickMark
+                        or C.TickLabelPosition
+                        or C.CrossingAxis
+                        or C.Crosses
+                        or C.CrossBetween
+                        or C.CrossesAt
+                        or C.Layout
+                        or C.ShapeProperties
+                        or C.TextProperties);
+                if (insertBefore != null)
+                {
+                    axis.InsertBefore(cTitle, insertBefore);
+                }
+                else
+                {
+                    axis.AppendChild(cTitle);
+                }
+            }
+
             var chartText = cTitle.GetFirstChild<C.ChartText>() ?? cTitle.AppendChild(new C.ChartText());
             var richText = chartText.GetFirstChild<C.RichText>();
             if (richText == null)
