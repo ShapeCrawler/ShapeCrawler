@@ -125,47 +125,12 @@ internal class XAxis(ChartPart chartPart) : IXAxis
                 return;
             }
 
-            var cTitle = axis.GetFirstChild<C.Title>();
-            if (cTitle == null)
-            {
-                cTitle = new C.Title();
-                var insertBefore = axis.Elements<OpenXmlElement>().FirstOrDefault(e =>
-                    e is C.NumberingFormat
-                        or C.MajorTickMark
-                        or C.MinorTickMark
-                        or C.TickLabelPosition
-                        or C.CrossingAxis
-                        or C.Crosses
-                        or C.CrossBetween
-                        or C.CrossesAt
-                        or C.Layout
-                        or C.ShapeProperties
-                        or C.TextProperties);
-                if (insertBefore != null)
-                {
-                    axis.InsertBefore(cTitle, insertBefore);
-                }
-                else
-                {
-                    axis.AppendChild(cTitle);
-                }
-            }
+            var cTitle = this.GetOrCreateTitle(axis);
+            var chartText = this.GetOrCreateChartText(cTitle);
+            var richText = this.GetOrCreateRichText(chartText);
 
-            var chartText = cTitle.GetFirstChild<C.ChartText>() ?? cTitle.AppendChild(new C.ChartText());
-            var richText = chartText.GetFirstChild<C.RichText>();
-            if (richText == null)
-            {
-                richText = chartText.AppendChild(new C.RichText());
-                richText.Append(new A.BodyProperties());
-                richText.Append(new A.ListStyle());
-            }
-
-            richText.RemoveAllChildren<A.Paragraph>();
-            var paragraph = richText.AppendChild(new A.Paragraph());
-            paragraph.AppendChild(new A.Run(new A.Text(value!)));
-
-            var overlay = cTitle.GetFirstChild<C.Overlay>() ?? cTitle.AppendChild(new C.Overlay());
-            overlay.Val = false;
+            this.UpdateRichTextContent(richText, value!);
+            this.EnsureOverlayDisabled(cTitle);
         }
     }
 
@@ -193,4 +158,76 @@ internal class XAxis(ChartPart chartPart) : IXAxis
             .FirstOrDefault(a => a.AxisPosition?.Val?.Value == C.AxisPositionValues.Bottom)
             ?? plotArea.Elements<C.ValueAxis>().FirstOrDefault();
     }
+
+    private C.Title GetOrCreateTitle(OpenXmlCompositeElement axis)
+    {
+        var title = axis.GetFirstChild<C.Title>();
+        if (title != null)
+        {
+            return title;
+        }
+
+        title = new C.Title();
+        var insertBefore = axis.Elements<OpenXmlElement>()
+            .FirstOrDefault(this.IsTitleInsertionBoundary);
+
+        if (insertBefore != null)
+        {
+            axis.InsertBefore(title, insertBefore);
+        }
+        else
+        {
+            axis.AppendChild(title);
+        }
+
+        return title;
+    }
+
+    private C.ChartText GetOrCreateChartText(C.Title title) =>
+        title.GetFirstChild<C.ChartText>() ?? title.AppendChild(new C.ChartText());
+
+    private C.RichText GetOrCreateRichText(C.ChartText chartText)
+    {
+        var richText = chartText.GetFirstChild<C.RichText>();
+        if (richText != null)
+        {
+            return richText;
+        }
+
+        richText = chartText.AppendChild(new C.RichText());
+        richText.Append(new A.BodyProperties());
+        richText.Append(new A.ListStyle());
+
+        return richText;
+    }
+
+    private void UpdateRichTextContent(C.RichText richText, string text)
+    {
+        richText.RemoveAllChildren<A.Paragraph>();
+        var paragraph = richText.AppendChild(new A.Paragraph());
+        paragraph.AppendChild(new A.Run(new A.Text(text)));
+    }
+
+    private void EnsureOverlayDisabled(C.Title title)
+    {
+        var overlay = title.GetFirstChild<C.Overlay>() ?? title.AppendChild(new C.Overlay());
+        overlay.Val = false;
+    }
+
+    private bool IsTitleInsertionBoundary(OpenXmlElement element) =>
+        element switch
+        {
+            C.NumberingFormat => true,
+            C.MajorTickMark => true,
+            C.MinorTickMark => true,
+            C.TickLabelPosition => true,
+            C.CrossingAxis => true,
+            C.Crosses => true,
+            C.CrossBetween => true,
+            C.CrossesAt => true,
+            C.Layout => true,
+            C.ShapeProperties => true,
+            C.TextProperties => true,
+            _ => false,
+        };
 }
