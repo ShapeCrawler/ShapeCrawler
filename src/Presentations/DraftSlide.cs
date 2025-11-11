@@ -168,6 +168,28 @@ public sealed class DraftSlide
         return this;
     }
 
+    /// <summary>
+    ///     Adds a clustered bar chart with configuration.
+    /// </summary>
+    public DraftSlide ClusteredBarChart(Action<DraftChart> configure)
+    {
+        this.actions.Add(slide =>
+        {
+            var builder = new DraftChart();
+            configure(builder);
+            slide.Shapes.AddClusteredBarChart(
+                builder.ChartX,
+                builder.ChartY,
+                builder.ChartWidth,
+                builder.ChartHeight,
+                builder.CategoryNames,
+                builder.SeriesDataList,
+                builder.ChartName);
+        });
+
+        return this;
+    }
+
     internal void ApplyTo(Presentation presentation)
     {
         // Always add a new slide for each DraftSlide application

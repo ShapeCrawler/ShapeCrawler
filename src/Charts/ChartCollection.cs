@@ -87,6 +87,22 @@ internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart sl
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Stacked Column Chart");
     }
 
+    public void AddClusteredBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        List<string> categories,
+        List<DraftChart.SeriesData> seriesData,
+        string chartName)
+    {
+        var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
+        var chartPart = slidePart.AddNewPart<ChartPart>(rId);
+        var seriesTuples = seriesData.Select(s => (s.Name, s.Values)).ToList();
+        new ClusteredBarChart(chartPart, categories, seriesTuples).Generate();
+        this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
+    }
+
     #region Shapes
 
     public void Add(IShape addingShape) => shapes.Add(addingShape);

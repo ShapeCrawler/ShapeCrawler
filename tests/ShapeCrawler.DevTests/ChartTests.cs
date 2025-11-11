@@ -553,5 +553,6 @@ public class ChartTests : SCTest
         
         // Assert
         chart.XAxis.Title.Should().Be("Series values");
+        pres.Validate();
     }
 }
