@@ -22,8 +22,6 @@ jobs:
             framework_version: 'net9.0'
           - os: macos-14
             framework_version: 'net9.0'
-          - os: macos-13
-            framework_version: 'net9.0'
       fail-fast: false
     steps:
       - uses: actions/checkout@v5
