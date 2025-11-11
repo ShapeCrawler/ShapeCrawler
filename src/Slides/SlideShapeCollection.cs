@@ -102,6 +102,16 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
     ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+
+    public void AddClusteredBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IList<string> categories,
+        IList<Presentations.DraftChart.SeriesData> seriesData,
+        string chartName
+    ) => shapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
     
     public IShape AddSmartArt(
         int x,

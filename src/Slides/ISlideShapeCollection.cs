@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 
 #pragma warning disable IDE0130
@@ -104,6 +105,18 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <param name="pointValues">Dictionary of x and y coordinate values for each point.</param>
     /// <param name="seriesName">Name of the data series.</param>
     void AddScatterChart(int x, int y, int width, int height, Dictionary<double, double> pointValues, string seriesName);
+
+    /// <summary>
+    ///     Adds a Clustered Bar Chart.
+    /// </summary>
+    void AddClusteredBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IList<string> categories,
+        IList<DraftChart.SeriesData> seriesData,
+        string chartName);
 
     /// <summary>
     ///     Adds a Stacked Column Chart.

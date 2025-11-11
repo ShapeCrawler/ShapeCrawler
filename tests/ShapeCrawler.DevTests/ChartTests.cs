@@ -529,4 +529,30 @@ public class ChartTests : SCTest
         title.Alignment.X.Should().BeNull();
         pres.Validate();
     }
+
+    [Test]
+    public void XAxis_Title_Setter_sets_title_for_the_chart_x_axis()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.ClusteredBarChart(chart =>
+                {
+                    chart.Categories("Category 1", "Category 2");
+                    chart.Series("Series 1", 4.3, 2.5);
+                    chart.Series("Series 2", 2.4, 4.4);
+                });
+            });
+        });
+        var chart = pres.Slide(1).Shapes.First().Chart!;
+        
+        // Act
+        chart.XAxis!.Title = "Series values";
+        
+        // Assert
+        chart.XAxis.Title.Should().Be("Series values");
+        pres.Validate();
+    }
 }

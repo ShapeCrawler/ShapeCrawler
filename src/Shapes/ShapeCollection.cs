@@ -151,6 +151,16 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         IList<string> seriesNames
     ) => throw new NotImplementedException();
 
+    public void AddClusteredBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IList<string> categories,
+        IList<Presentations.DraftChart.SeriesData> seriesData,
+        string chartName
+    ) => throw new NotImplementedException();
+
     public IShape AddSmartArt(
         int x,
         int y,
