@@ -12,13 +12,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            framework_version: 'net9.0'
+            framework_version: 'net10.0'
       fail-fast: false    
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x      
       - name: Run tests
         run: |
           dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj -c Release -f ${{ matrix.framework_version }}

@@ -226,10 +226,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
         }
 
         var autoTitleDeletedCheck = cChart.PlotArea!.GetFirstChild<C.AutoTitleDeleted>();
-        if (autoTitleDeletedCheck != null)
-        {
-            autoTitleDeletedCheck.Val = false;
-        }
+        autoTitleDeletedCheck?.Val = false;
 
         if (cTitle == null)
         {
