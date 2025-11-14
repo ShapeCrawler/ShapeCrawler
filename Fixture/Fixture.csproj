@@ -11,11 +11,11 @@
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <TargetFrameworks>net9.0;net48;net472</TargetFrameworks>
+        <TargetFrameworks>net10.0;net48;net472</TargetFrameworks>
         <WarningsAsErrors>NU1608</WarningsAsErrors>
     </PropertyGroup>
 
