@@ -120,10 +120,7 @@ internal sealed class TextBox : ITextBox
         get => this.margins.Top;
         set
         {
-            if (this.margins != null)
-            {
-                this.margins.Top = value;
-            }
+            this.margins.Top = value;
         }
     }
 
@@ -259,10 +256,7 @@ internal sealed class TextBox : ITextBox
 
         var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
 
-        if (aBodyPr is not null)
-        {
-            aBodyPr.Anchor = aTextAlignmentTypeValue;
-        }
+        aBodyPr?.Anchor = aTextAlignmentTypeValue;
 
         this.vAlignment = alignmentValue;
     }
