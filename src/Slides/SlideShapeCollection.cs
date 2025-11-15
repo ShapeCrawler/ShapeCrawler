@@ -24,7 +24,6 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 {
     private readonly ShapeIdGenerator idGenerator = new(shapes);
     private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart, new ShapeIdGenerator(shapes));
-    private readonly ShapeGrouping shapeGrouping = new(slidePart, new ShapeIdGenerator(shapes));
     private readonly ConnectionShape connectionShape = new(slidePart, new ShapeIdGenerator(shapes));
 
     public int Count => shapes.Count;
@@ -125,7 +124,6 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    // public IShape Group(IShape[] groupingShapes) => this.shapeGrouping.Create(groupingShapes);
     public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, idGenerator, slidePart);
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
