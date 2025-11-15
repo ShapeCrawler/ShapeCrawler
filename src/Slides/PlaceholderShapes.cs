@@ -8,9 +8,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Slides;
 
 /// <summary>
-///     Creates placeholder shapes.
+///     Represents placeholder shapes collection.
 /// </summary>
-internal sealed class PlaceholderShape(ISlideShapeCollection shapes, SlidePart slidePart, ShapeIdGenerator idGenerator)
+internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart slidePart, ShapeIdGenerator idGenerator)
 {
     /// <summary>
     ///     Adds a date and time placeholder.

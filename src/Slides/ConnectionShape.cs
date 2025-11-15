@@ -9,7 +9,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Slides;
 
 /// <summary>
-///     Creates connection shapes (lines).
+///     Creates connection shape for line.
 /// </summary>
 internal sealed class ConnectionShape(SlidePart slidePart, ShapeIdGenerator idGenerator)
 {

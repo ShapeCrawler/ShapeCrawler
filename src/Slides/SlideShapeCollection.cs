@@ -11,6 +11,7 @@ using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Groups;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Units;
@@ -22,7 +23,7 @@ namespace ShapeCrawler.Slides;
 internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
     private readonly ShapeIdGenerator idGenerator = new(shapes);
-    private readonly PlaceholderShape placeholderShape = new(shapes, slidePart, new ShapeIdGenerator(shapes));
+    private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart, new ShapeIdGenerator(shapes));
     private readonly ShapeGrouping shapeGrouping = new(slidePart, new ShapeIdGenerator(shapes));
     private readonly ConnectionShape connectionShape = new(slidePart, new ShapeIdGenerator(shapes));
 
@@ -124,7 +125,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    public IShape Group(IShape[] groupingShapes) => this.shapeGrouping.Create(groupingShapes);
+    // public IShape Group(IShape[] groupingShapes) => this.shapeGrouping.Create(groupingShapes);
+    public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, idGenerator, slidePart);
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {

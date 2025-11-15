@@ -43,7 +43,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         get
         {
             var stream = new MemoryStream();
-            new SCOpenXmlElement(pShapeTreeElement).PresentationDocument.Clone(stream);
+            new SCOpenXmlElement(pShapeTreeElement).ParentPresentationDocument.Clone(stream);
 
             return new Presentation(stream);
         }
