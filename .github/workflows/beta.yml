@@ -39,6 +39,9 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
       - name: Generate version
         id: versioning
         run: echo "PACKAGE_VERSION=${{ vars.VERSION }}-beta.$(Get-Date -Format 'yyyyMMddHHmm')" >> $env:GITHUB_ENV
