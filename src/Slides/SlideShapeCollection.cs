@@ -1,14 +1,10 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UseObjectOrCollectionInitializer
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Extensions;
@@ -23,6 +19,10 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
+    private readonly ShapeIdGenerator idGenerator = new(shapes);
+    private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
+    private readonly ConnectionShape connectionShape = new(slidePart, new ShapeIdGenerator(shapes));
+
     public int Count => shapes.Count;
 
     public IShape this[int index] => shapes[index];
@@ -121,82 +121,13 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    public IShape Group(IShape[] groupingShapes)
-    {
-        var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
-        var idAndName = this.GenerateIdAndName();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
-        {
-            Id = (uint)idAndName.Item1, Name = idAndName.Item2
-        };
-        var nonVisualGroupShapeDrawingProperties = new P.NonVisualGroupShapeDrawingProperties();
-        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
-
-        nonVisualGroupShapeProperties.Append(nonVisualDrawingProperties);
-        nonVisualGroupShapeProperties.Append(nonVisualGroupShapeDrawingProperties);
-        nonVisualGroupShapeProperties.Append(applicationNonVisualDrawingProperties);
-
-        var groupShapeProperties = new P.GroupShapeProperties();
-
-        decimal minX = decimal.MaxValue;
-        decimal minY = decimal.MaxValue;
-        decimal maxX = decimal.MinValue;
-        decimal maxY = decimal.MinValue;
-
-        foreach (var groupingShape in groupingShapes)
-        {
-            minX = Math.Min(minX, groupingShape.X);
-            minY = Math.Min(minY, groupingShape.Y);
-            maxX = Math.Max(maxX, groupingShape.X + groupingShape.Width);
-            maxY = Math.Max(maxY, groupingShape.Y + groupingShape.Height);
-        }
-
-        var transformGroup = new A.TransformGroup();
-        var offset = new A.Offset { X = (int)minX, Y = (int)minY };
-        var extents = new A.Extents { Cx = (int)(maxX - minX), Cy = (int)(maxY - minY) };
-        var childOffset = new A.ChildOffset { X = 0, Y = 0 };
-        var childExtents = new A.ChildExtents { Cx = extents.Cx, Cy = extents.Cy };
-
-        transformGroup.Append(offset);
-        transformGroup.Append(extents);
-        transformGroup.Append(childOffset);
-        transformGroup.Append(childExtents);
-
-        groupShapeProperties.Append(transformGroup);
-
-        var pGroupShape = new P.GroupShape();
-        pGroupShape.Append(nonVisualGroupShapeProperties);
-        pGroupShape.Append(groupShapeProperties);
-
-        foreach (var groupingShape in groupingShapes)
-        {
-            // Get the OpenXml element for the shape
-            var openXmlElement = groupingShape.SDKOpenXmlElement;
-
-            // Remove the shape from its current parent
-            if (openXmlElement.Parent is not null)
-            {
-                openXmlElement.Remove();
-            }
-            
-            pGroupShape.Append(openXmlElement);
-        }
-
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGroupShape);
-
-        foreach (var grouping in groupingShapes)
-        {
-            grouping.Remove();
-        }
-
-        return new GroupShape(pGroupShape);
-    }
+    public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, this.idGenerator, slidePart);
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
-        var nextShapeId = this.GetNextShapeId();
+        var nextShapeId = this.idGenerator.GetNextId();
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = shapes.Last<TextShape>();
@@ -214,7 +145,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // First add the basic shape
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
-        var nextShapeId = this.GetNextShapeId();
+        var nextShapeId = this.idGenerator.GetNextId();
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = shapes.Last<TextShape>();
@@ -236,82 +167,14 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
-    {
-        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new line.xml");
-        var pConnectionShape = new P.ConnectionShape(xml);
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
-
-        var deltaY = endPointY - startPointY;
-        var cx = endPointX;
-
-        var cy = endPointY;
-        if (deltaY == 0)
-        {
-            cy = 0;
-        }
-
-        if (startPointX == endPointX)
-        {
-            cx = 0;
-        }
-
-        var x = startPointX;
-        var y = startPointY;
-        var flipV = false;
-        var flipH = false;
-        if (startPointX > endPointX && endPointY > startPointY)
-        {
-            x = endPointX;
-            y = startPointY;
-            cx = startPointX - endPointX;
-            cy = endPointY;
-            flipH = true;
-        }
-        else if (startPointX > endPointX && startPointY == endPointY)
-        {
-            x = startPointX;
-            cx = Math.Abs(startPointX - endPointX);
-            cy = 0;
-        }
-        else if (startPointY > endPointY)
-        {
-            y = startPointY;
-            cy = endPointY;
-            flipV = true;
-        }
-
-        if (cx == 0)
-        {
-            flipV = true;
-        }
-
-        if (startPointX > endPointX)
-        {
-            flipH = true;
-        }
-
-        var idAndName = this.GenerateIdAndName();
-        pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)idAndName.Item1;
-
-        var xEmu = new Points(x).AsEmus();
-        var yEmu = new Points(y).AsEmus();
-        var cxEmu = new Points(cx).AsEmus();
-        var cyEmu = new Points(cy).AsEmus();
-        var aXfrm = pConnectionShape.ShapeProperties!.Transform2D!;
-        aXfrm.Offset!.X = xEmu;
-        aXfrm.Offset!.Y = yEmu;
-        aXfrm.Extents!.Cx = cxEmu;
-        aXfrm.Extents!.Cy = cyEmu;
-        aXfrm.HorizontalFlip = new BooleanValue(flipH);
-        aXfrm.VerticalFlip = new BooleanValue(flipV);
-    }
+        => this.connectionShape.Create(startPointX, startPointY, endPointX, endPointY);
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
         => this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {
-        var shapeName = this.GenerateNextTableName();
+        var shapeName = this.idGenerator.GenerateNextTableName();
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
         var tableHeightEmu = Constants.DefaultRowHeightEmu * rowsCount;
@@ -320,7 +183,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)this.GetNextShapeId(), Name = shapeName
+            Id = (uint)this.idGenerator.GetNextId(), Name = shapeName
         };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
@@ -385,122 +248,9 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public IShape AddDateAndTime()
-    {
-        // Check if a DateAndTime placeholder already exists
-        var existingDateTimePlaceholder = shapes
-            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
+    public IShape AddDateAndTime() => this.placeholderShape.AddDateAndTime();
 
-        if (existingDateTimePlaceholder != null)
-        {
-            throw new SCException("The slide already contains a Date and Time placeholder.");
-        }
+    public IShape AddFooter() => this.placeholderShape.AddFooter();
 
-        // Load the date-time placeholder XML template
-        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
-        var pShape = new P.Shape(xml);
-        var nextShapeId = this.GetNextShapeId();
-
-        // Append the shape to the slide
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
-
-        // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextShape>();
-        addedShape.Id = nextShapeId;
-        addedShape.Name = $"Date Placeholder {nextShapeId}";
-
-        return addedShape;
-    }
-
-    public IShape AddFooter()
-    {
-        // Check if a Footer placeholder already exists
-        var existingFooterPlaceholder = shapes
-            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
-
-        if (existingFooterPlaceholder != null)
-        {
-            throw new SCException("The slide already contains a Footer placeholder.");
-        }
-
-        // Load the footer placeholder XML template
-        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("footer placeholder.xml");
-        var pShape = new P.Shape(xml);
-        var nextShapeId = this.GetNextShapeId();
-
-        // Append the shape to the slide
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
-
-        // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextShape>();
-        addedShape.Id = nextShapeId;
-        addedShape.Name = $"Footer Placeholder {nextShapeId}";
-
-        return addedShape;
-    }
-
-    public IShape AddSlideNumber()
-    {
-        // Check if a Slide Number placeholder already exists
-        var existingSlideNumberPlaceholder = shapes
-            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.SlideNumber);
-
-        if (existingSlideNumberPlaceholder != null)
-        {
-            throw new SCException("The slide already contains a Slide Number placeholder.");
-        }
-
-        // Load the slide number placeholder XML template
-        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("slide number placeholder.xml");
-        var pShape = new P.Shape(xml);
-        var nextShapeId = this.GetNextShapeId();
-
-        // Append the shape to the slide
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
-
-        // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextShape>();
-        addedShape.Id = nextShapeId;
-        addedShape.Name = $"Slide Number Placeholder {nextShapeId}";
-
-        return addedShape;
-    }
-
-    private int GetNextShapeId()
-    {
-        if (shapes.Any())
-        {
-            return shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
-        }
-
-        return 1;
-    }
-
-    private (int, string) GenerateIdAndName()
-    {
-        var id = this.GetNextShapeId();
-
-        return (id, $"Shape {id}");
-    }
-
-    private string GenerateNextTableName()
-    {
-        var maxOrder = 0;
-        foreach (var shape in shapes)
-        {
-            var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+", RegexOptions.None, TimeSpan.FromSeconds(100));
-            if (!matchOrder.Success)
-            {
-                continue;
-            }
-
-            var order = int.Parse(matchOrder.Value);
-            if (order > maxOrder)
-            {
-                maxOrder = order;
-            }
-        }
-
-        return $"Table {maxOrder + 1}";
-    }
+    public IShape AddSlideNumber() => this.placeholderShape.AddSlideNumber();
 }

@@ -6,7 +6,7 @@ namespace ShapeCrawler;
 
 internal readonly ref struct SCOpenXmlElement(OpenXmlElement openXmlElement)
 {
-    internal PresentationDocument PresentationDocument =>
-        (PresentationDocument)openXmlElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!
-            .OpenXmlPackage;
+    internal PresentationDocument ParentPresentationDocument => (PresentationDocument)this.ParentOpenXmlPart.OpenXmlPackage;
+
+    internal OpenXmlPart ParentOpenXmlPart => openXmlElement.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
 }
