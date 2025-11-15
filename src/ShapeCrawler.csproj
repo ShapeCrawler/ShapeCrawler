@@ -58,6 +58,16 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EmbeddedResource Include="Assets\new rectangle.xml" />
     <None Remove="Assets\new line.xml" />
     <EmbeddedResource Include="Assets\new line.xml" />
+    <None Remove="Assets\smartart-basicblocklist-data.xml" />
+    <EmbeddedResource Include="Assets\smartart-basicblocklist-data.xml" />
+    <None Remove="Assets\smartart-basicblocklist-layout.xml" />
+    <EmbeddedResource Include="Assets\smartart-basicblocklist-layout.xml" />
+    <None Remove="Assets\smartart-basicblocklist-colors.xml" />
+    <EmbeddedResource Include="Assets\smartart-basicblocklist-colors.xml" />
+    <None Remove="Assets\smartart-basicblocklist-quickStyle.xml" />
+    <EmbeddedResource Include="Assets\smartart-basicblocklist-quickStyle.xml" />
+    <None Remove="Assets\smartart-basicblocklist-drawing.xml" />
+    <EmbeddedResource Include="Assets\smartart-basicblocklist-drawing.xml" />
     <None Remove="Assets\date and time placeholder.xml" />
     <EmbeddedResource Include="Assets\date and time placeholder.xml" />
     <None Remove="Assets\footer placeholder.xml" />
