@@ -27,7 +27,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore src/ShapeCrawler.csproj
       - name: Build
         run: dotnet build src/ShapeCrawler.csproj --configuration Release --framework ${{ matrix.framework_version }} --no-restore
       - name: Run tests
