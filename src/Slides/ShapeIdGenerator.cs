@@ -1,7 +1,5 @@
 using System;
-#pragma warning disable IDE0005 // Using directive is unnecessary
 using System.Linq;
-#pragma warning restore IDE0005
 using System.Text.RegularExpressions;
 
 namespace ShapeCrawler.Slides;
