@@ -10,7 +10,7 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Represents placeholder shapes collection.
 /// </summary>
-internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart slidePart, ShapeIdGenerator idGenerator)
+internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart slidePart)
 {
     /// <summary>
     ///     Adds a date and time placeholder.
@@ -29,6 +29,7 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         // Load the date-time placeholder XML template
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
         var pShape = new P.Shape(xml);
+        var idGenerator = new ShapeIdGenerator(shapes);
         var nextShapeId = idGenerator.GetNextId();
 
         // Append the shape to the slide
@@ -59,6 +60,7 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         // Load the footer placeholder XML template
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("footer placeholder.xml");
         var pShape = new P.Shape(xml);
+        var idGenerator = new ShapeIdGenerator(shapes);
         var nextShapeId = idGenerator.GetNextId();
 
         // Append the shape to the slide
@@ -89,6 +91,7 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         // Load the slide number placeholder XML template
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("slide number placeholder.xml");
         var pShape = new P.Shape(xml);
+        var idGenerator = new ShapeIdGenerator(shapes);
         var nextShapeId = idGenerator.GetNextId();
 
         // Append the shape to the slide

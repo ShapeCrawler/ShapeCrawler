@@ -4,9 +4,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-#pragma warning disable IDE0005 // Using directive is unnecessary
-using System.Linq;
-#pragma warning restore IDE0005
 using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
@@ -23,7 +20,7 @@ namespace ShapeCrawler.Slides;
 internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
     private readonly ShapeIdGenerator idGenerator = new(shapes);
-    private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart, new ShapeIdGenerator(shapes));
+    private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
     private readonly ConnectionShape connectionShape = new(slidePart, new ShapeIdGenerator(shapes));
 
     public int Count => shapes.Count;
@@ -124,7 +121,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, idGenerator, slidePart);
+    public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, this.idGenerator, slidePart);
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
