@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Assets;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -14,6 +18,15 @@ namespace ShapeCrawler.Slides;
 
 internal readonly ref struct SCSlidePart(SlidePart slidePart)
 {
+    private const string SmartArtDiagramUri = "http://schemas.openxmlformats.org/drawingml/2006/diagram";
+    private const string DiagramDrawingRelationshipType = "http://schemas.microsoft.com/office/2007/relationships/diagramDrawing";
+    private const string DiagramDrawingContentType = "application/vnd.ms-office.drawingml.diagramDrawing+xml";
+    private const string BasicBlockListDataAsset = "smartart-basicblocklist-data.xml";
+    private const string BasicBlockListLayoutAsset = "smartart-basicblocklist-layout.xml";
+    private const string BasicBlockListColorsAsset = "smartart-basicblocklist-colors.xml";
+    private const string BasicBlockListQuickStyleAsset = "smartart-basicblocklist-quickStyle.xml";
+    private const string BasicBlockListDrawingAsset = "smartart-basicblocklist-drawing.xml";
+
     /// <summary>
     /// Clones the wrapped slide part to the specified presentation part using the provided relationship id.
     /// </summary>
@@ -34,6 +47,12 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     internal IShape AddSmartArt(int x, int y, int width, int height, SmartArtType smartArtType)
     {
+        if (smartArtType != SmartArtType.BasicBlockList)
+        {
+            throw new NotSupportedException($"SmartArt type '{smartArtType}' is not supported.");
+        }
+
+        var diagramPartIds = this.CreateBasicBlockListDiagramParts();
         var pGraphicFrame = new GraphicFrame();
 
         // Add ID and name properties
@@ -58,11 +77,14 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // Create the diagram graphic
         var graphic = new A.Graphic();
-        var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/diagram" };
-
-        // Instead of using Diagram class directly, we'll use a simple approach
-        // with just a GraphicData container that identifies as a diagram
-        // This will create a valid empty SmartArt shell that can be modified later
+        var graphicData = new A.GraphicData { Uri = SmartArtDiagramUri };
+        graphicData.InnerXml =
+            "<dgm:relIds xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" " +
+            "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " +
+            $"r:dm=\"{diagramPartIds.DataId}\" " +
+            $"r:lo=\"{diagramPartIds.LayoutId}\" " +
+            $"r:qs=\"{diagramPartIds.QuickStyleId}\" " +
+            $"r:cs=\"{diagramPartIds.ColorsId}\" />";
         graphic.Append(graphicData);
         pGraphicFrame.Append(graphic);
 
@@ -75,6 +97,63 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 new ShapeId(pGraphicFrame),
                 pGraphicFrame);
     }
+
+    private DiagramPartIds CreateBasicBlockListDiagramParts()
+    {
+        var assets = new AssetCollection(Assembly.GetExecutingAssembly());
+        var relationshipGenerator = new SCOpenXmlPart(slidePart);
+
+        var dataRelId = relationshipGenerator.NextRelationshipId();
+        var dataPart = slidePart.AddNewPart<DiagramDataPart>(dataRelId);
+
+        var layoutRelId = relationshipGenerator.NextRelationshipId();
+        var layoutPart = slidePart.AddNewPart<DiagramLayoutDefinitionPart>(layoutRelId);
+        this.WriteSmartArtPart(layoutPart, assets, BasicBlockListLayoutAsset);
+
+        var quickStyleRelId = relationshipGenerator.NextRelationshipId();
+        var quickStylePart = slidePart.AddNewPart<DiagramStylePart>(quickStyleRelId);
+        this.WriteSmartArtPart(quickStylePart, assets, BasicBlockListQuickStyleAsset);
+
+        var colorsRelId = relationshipGenerator.NextRelationshipId();
+        var colorsPart = slidePart.AddNewPart<DiagramColorsPart>(colorsRelId);
+        this.WriteSmartArtPart(colorsPart, assets, BasicBlockListColorsAsset);
+
+        var drawingRelId = relationshipGenerator.NextRelationshipId();
+        var drawingPart = slidePart.AddExtendedPart(
+            DiagramDrawingRelationshipType,
+            DiagramDrawingContentType,
+            drawingRelId);
+        this.WriteSmartArtPart(drawingPart, assets, BasicBlockListDrawingAsset);
+        this.WriteSmartArtPart(dataPart, assets, BasicBlockListDataAsset, drawingRelId);
+
+        return new DiagramPartIds(dataRelId, layoutRelId, quickStyleRelId, colorsRelId, drawingRelId);
+    }
+
+    private void WriteSmartArtPart(
+        OpenXmlPart targetPart,
+        AssetCollection assets,
+        string assetName,
+        string? drawingRelationshipId = null)
+    {
+        using var destinationStream = targetPart.GetStream(FileMode.Create, FileAccess.Write);
+        if (drawingRelationshipId == null)
+        {
+            using var sourceStream = assets.StreamOf(assetName);
+            sourceStream.CopyTo(destinationStream);
+            return;
+        }
+
+        var template = assets.StringOf(assetName).Replace("{{DRAWING_REL_ID}}", drawingRelationshipId);
+        using var writer = new StreamWriter(destinationStream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        writer.Write(template);
+    }
+
+    private readonly record struct DiagramPartIds(
+        string DataId,
+        string LayoutId,
+        string QuickStyleId,
+        string ColorsId,
+        string DrawingId);
 
     private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
     {
