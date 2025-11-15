@@ -68,11 +68,8 @@ internal sealed class GroupShape : Shape
         pGroupShape.Append(nonVisualGroupShapeProperties);
         pGroupShape.Append(groupShapeProperties);
 
-        foreach (var groupingShape in groupingShapes)
+        foreach (var openXmlElement in groupingShapes.Select(groupingShape => groupingShape.SDKOpenXmlElement))
         {
-            // Get the OpenXml element for the shape
-            var openXmlElement = groupingShape.SDKOpenXmlElement;
-
             // Remove the shape from its current parent
             if (openXmlElement.Parent is not null)
             {
