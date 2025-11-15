@@ -17,7 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Build
+        run: dotnet build src/ShapeCrawler.csproj --configuration Release --framework ${{ matrix.framework_version }}
       - name: Run tests
         run: |
-          dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj -c Release -f ${{ matrix.framework_version }}
-          dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj -c Release -f ${{ matrix.framework_version }}
+          dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj --configuration Release --framework ${{ matrix.framework_version }}
+          dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj --configuration Release --framework ${{ matrix.framework_version }}
