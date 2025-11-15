@@ -1,3 +1,4 @@
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
@@ -28,6 +29,13 @@ public class SmartArtTests : SCTest
         smartArtShape.Y.Should().Be(y);
         smartArtShape.Width.Should().Be(width);
         smartArtShape.Height.Should().Be(height);
+        var slidePart = ((Presentation)pres).PresDocument.PresentationPart!.SlideParts.First();
+        var relationshipTypes = slidePart.Parts.Select(part => part.OpenXmlPart.RelationshipType).ToList();
+        relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
+        relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout");
+        relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle");
+        relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors");
+        relationshipTypes.Should().Contain("http://schemas.microsoft.com/office/2007/relationships/diagramDrawing");
     }
     
     [Test]
