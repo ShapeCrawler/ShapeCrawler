@@ -8,7 +8,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlCompositeElement): IShapeOutline
+internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlCompositeElement) : IShapeOutline
 {
     public decimal Weight
     {
@@ -32,7 +32,13 @@ internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlComposite
 
         if (aOutline == null || aNoFill != null)
         {
-            aOutline = openXmlCompositeElement.AddOutline();
+            aOutline = openXmlCompositeElement.GetFirstChild<A.Outline>();
+            aOutline?.Remove();
+
+            aOutline = new A.Outline(
+                new A.SolidFill(
+                    new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) }));
+            openXmlCompositeElement.Append(aOutline);
         }
 
         aOutline.Width = new Int32Value((int)new Points(points).AsEmus());

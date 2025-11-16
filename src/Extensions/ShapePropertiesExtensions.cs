@@ -69,40 +69,4 @@ internal static class ShapePropertiesExtensions
 
         aSolidFill.Append(aRgbColorModelHex);
     }
-
-    internal static void AddBlipFill(this OpenXmlCompositeElement pShapeProperties, string rId)
-    {
-        pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
-        pShapeProperties.GetFirstChild<A.SolidFill>()?.Remove();
-        pShapeProperties.GetFirstChild<A.PatternFill>()?.Remove();
-        pShapeProperties.GetFirstChild<A.NoFill>()?.Remove();
-        pShapeProperties.GetFirstChild<A.BlipFill>()?.Remove();
-
-        var aBlipFill = new A.BlipFill(
-            new A.Blip { Embed = rId },
-            new A.Stretch(new A.FillRectangle()));
-
-        var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
-        if (aOutline != null)
-        {
-            pShapeProperties.InsertBefore(aBlipFill, aOutline);
-        }
-        else
-        {
-            pShapeProperties.Append(aBlipFill);
-        }
-    }
-
-    internal static A.Outline AddOutline(this OpenXmlCompositeElement pSpPr)
-    {
-        var aOutline = pSpPr.GetFirstChild<A.Outline>();
-        aOutline?.Remove();
-
-        aOutline = new A.Outline(
-            new A.SolidFill(
-                new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) }));
-        pSpPr.Append(aOutline);
-
-        return aOutline;
-    }
 }
