@@ -98,38 +98,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 pGraphicFrame);
     }
 
-    private DiagramPartIds CreateBasicBlockListDiagramParts()
-    {
-        var assets = new AssetCollection(Assembly.GetExecutingAssembly());
-        var relationshipGenerator = new SCOpenXmlPart(slidePart);
-
-        var dataRelId = relationshipGenerator.NextRelationshipId();
-        var dataPart = slidePart.AddNewPart<DiagramDataPart>(dataRelId);
-
-        var layoutRelId = relationshipGenerator.NextRelationshipId();
-        var layoutPart = slidePart.AddNewPart<DiagramLayoutDefinitionPart>(layoutRelId);
-        this.WriteSmartArtPart(layoutPart, assets, BasicBlockListLayoutAsset);
-
-        var quickStyleRelId = relationshipGenerator.NextRelationshipId();
-        var quickStylePart = slidePart.AddNewPart<DiagramStylePart>(quickStyleRelId);
-        this.WriteSmartArtPart(quickStylePart, assets, BasicBlockListQuickStyleAsset);
-
-        var colorsRelId = relationshipGenerator.NextRelationshipId();
-        var colorsPart = slidePart.AddNewPart<DiagramColorsPart>(colorsRelId);
-        this.WriteSmartArtPart(colorsPart, assets, BasicBlockListColorsAsset);
-
-        var drawingRelId = relationshipGenerator.NextRelationshipId();
-        var drawingPart = slidePart.AddExtendedPart(
-            DiagramDrawingRelationshipType,
-            DiagramDrawingContentType,
-            drawingRelId);
-        this.WriteSmartArtPart(drawingPart, assets, BasicBlockListDrawingAsset);
-        this.WriteSmartArtPart(dataPart, assets, BasicBlockListDataAsset, drawingRelId);
-
-        return new DiagramPartIds(dataRelId, layoutRelId, quickStyleRelId, colorsRelId, drawingRelId);
-    }
-
-    private void WriteSmartArtPart(
+    private static void WriteSmartArtPart(
         OpenXmlPart targetPart,
         AssetCollection assets,
         string assetName,
@@ -147,13 +116,43 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         using var writer = new StreamWriter(destinationStream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         writer.Write(template);
     }
+    
+    private DiagramPartIds CreateBasicBlockListDiagramParts()
+    {
+        var assets = new AssetCollection(Assembly.GetExecutingAssembly());
+        var relationshipGenerator = new SCOpenXmlPart(slidePart);
+
+        var dataRelId = relationshipGenerator.NextRelationshipId();
+        var dataPart = slidePart.AddNewPart<DiagramDataPart>(dataRelId);
+
+        var layoutRelId = relationshipGenerator.NextRelationshipId();
+        var layoutPart = slidePart.AddNewPart<DiagramLayoutDefinitionPart>(layoutRelId);
+        WriteSmartArtPart(layoutPart, assets, BasicBlockListLayoutAsset);
+
+        var quickStyleRelId = relationshipGenerator.NextRelationshipId();
+        var quickStylePart = slidePart.AddNewPart<DiagramStylePart>(quickStyleRelId);
+        WriteSmartArtPart(quickStylePart, assets, BasicBlockListQuickStyleAsset);
+
+        var colorsRelId = relationshipGenerator.NextRelationshipId();
+        var colorsPart = slidePart.AddNewPart<DiagramColorsPart>(colorsRelId);
+        WriteSmartArtPart(colorsPart, assets, BasicBlockListColorsAsset);
+
+        var drawingRelId = relationshipGenerator.NextRelationshipId();
+        var drawingPart = slidePart.AddExtendedPart(
+            DiagramDrawingRelationshipType,
+            DiagramDrawingContentType,
+            drawingRelId);
+        WriteSmartArtPart(drawingPart, assets, BasicBlockListDrawingAsset);
+        WriteSmartArtPart(dataPart, assets, BasicBlockListDataAsset, drawingRelId);
+
+        return new DiagramPartIds(dataRelId, layoutRelId, quickStyleRelId, colorsRelId);
+    }
 
     private readonly record struct DiagramPartIds(
         string DataId,
         string LayoutId,
         string QuickStyleId,
-        string ColorsId,
-        string DrawingId);
+        string ColorsId);
 
     private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
     {
