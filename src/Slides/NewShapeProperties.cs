@@ -23,19 +23,14 @@ internal sealed class NewShapeProperties(ISlideShapeCollection shapes)
     }
 
     /// <summary>
-    ///     Generates a shape ID and default name.
+    ///     Generates name for the next new shape.
     /// </summary>
-    internal (int, string) GetNextIdAndName()
-    {
-        var id = this.Id();
-
-        return (id, $"Shape {id}");
-    }
+    internal string Name() => $"Shape {this.Id()}";
 
     /// <summary>
-    ///     Generates the next table name based on existing table names.
+    ///     Generates name for the next new table shape.
     /// </summary>
-    internal string GetNextTableName()
+    internal string TableName()
     {
         var maxOrder = 0;
         foreach (var shape in shapes)

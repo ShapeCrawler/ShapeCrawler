@@ -25,10 +25,11 @@ internal sealed class GroupShape : Shape
         : base(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape)
     {
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
-        var idAndName = idGenerator.GetNextIdAndName();
+        var id = idGenerator.Id();
+        var name = idGenerator.Name();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)idAndName.Item1, Name = idAndName.Item2
+            Id = (uint)id, Name = name
         };
         var nonVisualGroupShapeDrawingProperties = new P.NonVisualGroupShapeDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
