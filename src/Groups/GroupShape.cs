@@ -26,7 +26,7 @@ internal sealed class GroupShape : Shape
     {
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
         var id = idGenerator.Id();
-        var name = idGenerator.Name();
+        var name = $"Shape {id}";
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
             Id = (uint)id, Name = name
