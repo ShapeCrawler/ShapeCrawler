@@ -11,7 +11,7 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Creates connection shape for line.
 /// </summary>
-internal sealed class ConnectionShape(SlidePart slidePart, ShapeIdGenerator idGenerator)
+internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties idGenerator)
 {
     /// <summary>
     ///     Creates a connection shape with the specified coordinates.
@@ -71,7 +71,7 @@ internal sealed class ConnectionShape(SlidePart slidePart, ShapeIdGenerator idGe
             flipH = true;
         }
 
-        var idAndName = idGenerator.GenerateIdAndName();
+        var idAndName = idGenerator.GetNextIdAndName();
         pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)idAndName.Item1;
 
         var xEmu = new Points(x).AsEmus();

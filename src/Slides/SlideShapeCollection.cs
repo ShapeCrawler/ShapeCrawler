@@ -19,9 +19,9 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
-    private readonly ShapeIdGenerator idGenerator = new(shapes);
+    private readonly NewShapeProperties idGenerator = new(shapes);
     private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
-    private readonly ConnectionShape connectionShape = new(slidePart, new ShapeIdGenerator(shapes));
+    private readonly ConnectionShape connectionShape = new(slidePart, new NewShapeProperties(shapes));
 
     public int Count => shapes.Count;
 
@@ -127,7 +127,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
-        var nextShapeId = this.idGenerator.GetNextId();
+        var nextShapeId = this.idGenerator.Id();
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = shapes.Last<TextShape>();
@@ -145,7 +145,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // First add the basic shape
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
-        var nextShapeId = this.idGenerator.GetNextId();
+        var nextShapeId = this.idGenerator.Id();
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = shapes.Last<TextShape>();
@@ -174,7 +174,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {
-        var shapeName = this.idGenerator.GenerateNextTableName();
+        var shapeName = this.idGenerator.GetNextTableName();
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
         var tableHeightEmu = Constants.DefaultRowHeightEmu * rowsCount;
@@ -183,7 +183,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)this.idGenerator.GetNextId(), Name = shapeName
+            Id = (uint)this.idGenerator.Id(), Name = shapeName
         };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
