@@ -5,14 +5,14 @@ using System.Text.RegularExpressions;
 namespace ShapeCrawler.Slides;
 
 /// <summary>
-///     Generates shape IDs and names.
+///     Represents properties for the new shapes.
 /// </summary>
-internal sealed class ShapeIdGenerator(ISlideShapeCollection shapes)
+internal sealed class NewShapeProperties(ISlideShapeCollection shapes)
 {
     /// <summary>
-    ///     Gets the next available shape ID.
+    ///     Generates ID for the next new shape.
     /// </summary>
-    internal int GetNextId()
+    internal int Id()
     {
         if (shapes.Any())
         {
@@ -23,19 +23,14 @@ internal sealed class ShapeIdGenerator(ISlideShapeCollection shapes)
     }
 
     /// <summary>
-    ///     Generates a shape ID and default name.
+    ///     Generates name for the next new shape.
     /// </summary>
-    internal (int, string) GenerateIdAndName()
-    {
-        var id = this.GetNextId();
-
-        return (id, $"Shape {id}");
-    }
+    internal string Name() => $"Shape {this.Id()}";
 
     /// <summary>
-    ///     Generates the next table name based on existing table names.
+    ///     Generates name for the next new table shape.
     /// </summary>
-    internal string GenerateNextTableName()
+    internal string TableName()
     {
         var maxOrder = 0;
         foreach (var shape in shapes)

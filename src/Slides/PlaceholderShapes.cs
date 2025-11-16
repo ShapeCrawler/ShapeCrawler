@@ -29,8 +29,7 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         // Load the date-time placeholder XML template
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
         var pShape = new P.Shape(xml);
-        var idGenerator = new ShapeIdGenerator(shapes);
-        var nextShapeId = idGenerator.GetNextId();
+        var nextShapeId = new NewShapeProperties(shapes).Id();
 
         // Append the shape to the slide
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
@@ -60,8 +59,7 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         // Load the footer placeholder XML template
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("footer placeholder.xml");
         var pShape = new P.Shape(xml);
-        var idGenerator = new ShapeIdGenerator(shapes);
-        var nextShapeId = idGenerator.GetNextId();
+        var nextShapeId = new NewShapeProperties(shapes).Id();
 
         // Append the shape to the slide
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
@@ -91,8 +89,7 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         // Load the slide number placeholder XML template
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("slide number placeholder.xml");
         var pShape = new P.Shape(xml);
-        var idGenerator = new ShapeIdGenerator(shapes);
-        var nextShapeId = idGenerator.GetNextId();
+        var nextShapeId = new NewShapeProperties(shapes).Id();
 
         // Append the shape to the slide
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);

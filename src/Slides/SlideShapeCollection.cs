@@ -19,9 +19,9 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
-    private readonly ShapeIdGenerator idGenerator = new(shapes);
+    private readonly NewShapeProperties newShapeProperties = new(shapes);
     private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
-    private readonly ConnectionShape connectionShape = new(slidePart, new ShapeIdGenerator(shapes));
+    private readonly ConnectionShape connectionShape = new(slidePart, new NewShapeProperties(shapes));
 
     public int Count => shapes.Count;
 
@@ -121,13 +121,13 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         SmartArtType smartArtType)
         => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
-    public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, this.idGenerator, slidePart);
+    public IShape Group(IShape[] groupingShapes) => new GroupShape(new P.GroupShape(), groupingShapes, this.newShapeProperties, slidePart);
 
     public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
-        var nextShapeId = this.idGenerator.GetNextId();
+        var nextShapeId = this.newShapeProperties.Id();
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = shapes.Last<TextShape>();
@@ -145,7 +145,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // First add the basic shape
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
-        var nextShapeId = this.idGenerator.GetNextId();
+        var nextShapeId = this.newShapeProperties.Id();
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = shapes.Last<TextShape>();
@@ -174,7 +174,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style)
     {
-        var shapeName = this.idGenerator.GenerateNextTableName();
+        var shapeName = this.newShapeProperties.TableName();
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
         var tableHeightEmu = Constants.DefaultRowHeightEmu * rowsCount;
@@ -183,7 +183,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)this.idGenerator.GetNextId(), Name = shapeName
+            Id = (uint)this.newShapeProperties.Id(), Name = shapeName
         };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();

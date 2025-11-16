@@ -70,7 +70,25 @@ internal sealed class SlideLayoutBackground(SlideLayoutPart slideLayoutPart) : I
                                     ?? pBackground.AppendChild(new P.BackgroundProperties());
 
         var (rId, _) = slideLayoutPart.AddImagePart(image, "image/png");
-        pBackgroundProperties.AddBlipFill(rId);
+        pBackgroundProperties.GetFirstChild<A.GradientFill>()?.Remove();
+        pBackgroundProperties.GetFirstChild<A.SolidFill>()?.Remove();
+        pBackgroundProperties.GetFirstChild<A.PatternFill>()?.Remove();
+        pBackgroundProperties.GetFirstChild<A.NoFill>()?.Remove();
+        pBackgroundProperties.GetFirstChild<A.BlipFill>()?.Remove();
+        
+        var aBlipFill = new A.BlipFill(
+            new A.Blip { Embed = rId },
+            new A.Stretch(new A.FillRectangle()));
+        
+        var aOutline = pBackgroundProperties.GetFirstChild<A.Outline>();
+        if (aOutline != null)
+        {
+            pBackgroundProperties.InsertBefore(aBlipFill, aOutline);
+        }
+        else
+        {
+            pBackgroundProperties.Append(aBlipFill);
+        }
     }
 
     public MemoryStream Picture()

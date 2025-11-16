@@ -9,9 +9,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Slides;
 
 /// <summary>
-///     Creates connection shape for line.
+///     Represents a connection shape.
 /// </summary>
-internal sealed class ConnectionShape(SlidePart slidePart, ShapeIdGenerator idGenerator)
+internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties newShapeProperties)
 {
     /// <summary>
     ///     Creates a connection shape with the specified coordinates.
@@ -71,8 +71,7 @@ internal sealed class ConnectionShape(SlidePart slidePart, ShapeIdGenerator idGe
             flipH = true;
         }
 
-        var idAndName = idGenerator.GenerateIdAndName();
-        pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)idAndName.Item1;
+        pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)newShapeProperties.Id();
 
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();

@@ -345,7 +345,4 @@ healthchecksdb
 
 coverage/
 
-/scripts/Output/
-
-# windsurf rules
-.windsurf/
+context/
