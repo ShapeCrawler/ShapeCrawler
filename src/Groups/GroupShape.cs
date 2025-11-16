@@ -21,15 +21,13 @@ internal sealed class GroupShape : Shape
         this.GroupedShapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
     }
 
-    internal GroupShape(P.GroupShape pGroupShape, IShape[] groupingShapes, NewShapeProperties idGenerator, SlidePart slidePart) 
+    internal GroupShape(P.GroupShape pGroupShape, IShape[] groupingShapes, NewShapeProperties newShapeProperties, SlidePart slidePart) 
         : base(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape)
     {
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
-        var id = idGenerator.Id();
-        var name = idGenerator.Name();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)id, Name = name
+            Id = (uint)newShapeProperties.Id(), Name = newShapeProperties.Name()
         };
         var nonVisualGroupShapeDrawingProperties = new P.NonVisualGroupShapeDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
