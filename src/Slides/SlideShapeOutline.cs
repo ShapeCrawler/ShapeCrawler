@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
