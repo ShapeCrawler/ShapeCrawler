@@ -126,7 +126,7 @@ internal sealed class Paragraph : IParagraph
             }
 
 #if NETSTANDARD2_0
-            var textLines = value.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var textLines = value.Split([Environment.NewLine], StringSplitOptions.None);
 #else
             var textLines = value.Split(Environment.NewLine);
 #endif
