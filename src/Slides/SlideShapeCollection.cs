@@ -7,7 +7,6 @@ using System.IO;
 using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Groups;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
@@ -216,7 +215,13 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         aTable.Append(tableGrid);
         for (var i = 0; i < rowsCount; i++)
         {
-            aTable.AddRow(columnsCount);
+            var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
+            for (var i2 = 0; i2 < columnsCount; i2++)
+            {
+                new SCATableRow(aTableRow).AddNewCell();
+            }
+        
+            aTable.Append(aTableRow);
         }
 
         graphicData.Append(aTable);

@@ -101,14 +101,12 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
 
     private static (A.RgbColorModelHex?, A.SchemeColor?, A.SystemColor?, A.PresetColor?) ExtractColorProperties(A.DefaultRunProperties aDefRPr)
     {
-        // Try get color from <a:solidFill>
-        var aSolidFill = aDefRPr.SdkASolidFill();
+        var aSolidFill = aDefRPr.GetFirstChild<A.SolidFill>();
         if (aSolidFill != null)
         {
             return (aSolidFill.RgbColorModelHex, aSolidFill.SchemeColor, aSolidFill.SystemColor, aSolidFill.PresetColor);
         }
 
-        // Try get color from gradient fill
         var aGradientStop = aDefRPr.GetFirstChild<A.GradientFill>()?.GradientStopList?
             .GetFirstChild<A.GradientStop>();
             
