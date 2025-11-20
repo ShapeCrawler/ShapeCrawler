@@ -369,7 +369,7 @@ internal sealed class AudioVideoShapeCollection(
 
         if (!this.TryGetImageRId(hash, out var imgPartRId))
         {
-            (imgPartRId, _) = slidePart.AddImagePart(image, mimeType);
+            imgPartRId = slidePart.AddImagePart(image, mimeType);
         }
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();

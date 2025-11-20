@@ -6,7 +6,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class TypedOpenXmlPartExtensions
 {
-    internal static (string, ImagePart) AddImagePart(this OpenXmlPart openXmlPart, Stream stream, string mimeType)
+    internal static string AddImagePart(this OpenXmlPart openXmlPart, Stream stream, string mimeType)
     {
         var rId = new SCOpenXmlPart(openXmlPart).NextRelationshipId();
 
@@ -14,6 +14,6 @@ internal static class TypedOpenXmlPartExtensions
         stream.Position = 0;
         imagePart.FeedData(stream);
 
-        return (rId, imagePart);
+        return rId;
     }
 }

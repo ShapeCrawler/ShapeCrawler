@@ -123,7 +123,7 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
             openXmlCompositeElement.GetFirstChild<A.PatternFill>()?.Remove();
             openXmlCompositeElement.GetFirstChild<A.NoFill>()?.Remove();
 
-            (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
+            var rId = openXmlPart.AddImagePart(image, "image/png");
 
             this.aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();

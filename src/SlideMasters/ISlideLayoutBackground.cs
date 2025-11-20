@@ -69,7 +69,7 @@ internal sealed class SlideLayoutBackground(SlideLayoutPart slideLayoutPart) : I
         var pBackgroundProperties = pBackground.GetFirstChild<P.BackgroundProperties>()
                                     ?? pBackground.AppendChild(new P.BackgroundProperties());
 
-        var (rId, _) = slideLayoutPart.AddImagePart(image, "image/png");
+        var rId = slideLayoutPart.AddImagePart(image, "image/png");
         pBackgroundProperties.GetFirstChild<A.GradientFill>()?.Remove();
         pBackgroundProperties.GetFirstChild<A.SolidFill>()?.Remove();
         pBackgroundProperties.GetFirstChild<A.PatternFill>()?.Remove();

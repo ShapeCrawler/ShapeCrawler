@@ -38,13 +38,13 @@ internal sealed class PictureCollection(
                 var svgHash = imageContent.SvgHash;
                 if (!this.TryGetImageRId(svgHash, out var svgPartRId))
                 {
-                    (svgPartRId, _) = slidePart.AddImagePart(svgStream, "image/svg+xml");
+                    svgPartRId = slidePart.AddImagePart(svgStream, "image/svg+xml");
                 }
 
                 var imgHash = imageContent.Hash;
                 if (!this.TryGetImageRId(imgHash, out var imgPartRId))
                 {
-                    (imgPartRId, _) = slidePart.AddImagePart(rasterStream, "image/png");
+                    imgPartRId = slidePart.AddImagePart(rasterStream, "image/png");
                 }
 
                 var xmlPicture = new XmlPicture(slidePart, (uint)this.GetNextShapeId(), "Picture");
@@ -57,13 +57,13 @@ internal sealed class PictureCollection(
                     // Preserve original bytes for supported formats to ensure deterministic dedup across slides
                     imageContent.IsOriginalFormatPreserved ? imageContent.GetOriginalStream() :
 
-                    // For formats we convert (e.g., WebP/AVIF/BMP), write a deterministic raster representation
+                    // For formats, we convert (e.g., WebP/AVIF/BMP), write a deterministic raster representation
                     imageContent.GetRasterStream();
 
                 var hash = imageContent.Hash;
                 if (!this.TryGetImageRId(hash, out var imgPartRId))
                 {
-                    (imgPartRId, _) = slidePart.AddImagePart(imageForPart, imageContent.MimeType);
+                    imgPartRId = slidePart.AddImagePart(imageForPart, imageContent.MimeType);
                 }
 
                 var xmlPicture = new XmlPicture(slidePart, (uint)this.GetNextShapeId(), "Picture");

@@ -51,7 +51,7 @@ internal class TableCellFill : IShapeFill
         }
         else
         {
-            (var rId, _) = openXmlPart.AddImagePart(image, "image/png");
+            var rId = openXmlPart.AddImagePart(image, "image/png");
 
             // This could be refactored to DRY vs SlideShapes.CreatePPicture.
             // In the process, the image could be de-duped also.
