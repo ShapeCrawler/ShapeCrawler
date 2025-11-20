@@ -7,7 +7,6 @@ using System.IO;
 using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Groups;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;

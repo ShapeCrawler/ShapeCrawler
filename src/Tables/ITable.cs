@@ -132,6 +132,9 @@ internal sealed class Table(
         throw new NotImplementedException();
     }
 
+    private static bool IsParagraphEmpty(A.Paragraph aParagraph) =>
+        aParagraph.Descendants<A.Text>().All(t => string.IsNullOrEmpty(t.Text));
+    
     private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
     {
         foreach (var aTblRow in aTableRows)
@@ -244,9 +247,6 @@ internal sealed class Table(
             aParagraph.Remove();
         }
     }
-
-    private static bool IsParagraphEmpty(A.Paragraph aParagraph) =>
-        aParagraph.Descendants<A.Text>().All(t => string.IsNullOrEmpty(t.Text));
 
     private void MergeHorizontal(
         int maxColIndex,
