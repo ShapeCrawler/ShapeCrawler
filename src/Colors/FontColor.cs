@@ -19,7 +19,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         get
         {
             var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-            var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
+            var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.GetFirstChild<A.SolidFill>();
 
             if (aSolidFill != null)
             {
@@ -93,7 +93,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         var aTextContainer = aText.Parent!;
         var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
 
-        var aSolidFill = aRunProperties.SdkASolidFill();
+        var aSolidFill = aRunProperties.GetFirstChild<A.SolidFill>();
         aSolidFill?.Remove();
         hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
         if (hex.Length == 8) 
@@ -138,7 +138,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
 
     private string? GetSolidFillHex(P.SlideMaster pSlideMaster)
     {
-        var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.SdkASolidFill();
+        var aSolidFill = aText.Parent!.GetFirstChild<A.RunProperties>()?.GetFirstChild<A.SolidFill>();
         if (aSolidFill != null)
         {
             var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
