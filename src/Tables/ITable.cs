@@ -225,24 +225,28 @@ internal sealed class Table(
 
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
-        A.TextBody? mergedCellTextBody = ((TableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
+        var mergedCellTextBody = ((TableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
-        IEnumerable<A.Paragraph> aParagraphsWithARun =
-            aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
+        var aParagraphsWithARun = aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !IsParagraphEmpty(p));
         foreach (A.Paragraph aParagraph in aParagraphsWithARun)
         {
             mergedCellTextBody!.Append(aParagraph.CloneNode(true));
             hasMoreOnePara = true;
         }
 
-        if (hasMoreOnePara)
+        if (!hasMoreOnePara)
         {
-            foreach (A.Paragraph aParagraph in mergedCellTextBody!.Elements<A.Paragraph>().Where(p => p.IsEmpty()))
-            {
-                aParagraph.Remove();
-            }
+            return;
+        }
+
+        foreach (A.Paragraph aParagraph in mergedCellTextBody!.Elements<A.Paragraph>().Where(IsParagraphEmpty))
+        {
+            aParagraph.Remove();
         }
     }
+
+    private static bool IsParagraphEmpty(A.Paragraph aParagraph) =>
+        aParagraph.Descendants<A.Text>().All(t => string.IsNullOrEmpty(t.Text));
 
     private void MergeHorizontal(
         int maxColIndex,

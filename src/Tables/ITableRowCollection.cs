@@ -87,7 +87,13 @@ internal sealed class TableRowCollection : ITableRowCollection
     public void Add()
     {
         var columnsCount = this.Rows()[0].Cells.Count;
-        this.aTable.AddRow(columnsCount);
+        var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
+        for (var i = 0; i < columnsCount; i++)
+        {
+            new SCATableRow(aTableRow).AddNewCell();
+        }
+        
+        aTable.Append(aTableRow);
     }
 
     public void Add(int index)
