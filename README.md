@@ -31,7 +31,7 @@ ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making 
 dotnet add package ShapeCrawler
 ```
 
-## 🚀Getting Started
+## 🚀 Getting Started
 
 ```csharp
 // Load an existing presentation
@@ -49,7 +49,7 @@ textBox.TextBox!.SetText("Updated content");
 pres.Save();
 ```
 
-## 🎯Why ShapeCrawler?
+## 🎯 Why ShapeCrawler?
 
 - **No Office Required** – Process presentations on any platform without Microsoft Office installation
 - **Clean API** – Intuitive object model that hides the complexity of Open XML
@@ -102,7 +102,7 @@ Have questions? We're here to help!
 
 We love contributions! Here's how you can help:
 
-- Give us a star⭐ – If you find ShapeCrawler useful, show your support with a star!
+- Give us a star ⭐ – If you find ShapeCrawler useful, show your support with a star!
 - Reporting Bugs – Found a bug? [Open an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with a clear description of the problem
 - Need to share a confidential file? – Email it to theadamo86@gmail.com – only the maintainer will access it
 - Contribute Code – Pull requests are welcome! Check out our:
