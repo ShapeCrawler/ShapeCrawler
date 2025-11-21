@@ -3,11 +3,12 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
-using Position = ShapeCrawler.Positions.Position;
 using P = DocumentFormat.OpenXml.Presentation;
+using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.MediaContent;
 
 internal sealed class MediaShape : Shape
 {

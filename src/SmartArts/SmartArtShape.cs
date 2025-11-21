@@ -2,7 +2,7 @@
 using ShapeCrawler.Shapes;
 using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.Slides;
+namespace ShapeCrawler.SmartArts;
 
 internal sealed class SmartArtShape: Shape
 {

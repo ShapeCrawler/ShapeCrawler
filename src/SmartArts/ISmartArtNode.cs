@@ -1,4 +1,8 @@
-namespace ShapeCrawler.Shapes;
+using ShapeCrawler.SmartArts;
+
+#pragma warning disable IDE0130
+namespace ShapeCrawler;
+#pragma warning restore IDE0130
 
 /// <summary>
 ///     Represents a node in a SmartArt graphic.

@@ -10,6 +10,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SmartArts;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using Position = ShapeCrawler.Positions.Position;

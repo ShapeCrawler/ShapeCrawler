@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using ShapeCrawler.Presentations;
-using ShapeCrawler.Shapes;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
