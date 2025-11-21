@@ -23,15 +23,7 @@
 
 ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making it easy to read, create, and modify `.pptx` files programmatically.
 
-
 ---
-
-## 🚀 Why ShapeCrawler?
-
-- **No Office Required** – Process presentations on any platform without Microsoft Office installation
-- **Clean API** – Intuitive object model that hides the complexity of Open XML
-- **Production Ready** – Battle-tested in real-world applications with comprehensive test coverage
-- **Actively Maintained** – Regular updates and responsive to community feedback
 
 ## 📦 Installation
 
@@ -39,7 +31,7 @@ ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making 
 dotnet add package ShapeCrawler
 ```
 
-## 🎯 Quick Start
+## 🚀Getting Started
 
 ```csharp
 // Load an existing presentation
@@ -56,6 +48,12 @@ var text = textBox.TextBox!.Text;
 textBox.TextBox!.SetText("Updated content");
 pres.Save();
 ```
+
+## 🎯Why ShapeCrawler?
+
+- **No Office Required** – Process presentations on any platform without Microsoft Office installation
+- **Clean API** – Intuitive object model that hides the complexity of Open XML
+- **Production Ready** – Battle-tested in real-world applications with comprehensive test coverage
 
 ## 💡 Common Use Cases
 
@@ -88,54 +86,28 @@ picture.Image!.Update(newImage);
 pres.Save();
 ```
 
-### Working with Tables and Charts
+### More Examples
 
-ShapeCrawler supports comprehensive manipulation of:
-- **Tables** – Create, modify cells, styling
-- **Charts** – Update data, titles, formatting
-- **Text** – Rich text formatting, fonts, paragraphs
-- **Media** – Images, audio, video
-
-**[📚 See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**
-
-## 🔧 Advanced Features
-
-- Full shape manipulation (position, size, rotation, styling)
-- Table operations (add/remove rows/columns, cell merging)
-- Chart data and formatting updates
-- Text and paragraph formatting
-- Slide master and layout access
-- Image cropping and replacement
-- Embedded media handling
+**[See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**
 
 ## 🌟 Getting Help
 
-**Have questions?** We're here to help!
+Have questions? We're here to help!
 
-- 💬 [**Discussions Forum**](https://github.com/ShapeCrawler/ShapeCrawler/discussions) – Ask questions and share ideas
-- 📧 **Email** – Reach out to theadamo86@gmail.com
-- 🐛 [**Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues) – Report bugs or request features
+- [**Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues) – Report bugs or request features
+- [**Discussions Forum**](https://github.com/ShapeCrawler/ShapeCrawler/discussions) – Ask questions and share ideas
+- Email – Reach out to theadamo86@gmail.com
 
 ## 🤝 Contributing
 
 We love contributions! Here's how you can help:
 
-**⭐ Give us a star** – If you find ShapeCrawler useful, show your support with a star!
-
-### Reporting Bugs
-
-Found a bug? [Open an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with:
-- A clear description of the problem
-- Steps to reproduce
-- Expected vs. actual behavior
-
-**Need to share a confidential file?** Email it to theadamo86@gmail.com – only the maintainer will access it.
-
-### Contributing Code
-
-Pull requests are welcome! Check out our:
-- [**Good First Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) – Perfect for newcomers
-- [**Contribution Guide**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) – Guidelines and best practices
+- Give us a star⭐ – If you find ShapeCrawler useful, show your support with a star!
+- Reporting Bugs – Found a bug? [Open an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with a clear description of the problem
+- Need to share a confidential file? – Email it to theadamo86@gmail.com – only the maintainer will access it
+- Contribute Code – Pull requests are welcome! Check out our:
+  - [**Good First Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) – Perfect for newcomers
+  - [**Contribution Guide**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) – Guidelines and best practices
 
 ## 🔄 Pre-release Versions
 
