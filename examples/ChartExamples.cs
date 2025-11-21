@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class Charts
+public class ChartExamples
 {
     [Test, Explicit]
     public void Update_series()

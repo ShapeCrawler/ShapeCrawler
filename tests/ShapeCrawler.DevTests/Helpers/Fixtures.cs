@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using ImageMagick;
 
@@ -8,7 +7,6 @@ namespace Fixture;
 public sealed class Fixtures
 {
     private readonly Random random = new();
-    private readonly List<string> files = [];
     private readonly Assembly assembly = Assembly.GetCallingAssembly();
 
     public int Int() => this.random.Next(1, 400);
@@ -107,21 +105,7 @@ public sealed class Fixtures
         return stream;
     }
 
-    /// <summary>
-    ///     Gets a path to a temporary file.
-    /// </summary>
-    public string File()
-    {
-        var file = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
-        var stream = System.IO.File.Create(file);
-        stream.Close();
-
-        this.files.Add(file);
-
-        return file;
-    }
-
-    public string String() => Guid.NewGuid().ToString();
+    public static string String() => Guid.NewGuid().ToString();
 
     public string String(Action<StringOptions> configure)
     {
@@ -167,20 +151,6 @@ public sealed class Fixtures
 
         return mStream;
     }
-
-    public string AssemblyFile(string assemblyFile)
-    {
-        var localFile = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid() + Path.GetExtension(assemblyFile));
-        using var localFileStream = System.IO.File.Create(localFile);
-        var assemblyStream = GetResourceStream(assemblyFile);
-        assemblyStream.CopyTo(localFileStream);
-
-        this.files.Add(localFile);
-
-        return localFile;
-    }
-
-    public void Clean() => files.ForEach(System.IO.File.Delete);
 
     private MemoryStream GetResourceStream(string fileName)
     {

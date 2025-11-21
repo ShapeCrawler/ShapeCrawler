@@ -34,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Fixture\Fixture.csproj" />
     <ProjectReference Include="..\..\src\ShapeCrawler.csproj" />
   </ItemGroup>
 

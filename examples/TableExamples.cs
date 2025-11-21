@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class Tables
+public class TableExamples
 {
     [Test, Explicit]
     public void Create_table()

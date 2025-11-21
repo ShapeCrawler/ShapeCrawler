@@ -630,8 +630,8 @@ public class PresentationTests : SCTest
         {
             p.Slide(s =>
             {
-                s.TextBox(fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
-                    fixtures.String());
+                s.TextBox(Fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
+                    Fixtures.String());
             });
         });
         var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;

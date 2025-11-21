@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class ShapeCollection
+public class ShapeCollectionExamples
 {
     [Test, Explicit]
     public void Groups_shapes()

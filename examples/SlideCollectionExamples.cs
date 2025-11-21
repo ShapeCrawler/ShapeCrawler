@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class Slides
+public class SlideCollectionExamples
 {
     [Test, Explicit]
     public void Remove_slide()

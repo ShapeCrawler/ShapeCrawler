@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Examples;
 
-public class Texts
+public class TextExamples
 {
     [Test, Explicit]
     public void Set_text()
