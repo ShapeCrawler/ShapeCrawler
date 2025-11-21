@@ -49,7 +49,7 @@ textBox.TextBox!.SetText("Updated content");
 pres.Save();
 ```
 
-## 🎯Why ShapeCrawler?
+## 🎯 Why ShapeCrawler?
 
 - **No Office Required** – Process presentations on any platform without Microsoft Office installation
 - **Clean API** – Intuitive object model that hides the complexity of Open XML
