@@ -102,7 +102,7 @@ Have questions? We're here to help!
 
 We love contributions! Here's how you can help:
 
-- Give us a star⭐ – If you find ShapeCrawler useful, show your support with a star!
+- Give us a star ⭐ – If you find ShapeCrawler useful, show your support with a star!
 - Reporting Bugs – Found a bug? [Open an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with a clear description of the problem
 - Need to share a confidential file? – Email it to theadamo86@gmail.com – only the maintainer will access it
 - Contribute Code – Pull requests are welcome! Check out our:
