@@ -11,15 +11,6 @@ namespace ShapeCrawler.DevTests.Helpers;
 public abstract class SCTest
 {
     protected readonly Fixtures fixture = new();
-    
-    protected static T GetShape<T>(string presentation, int slideNumber, int shapeId)
-    {
-        var scPresentation = GetPresentationFromAssembly(presentation);
-        var slide = scPresentation.Slides[slideNumber - 1];
-        var shape = slide.Shapes.First(sp => sp.Id == shapeId);
-
-        return (T)shape;
-    }
 
     protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
     {
@@ -39,20 +30,6 @@ public abstract class SCTest
         mStream.Position = 0;
 
         return mStream;
-    }
-    
-    protected static Presentation TestPresentation(string jsonFile)
-    {
-        var json = StringOf(jsonFile);
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            IncludeFields = true
-        };
-        
-        var jsonPres = JsonSerializer.Deserialize<JSONPresentation>(json, options);
-        
-        return jsonPres.AsSCPresentation();
     }
 
     protected static string StringOf(string fileName)
@@ -85,12 +62,5 @@ public abstract class SCTest
         stream.Position = 0;
 
         return PresentationDocument.Open(stream, true);
-    }
-
-    private static IPresentation GetPresentationFromAssembly(string fileName)
-    {
-        var stream = TestAsset(fileName);
-
-        return new Presentation(stream);
     }
 }
