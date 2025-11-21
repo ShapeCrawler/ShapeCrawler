@@ -37,15 +37,6 @@ public abstract class SCTest
         var stream = TestAsset(fileName);
         return System.Text.Encoding.UTF8.GetString(stream.ToArray());
     }
-    
-    protected string GetTestPath(string fileName)
-    {
-        var stream = TestAsset(fileName);
-        var path = Path.GetTempFileName();
-        File.WriteAllBytes(path, stream.ToArray());
-
-        return path;
-    }
 
     protected static Presentation SaveAndOpenPresentation(IPresentation presentation)
     {

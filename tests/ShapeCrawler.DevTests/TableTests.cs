@@ -298,7 +298,7 @@ public class TableTests : SCTest
         // Arrange
         var pres = new Presentation(p =>
         {
-            p.Slide(s => { s.Table(fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1); });
+            p.Slide(s => { s.Table(Fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1); });
         });
         var row = pres.Slide(1).Shapes.First().Table.Rows.First();
         var text = fixtures.String(s => s.Length(75));
@@ -317,7 +317,7 @@ public class TableTests : SCTest
     public void Row_Cell_TextBox_SetText()
     {
         // Arrange
-        var shapeName = fixtures.String();
+        var shapeName = Fixtures.String();
         var pres = new Presentation(p =>
         {
             p.Slide(s => { s.Table(shapeName, fixtures.Int(), fixtures.Int(), 1, 1); });
