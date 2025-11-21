@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class Shape
+public class ShapeExamples
 {
     [Test, Explicit]
     public void Set_shape_fill()

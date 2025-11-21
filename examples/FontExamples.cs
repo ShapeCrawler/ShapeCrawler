@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class Font
+public class FontExamples
 {
     [Test, Explicit]
     public void Set_Latin_font()

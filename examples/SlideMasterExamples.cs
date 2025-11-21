@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class SlideMaster
+public class SlideMasterExamples
 {
     [Test, Explicit]
     public void Get_master_shapes()

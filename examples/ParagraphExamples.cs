@@ -1,6 +1,6 @@
 namespace ShapeCrawler.Examples;
 
-public class Tests
+public class ParagraphExamples
 {
     [Test, Explicit]
     public void Add_paragraph()

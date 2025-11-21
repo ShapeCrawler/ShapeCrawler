@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Examples;
 
-public class Audio
+public class AudioExamples
 {
     [Test, Explicit]
     public static void Add_Audio_shape()
