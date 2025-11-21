@@ -7,7 +7,7 @@ using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
-namespace ShapeCrawler.MediaContent;
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a media content.
