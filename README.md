@@ -31,7 +31,7 @@ ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making 
 dotnet add package ShapeCrawler
 ```
 
-## 🚀Getting Started
+## 🚀 Getting Started
 
 ```csharp
 // Load an existing presentation
