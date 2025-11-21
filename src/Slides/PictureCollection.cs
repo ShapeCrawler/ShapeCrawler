@@ -7,7 +7,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ImageMagick;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
-using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable UseObjectOrCollectionInitializer

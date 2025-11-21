@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.SmartArts;
 
 /// <summary>
 ///     Represents a collection of SmartArt nodes.

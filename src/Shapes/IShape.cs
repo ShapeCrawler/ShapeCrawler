@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.MediaContent;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable InconsistentNaming
