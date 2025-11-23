@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.76.0 - 2025-11-23
+🍀Added support for removing text highlights [#690](https://github.com/ShapeCrawler/ShapeCrawler/issues/690)
+
 ## Version 0.75.2 - 2025-11-05
 🐞Fixed adding a slide with an image background slide layout [#1156](https://github.com/ShapeCrawler/ShapeCrawler/issues/1156)
 
