@@ -201,7 +201,7 @@ public class ParagraphPortionTests : SCTest
                 });
             });
         });
-        var portion = pres.Slides[0].Shapes.Last().TextBox!.Paragraphs[0].Portions[0];
+        var portion = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First().Portions.First();
 
         // Act
         portion.TextHighlightColor = Color.NoColor;
