@@ -19,6 +19,26 @@ public sealed class DraftTextBox
 
     internal string? Content { get; private set; }
 
+    internal Color? HighlightColor { get; private set; }
+
+    /// <summary>
+    ///     Sets text content.
+    /// </summary>
+    public DraftTextBox Text(string text)
+    {
+        this.Content = text;
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets text highlight color.
+    /// </summary>
+    public DraftTextBox TextHighlightColor(Color color)
+    {
+        this.HighlightColor = color;
+        return this;
+    }
+
     /// <summary>
     ///     Sets name.
     /// </summary>
