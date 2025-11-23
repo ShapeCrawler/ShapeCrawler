@@ -185,4 +185,21 @@ public class ParagraphPortionTests : SCTest
         // Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
+    
+    [Test]
+    public void TextHighlightColor_Setter_removes_text_highlight_When_NoColor_is_passed()
+    {
+        // Arrange
+        var pptx = TestAsset("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
+        var shape = pres.Slides[0].Shapes.Shape<IShape>("TextBox 3");
+        var portion = shape.TextBox!.Paragraphs[0].Portions[0];
+
+        // Act
+        portion.TextHighlightColor = Color.NoColor;
+
+        // Assert
+        portion.TextHighlightColor.IsTransparent.Should().BeTrue();
+        pres.Validate();
+    }
 }
