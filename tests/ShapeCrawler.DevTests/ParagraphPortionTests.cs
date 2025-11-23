@@ -184,5 +184,30 @@ public class ParagraphPortionTests : SCTest
 
         // Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
+        pres.Validate();
+    }
+    [Test]
+    public void TextHighlightColor_Setter_removes_text_highlight_When_NoColor_is_passed()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.TextBox(tb =>
+                {
+                    tb.Text("Some text");
+                    tb.TextHighlightColor(Color.FromHex("FF5733"));
+                });
+            });
+        });
+        var portion = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First().Portions.First();
+
+        // Act
+        portion.TextHighlightColor = Color.NoColor;
+
+        // Assert
+        portion.TextHighlightColor.IsTransparent.Should().BeTrue();
+        pres.Validate();
     }
 }

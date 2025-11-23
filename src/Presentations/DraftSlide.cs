@@ -89,6 +89,11 @@ public sealed class DraftSlide
             {
                 addedShape.TextBox!.SetText(builder.Content!);
             }
+
+            if (builder.HighlightColor.HasValue)
+            {
+                addedShape.TextBox!.Paragraphs[0].Portions[0].TextHighlightColor = builder.HighlightColor.Value;
+            }
         });
 
         return this;

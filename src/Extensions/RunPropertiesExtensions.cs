@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -8,18 +9,21 @@ internal static class RunPropertiesExtensions
 {
     internal static void AddAHighlight(this RunProperties arPr, Color color)
     {
-        var aHighlight = arPr.GetFirstChild<A.Highlight>();
-        aHighlight?.Remove();
+        var aHighlights = arPr.Elements<A.Highlight>().ToList();
+        foreach (var aHighlight in aHighlights)
+        {
+            aHighlight.Remove();
+        }
 
         if (color.IsTransparent)
         {
             return;
         }
 
-        aHighlight = new A.Highlight();
-        aHighlight.Append(color.ToRgbColorModelHex());
+        var newHighlight = new A.Highlight();
+        newHighlight.Append(color.ToRgbColorModelHex());
 
-        arPr.Append(aHighlight);
+        arPr.Append(newHighlight);
     }
 
     private static A.RgbColorModelHex ToRgbColorModelHex(this Color color)
