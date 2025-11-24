@@ -611,7 +611,6 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
         table[1, 1].IsMergedCell.Should().BeTrue();
-        
         table[0, 2].IsMergedCell.Should().BeFalse();
         pres.Save(mStream);
         pres = new Presentation(mStream);
