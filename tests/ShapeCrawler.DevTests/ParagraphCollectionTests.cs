@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.DevTests.Helpers;
 
 namespace ShapeCrawler.DevTests;
 
-public class ParagraphCollectionTests
+public class ParagraphCollectionTests : SCTest
 {
     [Test]
     public void Add_adds_paragraph_in_the_middle()
@@ -34,7 +35,7 @@ public class ParagraphCollectionTests
 
         // Assert
         addedShape.TextBox.Text.Should().Be($"Paragraph 1{Environment.NewLine}New Paragraph 2{Environment.NewLine}Paragraph 2");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -57,6 +58,6 @@ public class ParagraphCollectionTests
 
         // Assert
         addedShape.TextBox.Text.Should().Be($"New Paragraph 1{Environment.NewLine}Paragraph 1");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

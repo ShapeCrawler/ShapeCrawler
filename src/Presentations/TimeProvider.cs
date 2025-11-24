@@ -5,7 +5,7 @@ namespace ShapeCrawler.Presentations;
 /// <summary>
 ///     Provides the current date and time.
 /// </summary>
-internal interface ITimeProvider
+public interface ITimeProvider
 {
     /// <summary>
     ///     Gets the current date and time.

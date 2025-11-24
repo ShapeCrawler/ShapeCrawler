@@ -149,7 +149,7 @@ public class ShapeFillTests : SCTest
         shape.Fill!.SetColor("00FF00");
 
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -168,7 +168,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shapeFill.Color.Should().Be("32a852");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -188,7 +188,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shapeFill.Color.Should().Be(greenColor);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -204,7 +204,7 @@ public class ShapeFillTests : SCTest
         shapeFill.SetPicture(image);
 
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
@@ -221,7 +221,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shapeFill.Type.Should().Be(FillType.NoFill);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [TestCase("table-case001.pptx", 1, "Table 1")]
@@ -237,7 +237,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shapeFill.Color.Should().Be("32a852");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -254,7 +254,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shape.Fill.Type.Should().Be(FillType.NoFill);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Theory]

@@ -25,7 +25,7 @@ public class TableColumnTests : SCTest
         pres = new Presentation(ms);
         table = pres.Slide(1).Shape("Table 1").Table;
         table.Columns.Should().HaveCount(expectedColumnsCount);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -41,7 +41,7 @@ public class TableColumnTests : SCTest
 
         // Assert
         table.Columns.Should().HaveCount(expectedColumnsCount);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -57,7 +57,7 @@ public class TableColumnTests : SCTest
 
         // Assert
         cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -116,7 +116,7 @@ public class TableColumnTests : SCTest
 
         // Assert
         table.Columns.Should().HaveCount(columnsCountBefore + 1);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]

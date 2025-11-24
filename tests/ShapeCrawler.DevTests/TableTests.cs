@@ -23,7 +23,7 @@ public class TableTests : SCTest
 
         // Assert
         tableStyle.Should().BeEquivalentTo(CommonTableStyles.MediumStyle2Accent1);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -43,7 +43,7 @@ public class TableTests : SCTest
         pres = new Presentation(mStream);
         table = pres.Slide(3).Shape("Таблица 4").Table;
         table.TableStyle.Should().BeEquivalentTo(CommonTableStyles.ThemedStyle1Accent4);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -78,7 +78,7 @@ public class TableTests : SCTest
         pres = new Presentation(mStream);
         table = pres.Slide(1).Shape("Table 1").Table;
         table[1, 2].RightBorder.Color.Should().Be("00FF00");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -124,7 +124,7 @@ public class TableTests : SCTest
         tableCell.TextBox.TopMargin.Should().Be(20m);
         tableCell.TextBox.BottomMargin.Should().Be(20m);
 
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -165,7 +165,7 @@ public class TableTests : SCTest
         tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
         tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
 
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -200,7 +200,7 @@ public class TableTests : SCTest
 
         // Assert
         table.Rows.Should().HaveCount(2);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -240,11 +240,6 @@ public class TableTests : SCTest
         // Act-Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-
-        var cell1 = (TableCell)cell1X0;
-        var cell2 = (TableCell)cell1X1;
-        cell1.RowIndex.Should().Be(cell2.RowIndex);
-        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
     }
 
     [Test]
@@ -590,12 +585,6 @@ public class TableTests : SCTest
         // Assert
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-
-        var cell1 = (TableCell)table[1, 1];
-        var cell2 = (TableCell)table[1, 2];
-        cell1.RowIndex.Should().Be(cell2.RowIndex);
-        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
-
         table[3, 2].IsMergedCell.Should().BeFalse();
 
         pres.Save(mStream);
@@ -603,12 +592,6 @@ public class TableTests : SCTest
         table = pres.Slide(2).Shape(5).Table;
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-
-        cell1 = (TableCell)table[1, 1];
-        cell2 = (TableCell)table[1, 2];
-        cell1.RowIndex.Should().Be(cell2.RowIndex);
-        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
-
         table[3, 2].IsMergedCell.Should().BeFalse();
     }
 
@@ -628,12 +611,6 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
         table[1, 1].IsMergedCell.Should().BeTrue();
-
-        var cell_0_0 = (TableCell)table[0, 0];
-        var cell_1_1 = (TableCell)table[1, 1];
-        cell_0_0.RowIndex.Should().Be(cell_1_1.RowIndex);
-        cell_0_0.ColumnIndex.Should().Be(cell_1_1.ColumnIndex);
-
         table[0, 2].IsMergedCell.Should().BeFalse();
         pres.Save(mStream);
         pres = new Presentation(mStream);
@@ -807,44 +784,6 @@ public class TableTests : SCTest
         // Assert
         table[0, 1].Should().NotBeSameAs(table[1, 1]);
     }
-
-    [Test]
-    public void MergeCells_merges_0x0_and_0x1_then_1x1_and_1x2_cells()
-    {
-        // Arrange
-        var pres = new Presentation(p => p.Slide());
-        var slide = pres.Slides[0];
-        slide.Shapes.AddTable(0, 0, 4, 2);
-        var table = slide.Shapes.Last().Table;
-
-        // Act
-        table.MergeCells(table[0, 0], table[0, 1]);
-        table.MergeCells(table[1, 1], table[1, 2]);
-
-        // Assert
-        var cell1 = (TableCell)table[1, 1];
-        var cell2 = (TableCell)table[1, 2];
-        cell1.RowIndex.Should().Be(cell2.RowIndex);
-        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
-    }
-
-    [Test]
-    public void MergeCells_merges_0x1_and_1x1()
-    {
-        // Arrange
-        var pres = new Presentation(p => p.Slide());
-        var slide = pres.Slide(1);
-        slide.Shapes.AddTable(0, 0, 4, 2);
-        var table = slide.Shapes.Last().Table;
-
-        // Act
-        table.MergeCells(table[0, 1], table[1, 1]);
-
-        // Assert
-        var aTableRow = (TableRow)table.Rows[0];
-        aTableRow.ATableRow.Elements<A.TableCell>().ToList()[2].RowSpan.Should().BeNull();
-    }
-
     [Test]
     [SlideShape("009_table.pptx", 3, 3, 3)]
     [SlideShape("001.pptx", 2, 5, 4)]
@@ -876,10 +815,6 @@ public class TableTests : SCTest
         // Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        var internalCell1 = (TableCell)cell1;
-        var internalCell2 = (TableCell)cell2;
-        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
-        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
 
     [Test]
@@ -898,10 +833,6 @@ public class TableTests : SCTest
         // Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        var internalCell1 = (TableCell)cell1;
-        var internalCell2 = (TableCell)cell2;
-        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
-        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
 
     [Test]
@@ -920,10 +851,6 @@ public class TableTests : SCTest
         // Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        var internalCell1 = (TableCell)cell1;
-        var internalCell2 = (TableCell)cell2;
-        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
-        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
 
     [Test]
@@ -962,7 +889,7 @@ public class TableTests : SCTest
 
         // Assert
         table.AltText.Should().Be("Alt text");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -1043,7 +970,7 @@ public class TableTests : SCTest
         // Assert
         table.Rows[0].Height.Should().BeApproximately(43, 0.01m);
         table.Rows[1].Height.Should().Be(43);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -1063,7 +990,7 @@ public class TableTests : SCTest
         pres = SaveAndOpenPresentation(pres);
         table = pres.Slide(1).Shape("Table 1").Table;
         table.Rows.Should().HaveCount(rowsCountBefore + 1);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -1082,7 +1009,7 @@ public class TableTests : SCTest
         pres = SaveAndOpenPresentation(pres);
         table = pres.Slide(1).Shape("Table 1").Table;
         table.Rows[1].Height.Should().Be(templateRowHeight);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]

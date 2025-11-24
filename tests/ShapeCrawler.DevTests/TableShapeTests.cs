@@ -1,10 +1,11 @@
 ﻿using Fixture;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.DevTests.Helpers;
 
 namespace ShapeCrawler.DevTests;
 
-public class TableShapeTests
+public class TableShapeTests : SCTest
 {
     private readonly Fixtures fixtures = new();
 
@@ -30,6 +31,6 @@ public class TableShapeTests
 
         // Assert
         column.Width.Should().BeGreaterThan(columnWidthBefore);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

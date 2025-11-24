@@ -43,7 +43,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -58,7 +58,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.Footer);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -73,7 +73,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.Should().Contain(shape => shape.PlaceholderType == PlaceholderType.SlideNumber);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -198,7 +198,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(20);
         addedLine.EndPoint.Y.Should().Be(5);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -217,7 +217,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(10);
         addedLine.EndPoint.Y.Should().Be(5);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -236,7 +236,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.StartPoint.Y.Should().Be(50);
         addedLine.EndPoint.X.Should().Be(40);
         addedLine.EndPoint.Y.Should().Be(20);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -255,7 +255,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(40);
         addedLine.EndPoint.Y.Should().Be(20);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -274,7 +274,7 @@ public class ShapeCollectionTests : SCTest
         line.StartPoint.Y.Should().Be(60);
         line.EndPoint.X.Should().Be(100);
         line.EndPoint.Y.Should().Be(60);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -292,7 +292,7 @@ public class ShapeCollectionTests : SCTest
         var lineShape = shapes.Last();
         lineShape.X.Should().Be(50);
         lineShape.Y.Should().Be(60);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -311,7 +311,7 @@ public class ShapeCollectionTests : SCTest
         line.StartPoint.Y.Should().Be(50);
         line.EndPoint.X.Should().Be(80);
         line.EndPoint.Y.Should().Be(50);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -368,7 +368,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         pres = SaveAndOpenPresentation(pres);
         var addedAudio = pres.Slide(1).First<IMedia>();
-        pres.Validate();
+        ValidatePresentation(pres);
         addedAudio.StartMode.Should().Be(AudioStartMode.InClickSequence);
     }
 #endif
@@ -408,7 +408,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.Shape("Picture 1").Should().NotBeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -425,7 +425,7 @@ public class ShapeCollectionTests : SCTest
         var autoShape = shapes.Last();
         autoShape.Name.Should().Be("Rectangle");
         autoShape.Id.Should().Be(7);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -447,7 +447,7 @@ public class ShapeCollectionTests : SCTest
         rectangle.Height.Should().Be(70);
         rectangle.TextBox!.Paragraphs.Count.Should().Be(1);
         rectangle.Outline.HexColor.Should().BeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -465,7 +465,7 @@ public class ShapeCollectionTests : SCTest
         roundedRectangle.GeometryType.Should().Be(Geometry.RoundedRectangle);
         roundedRectangle.Name.Should().Be("RoundedRectangle");
         roundedRectangle.Outline.HexColor.Should().BeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -482,7 +482,7 @@ public class ShapeCollectionTests : SCTest
         var addedTopCornersRoundedRectangle = shapes.Last();
         addedTopCornersRoundedRectangle.GeometryType.Should().Be(Geometry.TopCornersRoundedRectangle);
         addedTopCornersRoundedRectangle.Name.Should().Be("TopCornersRoundedRectangle");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -503,7 +503,7 @@ public class ShapeCollectionTests : SCTest
         tableShape.Id.Should().Be(1);
         tableShape.Name.Should().Be("Table 1");
         table.Columns[0].Width.Should().BeApproximately(213.33m, 0.01m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -604,7 +604,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var addedSlide = slides.Last();
         addedSlide.Should().NotBeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -634,7 +634,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.First().Chart.Should().NotBeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -659,7 +659,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.First().Chart.Should().NotBeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -688,7 +688,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var chart = shapes.First().Chart;
         chart.Type.Should().Be(ChartType.ScatterChart);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -714,7 +714,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         shapes.First().Chart.Type.Should().Be(ChartType.BarChart);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -733,6 +733,6 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         group.GroupedShapes.Should().HaveCount(2);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

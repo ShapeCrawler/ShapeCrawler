@@ -122,7 +122,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Slides.Count.Should().Be(1);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -145,7 +145,7 @@ public class PresentationTests : SCTest
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
         destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count().Should().Be(1);
-        destPres.Validate();
+        ValidatePresentation(destPres);
     }
 
     [Test]
@@ -161,7 +161,7 @@ public class PresentationTests : SCTest
 
         // Assert
         destPres.Slides.Last().Notes!.Text.Should().Be("Test note");
-        destPres.Validate();
+        ValidatePresentation(destPres);
     }
 
     [Test]
@@ -176,7 +176,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Slides.Count.Should().Be(1);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -222,7 +222,7 @@ public class PresentationTests : SCTest
         pres.Slides.Add(inserting, 2);
 
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -539,7 +539,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Slide(2).Shapes.Count.Should().Be(2);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -554,7 +554,7 @@ public class PresentationTests : SCTest
         pres.Slides.Add(slide, 1);
 
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
 
@@ -752,7 +752,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Should().NotBeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]

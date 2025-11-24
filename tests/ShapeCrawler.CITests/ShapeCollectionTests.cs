@@ -30,7 +30,7 @@ public class ShapeCollectionTests : SCTest
             .ToHashSet();
         imageParts.Count.Should().Be(2,
             "SVG image adds two parts: One for the vector and one for the auto-generated raster");
-        loadedPres.Validate();
+        ValidatePresentation(loadedPres);
     }
     
     [Test]
@@ -114,6 +114,6 @@ public class ShapeCollectionTests : SCTest
         var rasterImage = new MagickImageInfo(picture.Image!.AsByteArray());
         rasterImage.Width.Should().Be(500);
         rasterImage.Height.Should().Be(500);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

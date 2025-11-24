@@ -1,6 +1,12 @@
 namespace ShapeCrawler.Presentations;
 
-internal static class SCSettings
+/// <summary>
+///    Represents ShapeCrawler settings.
+/// </summary>
+public static class SCSettings
 {
-    internal static ITimeProvider TimeProvider { get; set; } = new SystemTimeProvider();
+    /// <summary>
+    ///    Gets or sets time provider.
+    /// </summary>
+    public static ITimeProvider TimeProvider { get; set; } = new SystemTimeProvider();
 }

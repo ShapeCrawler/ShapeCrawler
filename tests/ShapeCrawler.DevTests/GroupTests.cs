@@ -150,7 +150,7 @@ public class GroupTests : SCTest
         pres = new Presentation(stream);
         groupShape = pres.Slide(1).Shape("New Group Name");
         groupShape.Name.Should().Be("New Group Name");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
