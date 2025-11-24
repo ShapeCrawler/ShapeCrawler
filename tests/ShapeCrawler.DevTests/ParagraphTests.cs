@@ -83,7 +83,7 @@ public class ParagraphTests : SCTest
 
         // Assert 
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -154,7 +154,7 @@ public class ParagraphTests : SCTest
 
         // Assert
         paragraph.Text.Should().Be("test");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -172,7 +172,7 @@ public class ParagraphTests : SCTest
         // Assert
         paragraph.Text.Should()
             .BeEquivalentTo($"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -206,7 +206,7 @@ public class ParagraphTests : SCTest
 
         // Assert
         paragraph.Text.Should().BeEquivalentTo("Some text2");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]

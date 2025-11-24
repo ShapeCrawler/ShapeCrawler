@@ -64,7 +64,7 @@ public class ThemeTests : SCTest
 
         // Assert
         slideMaster.Theme.FontScheme.HeadEastAsianFont.Should().Be("MingLiU-ExtB");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -185,6 +185,6 @@ public class ThemeTests : SCTest
         slideMaster.Theme.ColorScheme.Accent1.Should().Be("FFC0CB");
         slideMaster.Theme.ColorScheme.Hyperlink.Should().Be("FFC0CB");
         slideMaster.Theme.ColorScheme.FollowedHyperlink.Should().Be("FFC0CB");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

@@ -61,14 +61,14 @@ public struct Color
     public string Hex => this.ToString();
 
     /// <summary>
+    ///     Gets a value indicating whether the color is transparent.
+    /// </summary>
+    public readonly bool IsTransparent => Math.Abs(this.Alpha) < 0.01;
+    
+    /// <summary>
     ///     Gets a value indicating whether the color is solid.
     /// </summary>
     internal readonly bool IsSolid => Math.Abs(this.Alpha - 255) < 0.01;
-
-    /// <summary>
-    ///     Gets a value indicating whether the color is transparent.
-    /// </summary>
-    internal readonly bool IsTransparent => Math.Abs(this.Alpha) < 0.01;
 
     /// <summary>
     ///     Creates color from Hex value.

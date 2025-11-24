@@ -55,7 +55,7 @@ public class ShapeTests : SCTest
         // Assert
         pres = SaveAndOpenPresentation(pres);
         addedAudio = pres.Slide(1).First<IMedia>();
-        pres.Validate();
+        ValidatePresentation(pres);
         addedAudio.StartMode.Should().Be(AudioStartMode.Automatically);
     }
 #endif
@@ -253,7 +253,7 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.Y.Should().Be(100);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -277,7 +277,7 @@ public class ShapeTests : SCTest
         pres = new Presentation(stream);
         shape = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName);
         shape.X.Should().Be(400);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -298,7 +298,7 @@ public class ShapeTests : SCTest
         pres = new Presentation(stream);
         shape = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName);
         shape.Width.Should().Be(600);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -314,7 +314,7 @@ public class ShapeTests : SCTest
         // Assert
         var act = () => pres.Slide(1).Shape("TextBox 3");
         act.Should().Throw<SCException>();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -537,7 +537,7 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.CornerSize.Should().Be(0.1m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [TestCase("RoundedRectangle")]
@@ -566,7 +566,7 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.GeometryType.Should().Be(expected);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -619,7 +619,7 @@ public class ShapeTests : SCTest
         pres = new Presentation(stream);
         shape = pres.Slides[0].Shapes.Shape("New Name");
         shape.Name.Should().Be("New Name");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [TestCase("Triangle", "[200]")]
@@ -817,7 +817,7 @@ public class ShapeTests : SCTest
         shape.SetText("Test");
 
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]

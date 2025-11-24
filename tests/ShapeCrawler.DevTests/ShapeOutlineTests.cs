@@ -51,7 +51,7 @@ public class ShapeOutlineTests : SCTest
 
         // Assert
         outline.Weight.Should().Be(0.25m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -90,7 +90,7 @@ public class ShapeOutlineTests : SCTest
 
         // Assert
         outline.HexColor.Should().Be("be3455");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -107,6 +107,6 @@ public class ShapeOutlineTests : SCTest
 
         // Assert
         outline.HexColor.Should().BeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

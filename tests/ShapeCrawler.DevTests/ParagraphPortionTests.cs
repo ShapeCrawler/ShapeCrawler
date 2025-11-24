@@ -93,7 +93,7 @@ public class ParagraphPortionTests : SCTest
 
         // Assert
         portion.Link.SlideNumber.Should().Be(2);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -124,7 +124,7 @@ public class ParagraphPortionTests : SCTest
 
         // Assert
         portion.Link.File.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -184,7 +184,7 @@ public class ParagraphPortionTests : SCTest
 
         // Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     [Test]
     public void TextHighlightColor_Setter_removes_text_highlight_When_NoColor_is_passed()
@@ -208,6 +208,6 @@ public class ParagraphPortionTests : SCTest
 
         // Assert
         portion.TextHighlightColor.IsTransparent.Should().BeTrue();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

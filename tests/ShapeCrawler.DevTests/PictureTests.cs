@@ -258,7 +258,7 @@ public class PictureTests : SCTest
 
         // Assert
         picture.GeometryType.Should().Be(expected);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [TestCase("RoundedRectangle")]
@@ -279,7 +279,7 @@ public class PictureTests : SCTest
 
         // Assert
         picture.CornerSize.Should().Be(10m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [TestCase("0")]

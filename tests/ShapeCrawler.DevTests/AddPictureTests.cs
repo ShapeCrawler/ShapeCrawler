@@ -28,7 +28,7 @@ public class AddPictureTests : SCTest
         addedPictureShape.Picture.Should().NotBeNull();
         addedPictureShape.Height.Should().Be(75);
         addedPictureShape.Width.Should().Be(75);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -162,7 +162,7 @@ public class AddPictureTests : SCTest
         // which led to this test. However, the true test comes from loading
         // these up in PowerPoint and ensure the added image looks like the
         // existing image.
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -188,7 +188,7 @@ public class AddPictureTests : SCTest
         var aspect = pictureShape.Width / pictureShape.Height;
         aspect.Should().Be(100);
 
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -209,7 +209,7 @@ public class AddPictureTests : SCTest
         var pictureShape = shapes.Last();
         pictureShape.Height.Should().BeApproximately(67.5m, 0.1m);
         pictureShape.Width.Should().Be(210);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -250,7 +250,7 @@ public class AddPictureTests : SCTest
         // Assert
         shapes.Should().HaveCount(1);
         shapes.Last().Picture.Image.Mime.Should().Be(expectedMime);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [TestCase("webp image.webp")]
@@ -275,7 +275,7 @@ public class AddPictureTests : SCTest
         var expectedImage = new MagickImage(TestAsset("reference image.png"));
         actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -296,7 +296,7 @@ public class AddPictureTests : SCTest
         var expectedImage = new MagickImage(TestAsset("reference ico.png"));
         actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -319,7 +319,7 @@ public class AddPictureTests : SCTest
         var expectedImage = new MagickImage(TestAsset("reference image.jpg"));
         actualImage.GetPixels().Should().BeEquivalentTo(expectedImage.GetPixels());
         
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -403,7 +403,7 @@ public class AddPictureTests : SCTest
         destPres.Slide(1).Shapes.Add(pictureShape);
         
         // Assert
-        destPres.Validate();
+        ValidatePresentation(destPres);
     }
     
     [Test]

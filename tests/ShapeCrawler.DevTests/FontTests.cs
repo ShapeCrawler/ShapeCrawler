@@ -33,9 +33,9 @@ public class FontTests : SCTest
 
         // Assert
         font.EastAsianName.Should().Be("SimSun");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
-    
+
     [Test]
     [TestCase("001.pptx", 1, "TextBox 3")]
     public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_2(string file, int slideNumber, string shapeName)
@@ -50,7 +50,7 @@ public class FontTests : SCTest
 
         // Assert
         font.EastAsianName.Should().Be("SimSun");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -385,7 +385,7 @@ public class FontTests : SCTest
         font.Size = newSize;
 
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
         pres.Save(mStream);
         pres = new Presentation(mStream);
         font = pres.Slide(slideNumber).Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font!;
@@ -474,6 +474,6 @@ public class FontTests : SCTest
         pres.Save(stream);
         font = new Presentation(stream).Slide(1).Shapes.Last().TextBox!.Paragraphs[0].Portions[0].Font!;
         font.LatinName.Should().Be("Times New Roman");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

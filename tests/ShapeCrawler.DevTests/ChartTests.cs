@@ -320,7 +320,7 @@ public class ChartTests : SCTest
         pres.Save(mStream);
         barChart = new Presentation(mStream).Slides[0].Shape("Bar Chart 1").Chart;
         barChart.XAxis!.Minimum.Should().Be(1);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -336,7 +336,7 @@ public class ChartTests : SCTest
 
         // Assert
         barChart.XAxis.Maximum.Should().Be(7);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -422,7 +422,7 @@ public class ChartTests : SCTest
 
         // Assert
         title.Alignment.CustomAngle.Should().Be(5);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -443,7 +443,7 @@ public class ChartTests : SCTest
 
         // Assert
         title.Alignment.X.Should().Be(0.2m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -464,7 +464,7 @@ public class ChartTests : SCTest
 
         // Assert
         title.Alignment.Y.Should().Be(0.1m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -505,7 +505,7 @@ public class ChartTests : SCTest
         // Assert
         title.Alignment.X.Should().Be(0.3m);
         title.Alignment.Y.Should().Be(0.15m);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -527,7 +527,7 @@ public class ChartTests : SCTest
 
         // Assert
         title.Alignment.X.Should().BeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -553,6 +553,6 @@ public class ChartTests : SCTest
         
         // Assert
         chart.XAxis.Title.Should().Be("Series values");
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 }

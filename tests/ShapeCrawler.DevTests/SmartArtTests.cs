@@ -23,13 +23,13 @@ public class SmartArtTests : SCTest
         var smartArtShape = slide.Shapes.AddSmartArt(x, y, width, height, SmartArtType.BasicBlockList);
         
         // Assert
-        pres.Validate();
+        ValidatePresentation(pres);
         smartArtShape.SmartArt.Should().NotBeNull();
         smartArtShape.X.Should().Be(x);
         smartArtShape.Y.Should().Be(y);
         smartArtShape.Width.Should().Be(width);
         smartArtShape.Height.Should().Be(height);
-        var slidePart = pres.PresDocument.PresentationPart!.SlideParts.First();
+        var slidePart = pres.GetSDKPresentationDocument().PresentationPart!.SlideParts.First();
         var relationshipTypes = slidePart.Parts.Select(part => part.OpenXmlPart.RelationshipType).ToList();
         relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
     }
@@ -71,7 +71,7 @@ public class SmartArtTests : SCTest
         node2.Text.Should().Be("Text 2");
         node3.Text.Should().Be("Text 3");
         
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -90,7 +90,7 @@ public class SmartArtTests : SCTest
         // Assert
         node.Text.Should().Be(updatedText);
         
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]

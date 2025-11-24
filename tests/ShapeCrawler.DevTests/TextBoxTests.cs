@@ -147,7 +147,7 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             textBox.Paragraphs[0].Bullet.Type.Should().NotBe(BulletType.None);
-            pres.Validate();
+            ValidatePresentation(pres);
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace ShapeCrawler.DevTests
             textBox.Text.Should().Be("AutoShape 4 some text");
             shape.Height.Should().BeApproximately(64m, 1m);
             shape.Y.Should().BeApproximately(96m, 1m);
-            pres.Validate();
+            ValidatePresentation(pres);
         }
 
         [Test]
@@ -204,7 +204,7 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             textBox.Text.Should().Be("Test");
-            pres.Validate();
+            ValidatePresentation(pres);
         }
 
         [Test]
@@ -221,7 +221,7 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             shape.Width.Should().BeApproximately(103m, 103m);
-            pres.Validate();
+            ValidatePresentation(pres);
         }
 
         [Test]
@@ -237,7 +237,7 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             shape.Height.Should().BeApproximately(30m, 30m);
-            pres.Validate();
+            ValidatePresentation(pres);
         }
 
         [Test]
@@ -355,7 +355,7 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             textFrame.AutofitType.Should().Be(AutofitType.Resize);
-            pres.Validate();
+            ValidatePresentation(pres);
         }
 
         [Test]

@@ -75,7 +75,7 @@ public class SlideTests : SCTest
 
         // Assert
         slide.Fill.Picture.Should().NotBeNull();
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]
@@ -266,7 +266,7 @@ public class SlideTests : SCTest
         // Assert
         notes.Paragraphs.Should().HaveCount(3);
         notes.Text.Should().Be(expected);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -282,7 +282,7 @@ public class SlideTests : SCTest
 
         // Assert
         notes.Text.Should().Be(string.Empty);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -321,7 +321,7 @@ public class SlideTests : SCTest
 
         // Assert
         notes.Text.Should().Be(expected);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -338,7 +338,7 @@ public class SlideTests : SCTest
 
         // Assert
         slide.Notes.Text.Should().Be(expected);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
 
     [Test]
@@ -356,7 +356,7 @@ public class SlideTests : SCTest
 
         // Assert
         notes.Text.Should().Be(expected);
-        pres.Validate();
+        ValidatePresentation(pres);
     }
     
     [Test]

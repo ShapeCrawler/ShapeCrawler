@@ -144,7 +144,7 @@ public class FontColorTests : SCTest
         // Assert
         pres.Save(stream);
         pres = new Presentation(stream);
-        pres.Validate();
+        ValidatePresentation(pres);
         fontColor = pres.SlideMasters[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         fontColor.Hex.Should().Be("007F00");
     }
