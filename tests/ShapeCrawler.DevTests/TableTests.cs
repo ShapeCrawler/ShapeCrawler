@@ -784,7 +784,6 @@ public class TableTests : SCTest
         // Assert
         table[0, 1].Should().NotBeSameAs(table[1, 1]);
     }
-    
     [Test]
     [SlideShape("009_table.pptx", 3, 3, 3)]
     [SlideShape("001.pptx", 2, 5, 4)]
