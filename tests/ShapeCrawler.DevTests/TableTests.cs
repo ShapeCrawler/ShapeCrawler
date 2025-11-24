@@ -592,7 +592,6 @@ public class TableTests : SCTest
         table = pres.Slide(2).Shape(5).Table;
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-        
         table[3, 2].IsMergedCell.Should().BeFalse();
     }
 
