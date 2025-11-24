@@ -11,6 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 #if NETSTANDARD2_0
 using ShapeCrawler.Extensions;
+using System.Collections.Generic;
 #endif
 
 #pragma warning disable IDE0130

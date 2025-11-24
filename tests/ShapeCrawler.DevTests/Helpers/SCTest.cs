@@ -75,11 +75,9 @@ public abstract class SCTest
             new OpenXmlValidator(FileFormatVersions.Microsoft365).Validate(presDocument);
         sdkValidationErrorInfoCollection =
             sdkValidationErrorInfoCollection.Where(errorInfo => !nonCriticalErrors.Contains(errorInfo.Description));
-        sdkValidationErrorInfoCollection =
-        [
-            .. sdkValidationErrorInfoCollection.DistinctBy(errorInfo =>
-                new { errorInfo.Description, errorInfo.Path?.XPath })
-        ];
+        sdkValidationErrorInfoCollection = sdkValidationErrorInfoCollection
+            .GroupBy(errorInfo => new { errorInfo.Description, errorInfo.Path?.XPath })
+            .Select(g => g.First());
         var sdkErrors = new List<string>();
         foreach (var validationErrorInfo in sdkValidationErrorInfoCollection)
         {
