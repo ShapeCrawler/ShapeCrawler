@@ -1,18 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml.Linq;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
 #if NETSTANDARD2_0
 using ShapeCrawler.Extensions;
