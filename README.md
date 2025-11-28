@@ -53,7 +53,6 @@ pres.Save();
 
 - **No Office Required** – Process presentations on any platform without Microsoft Office installation
 - **Clean API** – Intuitive object model that hides the complexity of Open XML
-- **Production Ready** – Battle-tested in real-world applications with comprehensive test coverage
 
 ## 💡 Common Use Cases
 
@@ -84,6 +83,29 @@ using var newImage = File.OpenRead("new-image.png");
 picture.Image!.Update(newImage);
 
 pres.Save();
+```
+
+### Line
+
+#### Adding a straight line
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var shapes = pres.Slide(1).Shapes;
+
+// Add a line from (50, 60) to (100, 60)
+shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
+```
+
+#### Accessing Start and End Points
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var line = pres.Slide(1).Shapes.First(shape => shape.GeometryType == Geometry.Line).Line;
+
+var start = line.StartPoint; // Point(x, y)
+var end = line.EndPoint;     // Point(x, y)
+Console.WriteLine($"Line from {start.X},{start.Y} to {end.X},{end.Y}");
 ```
 
 ### More Examples
