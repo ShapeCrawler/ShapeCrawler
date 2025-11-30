@@ -300,6 +300,7 @@ internal abstract class Slide : ISlide
         {
             throw new ArgumentNullException(nameof(stream));
         }
+
         var slideImage = new SlideImage(this);
         slideImage.Save(stream, SKEncodedImageFormat.Png);
         if (stream.CanSeek)
