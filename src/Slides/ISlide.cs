@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #if DEBUG
@@ -95,6 +96,11 @@ public interface ISlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
+
+    /// <summary>
+    ///     Saves the slide as a PNG image.
+    /// </summary>
+    void SaveAsPng(Stream stream);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -287,6 +293,12 @@ internal abstract class Slide : ISlide
     }
 
     public abstract void Remove(); 
+
+    public void SaveAsPng(Stream stream)
+    {
+        var slideImage = new SlideImage(this);
+        slideImage.Save(stream, SKEncodedImageFormat.Png);
+    }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
