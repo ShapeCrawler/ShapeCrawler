@@ -302,6 +302,10 @@ internal abstract class Slide : ISlide
         }
         var slideImage = new SlideImage(this);
         slideImage.Save(stream, SKEncodedImageFormat.Png);
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
     }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
