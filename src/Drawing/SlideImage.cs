@@ -4,18 +4,11 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlideImage
+internal sealed class SlideImage(ISlide slide)
 {
-    private readonly ISlide slide;
-
-    internal SlideImage(ISlide slide)
-    {
-        this.slide = slide;
-    }
-
     internal void Save(Stream stream, SKEncodedImageFormat format)
     {
-        var presPart = this.slide.GetSDKPresentationPart();
+        var presPart = slide.GetSDKPresentationPart();
         var pSlideSize = presPart.Presentation.SlideSize!;
         var width = pSlideSize.Cx!.Value / 9525; // Convert EMUs to pixels (96 DPI)
         var height = pSlideSize.Cy!.Value / 9525;
@@ -23,10 +16,8 @@ internal sealed class SlideImage
         using var surface = SKSurface.Create(new SKImageInfo(width, height));
         var canvas = surface.Canvas;
 
-        // 2. Render background
-        this.RenderBackground(canvas, width, height);
+        this.RenderBackground(canvas);
 
-        // 3. Save to stream
         using var image = surface.Snapshot();
         using var data = image.Encode(format, 100);
         data.SaveTo(stream);
@@ -34,7 +25,6 @@ internal sealed class SlideImage
 
     private static SKColor HexToSkColor(string hex)
     {
-        // Remove '#' if present
         hex = hex.TrimStart('#');
 
         if (hex.Length == 6)
@@ -60,9 +50,9 @@ internal sealed class SlideImage
         return SKColors.White;
     }
 
-    private void RenderBackground(SKCanvas canvas, int width, int height)
+    private void RenderBackground(SKCanvas canvas)
     {
-        var fill = this.slide.Fill;
+        var fill = slide.Fill;
 
         if (fill is { Type: FillType.Solid, Color: not null })
         {
