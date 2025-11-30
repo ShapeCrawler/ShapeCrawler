@@ -398,4 +398,30 @@ public class SlideTests : SCTest
         // Assert
         stream.Length.Should().BeGreaterThan(0);
     }
+    
+    [Test]
+    public void SaveAsImage_saves_slide_image_with_solid_background()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s=>
+            {
+                s.SolidBackground("FF0000");
+            });
+        });
+        var slide = pres.Slide(1);
+        var stream = new MemoryStream();
+
+        // Act
+        slide.SaveAsImage(stream);
+
+        // Assert
+        stream.Position = 0;
+        using var image = SkiaSharp.SKBitmap.Decode(stream);
+        var centerPixel = image.GetPixel(image.Width / 2, image.Height / 2);
+        centerPixel.Red.Should().Be(255, "Red component");
+        centerPixel.Green.Should().Be(0, "Green component");
+        centerPixel.Blue.Should().Be(0, "Blue component");
+    }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using SkiaSharp;
 
@@ -14,29 +15,64 @@ internal sealed class SlideImage
 
     internal void Save(Stream stream, SKEncodedImageFormat format)
     {
-        // TODO: Implement rendering logic
-        // For now, just create a blank image with background color
-
-        // 1. Determine slide size (default to 960x540 for now if not available)
-        int width = 960;
-        int height = 540;
         var presPart = this.slide.GetSDKPresentationPart();
-        var pSlideSize = presPart.Presentation.SlideSize;
-        if (pSlideSize?.Cx != null && pSlideSize.Cy != null)
-        {
-            width = pSlideSize.Cx.Value / 9525; // Convert EMUs to pixels (96 DPI)
-            height = pSlideSize.Cy.Value / 9525;
-        }
+        var pSlideSize = presPart.Presentation.SlideSize!;
+        var width = pSlideSize.Cx!.Value / 9525; // Convert EMUs to pixels (96 DPI)
+        var height = pSlideSize.Cy!.Value / 9525;
 
         using var surface = SKSurface.Create(new SKImageInfo(width, height));
         var canvas = surface.Canvas;
 
-        // 2. Clear with white background
-        canvas.Clear(SKColors.White);
+        // 2. Render background
+        this.RenderBackground(canvas, width, height);
 
         // 3. Save to stream
         using var image = surface.Snapshot();
         using var data = image.Encode(format, 100);
         data.SaveTo(stream);
+    }
+
+    private static SKColor HexToSkColor(string hex)
+    {
+        // Remove '#' if present
+        hex = hex.TrimStart('#');
+
+        if (hex.Length == 6)
+        {
+            // Parse RGB (RRGGBB)
+            var r = Convert.ToByte(hex[..2], 16);
+            var g = Convert.ToByte(hex.Substring(2, 2), 16);
+            var b = Convert.ToByte(hex.Substring(4, 2), 16);
+            return new SKColor(r, g, b);
+        }
+
+        if (hex.Length == 8)
+        {
+            // Parse ARGB (AARRGGBB)
+            var a = Convert.ToByte(hex[..2], 16);
+            var r = Convert.ToByte(hex.Substring(2, 2), 16);
+            var g = Convert.ToByte(hex.Substring(4, 2), 16);
+            var b = Convert.ToByte(hex.Substring(6, 2), 16);
+            return new SKColor(r, g, b, a);
+        }
+
+        // Default to white if hex is invalid
+        return SKColors.White;
+    }
+
+    private void RenderBackground(SKCanvas canvas, int width, int height)
+    {
+        var fill = this.slide.Fill;
+
+        if (fill is { Type: FillType.Solid, Color: not null })
+        {
+            var skColor = HexToSkColor(fill.Color);
+            canvas.Clear(skColor);
+        }
+        else
+        {
+            // Default to white for unsupported backgrounds
+            canvas.Clear(SKColors.White);
+        }
     }
 }
