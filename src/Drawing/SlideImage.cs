@@ -1,6 +1,5 @@
 using System.IO;
 using SkiaSharp;
-using ShapeCrawler.Slides;
 
 namespace ShapeCrawler.Drawing;
 
