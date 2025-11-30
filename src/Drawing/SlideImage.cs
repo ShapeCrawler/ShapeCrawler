@@ -16,23 +16,16 @@ internal sealed class SlideImage
     {
         // TODO: Implement rendering logic
         // For now, just create a blank image with background color
-        
+
         // 1. Determine slide size (default to 960x540 for now if not available)
         int width = 960;
         int height = 540;
-        try
+        var presPart = this.slide.GetSDKPresentationPart();
+        var pSlideSize = presPart.Presentation.SlideSize;
+        if (pSlideSize?.Cx != null && pSlideSize.Cy != null)
         {
-            var presPart = this.slide.GetSDKPresentationPart();
-            var pSlideSize = presPart.Presentation.SlideSize;
-            if (pSlideSize?.Cx != null && pSlideSize?.Cy != null)
-            {
-                width = (int)(pSlideSize.Cx.Value / 9525); // Convert EMUs to pixels (96 DPI)
-                height = (int)(pSlideSize.Cy.Value / 9525);
-            }
-        }
-        catch
-        {
-            // Fallback to default if any error occurs
+            width = pSlideSize.Cx.Value / 9525; // Convert EMUs to pixels (96 DPI)
+            height = pSlideSize.Cy.Value / 9525;
         }
 
         using var surface = SKSurface.Create(new SKImageInfo(width, height));
