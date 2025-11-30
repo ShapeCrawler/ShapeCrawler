@@ -380,4 +380,22 @@ public class SlideTests : SCTest
         sectionSlides = pres.Sections[0].Slides;
         sectionSlides.Count.Should().Be(0);
     }
+    
+    [Test]
+    public void SaveAsImage_saves_slide_image()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
+        var slide = pres.Slide(1);
+        var stream = new MemoryStream();
+
+        // Act
+        slide.SaveAsImage(stream);
+
+        // Assert
+        stream.Length.Should().BeGreaterThan(0);
+    }
 }

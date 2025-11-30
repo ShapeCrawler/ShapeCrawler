@@ -98,9 +98,9 @@ public interface ISlide
     void Remove();
 
     /// <summary>
-    ///     Saves the slide as a PNG image.
+    ///     Saves the slide as an image.
     /// </summary>
-    void SaveAsPng(Stream stream);
+    void SaveAsImage(Stream stream);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -294,7 +294,7 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove(); 
 
-    public void SaveAsPng(Stream stream)
+    public void SaveAsImage(Stream stream)
     {
         var slideImage = new SlideImage(this);
         slideImage.Save(stream, SKEncodedImageFormat.Png);
