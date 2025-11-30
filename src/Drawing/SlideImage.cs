@@ -19,8 +19,8 @@ internal sealed class SlideImage
         
         // 1. Determine slide size (default to 960x540 for now if not available)
         // TODO: Get actual slide size from Presentation
-        var width = 960;
-        var height = 540;
+        const int width = 960;
+        const int height = 540;
 
         using var surface = SKSurface.Create(new SKImageInfo(width, height));
         var canvas = surface.Canvas;
