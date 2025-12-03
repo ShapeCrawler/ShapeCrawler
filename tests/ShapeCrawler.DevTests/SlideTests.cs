@@ -382,7 +382,7 @@ public class SlideTests : SCTest
     }
     
     [Test]
-    public void SaveAsImage_saves_slide_image()
+    public void SaveImageTo_saves_slide_image()
     {
         // Arrange
         var pres = new Presentation(p =>
@@ -393,14 +393,14 @@ public class SlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        slide.SaveAsImage(stream);
+        slide.SaveImageTo(stream);
 
         // Assert
         stream.Length.Should().BeGreaterThan(0);
     }
     
     [Test]
-    public void SaveAsImage_saves_slide_image_with_solid_background()
+    public void SaveImageTo_saves_slide_image_with_solid_background()
     {
         // Arrange
         var pres = new Presentation(p =>
@@ -414,7 +414,7 @@ public class SlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        slide.SaveAsImage(stream);
+        slide.SaveImageTo(stream);
 
         // Assert
         stream.Position = 0;
@@ -423,5 +423,27 @@ public class SlideTests : SCTest
         centerPixel.Red.Should().Be(255, "Red component");
         centerPixel.Green.Should().Be(0, "Green component");
         centerPixel.Blue.Should().Be(0, "Blue component");
+    }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_image_with_image_background()
+    {
+        // Arrange
+        var image = TestImage();
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s=>
+            {
+                s.ImageBackground(image);
+            });
+        });
+        var slide = pres.Slide(1);
+        var stream = new MemoryStream();
+
+        // Act
+        slide.SaveImageTo(stream);
+
+        // Assert
+        // Add a corresponding assertion
     }
 }

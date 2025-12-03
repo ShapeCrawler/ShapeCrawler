@@ -100,7 +100,7 @@ public interface ISlide
     /// <summary>
     ///     Saves the slide as an image.
     /// </summary>
-    void SaveAsImage(Stream stream);
+    void SaveImageTo(Stream stream);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -294,7 +294,7 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove(); 
 
-    public void SaveAsImage(Stream stream)
+    public void SaveImageTo(Stream stream)
     {
         if (stream is null)
         {

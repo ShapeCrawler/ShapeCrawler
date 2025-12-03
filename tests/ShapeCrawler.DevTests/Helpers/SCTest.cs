@@ -33,6 +33,15 @@ public abstract class SCTest
 
         return mStream;
     }
+    
+    /// <summary>
+    ///     Creates a random image byte array.
+    /// </summary>
+    /// <returns></returns>
+    protected static byte[] TestImage()
+    {
+        throw new NotImplementedException();
+    }
 
     protected static string StringOf(string fileName)
     {
