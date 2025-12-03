@@ -209,6 +209,19 @@ public sealed class DraftSlide
         return this;
     }
 
+    /// <summary>
+    ///     Sets the slide background to an image.
+    /// </summary>
+    public DraftSlide ImageBackground(byte[] imageBytes)
+    {
+        this.actions.Add(slide =>
+        {
+            slide.Fill.SetPicture(new MemoryStream(imageBytes));
+        });
+
+        return this;
+    }
+
     internal void ApplyTo(Presentation presentation)
     {
         // Always add a new slide for each DraftSlide application

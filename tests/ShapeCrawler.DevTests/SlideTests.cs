@@ -430,6 +430,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var image = TestImage();
+        image = File.ReadAllBytes(@"c:\temp\Рисунок 3.png");
         var pres = new Presentation(p =>
         {
             p.Slide(s=>
@@ -444,6 +445,19 @@ public class SlideTests : SCTest
         slide.SaveImageTo(stream);
 
         // Assert
-        // Add a corresponding assertion
+        stream.Position = 0;
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        var centerPixel = bitmap.GetPixel(bitmap.Width / 2, bitmap.Height / 2);
+        
+        // The test image is red, so we expect the background to be red
+        centerPixel.Red.Should().Be(255);
+        centerPixel.Green.Should().Be(0);
+        centerPixel.Blue.Should().Be(0);
+    }
+
+    private static byte[] TestImage()
+    {
+        // 1x1 Red Pixel PNG
+        return Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==");
     }
 }
