@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.76.1 - 2025-12-03
+🐞Fixed potential security vulnerabilities
+
 ## Version 0.76.0 - 2025-11-23
 🍀Added support for removing text highlights [#690](https://github.com/ShapeCrawler/ShapeCrawler/issues/690)
 
