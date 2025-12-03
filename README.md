@@ -139,7 +139,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.76.0 - 2025-11-23
-🍀Added support for removing text highlights [#690](https://github.com/ShapeCrawler/ShapeCrawler/issues/690)
+### Version 0.76.1 - 2025-12-03
+🐞Fixed potential security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
