@@ -1033,19 +1033,28 @@ public class TableTests : SCTest
     public void Rows_Add_copies_style_from_template_row()
     {
         // Arrange
-        var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Shape("Table 1").Table!;
-        var templateRow = table.Rows[0];
-        var templateCell = templateRow.Cells[0];
         const string expectedRedColor = "FF0000";
-        templateCell.Fill.SetColor(expectedRedColor);
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Table(table =>
+                {
+                    table.Columns(2);
+                    table.Row(row =>
+                    {
+                        row.Cell(cell => cell.SolidColor(expectedRedColor));
+                        row.Cell();
+                    });
+                });
+            });
+        });
+        var table = pres.Slide(1).Shapes.First().Table!;
         
         // Act
         table.Rows.Add(1, 0); // Add new row at index 1, using row 0 as template
         
         // Assert
-        var newRow = table.Rows[1];
-        var newCell = newRow.Cells[0];
-        newCell.Fill.Color.Should().Be(expectedRedColor);
+        table.Rows[1].Cells[0].Fill.Color.Should().Be(expectedRedColor);
     }
 }
