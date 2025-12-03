@@ -159,8 +159,7 @@ internal sealed class TableRowCollection : ITableRowCollection
         // Build each cell of the new row based on the template cell formatting
         foreach (var (templateACell, columnIndex) in templateACells.Select((c, i) => (c, i)))
         {
-            var templateCell = templateRow.Cells[columnIndex];
-            var newACell = CreateCellFromTemplate(templateACell, templateCell);
+            var newACell = CreateCellFromTemplate(templateACell);
             newARow.Append(newACell);
         }
         
@@ -178,7 +177,7 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
     }
 
-    private static A.TableCell CreateCellFromTemplate(A.TableCell templateACell, ITableCell templateCell)
+    private static A.TableCell CreateCellFromTemplate(A.TableCell templateACell)
     {
         // Create a brand-new table cell with an empty text body
         var newACell = new A.TableCell();

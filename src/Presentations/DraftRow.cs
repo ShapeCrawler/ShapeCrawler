@@ -9,12 +9,6 @@ namespace ShapeCrawler.Presentations;
 public sealed class DraftRow
 {
     private readonly List<DraftCell> cells = [];
-    private readonly int maxColumns;
-
-    internal DraftRow(int maxColumns)
-    {
-        this.maxColumns = maxColumns;
-    }
 
     internal IReadOnlyList<DraftCell> Cells => this.cells;
 

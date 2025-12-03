@@ -32,7 +32,7 @@ public sealed class DraftTable
     /// </summary>
     public DraftTable Row(Action<DraftRow> configure)
     {
-        var rowBuilder = new DraftRow(this.ColumnsCount);
+        var rowBuilder = new DraftRow();
         configure(rowBuilder);
         this.rows.Add(rowBuilder);
         return this;
