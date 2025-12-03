@@ -188,9 +188,6 @@ internal sealed class TableRowCollection : ITableRowCollection
             new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" }));
         newACell.Append(textBody);
         
-        // Determine template cell properties and font color
-        var templateFontColor = templateCell.TextBox.Paragraphs.FirstOrDefault()?.Portions.FirstOrDefault()?.Font?.Color.Hex;
-        
         A.TableCellProperties newTcPr;
         if (templateACell.TableCellProperties is not null)
         {
@@ -202,15 +199,6 @@ internal sealed class TableRowCollection : ITableRowCollection
             newTcPr = new A.TableCellProperties();
         }
         
-        if (!string.IsNullOrEmpty(templateFontColor))
-        {
-            newTcPr.AddSolidFill(templateFontColor!);
-        }
-        else
-        {
-            newTcPr.AddSolidFill("000000"); // default color
-        }
-
         newACell.Append(newTcPr);
         
         return newACell;
