@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 
@@ -446,17 +447,30 @@ public class SlideTests : SCTest
         // Assert
         stream.Position = 0;
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
-        var centerPixel = bitmap.GetPixel(bitmap.Width / 2, bitmap.Height / 2);
+        var cornerPixel = bitmap.GetPixel(10, 10); // corner to avoid "Shape" text in center
         
-        // The test image is red, so we expect the background to be red
-        centerPixel.Red.Should().Be(255);
-        centerPixel.Green.Should().Be(0);
-        centerPixel.Blue.Should().Be(0);
+        // The test image background is peach #F5C8A8 (RGB: 245, 200, 168)
+        cornerPixel.Red.Should().BeInRange(240, 250);
+        cornerPixel.Green.Should().BeInRange(195, 205);
+        cornerPixel.Blue.Should().BeInRange(163, 173);
     }
 
     private static byte[] TestImage()
     {
-        // 1x1 Red Pixel PNG
-        return Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==");
+        using var image = new MagickImage(new MagickColor("#F5C8A8"), 1280, 720);
+        
+        var settings = new MagickReadSettings
+        {
+            Font = "Arial",
+            FontPointsize = 72,
+            FillColor = MagickColors.Black,
+            BackgroundColor = MagickColors.Transparent,
+            TextGravity = Gravity.Center
+        };
+        
+        using var caption = new MagickImage($"caption:Shape", settings);
+        image.Composite(caption, Gravity.Center, CompositeOperator.Over);
+        
+        return image.ToByteArray(MagickFormat.Png);
     }
 }
