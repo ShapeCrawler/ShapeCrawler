@@ -401,6 +401,7 @@ public class SlideTests : SCTest
     }
     
     [Test]
+    [Platform(Exclude = "Linux", Reason = "ImageMagick.MagickTypeErrorException : UnableToReadFont `Arial' @ error/annotate.c/RenderFreetype/1658")]
     public void SaveImageTo_saves_slide_image_with_solid_background()
     {
         // Arrange
