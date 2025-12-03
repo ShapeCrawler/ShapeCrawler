@@ -1028,4 +1028,24 @@ public class TableTests : SCTest
         pres = SaveAndOpenPresentation(pres);
         pres.Slide(1).Shape("Table 1").Table.Rows[1].Cells[0].Fill.Color.Should().Be(templateFontColor);
     }
+    
+    [Test]
+    public void Rows_Add_copies_style_from_template_row()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("table-case001.pptx"));
+        var table = pres.Slide(1).Shape("Table 1").Table!;
+        var templateRow = table.Rows[0];
+        var templateCell = templateRow.Cells[0];
+        const string expectedRedColor = "FF0000";
+        templateCell.Fill.SetColor(expectedRedColor);
+        
+        // Act
+        table.Rows.Add(1, 0); // Add new row at index 1, using row 0 as template
+        
+        // Assert
+        var newRow = table.Rows[1];
+        var newCell = newRow.Cells[0];
+        newCell.Fill.Color.Should().Be(expectedRedColor);
+    }
 }
