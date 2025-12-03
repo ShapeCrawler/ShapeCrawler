@@ -21,7 +21,6 @@ public class Issue1185Tests : SCTest
         
         // Act
         table.Rows.Add(1, 0); // Add new row at index 1, using row 0 as template
-        pres.Save(@"c:\temp\after.pptx");
         
         // Assert
         var newRow = table.Rows[1];
