@@ -3,16 +3,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+#if NETSTANDARD2_0
+using System.Collections.Generic;
+using ShapeCrawler.Extensions;
+#endif
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using P = DocumentFormat.OpenXml.Presentation;
-
-#if NETSTANDARD2_0
-using ShapeCrawler.Extensions;
-using System.Collections.Generic;
-#endif
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
