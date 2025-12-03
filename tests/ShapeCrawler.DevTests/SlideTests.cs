@@ -430,7 +430,6 @@ public class SlideTests : SCTest
     {
         // Arrange
         var image = TestImage();
-        image = File.ReadAllBytes(@"c:\temp\Рисунок 3.png");
         var pres = new Presentation(p =>
         {
             p.Slide(s=>

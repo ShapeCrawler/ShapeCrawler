@@ -98,9 +98,14 @@ public interface ISlide
     void Remove();
 
     /// <summary>
-    ///     Saves the slide as an image.
+    ///     Saves the slide image to the specified stream.
     /// </summary>
     void SaveImageTo(Stream stream);
+    
+    /// <summary>
+    ///     Saves the slide image to the specified file.
+    /// </summary>
+    void SaveImageTo(string file);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -251,6 +256,12 @@ internal abstract class Slide : ISlide
     public T Shape<T>(string name)
         where T : IShape
         => this.Shapes.Shape<T>(name);
+
+    public void SaveImageTo(string file)
+    {
+        using var fileStream = File.Create(file);
+        this.SaveImageTo(fileStream);
+    }
 
     public PresentationPart GetSDKPresentationPart()
     {
