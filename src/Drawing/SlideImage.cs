@@ -23,9 +23,9 @@ internal sealed class SlideImage(ISlide slide)
         data.SaveTo(stream);
     }
 
-    private static SKColor HexToSkColor(string hex)
+    private SKColor GetSkColor()
     {
-        hex = hex.TrimStart('#');
+        var hex = slide.Fill.Color!.TrimStart('#');
 
         if (hex.Length == 6)
         {
@@ -56,7 +56,7 @@ internal sealed class SlideImage(ISlide slide)
 
         if (fill is { Type: FillType.Solid, Color: not null })
         {
-            var skColor = HexToSkColor(fill.Color);
+            var skColor = GetSkColor();
             canvas.Clear(skColor);
         }
         else if (fill is { Type: FillType.Picture, Picture: not null })

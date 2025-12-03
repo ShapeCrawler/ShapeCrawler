@@ -455,23 +455,4 @@ public class SlideTests : SCTest
         cornerPixel.Green.Should().BeInRange(195, 205);
         cornerPixel.Blue.Should().BeInRange(163, 173);
     }
-
-    private static byte[] TestImage()
-    {
-        using var image = new MagickImage(new MagickColor("#F5C8A8"), 1280, 720);
-        
-        var settings = new MagickReadSettings
-        {
-            Font = "Arial",
-            FontPointsize = 72,
-            FillColor = MagickColors.Black,
-            BackgroundColor = MagickColors.Transparent,
-            TextGravity = Gravity.Center
-        };
-        
-        using var caption = new MagickImage($"caption:Shape", settings);
-        image.Composite(caption, Gravity.Center, CompositeOperator.Over);
-        
-        return image.ToByteArray(MagickFormat.Png);
-    }
 }
