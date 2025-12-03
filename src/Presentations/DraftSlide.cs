@@ -180,7 +180,7 @@ public sealed class DraftSlide
                     var draftCell = draftRow.Cells[cellIndex];
                     if (!string.IsNullOrEmpty(draftCell.SolidColorHex))
                     {
-                        tableRow.Cells[cellIndex].Fill.SetColor(draftCell.SolidColorHex!);
+                        tableRow.Cells[cellIndex].Fill.SetColor(draftCell.SolidColorHex);
                     }
                 }
             }
