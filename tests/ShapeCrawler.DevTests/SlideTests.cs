@@ -459,7 +459,7 @@ public class SlideTests : SCTest
     [Test]
     public void SaveImageTo_saves_slide_image_with_text_box()
     {
-        // Arrange
+        // ARRANGE
         var pres = new Presentation(pres =>
         {
             pres.Slide(slide =>
@@ -476,11 +476,20 @@ public class SlideTests : SCTest
         });
         var slide = pres.Slide(1);
 
-        // Act
-        pres.Save(@"c:\Repo\ShapeCrawler\context\result.pptx");
-        slide.SaveImageTo(@"c:\Repo\ShapeCrawler\context\result.png");
+        // ACT
+        using var stream = new MemoryStream();
+        slide.SaveImageTo(stream);
 
-        // Assert
-        // Add a corresponding assertion
+        // ASSERT - verify the blue rectangle is rendered at position (50, 50) with accent1 color (4472C4)
+        stream.Position = 0;
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        
+        // Check a pixel inside the rectangle (center of shape at ~100pt, ~75pt -> ~133px, ~100px)
+        var centerPixel = bitmap.GetPixel(133, 100);
+        
+        // Accent1 theme color is #4472C4 (R=68, G=114, B=196)
+        centerPixel.Red.Should().BeInRange(60, 76);
+        centerPixel.Green.Should().BeInRange(106, 122);
+        centerPixel.Blue.Should().BeInRange(188, 204);
     }
 }
