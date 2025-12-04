@@ -45,6 +45,11 @@ public interface IParagraph
     ///     Gets spacing.
     /// </summary>
     ISpacing Spacing { get; }
+    
+    /// <summary>
+    ///     Gets font color.
+    /// </summary>
+    string FontColor { get; }
 
     /// <summary>
     ///     Finds and replaces text.
@@ -70,11 +75,6 @@ public interface IParagraph
     ///     Sets font color.
     /// </summary>
     void SetFontColor(string colorHex);
-
-    /// <summary>
-    ///     Gets font color.
-    /// </summary>
-    string FontColor { get; }
 }
 
 internal sealed class Paragraph : IParagraph
@@ -215,6 +215,19 @@ internal sealed class Paragraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
+    
+    public string FontColor
+    {
+        get
+        {
+            if (this.Portions.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return this.Portions[0].Font!.Color.Hex;
+        }
+    }
 
     public void ReplaceText(string oldValue, string newValue)
     {
@@ -272,19 +285,6 @@ internal sealed class Paragraph : IParagraph
             endParaRPr.GetFirstChild<A.SolidFill>()?.Remove();
             var solidFill = new A.SolidFill(new A.RgbColorModelHex { Val = colorHex });
             endParaRPr.InsertAt(solidFill, 0);
-        }
-    }
-
-    public string FontColor
-    {
-        get
-        {
-            if (this.Portions.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            return this.Portions[0].Font!.Color.Hex;
         }
     }
 
