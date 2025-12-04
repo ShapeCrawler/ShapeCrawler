@@ -1013,24 +1013,7 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void Rows_Add_adds_a_new_row_with_template_font_color()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("table-case001.pptx"));
-        var table = pres.Slide(1).Shape("Table 1").Table;
-        var templateRowIndex = 0;
-        var templateFontColor = table.Rows[templateRowIndex].Cells[0].TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex;
-
-        // Act
-        table.Rows.Add(1, templateRowIndex);
-
-        // Assert
-        pres = SaveAndOpenPresentation(pres);
-        pres.Slide(1).Shape("Table 1").Table.Rows[1].Cells[0].TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be(templateFontColor);
-    }
-    
-    [Test]
-    public void Rows_Add_copies_style_from_template_row()
+    public void Rows_Add_copies_font_color_from_template_row()
     {
         // Arrange
         const string expectedRedColor = "FF0000";
@@ -1043,7 +1026,37 @@ public class TableTests : SCTest
                     table.Columns(2);
                     table.Row(row =>
                     {
-                        row.Cell(cell => cell.SolidColor(expectedRedColor));
+                        row.Cell(cell => cell.FontColor(expectedRedColor));
+                        row.Cell();
+                    });
+                });
+            });
+        });
+        var table = pres.Slide(1).Shapes.First().Table!;
+        
+        // Act
+        table.Rows.Add(1, 0);
+        pres.Save(@"c:\Repo\ShapeCrawler\context\output.pptx");
+        
+        // Assert
+        table.Rows[1].Cells[0].TextBox.Paragraphs[0].FontColor.Should().Be(expectedRedColor);
+    }
+    
+    [Test]
+    public void Rows_Add_copies_solid_fill_color_from_template_row()
+    {
+        // Arrange
+        const string redColor = "FF0000";
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.Table(table =>
+                {
+                    table.Columns(2);
+                    table.Row(row =>
+                    {
+                        row.Cell(cell => cell.FillSolidColor(redColor));
                         row.Cell();
                     });
                 });
@@ -1055,6 +1068,6 @@ public class TableTests : SCTest
         table.Rows.Add(1, 0); // Add new row at index 1, using row 0 as template
         
         // Assert
-        table.Rows[1].Cells[0].Fill.Color.Should().Be(expectedRedColor);
+        table.Rows[1].Cells[0].Fill.Color.Should().Be(redColor);
     }
 }

@@ -181,10 +181,28 @@ internal sealed class TableRowCollection : ITableRowCollection
     {
         // Create a brand-new table cell with an empty text body
         var newACell = new A.TableCell();
+        var endParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
         var textBody = new A.TextBody(
             new A.BodyProperties(),
             new A.ListStyle(),
-            new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" }));
+            new A.Paragraph(endParaRPr));
+        
+        // Copy font color if present (check Run properties first, then EndParagraphRunProperties)
+        var templatePara = templateACell.TextBody!.GetFirstChild<A.Paragraph>()!;
+        var templateSolidFill = templatePara.GetFirstChild<A.Run>()?.RunProperties?.GetFirstChild<A.SolidFill>()
+            ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()?.GetFirstChild<A.SolidFill>();
+        
+        if (templateSolidFill != null)
+        {
+            var newRunProperties = new A.RunProperties { Language = "en-US", Dirty = false };
+            newRunProperties.Append(templateSolidFill.CloneNode(true));
+            var newRun = new A.Run(newRunProperties, new A.Text(string.Empty));
+            textBody.GetFirstChild<A.Paragraph>()!.InsertAt(newRun, 0);
+
+            // Also set on EndParagraphRunProperties so newly typed text inherits the color
+            endParaRPr.InsertAt((A.SolidFill)templateSolidFill.CloneNode(true), 0);
+        }
+        
         newACell.Append(textBody);
         
         A.TableCellProperties newTcPr;
