@@ -79,7 +79,7 @@ public interface ISlide
     /// </summary>
     /// <param name="name">element name.</param>
     IShape Shape(string name);
-    
+
     /// <summary>
     ///     Gets element by ID.
     /// </summary>
@@ -101,11 +101,13 @@ public interface ISlide
     ///     Saves the slide image to the specified stream.
     /// </summary>
     void SaveImageTo(Stream stream);
-    
+
+#if DEBUG
     /// <summary>
     ///     Saves the slide image to the specified file.
     /// </summary>
     void SaveImageTo(string file);
+#endif
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -303,7 +305,7 @@ internal abstract class Slide : ISlide
         }
     }
 
-    public abstract void Remove(); 
+    public abstract void Remove();
 
     public void SaveImageTo(Stream stream)
     {
