@@ -1036,7 +1036,6 @@ public class TableTests : SCTest
         
         // Act
         table.Rows.Add(1, 0);
-        pres.Save(@"c:\Repo\ShapeCrawler\context\output.pptx");
         
         // Assert
         table.Rows[1].Cells[0].TextBox.Paragraphs[0].FontColor.Should().Be(expectedRedColor);
