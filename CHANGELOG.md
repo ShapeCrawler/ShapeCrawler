@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.76.2 - 2025-12-04
+🐞Fixed adding table row with template [D1185](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1185)
+
 ## Version 0.76.1 - 2025-12-03
 🐞Fixed potential security vulnerabilities
 

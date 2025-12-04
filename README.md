@@ -139,7 +139,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.76.1 - 2025-12-03
-🐞Fixed potential security vulnerabilities
+### Version 0.76.2 - 2025-12-04
+🐞Fixed adding table row with template [D1185](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1185)
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
