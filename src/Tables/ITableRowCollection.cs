@@ -159,8 +159,7 @@ internal sealed class TableRowCollection : ITableRowCollection
         // Build each cell of the new row based on the template cell formatting
         foreach (var (templateACell, columnIndex) in templateACells.Select((c, i) => (c, i)))
         {
-            var templateCell = templateRow.Cells[columnIndex];
-            var newACell = CreateCellFromTemplate(templateACell, templateCell);
+            var newACell = CreateCellFromTemplate(templateACell);
             newARow.Append(newACell);
         }
         
@@ -178,18 +177,33 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
     }
 
-    private static A.TableCell CreateCellFromTemplate(A.TableCell templateACell, ITableCell templateCell)
+    private static A.TableCell CreateCellFromTemplate(A.TableCell templateACell)
     {
         // Create a brand-new table cell with an empty text body
         var newACell = new A.TableCell();
+        var endParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
         var textBody = new A.TextBody(
             new A.BodyProperties(),
             new A.ListStyle(),
-            new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" }));
-        newACell.Append(textBody);
+            new A.Paragraph(endParaRPr));
         
-        // Determine template cell properties and font color
-        var templateFontColor = templateCell.TextBox.Paragraphs.FirstOrDefault()?.Portions.FirstOrDefault()?.Font?.Color.Hex;
+        // Copy font color if present (check Run properties first, then EndParagraphRunProperties)
+        var templatePara = templateACell.TextBody!.GetFirstChild<A.Paragraph>()!;
+        var templateSolidFill = templatePara.GetFirstChild<A.Run>()?.RunProperties?.GetFirstChild<A.SolidFill>()
+            ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()?.GetFirstChild<A.SolidFill>();
+        
+        if (templateSolidFill != null)
+        {
+            var newRunProperties = new A.RunProperties { Language = "en-US", Dirty = false };
+            newRunProperties.Append(templateSolidFill.CloneNode(true));
+            var newRun = new A.Run(newRunProperties, new A.Text(string.Empty));
+            textBody.GetFirstChild<A.Paragraph>()!.InsertAt(newRun, 0);
+
+            // Also set on EndParagraphRunProperties so newly typed text inherits the color
+            endParaRPr.InsertAt((A.SolidFill)templateSolidFill.CloneNode(true), 0);
+        }
+        
+        newACell.Append(textBody);
         
         A.TableCellProperties newTcPr;
         if (templateACell.TableCellProperties is not null)
@@ -202,15 +216,6 @@ internal sealed class TableRowCollection : ITableRowCollection
             newTcPr = new A.TableCellProperties();
         }
         
-        if (!string.IsNullOrEmpty(templateFontColor))
-        {
-            newTcPr.AddSolidFill(templateFontColor!);
-        }
-        else
-        {
-            newTcPr.AddSolidFill("000000"); // default color
-        }
-
         newACell.Append(newTcPr);
         
         return newACell;

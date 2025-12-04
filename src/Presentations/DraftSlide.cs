@@ -155,6 +155,47 @@ public sealed class DraftSlide
     }
 
     /// <summary>
+    ///     Configures a table using a nested builder.
+    /// </summary>
+    public DraftSlide Table(Action<DraftTable> configure)
+    {
+        this.actions.Add(slide =>
+        {
+            var builder = new DraftTable();
+            configure(builder);
+
+            var rowsCount = builder.Rows.Count;
+            slide.Shapes.AddTable(builder.TableX, builder.TableY, builder.ColumnsCount, rowsCount);
+            var tableShape = slide.Shapes.Last<IShape>();
+            var table = tableShape.Table!;
+
+            // Apply cell configurations
+            for (var rowIndex = 0; rowIndex < builder.Rows.Count && rowIndex < table.Rows.Count; rowIndex++)
+            {
+                var draftRow = builder.Rows[rowIndex];
+                var tableRow = table.Rows[rowIndex];
+
+                for (var cellIndex = 0; cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count; cellIndex++)
+                {
+                    var draftCell = draftRow.Cells[cellIndex];
+                    if (!string.IsNullOrEmpty(draftCell.SolidColorHex))
+                    {
+                        tableRow.Cells[cellIndex].Fill.SetColor(draftCell.SolidColorHex!);
+                    }
+
+                    if (!string.IsNullOrEmpty(draftCell.FontColorHex))
+                    {
+                        var cell = tableRow.Cells[cellIndex];
+                        cell.TextBox.Paragraphs[0].SetFontColor(draftCell.FontColorHex!);
+                    }
+                }
+            }
+        });
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a pie chart with specified name.
     /// </summary>
     public DraftSlide PieChart(string name)
