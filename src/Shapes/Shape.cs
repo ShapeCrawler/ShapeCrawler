@@ -262,7 +262,12 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
                     60000d; // OpenXML rotation angles are stored in units of 1/60,000th of a degree
             }
 
-            return pSpPr.Transform2D!.Rotation!.Value / 60000d;
+            if (pSpPr.Transform2D!.Rotation is null)
+            {
+                return 0;
+            }
+
+            return pSpPr.Transform2D.Rotation.Value / 60000d;
         }
     }
 

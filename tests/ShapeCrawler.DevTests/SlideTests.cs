@@ -455,4 +455,32 @@ public class SlideTests : SCTest
         cornerPixel.Green.Should().BeInRange(195, 205);
         cornerPixel.Blue.Should().BeInRange(163, 173);
     }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_image_with_text_box()
+    {
+        // Arrange
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(textBox =>
+                {
+                    textBox.X(50);
+                    textBox.Y(50);
+                    textBox.Width(100);
+                    textBox.Height(50);    
+                    textBox.Text("Hello, World!");
+                });
+            });
+        });
+        var slide = pres.Slide(1);
+
+        // Act
+        pres.Save(@"c:\Repo\ShapeCrawler\context\result.pptx");
+        slide.SaveImageTo(@"c:\Repo\ShapeCrawler\context\result.png");
+
+        // Assert
+        // Add a corresponding assertion
+    }
 }

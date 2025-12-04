@@ -1,6 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
@@ -170,50 +173,44 @@ internal sealed class SlideImage(ISlide slide)
 
     private void RenderFill(SKCanvas canvas, IShape shape, SKRect rect, float cornerRadius)
     {
-        var shapeFill = shape.Fill;
-        if (shapeFill is null || shapeFill.Type == FillType.NoFill)
+        var fillColor = this.GetShapeFillColor(shape);
+        if (fillColor is null)
         {
             return;
         }
 
-        if (shapeFill.Type == FillType.Solid && shapeFill.Color is not null)
+        using var fillPaint = new SKPaint
         {
-            var fillColor = this.ParseHexColor(shapeFill.Color, shapeFill.Alpha);
-            using var fillPaint = new SKPaint
-            {
-                Color = fillColor,
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
+            Color = fillColor.Value,
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true
+        };
 
-            if (cornerRadius > 0)
-            {
-                canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);
-            }
-            else
-            {
-                canvas.DrawRect(rect, fillPaint);
-            }
+        if (cornerRadius > 0)
+        {
+            canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);
+        }
+        else
+        {
+            canvas.DrawRect(rect, fillPaint);
         }
     }
 
     private void RenderOutline(SKCanvas canvas, IShape shape, SKRect rect, float cornerRadius)
     {
-        var shapeOutline = shape.Outline;
-        if (shapeOutline is null || shapeOutline.Weight <= 0)
+        var outlineColor = this.GetShapeOutlineColor(shape);
+        var strokeWidth = this.GetShapeOutlineWidth(shape);
+
+        if (outlineColor is null || strokeWidth <= 0)
         {
             return;
         }
 
-        var outlineColor = shapeOutline.HexColor is not null
-            ? this.ParseHexColor(shapeOutline.HexColor, 100)
-            : SKColors.Black;
-
         using var outlinePaint = new SKPaint
         {
-            Color = outlineColor,
+            Color = outlineColor.Value,
             Style = SKPaintStyle.Stroke,
-            StrokeWidth = (float)shapeOutline.Weight * PointsToPixels,
+            StrokeWidth = strokeWidth,
             IsAntialias = true
         };
 
@@ -229,47 +226,255 @@ internal sealed class SlideImage(ISlide slide)
 
     private void RenderEllipseFill(SKCanvas canvas, IShape shape, SKRect rect)
     {
-        var shapeFill = shape.Fill;
-        if (shapeFill is null || shapeFill.Type == FillType.NoFill)
+        var fillColor = this.GetShapeFillColor(shape);
+        if (fillColor is null)
         {
             return;
         }
 
-        if (shapeFill.Type == FillType.Solid && shapeFill.Color is not null)
+        using var fillPaint = new SKPaint
         {
-            var fillColor = this.ParseHexColor(shapeFill.Color, shapeFill.Alpha);
-            using var fillPaint = new SKPaint
-            {
-                Color = fillColor,
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
+            Color = fillColor.Value,
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true
+        };
 
-            canvas.DrawOval(rect, fillPaint);
-        }
+        canvas.DrawOval(rect, fillPaint);
     }
 
     private void RenderEllipseOutline(SKCanvas canvas, IShape shape, SKRect rect)
     {
-        var shapeOutline = shape.Outline;
-        if (shapeOutline is null || shapeOutline.Weight <= 0)
+        var outlineColor = this.GetShapeOutlineColor(shape);
+        var strokeWidth = this.GetShapeOutlineWidth(shape);
+
+        if (outlineColor is null || strokeWidth <= 0)
         {
             return;
         }
 
-        var outlineColor = shapeOutline.HexColor is not null
-            ? this.ParseHexColor(shapeOutline.HexColor, 100)
-            : SKColors.Black;
-
         using var outlinePaint = new SKPaint
         {
-            Color = outlineColor,
+            Color = outlineColor.Value,
             Style = SKPaintStyle.Stroke,
-            StrokeWidth = (float)shapeOutline.Weight * PointsToPixels,
+            StrokeWidth = strokeWidth,
             IsAntialias = true
         };
 
         canvas.DrawOval(rect, outlinePaint);
+    }
+
+    private SKColor? GetShapeOutlineColor(IShape shape)
+    {
+        var shapeOutline = shape.Outline;
+
+        // Check for explicit outline color first
+        if (shapeOutline?.HexColor is not null)
+        {
+            return this.ParseHexColor(shapeOutline.HexColor, 100);
+        }
+
+        // Check for style-based outline (lnRef with scheme color)
+        var styleColor = this.GetStyleOutlineColor(shape);
+        if (styleColor is not null)
+        {
+            return styleColor;
+        }
+
+        return null;
+    }
+
+    private float GetShapeOutlineWidth(IShape shape)
+    {
+        var shapeOutline = shape.Outline;
+
+        // Check for explicit outline weight first
+        if (shapeOutline is not null && shapeOutline.Weight > 0)
+        {
+            return (float)shapeOutline.Weight * PointsToPixels;
+        }
+
+        // Check for style-based outline width
+        var styleWidth = this.GetStyleOutlineWidth(shape);
+        return styleWidth;
+    }
+
+    private SKColor? GetStyleOutlineColor(IShape shape)
+    {
+        var pShape = shape.SDKOpenXmlElement as P.Shape;
+        if (pShape is null)
+        {
+            return null;
+        }
+
+        var style = pShape.ShapeStyle;
+        var lineRef = style?.LineReference;
+        if (lineRef is null)
+        {
+            return null;
+        }
+
+        var schemeColor = lineRef.GetFirstChild<A.SchemeColor>();
+        if (schemeColor?.Val is null)
+        {
+            return null;
+        }
+
+        var schemeColorValue = schemeColor.Val?.InnerText;
+        if (schemeColorValue is null)
+        {
+            return null;
+        }
+
+        // Handle shade modifier (makes color darker)
+        var shade = schemeColor.GetFirstChild<A.Shade>();
+        var hexColor = this.ResolveSchemeColor(schemeColorValue);
+
+        if (hexColor is null)
+        {
+            return null;
+        }
+
+        var color = this.ParseHexColor(hexColor, 100);
+
+        // Apply shade if present (e.g., shade val="15000" means 15% of original brightness)
+        if (shade?.Val is not null)
+        {
+            var shadeFactor = shade.Val.Value / 100000f;
+            return new SKColor(
+                (byte)(color.Red * shadeFactor),
+                (byte)(color.Green * shadeFactor),
+                (byte)(color.Blue * shadeFactor),
+                color.Alpha);
+        }
+
+        return color;
+    }
+
+    private float GetStyleOutlineWidth(IShape shape)
+    {
+        var pShape = shape.SDKOpenXmlElement as P.Shape;
+        if (pShape is null)
+        {
+            return 0;
+        }
+
+        var style = pShape.ShapeStyle;
+        var lineRef = style?.LineReference;
+        if (lineRef?.Index is null || lineRef.Index.Value == 0)
+        {
+            return 0;
+        }
+
+        // Default line width based on index (idx="2" typically means ~1.5pt line)
+        // This is a simplification - proper implementation would look up theme line styles
+        var defaultWidth = lineRef.Index.Value * 0.75f;
+        return defaultWidth * PointsToPixels;
+    }
+
+    private SKColor? GetShapeFillColor(IShape shape)
+    {
+        var shapeFill = shape.Fill;
+
+        // Check for explicit solid fill first
+        if (shapeFill is { Type: FillType.Solid, Color: not null })
+        {
+            return this.ParseHexColor(shapeFill.Color, shapeFill.Alpha);
+        }
+
+        // Check for style-based fill (fillRef with scheme color)
+        if (shapeFill is null || shapeFill.Type == FillType.NoFill)
+        {
+            var styleColor = this.GetStyleFillColor(shape);
+            if (styleColor is not null)
+            {
+                return styleColor;
+            }
+        }
+
+        return null;
+    }
+
+    private SKColor? GetStyleFillColor(IShape shape)
+    {
+        var pShape = shape.SDKOpenXmlElement as P.Shape;
+        if (pShape is null)
+        {
+            return null;
+        }
+
+        var style = pShape.ShapeStyle;
+        var fillRef = style?.FillReference;
+        if (fillRef is null)
+        {
+            return null;
+        }
+
+        var schemeColor = fillRef.GetFirstChild<A.SchemeColor>();
+        if (schemeColor?.Val is null)
+        {
+            return null;
+        }
+
+        var schemeColorValue = schemeColor.Val?.InnerText;
+        if (schemeColorValue is null)
+        {
+            return null;
+        }
+
+        var hexColor = this.ResolveSchemeColor(schemeColorValue);
+
+        return hexColor is not null ? this.ParseHexColor(hexColor, 100) : null;
+    }
+
+    private string? ResolveSchemeColor(string schemeColorName)
+    {
+        var presPart = slide.GetSDKPresentationPart();
+        var slideParts = presPart.SlideParts.ToList();
+        if (slideParts.Count == 0)
+        {
+            return null;
+        }
+
+        var slidePart = slideParts.FirstOrDefault();
+        var themePart = slidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart;
+        var colorScheme = themePart?.Theme?.ThemeElements?.ColorScheme;
+        if (colorScheme is null)
+        {
+            return null;
+        }
+
+        // Map scheme color names to ColorScheme elements
+        A.Color2Type? colorElement = schemeColorName switch
+        {
+            "dk1" => colorScheme.Dark1Color,
+            "lt1" => colorScheme.Light1Color,
+            "dk2" => colorScheme.Dark2Color,
+            "lt2" => colorScheme.Light2Color,
+            "accent1" => colorScheme.Accent1Color,
+            "accent2" => colorScheme.Accent2Color,
+            "accent3" => colorScheme.Accent3Color,
+            "accent4" => colorScheme.Accent4Color,
+            "accent5" => colorScheme.Accent5Color,
+            "accent6" => colorScheme.Accent6Color,
+            "hlink" => colorScheme.Hyperlink,
+            "folHlink" => colorScheme.FollowedHyperlinkColor,
+            _ => null
+        };
+
+        if (colorElement is null)
+        {
+            return null;
+        }
+
+        // Get the RGB hex value from the color element
+        var rgbColor = colorElement.RgbColorModelHex?.Val?.Value;
+        if (rgbColor is not null)
+        {
+            return rgbColor;
+        }
+
+        var sysColor = colorElement.SystemColor?.LastColor?.Value;
+        return sysColor;
     }
 
     private SKColor ParseHexColor(string hex, double alphaPercentage)
