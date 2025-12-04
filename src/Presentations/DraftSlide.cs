@@ -164,7 +164,7 @@ public sealed class DraftSlide
             var builder = new DraftTable();
             configure(builder);
 
-            var rowsCount = builder.Rows.Count > 0 ? builder.Rows.Count : 1;
+            var rowsCount = builder.Rows.Count;
             slide.Shapes.AddTable(builder.TableX, builder.TableY, builder.ColumnsCount, rowsCount);
             var tableShape = slide.Shapes.Last<IShape>();
             var table = tableShape.Table!;
