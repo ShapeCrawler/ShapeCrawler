@@ -1026,7 +1026,7 @@ public class TableTests : SCTest
 
         // Assert
         pres = SaveAndOpenPresentation(pres);
-        pres.Slide(1).Shape("Table 1").Table.Rows[1].Cells[0].Fill.Color.Should().Be(templateFontColor);
+        pres.Slide(1).Shape("Table 1").Table.Rows[1].Cells[0].TextBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be(templateFontColor);
     }
     
     [Test]
