@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 
@@ -379,5 +380,79 @@ public class SlideTests : SCTest
         pres = new Presentation(mStream);
         sectionSlides = pres.Sections[0].Slides;
         sectionSlides.Count.Should().Be(0);
+    }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_image()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide();
+        });
+        var slide = pres.Slide(1);
+        var stream = new MemoryStream();
+
+        // Act
+        slide.SaveImageTo(stream);
+
+        // Assert
+        stream.Length.Should().BeGreaterThan(0);
+    }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_image_with_solid_background()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s=>
+            {
+                s.SolidBackground("FF0000");
+            });
+        });
+        var slide = pres.Slide(1);
+        var stream = new MemoryStream();
+
+        // Act
+        slide.SaveImageTo(stream);
+
+        // Assert
+        stream.Position = 0;
+        using var image = SkiaSharp.SKBitmap.Decode(stream);
+        var centerPixel = image.GetPixel(image.Width / 2, image.Height / 2);
+        centerPixel.Red.Should().Be(255, "Red component");
+        centerPixel.Green.Should().Be(0, "Green component");
+        centerPixel.Blue.Should().Be(0, "Blue component");
+    }
+    
+    [Test]
+    [Platform(Exclude = "Linux", Reason = "ImageMagick.MagickTypeErrorException : UnableToReadFont `Arial' @ error/annotate.c/RenderFreetype/1658")]
+    public void SaveImageTo_saves_slide_image_with_image_background()
+    {
+        // Arrange
+        var image = TestImage();
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s=>
+            {
+                s.ImageBackground(image);
+            });
+        });
+        var slide = pres.Slide(1);
+        var stream = new MemoryStream();
+
+        // Act
+        slide.SaveImageTo(stream);
+
+        // Assert
+        stream.Position = 0;
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        var cornerPixel = bitmap.GetPixel(10, 10); // corner to avoid "Shape" text in center
+        
+        // The test image background is peach #F5C8A8 (RGB: 245, 200, 168)
+        cornerPixel.Red.Should().BeInRange(240, 250);
+        cornerPixel.Green.Should().BeInRange(195, 205);
+        cornerPixel.Blue.Should().BeInRange(163, 173);
     }
 }

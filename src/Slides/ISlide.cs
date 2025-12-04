@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #if DEBUG
@@ -78,7 +79,7 @@ public interface ISlide
     /// </summary>
     /// <param name="name">element name.</param>
     IShape Shape(string name);
-    
+
     /// <summary>
     ///     Gets element by ID.
     /// </summary>
@@ -95,6 +96,18 @@ public interface ISlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
+
+    /// <summary>
+    ///     Saves the slide image to the specified stream.
+    /// </summary>
+    void SaveImageTo(Stream stream);
+
+#if DEBUG
+    /// <summary>
+    ///     Saves the slide image to the specified file.
+    /// </summary>
+    void SaveImageTo(string file);
+#endif
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -246,6 +259,12 @@ internal abstract class Slide : ISlide
         where T : IShape
         => this.Shapes.Shape<T>(name);
 
+    public void SaveImageTo(string file)
+    {
+        using var fileStream = File.Create(file);
+        this.SaveImageTo(fileStream);
+    }
+
     public PresentationPart GetSDKPresentationPart()
     {
         var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
@@ -286,7 +305,22 @@ internal abstract class Slide : ISlide
         }
     }
 
-    public abstract void Remove(); 
+    public abstract void Remove();
+
+    public void SaveImageTo(Stream stream)
+    {
+        if (stream is null)
+        {
+            throw new ArgumentNullException(nameof(stream));
+        }
+
+        var slideImage = new SlideImage(this);
+        slideImage.Save(stream, SKEncodedImageFormat.Png);
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
+    }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {

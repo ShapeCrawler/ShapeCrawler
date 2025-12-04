@@ -236,6 +236,33 @@ public sealed class DraftSlide
         return this;
     }
 
+    /// <summary>
+    ///     Sets the slide background to a solid color.
+    /// </summary>
+    /// <param name="hexColor">Hex color string (e.g., "FF0000" for red).</param>
+    public DraftSlide SolidBackground(string hexColor)
+    {
+        this.actions.Add(slide =>
+        {
+            slide.Fill.SetColor(hexColor);
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the slide background to an image.
+    /// </summary>
+    public DraftSlide ImageBackground(byte[] imageBytes)
+    {
+        this.actions.Add(slide =>
+        {
+            slide.Fill.SetPicture(new MemoryStream(imageBytes));
+        });
+
+        return this;
+    }
+
     internal void ApplyTo(Presentation presentation)
     {
         // Always add a new slide for each DraftSlide application

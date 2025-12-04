@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using Fixture;
+using ImageMagick;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.DevTests.Helpers;
@@ -32,6 +33,25 @@ public abstract class SCTest
         mStream.Position = 0;
 
         return mStream;
+    }
+
+    protected static byte[] TestImage()
+    {
+        using var image = new MagickImage(new MagickColor("#F5C8A8"), 1280, 720);
+
+        var settings = new MagickReadSettings
+        {
+            Font = "Arial",
+            FontPointsize = 72,
+            FillColor = MagickColors.Black,
+            BackgroundColor = MagickColors.Transparent,
+            TextGravity = Gravity.Center
+        };
+
+        using var caption = new MagickImage($"caption:Shape", settings);
+        image.Composite(caption, Gravity.Center, CompositeOperator.Over);
+
+        return image.ToByteArray(MagickFormat.Png);
     }
 
     protected static string StringOf(string fileName)
