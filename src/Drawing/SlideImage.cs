@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using ShapeCrawler.Slides;
 using SkiaSharp;
@@ -15,6 +16,21 @@ internal sealed class SlideImage(RemovedSlide slide)
     private const int EmusPerPixel = 9525; // EMUs to pixels conversion factor (96 DPI)
     private const float PointsToPixels = 96f / 72f; // Points to pixels conversion factor
     private const double Epsilon = 1e-6;
+    private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors = new(StringComparer.Ordinal)
+    {
+        { "dk1", scheme => scheme.Dark1Color },
+        { "lt1", scheme => scheme.Light1Color },
+        { "dk2", scheme => scheme.Dark2Color },
+        { "lt2", scheme => scheme.Light2Color },
+        { "accent1", scheme => scheme.Accent1Color },
+        { "accent2", scheme => scheme.Accent2Color },
+        { "accent3", scheme => scheme.Accent3Color },
+        { "accent4", scheme => scheme.Accent4Color },
+        { "accent5", scheme => scheme.Accent5Color },
+        { "accent6", scheme => scheme.Accent6Color },
+        { "hlink", scheme => scheme.Hyperlink },
+        { "folHlink", scheme => scheme.FollowedHyperlinkColor }
+    };
 
     /// <summary>
     ///     Saves the slide to the specified stream in the given image format.
@@ -37,6 +53,17 @@ internal sealed class SlideImage(RemovedSlide slide)
         data.SaveTo(stream);
     }
 
+    private static SKColor ApplyShade(SKColor color, int shadeValue)
+    {
+        var shadeFactor = shadeValue / 100000f;
+
+        return new SKColor(
+            (byte)(color.Red * shadeFactor),
+            (byte)(color.Green * shadeFactor),
+            (byte)(color.Blue * shadeFactor),
+            color.Alpha);
+    }
+    
     private static float GetStyleOutlineWidth(IShape shape)
     {
         var pShape = shape.SDKOpenXmlElement as P.Shape;
@@ -355,22 +382,11 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         var baseColor = ParseHexColor(hexColor, 100);
-        var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
+        var shadeValue = schemeColor?.GetFirstChild<A.Shade>()?.Val?.Value;
 
         return shadeValue is null
             ? baseColor
-            : this.ApplyShade(baseColor, shadeValue.Value);
-    }
-
-    private SKColor ApplyShade(SKColor color, int shadeValue)
-    {
-        var shadeFactor = shadeValue / 100000f;
-
-        return new SKColor(
-            (byte)(color.Red * shadeFactor),
-            (byte)(color.Green * shadeFactor),
-            (byte)(color.Blue * shadeFactor),
-            color.Alpha);
+            : ApplyShade(baseColor, shadeValue.Value);
     }
 
     private SKColor? GetShapeFillColor(IShape shape)
@@ -430,31 +446,18 @@ internal sealed class SlideImage(RemovedSlide slide)
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var themePart = slide.SlidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart;
-        var colorScheme = themePart?.Theme.ThemeElements?.ColorScheme;
+        var colorScheme = slide.SlidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
         if (colorScheme is null)
         {
             return null;
         }
 
-        // Map scheme color names to ColorScheme elements
-        A.Color2Type? colorElement = schemeColorName switch
+        if (!SchemeColorSelectors.TryGetValue(schemeColorName, out var selector))
         {
-            "dk1" => colorScheme.Dark1Color,
-            "lt1" => colorScheme.Light1Color,
-            "dk2" => colorScheme.Dark2Color,
-            "lt2" => colorScheme.Light2Color,
-            "accent1" => colorScheme.Accent1Color,
-            "accent2" => colorScheme.Accent2Color,
-            "accent3" => colorScheme.Accent3Color,
-            "accent4" => colorScheme.Accent4Color,
-            "accent5" => colorScheme.Accent5Color,
-            "accent6" => colorScheme.Accent6Color,
-            "hlink" => colorScheme.Hyperlink,
-            "folHlink" => colorScheme.FollowedHyperlinkColor,
-            _ => null
-        };
+            return null;
+        }
 
+        var colorElement = selector(colorScheme);
         if (colorElement is null)
         {
             return null;
