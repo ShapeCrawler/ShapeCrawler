@@ -336,54 +336,41 @@ internal sealed class SlideImage(RemovedSlide slide)
 
     private SKColor? GetStyleOutlineColor(IShape shape)
     {
-        var pShape = shape.SDKOpenXmlElement as P.Shape;
-        if (pShape is null)
-        {
-            return null;
-        }
-
-        var style = pShape.ShapeStyle;
-        var lineRef = style?.LineReference;
-        if (lineRef is null)
+        if (shape.SDKOpenXmlElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
         {
             return null;
         }
 
         var schemeColor = lineRef.GetFirstChild<A.SchemeColor>();
-        if (schemeColor?.Val is null)
-        {
-            return null;
-        }
-
-        var schemeColorValue = schemeColor.Val?.InnerText;
+        var schemeColorValue = schemeColor?.Val?.InnerText;
         if (schemeColorValue is null)
         {
             return null;
         }
 
-        // Handle shade modifier (makes color darker)
-        var shade = schemeColor.GetFirstChild<A.Shade>();
         var hexColor = this.ResolveSchemeColor(schemeColorValue);
-
         if (hexColor is null)
         {
             return null;
         }
 
-        var color = ParseHexColor(hexColor, 100);
+        var baseColor = ParseHexColor(hexColor, 100);
+        var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
 
-        // Apply shade if present (e.g., shade val="15000" means 15% of original brightness)
-        if (shade?.Val is not null)
-        {
-            var shadeFactor = shade.Val.Value / 100000f;
-            return new SKColor(
-                (byte)(color.Red * shadeFactor),
-                (byte)(color.Green * shadeFactor),
-                (byte)(color.Blue * shadeFactor),
-                color.Alpha);
-        }
+        return shadeValue is null
+            ? baseColor
+            : this.ApplyShade(baseColor, shadeValue.Value);
+    }
 
-        return color;
+    private SKColor ApplyShade(SKColor color, int shadeValue)
+    {
+        var shadeFactor = shadeValue / 100000f;
+
+        return new SKColor(
+            (byte)(color.Red * shadeFactor),
+            (byte)(color.Green * shadeFactor),
+            (byte)(color.Blue * shadeFactor),
+            color.Alpha);
     }
 
     private SKColor? GetShapeFillColor(IShape shape)
