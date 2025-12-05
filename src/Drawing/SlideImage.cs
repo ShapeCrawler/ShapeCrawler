@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using ShapeCrawler.Slides;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,6 +14,7 @@ internal sealed class SlideImage(RemovedSlide slide)
 {
     private const int EmusPerPixel = 9525; // EMUs to pixels conversion factor (96 DPI)
     private const float PointsToPixels = 96f / 72f; // Points to pixels conversion factor
+    private const double Epsilon = 1e-6;
 
     /// <summary>
     ///     Saves the slide to the specified stream in the given image format.
@@ -37,6 +37,80 @@ internal sealed class SlideImage(RemovedSlide slide)
         data.SaveTo(stream);
     }
 
+    private static float GetStyleOutlineWidth(IShape shape)
+    {
+        var pShape = shape.SDKOpenXmlElement as P.Shape;
+        if (pShape is null)
+        {
+            return 0;
+        }
+
+        var style = pShape.ShapeStyle;
+        var lineRef = style?.LineReference;
+        if (lineRef?.Index is null || lineRef.Index.Value == 0)
+        {
+            return 0;
+        }
+
+        // Default line width based on index (idx="2" typically means ~1.5pt line)
+        // This is a simplification - proper implementation would look up theme line styles
+        var defaultWidth = lineRef.Index.Value * 0.75f;
+        return defaultWidth * PointsToPixels;
+    }
+    
+    private static void ApplyRotation(SKCanvas canvas, IShape shape, float x, float y, float width, float height)
+    {
+        if (Math.Abs(shape.Rotation) > Epsilon)
+        {
+            var centerX = x + (width / 2);
+            var centerY = y + (height / 2);
+            canvas.RotateDegrees((float)shape.Rotation, centerX, centerY);
+        }
+    }
+    
+    private static float GetShapeOutlineWidth(IShape shape)
+    {
+        var shapeOutline = shape.Outline;
+
+        // Check for explicit outline weight first
+        if (shapeOutline is not null && shapeOutline.Weight > 0)
+        {
+            return (float)shapeOutline.Weight * PointsToPixels;
+        }
+
+        // Check for style-based outline width
+        var styleWidth = GetStyleOutlineWidth(shape);
+        return styleWidth;
+    }
+    
+    private static SKColor ParseHexColor(string hex, double alphaPercentage)
+    {
+        hex = hex.TrimStart('#');
+
+        byte r, g, b;
+        byte a = (byte)(alphaPercentage / 100.0 * 255);
+
+        if (hex.Length == 6)
+        {
+            r = Convert.ToByte(hex[..2], 16);
+            g = Convert.ToByte(hex.Substring(2, 2), 16);
+            b = Convert.ToByte(hex.Substring(4, 2), 16);
+        }
+        else if (hex.Length == 8)
+        {
+            a = Convert.ToByte(hex[..2], 16);
+            r = Convert.ToByte(hex.Substring(2, 2), 16);
+            g = Convert.ToByte(hex.Substring(4, 2), 16);
+            b = Convert.ToByte(hex.Substring(6, 2), 16);
+        }
+        else
+        {
+            return SKColors.Transparent;
+        }
+
+        return new SKColor(r, g, b, a);
+    }
+    
     private SKColor GetSkColor()
     {
         var hex = slide.Fill.Color!.TrimStart('#');
@@ -47,7 +121,7 @@ internal sealed class SlideImage(RemovedSlide slide)
             return SKColors.White; // used by the PowerPoint application as the default background color
         }
         
-        return this.ParseHexColor(hex, 100);
+        return ParseHexColor(hex, 100);
     }
 
     private void RenderBackground(SKCanvas canvas)
@@ -123,7 +197,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         canvas.Save();
-        this.ApplyRotation(canvas, shape, x, y, width, height);
+        ApplyRotation(canvas, shape, x, y, width, height);
 
         this.RenderFill(canvas, shape, rect, cornerRadius);
         this.RenderOutline(canvas, shape, rect, cornerRadius);
@@ -140,24 +214,12 @@ internal sealed class SlideImage(RemovedSlide slide)
         var rect = new SKRect(x, y, x + width, y + height);
 
         canvas.Save();
-        this.ApplyRotation(canvas, shape, x, y, width, height);
+        ApplyRotation(canvas, shape, x, y, width, height);
 
         this.RenderEllipseFill(canvas, shape, rect);
         this.RenderEllipseOutline(canvas, shape, rect);
 
         canvas.Restore();
-    }
-
-    private const double Epsilon = 1e-6;
-
-    private void ApplyRotation(SKCanvas canvas, IShape shape, float x, float y, float width, float height)
-    {
-        if (Math.Abs(shape.Rotation) > Epsilon)
-        {
-            var centerX = x + (width / 2);
-            var centerY = y + (height / 2);
-            canvas.RotateDegrees((float)shape.Rotation, centerX, centerY);
-        }
     }
 
     private void RenderFill(SKCanvas canvas, IShape shape, SKRect rect, float cornerRadius)
@@ -188,7 +250,7 @@ internal sealed class SlideImage(RemovedSlide slide)
     private void RenderOutline(SKCanvas canvas, IShape shape, SKRect rect, float cornerRadius)
     {
         var outlineColor = this.GetShapeOutlineColor(shape);
-        var strokeWidth = this.GetShapeOutlineWidth(shape);
+        var strokeWidth = GetShapeOutlineWidth(shape);
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -234,7 +296,7 @@ internal sealed class SlideImage(RemovedSlide slide)
     private void RenderEllipseOutline(SKCanvas canvas, IShape shape, SKRect rect)
     {
         var outlineColor = this.GetShapeOutlineColor(shape);
-        var strokeWidth = this.GetShapeOutlineWidth(shape);
+        var strokeWidth = GetShapeOutlineWidth(shape);
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -259,7 +321,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         // Check for explicit outline color first
         if (shapeOutline?.HexColor is not null)
         {
-            return this.ParseHexColor(shapeOutline.HexColor, 100);
+            return ParseHexColor(shapeOutline.HexColor, 100);
         }
 
         // Check for style-based outline (lnRef with scheme color)
@@ -270,21 +332,6 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         return null;
-    }
-
-    private float GetShapeOutlineWidth(IShape shape)
-    {
-        var shapeOutline = shape.Outline;
-
-        // Check for explicit outline weight first
-        if (shapeOutline is not null && shapeOutline.Weight > 0)
-        {
-            return (float)shapeOutline.Weight * PointsToPixels;
-        }
-
-        // Check for style-based outline width
-        var styleWidth = this.GetStyleOutlineWidth(shape);
-        return styleWidth;
     }
 
     private SKColor? GetStyleOutlineColor(IShape shape)
@@ -323,7 +370,7 @@ internal sealed class SlideImage(RemovedSlide slide)
             return null;
         }
 
-        var color = this.ParseHexColor(hexColor, 100);
+        var color = ParseHexColor(hexColor, 100);
 
         // Apply shade if present (e.g., shade val="15000" means 15% of original brightness)
         if (shade?.Val is not null)
@@ -339,27 +386,6 @@ internal sealed class SlideImage(RemovedSlide slide)
         return color;
     }
 
-    private float GetStyleOutlineWidth(IShape shape)
-    {
-        var pShape = shape.SDKOpenXmlElement as P.Shape;
-        if (pShape is null)
-        {
-            return 0;
-        }
-
-        var style = pShape.ShapeStyle;
-        var lineRef = style?.LineReference;
-        if (lineRef?.Index is null || lineRef.Index.Value == 0)
-        {
-            return 0;
-        }
-
-        // Default line width based on index (idx="2" typically means ~1.5pt line)
-        // This is a simplification - proper implementation would look up theme line styles
-        var defaultWidth = lineRef.Index.Value * 0.75f;
-        return defaultWidth * PointsToPixels;
-    }
-
     private SKColor? GetShapeFillColor(IShape shape)
     {
         var shapeFill = shape.Fill;
@@ -367,7 +393,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         // Check for explicit solid fill first
         if (shapeFill is { Type: FillType.Solid, Color: not null })
         {
-            return this.ParseHexColor(shapeFill.Color, shapeFill.Alpha);
+            return ParseHexColor(shapeFill.Color, shapeFill.Alpha);
         }
 
         // Check for style-based fill (fillRef with scheme color)
@@ -412,7 +438,7 @@ internal sealed class SlideImage(RemovedSlide slide)
 
         var hexColor = this.ResolveSchemeColor(schemeColorValue);
 
-        return hexColor is not null ? this.ParseHexColor(hexColor, 100) : null;
+        return hexColor is not null ? ParseHexColor(hexColor, 100) : null;
     }
 
     private string? ResolveSchemeColor(string schemeColorName)
@@ -457,32 +483,5 @@ internal sealed class SlideImage(RemovedSlide slide)
         var sysColor = colorElement.SystemColor?.LastColor?.Value;
         return sysColor;
     }
-
-    private SKColor ParseHexColor(string hex, double alphaPercentage)
-    {
-        hex = hex.TrimStart('#');
-
-        byte r, g, b;
-        byte a = (byte)(alphaPercentage / 100.0 * 255);
-
-        if (hex.Length == 6)
-        {
-            r = Convert.ToByte(hex[..2], 16);
-            g = Convert.ToByte(hex.Substring(2, 2), 16);
-            b = Convert.ToByte(hex.Substring(4, 2), 16);
-        }
-        else if (hex.Length == 8)
-        {
-            a = Convert.ToByte(hex[..2], 16);
-            r = Convert.ToByte(hex.Substring(2, 2), 16);
-            g = Convert.ToByte(hex.Substring(4, 2), 16);
-            b = Convert.ToByte(hex.Substring(6, 2), 16);
-        }
-        else
-        {
-            return SKColors.Transparent;
-        }
-
-        return new SKColor(r, g, b, a);
-    }
+    
 }
