@@ -161,9 +161,11 @@ internal sealed class SlideImage(ISlide slide)
         canvas.Restore();
     }
 
+    private const double Epsilon = 1e-6;
+
     private void ApplyRotation(SKCanvas canvas, IShape shape, float x, float y, float width, float height)
     {
-        if (shape.Rotation != 0)
+        if (Math.Abs(shape.Rotation) > Epsilon)
         {
             var centerX = x + (width / 2);
             var centerY = y + (height / 2);
