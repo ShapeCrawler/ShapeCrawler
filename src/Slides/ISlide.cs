@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -124,7 +125,7 @@ public interface ISlide
 
 internal abstract class Slide : ISlide
 {
-    protected readonly SlidePart SlidePart;
+    protected internal readonly SlidePart SlidePart;
     private IShapeFill? fill;
 
     private protected Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
@@ -314,7 +315,8 @@ internal abstract class Slide : ISlide
             throw new ArgumentNullException(nameof(stream));
         }
 
-        var slideImage = new SlideImage(this);
+        var removedSlide = (RemovedSlide)this;
+        var slideImage = new SlideImage(removedSlide);
         slideImage.Save(stream, SKEncodedImageFormat.Png);
         if (stream.CanSeek)
         {

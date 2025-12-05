@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using ShapeCrawler.Slides;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -10,7 +11,7 @@ namespace ShapeCrawler.Drawing;
 /// <summary>
 ///     Renders a slide to an image.
 /// </summary>
-internal sealed class SlideImage(ISlide slide)
+internal sealed class SlideImage(RemovedSlide slide)
 {
     private const int EmusPerPixel = 9525; // EMUs to pixels conversion factor (96 DPI)
     private const float PointsToPixels = 96f / 72f; // Points to pixels conversion factor
@@ -416,10 +417,8 @@ internal sealed class SlideImage(ISlide slide)
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        // Get the current slide's own SlidePart, then its layout/master/theme
-        var slidePart = slide.GetSDKSlidePart();
-        var themePart = slidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart;
-        var colorScheme = themePart?.Theme?.ThemeElements?.ColorScheme;
+        var themePart = slide.SlidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart;
+        var colorScheme = themePart?.Theme.ThemeElements?.ColorScheme;
         if (colorScheme is null)
         {
             return null;
