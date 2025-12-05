@@ -480,7 +480,7 @@ public class SlideTests : SCTest
         using var stream = new MemoryStream();
         slide.SaveImageTo(stream);
 
-        // ASSERT - verify the blue rectangle is rendered at position (50, 50) with accent1 color (4472C4)
+        // ASSERT - verify the text box's background rectangle is rendered at position (50, 50) with accent1 color (4472C4)
         stream.Position = 0;
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
         
