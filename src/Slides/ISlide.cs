@@ -308,21 +308,7 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove();
 
-    public void SaveImageTo(Stream stream)
-    {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
-
-        var removedSlide = (RemovedSlide)this;
-        var slideImage = new SlideImage(removedSlide);
-        slideImage.Save(stream, SKEncodedImageFormat.Png);
-        if (stream.CanSeek)
-        {
-            stream.Position = 0;
-        }
-    }
+    public abstract void SaveImageTo(Stream stream);
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
