@@ -369,7 +369,12 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         var schemeColor = lineRef.GetFirstChild<A.SchemeColor>();
-        var schemeColorValue = schemeColor?.Val?.InnerText;
+        if (schemeColor is null)
+        {
+            return null;
+        }
+        
+        var schemeColorValue = schemeColor.Val?.InnerText;
         if (schemeColorValue is null)
         {
             return null;
@@ -382,7 +387,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         var baseColor = ParseHexColor(hexColor, 100);
-        var shadeValue = schemeColor?.GetFirstChild<A.Shade>()?.Val?.Value;
+        var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
 
         return shadeValue is null
             ? baseColor
