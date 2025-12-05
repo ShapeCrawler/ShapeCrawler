@@ -138,6 +138,18 @@ internal sealed class SlideImage(RemovedSlide slide)
         return new SKColor(r, g, b, a);
     }
     
+    private static string? GetHexFromColorElement(A.Color2Type colorElement)
+    {
+        var rgbColor = colorElement.RgbColorModelHex;
+        if (rgbColor?.Val?.Value is { } rgb)
+        {
+            return rgb;
+        }
+
+        var sysColor = colorElement.SystemColor;
+        return sysColor?.LastColor?.Value;
+    }
+    
     private SKColor GetSkColor()
     {
         var hex = slide.Fill.Color!.TrimStart('#');
@@ -451,7 +463,7 @@ internal sealed class SlideImage(RemovedSlide slide)
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var colorScheme = slide.SlidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
+        var colorScheme = this.GetColorScheme();
         if (colorScheme is null)
         {
             return null;
@@ -463,20 +475,17 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         var colorElement = selector(colorScheme);
-        if (colorElement is null)
-        {
-            return null;
-        }
-
-        // Get the RGB hex value from the color element
-        var rgbColor = colorElement.RgbColorModelHex?.Val?.Value;
-        if (rgbColor is not null)
-        {
-            return rgbColor;
-        }
-
-        var sysColor = colorElement.SystemColor?.LastColor?.Value;
-        return sysColor;
+        
+        return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
-    
+
+    private A.ColorScheme? GetColorScheme()
+    {
+        var layoutPart = slide.SlidePart.SlideLayoutPart;
+        var masterPart = layoutPart?.SlideMasterPart;
+        var themePart = masterPart?.ThemePart;
+        var themeElements = themePart?.Theme.ThemeElements;
+        
+        return themeElements?.ColorScheme;
+    }
 }
