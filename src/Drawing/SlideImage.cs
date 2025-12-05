@@ -46,7 +46,7 @@ internal sealed class SlideImage(ISlide slide)
             return SKColors.White; // used by the PowerPoint application as the default background color
         }
         
-        return this.ParseHexColor(slide.Fill.Color!, 100);
+        return this.ParseHexColor(hex, 100);
     }
 
     private void RenderBackground(SKCanvas canvas)
