@@ -1,6 +1,9 @@
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -41,5 +44,15 @@ internal sealed class RemovedSlide : Slide
         presPart.DeletePart(removingSlidePart);
         
         presPart.Presentation.Save();
+    }
+
+    public override void SaveImageTo(Stream stream)
+    {
+        var slideImage = new SlideImage(this);
+        slideImage.Save(stream, SKEncodedImageFormat.Png);
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
     }
 }

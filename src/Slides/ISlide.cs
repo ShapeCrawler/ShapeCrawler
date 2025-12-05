@@ -9,8 +9,6 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
-using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #if DEBUG
