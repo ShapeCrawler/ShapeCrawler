@@ -9,7 +9,6 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #if DEBUG
@@ -124,7 +123,7 @@ public interface ISlide
 
 internal abstract class Slide : ISlide
 {
-    protected readonly SlidePart SlidePart;
+    protected internal readonly SlidePart SlidePart;
     private IShapeFill? fill;
 
     private protected Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
@@ -307,20 +306,7 @@ internal abstract class Slide : ISlide
 
     public abstract void Remove();
 
-    public void SaveImageTo(Stream stream)
-    {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
-
-        var slideImage = new SlideImage(this);
-        slideImage.Save(stream, SKEncodedImageFormat.Png);
-        if (stream.CanSeek)
-        {
-            stream.Position = 0;
-        }
-    }
+    public abstract void SaveImageTo(Stream stream);
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
