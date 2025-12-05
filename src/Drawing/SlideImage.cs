@@ -38,29 +38,7 @@ internal sealed class SlideImage(ISlide slide)
 
     private SKColor GetSkColor()
     {
-        var hex = slide.Fill.Color!.TrimStart('#');
-
-        if (hex.Length == 6)
-        {
-            // Parse RGB (RRGGBB)
-            var r = Convert.ToByte(hex[..2], 16);
-            var g = Convert.ToByte(hex.Substring(2, 2), 16);
-            var b = Convert.ToByte(hex.Substring(4, 2), 16);
-            return new SKColor(r, g, b);
-        }
-
-        if (hex.Length == 8)
-        {
-            // Parse ARGB (AARRGGBB)
-            var a = Convert.ToByte(hex[..2], 16);
-            var r = Convert.ToByte(hex.Substring(2, 2), 16);
-            var g = Convert.ToByte(hex.Substring(4, 2), 16);
-            var b = Convert.ToByte(hex.Substring(6, 2), 16);
-            return new SKColor(r, g, b, a);
-        }
-
-        // Default to white if hex is invalid
-        return SKColors.White;
+        return this.ParseHexColor(slide.Fill.Color!, 100);
     }
 
     private void RenderBackground(SKCanvas canvas)
