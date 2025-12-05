@@ -416,14 +416,8 @@ internal sealed class SlideImage(ISlide slide)
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var presPart = slide.GetSDKPresentationPart();
-        var slideParts = presPart.SlideParts.ToList();
-        if (slideParts.Count == 0)
-        {
-            return null;
-        }
-
-        var slidePart = slideParts.FirstOrDefault();
+        // Get the current slide's own SlidePart, then its layout/master/theme
+        var slidePart = slide.GetSDKSlidePart();
         var themePart = slidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart;
         var colorScheme = themePart?.Theme?.ThemeElements?.ColorScheme;
         if (colorScheme is null)
