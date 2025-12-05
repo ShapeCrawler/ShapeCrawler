@@ -38,6 +38,14 @@ internal sealed class SlideImage(ISlide slide)
 
     private SKColor GetSkColor()
     {
+        var hex = slide.Fill.Color!.TrimStart('#');
+        
+        // Validate hex length before parsing
+        if (hex.Length != 6 && hex.Length != 8)
+        {
+            return SKColors.White; // used by the PowerPoint application as the default background color
+        }
+        
         return this.ParseHexColor(slide.Fill.Color!, 100);
     }
 
