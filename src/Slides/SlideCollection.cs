@@ -28,11 +28,11 @@ internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IRead
 
         var presDocument = (PresentationDocument)slideParts.First().OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
-        var pSlideIdList = presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();
+        var pSlideIdList = presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToArray();
         foreach (var pSlideId in pSlideIdList)
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
-            yield return new RemovedSlide(
+            yield return new Slide(
                 new SlideLayout(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(

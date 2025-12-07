@@ -9,7 +9,9 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -121,12 +123,12 @@ public interface ISlide
     T First<T>();
 }
 
-internal abstract class Slide : ISlide
+internal class Slide : ISlide
 {
     protected internal readonly SlidePart SlidePart;
     private IShapeFill? fill;
 
-    private protected Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
+    internal Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
     {
         this.SlideLayout = slideLayout;
         this.Shapes = shapes;
@@ -303,10 +305,46 @@ internal abstract class Slide : ISlide
             }
         }
     }
+    
+    public void Remove()
+    {
+        var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+        var presPart = presDocument.PresentationPart!;
+        var pPresentation = presDocument.PresentationPart!.Presentation;
+        var slideIdList = pPresentation.SlideIdList!;
 
-    public abstract void Remove();
+        // Find the exact SlideId corresponding to this slide
+        var slideIdRelationship = presPart.GetIdOfPart(this.SlidePart);
+        var removingPSlideId = slideIdList.Elements<P.SlideId>()
+                                   .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ??
+                               throw new SCException("Could not find slide ID in presentation.");
+        
+        var sectionList = pPresentation.PresentationExtensionList?.Descendants<P14.SectionList>().FirstOrDefault();
+        var removingSectionSlideIdListEntry = sectionList?.Descendants<P14.SectionSlideIdListEntry>()
+            .FirstOrDefault(s => s.Id! == removingPSlideId.Id!);
+        removingSectionSlideIdListEntry?.Remove();
 
-    public abstract void SaveImageTo(Stream stream);
+        slideIdList.RemoveChild(removingPSlideId);
+        pPresentation.Save();
+
+        var removingSlideIdRelationshipId = removingPSlideId.RelationshipId!;
+        new SCPPresentation(pPresentation).RemoveSlideIdFromCustomShow(removingSlideIdRelationshipId.Value!);
+
+        var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
+        presPart.DeletePart(removingSlidePart);
+        
+        presPart.Presentation.Save();
+    }
+
+    public void SaveImageTo(Stream stream)
+    {
+        var slideImage = new SlideImage(this);
+        slideImage.Save(stream, SKEncodedImageFormat.Png);
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
+    }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
