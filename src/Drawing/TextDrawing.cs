@@ -39,6 +39,44 @@ internal sealed class TextDrawing
         }
     }
 
+    private static SKFontStyle GetFontStyle(ITextPortionFont? font)
+    {
+        var isBold = font?.IsBold == true;
+        var isItalic = font?.IsItalic == true;
+
+        if (isBold && isItalic)
+        {
+            return SKFontStyle.BoldItalic;
+        }
+
+        if (isBold)
+        {
+            return SKFontStyle.Bold;
+        }
+
+        if (isItalic)
+        {
+            return SKFontStyle.Italic;
+        }
+
+        return SKFontStyle.Normal;
+    }
+
+    private static SKFont CreateFont(ITextPortionFont? font)
+    {
+        var fontStyle = GetFontStyle(font);
+        var family = font?.LatinName;
+
+        var typeface = string.IsNullOrWhiteSpace(family)
+            ? SKTypeface.CreateDefault()
+            : SKTypeface.FromFamilyName(family, fontStyle);
+        var size = new Points(font?.Size ?? DefaultFontSize).AsPixels();
+
+        return new SKFont(typeface) { Size = (float)size };
+    }
+
+    private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
+
     private void RenderParagraph(SKCanvas canvas, IParagraph paragraph, float startX, ref float baseline)
     {
         var currentX = startX;
@@ -92,27 +130,9 @@ internal sealed class TextDrawing
 
     private SKPaint CreatePaint(ITextPortionFont? font)
     {
-        var paint = new SKPaint
-        {
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            Color = this.GetPaintColor(font)
-        };
+        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = this.GetPaintColor(font) };
 
         return paint;
-    }
-
-    private static SKFont CreateFont(ITextPortionFont? font)
-    {
-        var fontStyle = GetFontStyle(font);
-        var family = font?.LatinName;
-
-        var typeface = string.IsNullOrWhiteSpace(family)
-            ? SKTypeface.CreateDefault()
-            : SKTypeface.FromFamilyName(family, fontStyle);
-        var size = new Points((font?.Size ?? DefaultFontSize)).AsPixels();
-
-        return new SKFont(typeface) { Size = (float)size };
     }
 
     private SKColor GetPaintColor(ITextPortionFont? font)
@@ -123,29 +143,4 @@ internal sealed class TextDrawing
             ? SKColors.Black
             : this.parseHexColor(hex!, 100);
     }
-
-    private static SKFontStyle GetFontStyle(ITextPortionFont? font)
-    {
-        var isBold = font?.IsBold == true;
-        var isItalic = font?.IsItalic == true;
-
-        if (isBold && isItalic)
-        {
-            return SKFontStyle.BoldItalic;
-        }
-
-        if (isBold)
-        {
-            return SKFontStyle.Bold;
-        }
-
-        if (isItalic)
-        {
-            return SKFontStyle.Italic;
-        }
-
-        return SKFontStyle.Normal;
-    }
-
-    private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
 }

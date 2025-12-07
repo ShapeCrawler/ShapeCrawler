@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,25 +8,27 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlideImage(RemovedSlide slide)
+internal sealed class SlideImage(Slide slide)
 {
     private const int EmusPerPixel = 9525; // EMUs to pixels conversion factor (96 DPI)
     private const double Epsilon = 1e-6;
-    private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors = new(StringComparer.Ordinal)
-    {
-        { "dk1", scheme => scheme.Dark1Color },
-        { "lt1", scheme => scheme.Light1Color },
-        { "dk2", scheme => scheme.Dark2Color },
-        { "lt2", scheme => scheme.Light2Color },
-        { "accent1", scheme => scheme.Accent1Color },
-        { "accent2", scheme => scheme.Accent2Color },
-        { "accent3", scheme => scheme.Accent3Color },
-        { "accent4", scheme => scheme.Accent4Color },
-        { "accent5", scheme => scheme.Accent5Color },
-        { "accent6", scheme => scheme.Accent6Color },
-        { "hlink", scheme => scheme.Hyperlink },
-        { "folHlink", scheme => scheme.FollowedHyperlinkColor }
-    };
+
+    private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
+        new(StringComparer.Ordinal)
+        {
+            { "dk1", scheme => scheme.Dark1Color },
+            { "lt1", scheme => scheme.Light1Color },
+            { "dk2", scheme => scheme.Dark2Color },
+            { "lt2", scheme => scheme.Light2Color },
+            { "accent1", scheme => scheme.Accent1Color },
+            { "accent2", scheme => scheme.Accent2Color },
+            { "accent3", scheme => scheme.Accent3Color },
+            { "accent4", scheme => scheme.Accent4Color },
+            { "accent5", scheme => scheme.Accent5Color },
+            { "accent6", scheme => scheme.Accent6Color },
+            { "hlink", scheme => scheme.Hyperlink },
+            { "folHlink", scheme => scheme.FollowedHyperlinkColor }
+        };
 
     private readonly TextDrawing textDrawing = new(ParseHexColor);
 
@@ -62,7 +63,7 @@ internal sealed class SlideImage(RemovedSlide slide)
             (byte)(color.Blue * shadeFactor),
             color.Alpha);
     }
-    
+
     private static decimal GetStyleOutlineWidth(IShape shape)
     {
         if (shape.SDKOpenXmlElement is not P.Shape pShape)
@@ -80,11 +81,17 @@ internal sealed class SlideImage(RemovedSlide slide)
         // Default line width based on index (idx="2" typically means ~1.5pt line)
         // This is a simplification - proper implementation would look up theme line styles
         var defaultWidth = lineRef.Index.Value * 0.75m;
-        
+
         return new Points(defaultWidth).AsPixels();
     }
-    
-    private static void ApplyRotation(SKCanvas canvas, IShape shape, decimal x, decimal y, decimal width, decimal height)
+
+    private static void ApplyRotation(
+        SKCanvas canvas, 
+        IShape shape, 
+        decimal x, 
+        decimal y, 
+        decimal width,
+        decimal height)
     {
         if (Math.Abs(shape.Rotation) > Epsilon)
         {
@@ -93,7 +100,7 @@ internal sealed class SlideImage(RemovedSlide slide)
             canvas.RotateDegrees((float)shape.Rotation, (float)new Points(centerX).AsPixels(), (float)new Points(centerY).AsPixels());
         }
     }
-    
+
     private static decimal GetShapeOutlineWidth(IShape shape)
     {
         var shapeOutline = shape.Outline;
@@ -108,7 +115,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         var styleWidth = GetStyleOutlineWidth(shape);
         return styleWidth;
     }
-    
+
     private static SKColor ParseHexColor(string hex, double alphaPercentage)
     {
         hex = hex.TrimStart('#');
@@ -138,7 +145,7 @@ internal sealed class SlideImage(RemovedSlide slide)
 
         return new SKColor(r, g, b, a);
     }
-    
+
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
     {
         var rgbColor = colorElement.RgbColorModelHex;
@@ -150,17 +157,17 @@ internal sealed class SlideImage(RemovedSlide slide)
         var sysColor = colorElement.SystemColor;
         return sysColor?.LastColor?.Value;
     }
-    
+
     private SKColor GetSkColor()
     {
         var hex = slide.Fill.Color!.TrimStart('#');
-        
+
         // Validate hex length before parsing
         if (hex.Length != 6 && hex.Length != 8)
         {
             return SKColors.White; // used by the PowerPoint application as the default background color
         }
-        
+
         return ParseHexColor(hex, 100);
     }
 
@@ -255,7 +262,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         canvas.Save();
-        ApplyRotation( canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
+        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
         this.textDrawing.Render(canvas, shape);
         canvas.Restore();
     }
@@ -393,7 +400,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         {
             return null;
         }
-        
+
         var schemeColorValue = schemeColor.Val?.InnerText;
         if (schemeColorValue is null)
         {
@@ -483,7 +490,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         var colorElement = selector(colorScheme);
-        
+
         return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
 
