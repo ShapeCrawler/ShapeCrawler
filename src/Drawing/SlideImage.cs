@@ -86,10 +86,10 @@ internal sealed class SlideImage(Slide slide)
     }
 
     private static void ApplyRotation(
-        SKCanvas canvas, 
-        IShape shape, 
-        decimal x, 
-        decimal y, 
+        SKCanvas canvas,
+        IShape shape,
+        decimal x,
+        decimal y,
         decimal width,
         decimal height)
     {
@@ -97,7 +97,11 @@ internal sealed class SlideImage(Slide slide)
         {
             var centerX = x + (width / 2);
             var centerY = y + (height / 2);
-            canvas.RotateDegrees((float)shape.Rotation, (float)new Points(centerX).AsPixels(), (float)new Points(centerY).AsPixels());
+            canvas.RotateDegrees(
+                (float)shape.Rotation,
+                (float)new Points(centerX).AsPixels(),
+                (float)new Points(centerY).AsPixels()
+            );
         }
     }
 
