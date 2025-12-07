@@ -246,7 +246,7 @@ internal sealed class SlideImage(Slide slide)
         }
 
         canvas.Save();
-        ApplyRotation(canvas, shape, x, y, width, height);
+        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
 
         this.RenderFill(canvas, shape, rect, cornerRadius);
         this.RenderOutline(canvas, shape, rect, cornerRadius);
@@ -276,7 +276,7 @@ internal sealed class SlideImage(Slide slide)
         var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         canvas.Save();
-        ApplyRotation(canvas, shape, x, y, width, height);
+        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
 
         this.RenderEllipseFill(canvas, shape, rect);
         this.RenderEllipseOutline(canvas, shape, rect);
