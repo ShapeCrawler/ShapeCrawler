@@ -4,21 +4,16 @@ using SkiaSharp;
 namespace ShapeCrawler.Drawing;
 
 /// <summary>
-///     Renders text content of shapes onto a canvas.
+///     Represents slide text drawing.
 /// </summary>
-internal sealed class SlideTextRenderer
+internal sealed class SlideTextDrawing
 {
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
     private readonly Func<string, double, SKColor> parseHexColor;
     private readonly float pointsToPixels;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="SlideTextRenderer"/> class.
-    /// </summary>
-    /// <param name="pointsToPixels">Points to pixels conversion factor.</param>
-    /// <param name="parseHexColor">Delegate used to parse colors from hex.</param>
-    internal SlideTextRenderer(float pointsToPixels, Func<string, double, SKColor> parseHexColor)
+    internal SlideTextDrawing(float pointsToPixels, Func<string, double, SKColor> parseHexColor)
     {
         this.pointsToPixels = pointsToPixels;
         this.parseHexColor = parseHexColor;
@@ -27,20 +22,10 @@ internal sealed class SlideTextRenderer
         this.defaultLineHeight = font.Spacing;
     }
 
-    /// <summary>
-    ///     Renders the text of the specified shape.
-    /// </summary>
-    /// <param name="canvas">Canvas where the text is drawn.</param>
-    /// <param name="shape">Shape that contains text.</param>
     internal void Render(SKCanvas canvas, IShape shape)
     {
         var textBox = shape.TextBox;
-        if (textBox is null)
-        {
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(textBox.Text))
+        if (textBox is null || string.IsNullOrWhiteSpace(textBox.Text))
         {
             return;
         }
@@ -162,8 +147,5 @@ internal sealed class SlideTextRenderer
         return SKFontStyle.Normal;
     }
 
-    private bool IsLineBreak(IParagraphPortion portion)
-    {
-        return portion.Text == Environment.NewLine;
-    }
+    private bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
 }

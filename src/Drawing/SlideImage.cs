@@ -32,7 +32,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         { "folHlink", scheme => scheme.FollowedHyperlinkColor }
     };
 
-    private readonly SlideTextRenderer textRenderer = new(PointsToPixels, ParseHexColor);
+    private readonly SlideTextDrawing textDrawing = new(PointsToPixels, ParseHexColor);
 
     /// <summary>
     ///     Saves the slide to the specified stream in the given image format.
@@ -264,7 +264,7 @@ internal sealed class SlideImage(RemovedSlide slide)
             (float)shape.Y * PointsToPixels,
             (float)shape.Width * PointsToPixels,
             (float)shape.Height * PointsToPixels);
-        this.textRenderer.Render(canvas, shape);
+        this.textDrawing.Render(canvas, shape);
         canvas.Restore();
     }
 
