@@ -42,10 +42,10 @@ var shapes = pres.Slide(1).Shapes;
 var textBox = shapes.Shape("TextBox 1");
 
 // Read text content
-var text = textBox.TextBox!.Text;
+var text = textBox.TextBox.Text;
 
 // Modify and save
-textBox.TextBox!.SetText("Updated content");
+textBox.TextBox.SetText("Updated content");
 pres.Save();
 ```
 
@@ -67,7 +67,7 @@ var shapes = pres.Slide(1).Shapes;
 shapes.AddShape(x: 50, y: 60, width: 100, height: 70);
 
 var addedShape = shapes.Last();
-addedShape.TextBox!.SetText("Hello World!");
+addedShape.TextBox.SetText("Hello World!");
 
 pres.Save("output.pptx");
 ```
@@ -76,11 +76,11 @@ pres.Save("output.pptx");
 
 ```csharp
 var pres = new Presentation("presentation.pptx");
-var picture = pres.Slide(1).Shape("Picture 1").Picture!;
+var picture = pres.Slide(1).Shape("Picture 1").Picture;
 
 // Replace the image
 using var newImage = File.OpenRead("new-image.png");
-picture.Image!.Update(newImage);
+picture.Image.Update(newImage);
 
 pres.Save();
 ```
@@ -97,7 +97,7 @@ var shapes = pres.Slide(1).Shapes;
 shapes.AddTable(x: 50, y: 120, columnsCount: 3, rowsCount: 2);
 
 var table = shapes.Last().Table;
-table[0, 0].TextBox!.SetText("Hello table");
+table[0, 0].TextBox.SetText("Hello table");
 
 pres.Save();
 ```
