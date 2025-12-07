@@ -7,13 +7,13 @@ namespace ShapeCrawler.Drawing;
 /// <summary>
 ///     Represents slide text drawing.
 /// </summary>
-internal sealed class SlideTextDrawing
+internal sealed class TextDrawing
 {
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
     private readonly Func<string, double, SKColor> parseHexColor;
 
-    internal SlideTextDrawing(Func<string, double, SKColor> parseHexColor)
+    internal TextDrawing(Func<string, double, SKColor> parseHexColor)
     {
         this.parseHexColor = parseHexColor;
 

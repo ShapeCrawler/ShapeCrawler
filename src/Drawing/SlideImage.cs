@@ -29,7 +29,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         { "folHlink", scheme => scheme.FollowedHyperlinkColor }
     };
 
-    private readonly SlideTextDrawing textDrawing = new(ParseHexColor);
+    private readonly TextDrawing textDrawing = new(ParseHexColor);
 
     /// <summary>
     ///     Saves the slide to the specified stream in the given image format.
