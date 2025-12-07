@@ -1,4 +1,5 @@
 using System;
+using ShapeCrawler.Units;
 using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
@@ -11,14 +12,12 @@ internal sealed class SlideTextDrawing
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
     private readonly Func<string, double, SKColor> parseHexColor;
-    private readonly float pointsToPixels;
 
-    internal SlideTextDrawing(float pointsToPixels, Func<string, double, SKColor> parseHexColor)
+    internal SlideTextDrawing(Func<string, double, SKColor> parseHexColor)
     {
-        this.pointsToPixels = pointsToPixels;
         this.parseHexColor = parseHexColor;
 
-        using var font = this.CreateFont(null);
+        using var font = CreateFont(null);
         this.defaultLineHeight = font.Spacing;
     }
 
@@ -30,13 +29,13 @@ internal sealed class SlideTextDrawing
             return;
         }
 
-        var originX = ((float)shape.X + (float)textBox.LeftMargin) * this.pointsToPixels;
-        var originY = ((float)shape.Y + (float)textBox.TopMargin) * this.pointsToPixels;
+        var originX = new Points(shape.X + textBox.LeftMargin).AsPixels();
+        var originY = new Points(shape.Y + textBox.TopMargin).AsPixels();
 
-        var baseline = originY;
+        var baseline = (float)originY;
         foreach (var paragraph in textBox.Paragraphs)
         {
-            this.RenderParagraph(canvas, paragraph, originX, ref baseline);
+            this.RenderParagraph(canvas, paragraph, (float)originX, ref baseline);
         }
     }
 
@@ -48,13 +47,13 @@ internal sealed class SlideTextDrawing
 
         foreach (var portion in paragraph.Portions)
         {
-            if (this.IsLineBreak(portion))
+            if (IsLineBreak(portion))
             {
                 this.AdvanceLine(ref baseline, ref currentX, startX, ref lineHeight, ref hasLineContent);
                 continue;
             }
 
-            using var font = this.CreateFont(portion.Font);
+            using var font = CreateFont(portion.Font);
             using var paint = this.CreatePaint(portion.Font);
             var metrics = font.Metrics;
             var drawY = baseline - metrics.Ascent;
@@ -103,16 +102,17 @@ internal sealed class SlideTextDrawing
         return paint;
     }
 
-    private SKFont CreateFont(ITextPortionFont? font)
+    private static SKFont CreateFont(ITextPortionFont? font)
     {
-        var fontStyle = this.GetFontStyle(font);
+        var fontStyle = GetFontStyle(font);
         var family = font?.LatinName;
 
         var typeface = string.IsNullOrWhiteSpace(family)
             ? SKTypeface.CreateDefault()
             : SKTypeface.FromFamilyName(family, fontStyle);
+        var size = new Points((font?.Size ?? DefaultFontSize)).AsPixels();
 
-        return new SKFont(typeface) { Size = (float)(font?.Size ?? DefaultFontSize) * this.pointsToPixels };
+        return new SKFont(typeface) { Size = (float)size };
     }
 
     private SKColor GetPaintColor(ITextPortionFont? font)
@@ -124,7 +124,7 @@ internal sealed class SlideTextDrawing
             : this.parseHexColor(hex!, 100);
     }
 
-    private SKFontStyle GetFontStyle(ITextPortionFont? font)
+    private static SKFontStyle GetFontStyle(ITextPortionFont? font)
     {
         var isBold = font?.IsBold == true;
         var isItalic = font?.IsItalic == true;
@@ -147,5 +147,5 @@ internal sealed class SlideTextDrawing
         return SKFontStyle.Normal;
     }
 
-    private bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
+    private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
 }

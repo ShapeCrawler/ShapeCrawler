@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using ShapeCrawler.Slides;
+using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-/// <summary>
-///     Renders a slide to an image.
-/// </summary>
 internal sealed class SlideImage(RemovedSlide slide)
 {
     private const int EmusPerPixel = 9525; // EMUs to pixels conversion factor (96 DPI)
-    private const float PointsToPixels = 96f / 72f; // Points to pixels conversion factor
     private const double Epsilon = 1e-6;
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors = new(StringComparer.Ordinal)
     {
@@ -32,7 +29,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         { "folHlink", scheme => scheme.FollowedHyperlinkColor }
     };
 
-    private readonly SlideTextDrawing textDrawing = new(PointsToPixels, ParseHexColor);
+    private readonly SlideTextDrawing textDrawing = new(ParseHexColor);
 
     /// <summary>
     ///     Saves the slide to the specified stream in the given image format.
@@ -66,7 +63,7 @@ internal sealed class SlideImage(RemovedSlide slide)
             color.Alpha);
     }
     
-    private static float GetStyleOutlineWidth(IShape shape)
+    private static decimal GetStyleOutlineWidth(IShape shape)
     {
         if (shape.SDKOpenXmlElement is not P.Shape pShape)
         {
@@ -82,28 +79,29 @@ internal sealed class SlideImage(RemovedSlide slide)
 
         // Default line width based on index (idx="2" typically means ~1.5pt line)
         // This is a simplification - proper implementation would look up theme line styles
-        var defaultWidth = lineRef.Index.Value * 0.75f;
-        return defaultWidth * PointsToPixels;
+        var defaultWidth = lineRef.Index.Value * 0.75m;
+        
+        return new Points(defaultWidth).AsPixels();
     }
     
-    private static void ApplyRotation(SKCanvas canvas, IShape shape, float x, float y, float width, float height)
+    private static void ApplyRotation(SKCanvas canvas, IShape shape, decimal x, decimal y, decimal width, decimal height)
     {
         if (Math.Abs(shape.Rotation) > Epsilon)
         {
             var centerX = x + (width / 2);
             var centerY = y + (height / 2);
-            canvas.RotateDegrees((float)shape.Rotation, centerX, centerY);
+            canvas.RotateDegrees((float)shape.Rotation, (float)new Points(centerX).AsPixels(), (float)new Points(centerY).AsPixels());
         }
     }
     
-    private static float GetShapeOutlineWidth(IShape shape)
+    private static decimal GetShapeOutlineWidth(IShape shape)
     {
         var shapeOutline = shape.Outline;
 
         // Check for explicit outline weight first
         if (shapeOutline is not null && shapeOutline.Weight > 0)
         {
-            return (float)shapeOutline.Weight * PointsToPixels;
+            return new Points(shapeOutline.Weight).AsPixels();
         }
 
         // Check for style-based outline width
@@ -226,18 +224,18 @@ internal sealed class SlideImage(RemovedSlide slide)
 
     private void RenderRectangle(SKCanvas canvas, IShape shape)
     {
-        var x = (float)shape.X * PointsToPixels;
-        var y = (float)shape.Y * PointsToPixels;
-        var width = (float)shape.Width * PointsToPixels;
-        var height = (float)shape.Height * PointsToPixels;
-        var rect = new SKRect(x, y, x + width, y + height);
+        var x = new Points(shape.X).AsPixels();
+        var y = new Points(shape.Y).AsPixels();
+        var width = new Points(shape.Width).AsPixels();
+        var height = new Points(shape.Height).AsPixels();
+        var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
-        var cornerRadius = 0f;
+        var cornerRadius = 0m;
         if (shape.GeometryType == Geometry.RoundedRectangle)
         {
             // CornerSize is percentage (0-100), where 100 = half of shortest side
             var shortestSide = Math.Min(width, height);
-            cornerRadius = (float)shape.CornerSize / 100f * (shortestSide / 2f);
+            cornerRadius = shape.CornerSize / 100m * (shortestSide / 2m);
         }
 
         canvas.Save();
@@ -257,24 +255,18 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
 
         canvas.Save();
-        ApplyRotation(
-            canvas,
-            shape,
-            (float)shape.X * PointsToPixels,
-            (float)shape.Y * PointsToPixels,
-            (float)shape.Width * PointsToPixels,
-            (float)shape.Height * PointsToPixels);
+        ApplyRotation( canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
         this.textDrawing.Render(canvas, shape);
         canvas.Restore();
     }
 
     private void RenderEllipse(SKCanvas canvas, IShape shape)
     {
-        var x = (float)shape.X * PointsToPixels;
-        var y = (float)shape.Y * PointsToPixels;
-        var width = (float)shape.Width * PointsToPixels;
-        var height = (float)shape.Height * PointsToPixels;
-        var rect = new SKRect(x, y, x + width, y + height);
+        var x = new Points(shape.X).AsPixels();
+        var y = new Points(shape.Y).AsPixels();
+        var width = new Points(shape.Width).AsPixels();
+        var height = new Points(shape.Height).AsPixels();
+        var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         canvas.Save();
         ApplyRotation(canvas, shape, x, y, width, height);
@@ -285,7 +277,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         canvas.Restore();
     }
 
-    private void RenderFill(SKCanvas canvas, IShape shape, SKRect rect, float cornerRadius)
+    private void RenderFill(SKCanvas canvas, IShape shape, SKRect rect, decimal cornerRadius)
     {
         var fillColor = this.GetShapeFillColor(shape);
         if (fillColor is null)
@@ -300,7 +292,7 @@ internal sealed class SlideImage(RemovedSlide slide)
 
         if (cornerRadius > 0)
         {
-            canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);
+            canvas.DrawRoundRect(rect, (float)cornerRadius, (float)cornerRadius, fillPaint);
         }
         else
         {
@@ -308,7 +300,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         }
     }
 
-    private void RenderOutline(SKCanvas canvas, IShape shape, SKRect rect, float cornerRadius)
+    private void RenderOutline(SKCanvas canvas, IShape shape, SKRect rect, decimal cornerRadius)
     {
         var outlineColor = this.GetShapeOutlineColor(shape);
         var strokeWidth = GetShapeOutlineWidth(shape);
@@ -321,12 +313,12 @@ internal sealed class SlideImage(RemovedSlide slide)
         using var outlinePaint = new SKPaint();
         outlinePaint.Color = outlineColor.Value;
         outlinePaint.Style = SKPaintStyle.Stroke;
-        outlinePaint.StrokeWidth = strokeWidth;
+        outlinePaint.StrokeWidth = (float)strokeWidth;
         outlinePaint.IsAntialias = true;
 
         if (cornerRadius > 0)
         {
-            canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, outlinePaint);
+            canvas.DrawRoundRect(rect, (float)cornerRadius, (float)cornerRadius, outlinePaint);
         }
         else
         {
@@ -363,7 +355,7 @@ internal sealed class SlideImage(RemovedSlide slide)
         using var outlinePaint = new SKPaint();
         outlinePaint.Color = outlineColor.Value;
         outlinePaint.Style = SKPaintStyle.Stroke;
-        outlinePaint.StrokeWidth = strokeWidth;
+        outlinePaint.StrokeWidth = (float)strokeWidth;
         outlinePaint.IsAntialias = true;
 
         canvas.DrawOval(rect, outlinePaint);
