@@ -5,7 +5,7 @@ using SkiaSharp;
 namespace ShapeCrawler.Drawing;
 
 /// <summary>
-///     Represents slide text drawing.
+///     Represents text drawing.
 /// </summary>
 internal sealed class TextDrawing
 {
