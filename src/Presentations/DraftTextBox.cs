@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using GeometryEnum = ShapeCrawler.Geometry;
 
 namespace ShapeCrawler.Presentations;
 
@@ -20,6 +21,17 @@ public sealed class DraftTextBox
     internal string? Content { get; private set; }
 
     internal Color? HighlightColor { get; private set; }
+
+    internal GeometryEnum ShapeGeometry { get; private set; } = GeometryEnum.Rectangle;
+
+    /// <summary>
+    ///     Sets the geometry type of the text box.
+    /// </summary>
+    public DraftTextBox Geometry(GeometryEnum geometry)
+    {
+        this.ShapeGeometry = geometry;
+        return this;
+    }
 
     /// <summary>
     ///     Sets text content.

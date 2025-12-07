@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -82,7 +82,7 @@ public sealed class DraftSlide
         {
             var builder = new DraftTextBox();
             configure(builder);
-            slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, Geometry.Rectangle);
+            slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
             var addedShape = slide.Shapes.Last<IShape>();
             addedShape.Name = builder.TextBoxName;
             if (!string.IsNullOrEmpty(builder.Content))

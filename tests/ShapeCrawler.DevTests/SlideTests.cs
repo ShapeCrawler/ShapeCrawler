@@ -475,9 +475,9 @@ public class SlideTests : SCTest
             });
         });
         var slide = pres.Slide(1);
+        using var stream = new MemoryStream();
 
         // ACT
-        using var stream = new MemoryStream();
         slide.SaveImageTo(stream);
 
         // ASSERT - verify the text box's background rectangle is rendered at position (50, 50) with accent1 color (4472C4)
@@ -491,5 +491,30 @@ public class SlideTests : SCTest
         centerPixel.Red.Should().BeInRange(60, 76);
         centerPixel.Green.Should().BeInRange(106, 122);
         centerPixel.Blue.Should().BeInRange(188, 204);
+    }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_image_with_text_box_with_Rounded_Rectangle_geometry()
+    {
+        // ARRANGE
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(textBox =>
+                {
+                    textBox.Geometry(Geometry.RoundedRectangle);
+                    textBox.X(50);
+                    textBox.Y(50);
+                    textBox.Width(100);
+                    textBox.Height(50);    
+                    textBox.Text("Hello, World!");
+                });
+            });
+        });
+        var slide = pres.Slide(1);
+
+        // ACT
+        slide.SaveImageTo(@"c:\Repo\ShapeCrawler\context\result.png");
     }
 }
