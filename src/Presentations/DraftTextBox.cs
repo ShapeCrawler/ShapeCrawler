@@ -100,12 +100,6 @@ public sealed class DraftTextBox
         return this;
     }
 
-    internal DraftTextBox NameMethod(string name)
-    {
-        this.TextBoxName = name;
-        return this;
-    }
-
     private static string AppendParagraph(string? current, string next)
     {
         if (string.IsNullOrEmpty(current))
@@ -114,5 +108,11 @@ public sealed class DraftTextBox
         }
 
         return current + Environment.NewLine + next;
+    }
+
+    private DraftTextBox NameMethod(string name)
+    {
+        this.TextBoxName = name;
+        return this;
     }
 }

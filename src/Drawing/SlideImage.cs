@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using ShapeCrawler.Slides;
@@ -31,6 +31,8 @@ internal sealed class SlideImage(RemovedSlide slide)
         { "hlink", scheme => scheme.Hyperlink },
         { "folHlink", scheme => scheme.FollowedHyperlinkColor }
     };
+
+    private readonly SlideTextRenderer textRenderer = new(PointsToPixels, ParseHexColor);
 
     /// <summary>
     ///     Saves the slide to the specified stream in the given image format.
@@ -215,9 +217,11 @@ internal sealed class SlideImage(RemovedSlide slide)
                 this.RenderEllipse(canvas, shape);
                 break;
             default:
-                // Other shapes not yet supported
-                break;
+                this.RenderText(canvas, shape);
+                return;
         }
+
+        this.RenderText(canvas, shape);
     }
 
     private void RenderRectangle(SKCanvas canvas, IShape shape)
@@ -242,6 +246,25 @@ internal sealed class SlideImage(RemovedSlide slide)
         this.RenderFill(canvas, shape, rect, cornerRadius);
         this.RenderOutline(canvas, shape, rect, cornerRadius);
 
+        canvas.Restore();
+    }
+
+    private void RenderText(SKCanvas canvas, IShape shape)
+    {
+        if (shape.TextBox is null)
+        {
+            return;
+        }
+
+        canvas.Save();
+        ApplyRotation(
+            canvas,
+            shape,
+            (float)shape.X * PointsToPixels,
+            (float)shape.Y * PointsToPixels,
+            (float)shape.Width * PointsToPixels,
+            (float)shape.Height * PointsToPixels);
+        this.textRenderer.Render(canvas, shape);
         canvas.Restore();
     }
 
@@ -472,13 +495,6 @@ internal sealed class SlideImage(RemovedSlide slide)
         return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
 
-    private A.ColorScheme? GetColorScheme()
-    {
-        var layoutPart = slide.SlidePart.SlideLayoutPart;
-        var masterPart = layoutPart?.SlideMasterPart;
-        var themePart = masterPart?.ThemePart;
-        var themeElements = themePart?.Theme.ThemeElements;
-        
-        return themeElements?.ColorScheme;
-    }
+    private A.ColorScheme? GetColorScheme() =>
+        slide.SlidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
 }
