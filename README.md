@@ -56,7 +56,7 @@ pres.Save();
 
 ## 💡 Common Use Cases
 
-### Creating Presentations from Scratch
+### Create presentations
 
 ```csharp
 // Create a new presentation with a slide
@@ -72,7 +72,7 @@ addedShape.TextBox!.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
-### Updating Images
+### Update image
 
 ```csharp
 var pres = new Presentation("presentation.pptx");
@@ -85,7 +85,39 @@ picture.Image!.Update(newImage);
 pres.Save();
 ```
 
-### Line
+### Tables
+
+#### Create table
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var shapes = pres.Slide(1).Shapes;
+
+// Add a 3x2 table at position (50, 120)
+shapes.AddTable(x: 50, y: 120, columnsCount: 3, rowsCount: 2);
+
+var table = shapes.Last().Table;
+table[0, 0].TextBox.SetText("Hello table");
+
+pres.Save();
+```
+
+#### Update table
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var table = pres.Slide(1).Shapes.Shape("Table 1").Table;
+
+// Insert a row at index 1, using row 0 as a template
+table.Rows.Add(1, 0);
+
+// Merge two header cells
+table.MergeCells(table[0, 0], table[0, 1]);
+
+pres.Save();
+```
+
+### Lines
 
 #### Adding a straight line
 
@@ -112,12 +144,12 @@ Console.WriteLine($"Line from {start.X},{start.Y} to {end.X},{end.Y}");
 
 **[See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**
 
-## 🌟 Getting Help
+## ❓ Getting Help
 
 Have questions? We're here to help!
 
-- [**Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues) – Report bugs or request features
-- [**Discussions Forum**](https://github.com/ShapeCrawler/ShapeCrawler/discussions) – Ask questions and share ideas
+- [Issues](https://github.com/ShapeCrawler/ShapeCrawler/issues) – Report bugs or request features
+- [Discussions Forum](https://github.com/ShapeCrawler/ShapeCrawler/discussions) – Ask questions and share ideas
 - Email – Reach out to theadamo86@gmail.com
 
 ## 🤝 Contributing
@@ -126,16 +158,12 @@ We love contributions! Here's how you can help:
 
 - Give us a star ⭐ – If you find ShapeCrawler useful, show your support with a star!
 - Reporting Bugs – Found a bug? [Open an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with a clear description of the problem
+- Contribute Code – Pull requests are welcome!
 - Need to share a confidential file? – Email it to theadamo86@gmail.com – only the maintainer will access it
-- Contribute Code – Pull requests are welcome! Check out our:
-  - [**Good First Issues**](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) – Perfect for newcomers
-  - [**Contribution Guide**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) – Guidelines and best practices
 
 ## 🔄 Pre-release Versions
 
-Want to try the latest features? Access pre-release builds from the `master` branch:
-
-**NuGet Feed:** `https://www.myget.org/F/shape/api/v3/index.json`
+Want to try the latest features? Access pre-release builds from the `master` branch using the following NuGet: `https://www.myget.org/F/shape/api/v3/index.json`
 
 ## 📝 Changelog
 
