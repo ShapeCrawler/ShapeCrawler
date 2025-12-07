@@ -455,4 +455,41 @@ public class SlideTests : SCTest
         cornerPixel.Green.Should().BeInRange(195, 205);
         cornerPixel.Blue.Should().BeInRange(163, 173);
     }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_image_with_text_box()
+    {
+        // ARRANGE
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(textBox =>
+                {
+                    textBox.X(50);
+                    textBox.Y(50);
+                    textBox.Width(100);
+                    textBox.Height(50);    
+                    textBox.Text("Hello, World!");
+                });
+            });
+        });
+        var slide = pres.Slide(1);
+
+        // ACT
+        using var stream = new MemoryStream();
+        slide.SaveImageTo(stream);
+
+        // ASSERT - verify the text box's background rectangle is rendered at position (50, 50) with accent1 color (4472C4)
+        stream.Position = 0;
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        
+        // Check a pixel inside the rectangle (center of shape at ~100pt, ~75pt -> ~133px, ~100px)
+        var centerPixel = bitmap.GetPixel(133, 100);
+        
+        // Accent1 theme color is #4472C4 (R=68, G=114, B=196)
+        centerPixel.Red.Should().BeInRange(60, 76);
+        centerPixel.Green.Should().BeInRange(106, 122);
+        centerPixel.Blue.Should().BeInRange(188, 204);
+    }
 }
