@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace ShapeCrawler.Presentations;
 
@@ -20,6 +20,17 @@ public sealed class DraftTextBox
     internal string? Content { get; private set; }
 
     internal Color? HighlightColor { get; private set; }
+
+    internal Geometry ShapeGeometry { get; private set; } = ShapeCrawler.Geometry.Rectangle;
+
+    /// <summary>
+    ///     Sets the geometry type of the text box.
+    /// </summary>
+    public DraftTextBox Geometry(Geometry geometry)
+    {
+        this.ShapeGeometry = geometry;
+        return this;
+    }
 
     /// <summary>
     ///     Sets text content.

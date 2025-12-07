@@ -475,9 +475,9 @@ public class SlideTests : SCTest
             });
         });
         var slide = pres.Slide(1);
+        using var stream = new MemoryStream();
 
         // ACT
-        using var stream = new MemoryStream();
         slide.SaveImageTo(stream);
 
         // ASSERT - verify the text box's background rectangle is rendered at position (50, 50) with accent1 color (4472C4)
