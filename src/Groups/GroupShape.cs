@@ -101,7 +101,7 @@ internal sealed class GroupShape : Shape
         {
             var aTransformGroup = this.pGroupShape.GroupShapeProperties!.TransformGroup!;
             var rotation = aTransformGroup.Rotation?.Value ?? 0;
-            return rotation / 60000d;
+            return rotation / 60_000d;
         }
     }
 

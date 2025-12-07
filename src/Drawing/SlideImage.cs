@@ -55,7 +55,7 @@ internal sealed class SlideImage(RemovedSlide slide)
 
     private static SKColor ApplyShade(SKColor color, int shadeValue)
     {
-        var shadeFactor = shadeValue / 100000f;
+        var shadeFactor = shadeValue / 100_000f;
 
         return new SKColor(
             (byte)(color.Red * shadeFactor),
@@ -66,8 +66,7 @@ internal sealed class SlideImage(RemovedSlide slide)
     
     private static float GetStyleOutlineWidth(IShape shape)
     {
-        var pShape = shape.SDKOpenXmlElement as P.Shape;
-        if (pShape is null)
+        if (shape.SDKOpenXmlElement is not P.Shape pShape)
         {
             return 0;
         }
@@ -114,7 +113,9 @@ internal sealed class SlideImage(RemovedSlide slide)
     {
         hex = hex.TrimStart('#');
 
-        byte r, g, b;
+        byte r;
+        byte g;
+        byte b;
         byte a = (byte)(alphaPercentage / 100.0 * 255);
 
         if (hex.Length == 6)
@@ -269,12 +270,10 @@ internal sealed class SlideImage(RemovedSlide slide)
             return;
         }
 
-        using var fillPaint = new SKPaint
-        {
-            Color = fillColor.Value,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
+        using var fillPaint = new SKPaint();
+        fillPaint.Color = fillColor.Value;
+        fillPaint.Style = SKPaintStyle.Fill;
+        fillPaint.IsAntialias = true;
 
         if (cornerRadius > 0)
         {
@@ -296,13 +295,11 @@ internal sealed class SlideImage(RemovedSlide slide)
             return;
         }
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = outlineColor.Value,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = strokeWidth,
-            IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = outlineColor.Value;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = strokeWidth;
+        outlinePaint.IsAntialias = true;
 
         if (cornerRadius > 0)
         {
@@ -322,12 +319,10 @@ internal sealed class SlideImage(RemovedSlide slide)
             return;
         }
 
-        using var fillPaint = new SKPaint
-        {
-            Color = fillColor.Value,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
+        using var fillPaint = new SKPaint();
+        fillPaint.Color = fillColor.Value;
+        fillPaint.Style = SKPaintStyle.Fill;
+        fillPaint.IsAntialias = true;
 
         canvas.DrawOval(rect, fillPaint);
     }
@@ -342,13 +337,11 @@ internal sealed class SlideImage(RemovedSlide slide)
             return;
         }
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = outlineColor.Value,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = strokeWidth,
-            IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = outlineColor.Value;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = strokeWidth;
+        outlinePaint.IsAntialias = true;
 
         canvas.DrawOval(rect, outlinePaint);
     }
