@@ -97,7 +97,7 @@ var shapes = pres.Slide(1).Shapes;
 shapes.AddTable(x: 50, y: 120, columnsCount: 3, rowsCount: 2);
 
 var table = shapes.Last().Table;
-table[0, 0].TextBox.SetText("Hello table");
+table[0, 0].TextBox!.SetText("Hello table");
 
 pres.Save();
 ```
