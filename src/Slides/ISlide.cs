@@ -717,7 +717,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
             return null;
         }
 
-        var hexColor = ResolveSchemeColor(schemeColorValue);
+        var hexColor = this.ResolveSchemeColor(schemeColorValue);
 
         return hexColor is not null ? ParseHexColor(hexColor, 100) : null;
     }
