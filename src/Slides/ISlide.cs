@@ -781,15 +781,15 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private ITextBox? GetNotes()
     {
-        var notes = slidePart.NotesSlidePart;
+        var notesSlidePart = slidePart.NotesSlidePart;
 
-        if (notes is null)
+        if (notesSlidePart is null)
         {
             return null;
         }
 
-        var shapes = new ShapeCollection(notes);
-        var notesPlaceholder = shapes
+        var notesShapes = new ShapeCollection(notesSlidePart);
+        var notesPlaceholder = notesShapes
             .FirstOrDefault(shape =>
                 shape is { PlaceholderType: not null, TextBox: not null, PlaceholderType: PlaceholderType.Text });
         return notesPlaceholder?.TextBox;
@@ -897,10 +897,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
         return null;
     }
-
-    /// <summary>
-    ///     Saves the slide to the specified stream in the given image format.
-    /// </summary>
+    
     private SKColor GetSkColor()
     {
         var hex = this.Fill.Color!.TrimStart('#');
@@ -916,8 +913,6 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private void RenderBackground(SKCanvas canvas)
     {
-        var fill = this.Fill;
-
         if (fill is { Type: FillType.Solid, Color: not null })
         {
             var skColor = this.GetSkColor();
