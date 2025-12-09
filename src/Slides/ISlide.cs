@@ -537,8 +537,8 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         canvas.Save();
         ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
 
-        RenderEllipseFill(canvas, shape, rect);
-        RenderEllipseOutline(canvas, shape, rect);
+        this.RenderEllipseFill(canvas, shape, rect);
+        this.RenderEllipseOutline(canvas, shape, rect);
 
         canvas.Restore();
     }
@@ -568,7 +568,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private void RenderOutline(SKCanvas canvas, IShape shape, SKRect rect, decimal cornerRadius)
     {
-        var outlineColor = GetShapeOutlineColor(shape);
+        var outlineColor = this.GetShapeOutlineColor(shape);
         var strokeWidth = GetShapeOutlineWidth(shape);
 
         if (outlineColor is null || strokeWidth <= 0)
@@ -666,7 +666,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
             return null;
         }
 
-        var hexColor = ResolveSchemeColor(schemeColorValue);
+        var hexColor = this.ResolveSchemeColor(schemeColorValue);
         if (hexColor is null)
         {
             return null;
@@ -693,7 +693,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         // Check for style-based fill (fillRef with scheme color)
         if (shapeFill is null || shapeFill.Type == FillType.NoFill)
         {
-            var styleColor = GetStyleFillColor(shape);
+            var styleColor = this.GetStyleFillColor(shape);
             if (styleColor is not null)
             {
                 return styleColor;
@@ -753,8 +753,9 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
 
-    private A.ColorScheme? GetColorScheme() => slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
-    
+    private A.ColorScheme? GetColorScheme() =>
+        slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
+
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
         if (shape.TextBox is not null)
@@ -897,7 +898,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
         return null;
     }
-    
+
     private SKColor GetSkColor()
     {
         var hex = this.Fill.Color!.TrimStart('#');
@@ -957,7 +958,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
                 RenderRectangle(canvas, shape);
                 break;
             case Geometry.Ellipse:
-                RenderEllipse(canvas, shape);
+                this.RenderEllipse(canvas, shape);
                 break;
             default:
                 this.RenderText(canvas, shape);
