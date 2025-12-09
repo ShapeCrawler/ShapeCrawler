@@ -353,16 +353,6 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     public void SaveImageTo(Stream stream)
     {
-        this.Save(stream, SKEncodedImageFormat.Png);
-
-        if (stream.CanSeek)
-        {
-            stream.Position = 0;
-        }
-    }
-
-    internal void Save(Stream stream, SKEncodedImageFormat format)
-    {
         var presPart = this.GetSDKPresentationPart();
         var pSlideSize = presPart.Presentation.SlideSize!;
         var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
@@ -375,8 +365,13 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         this.RenderShapes(canvas);
 
         using var image = surface.Snapshot();
-        using var data = image.Encode(format, 100);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
         data.SaveTo(stream);
+
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
     }
 
     private static SKColor ApplyShade(SKColor color, int shadeValue)
