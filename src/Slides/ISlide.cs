@@ -597,7 +597,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private void RenderEllipseOutline(SKCanvas canvas, IShape shape, SKRect rect)
     {
-        var outlineColor = GetShapeOutlineColor(shape);
+        var outlineColor = this.GetShapeOutlineColor(shape);
         var strokeWidth = GetShapeOutlineWidth(shape);
 
         if (outlineColor is null || strokeWidth <= 0)
