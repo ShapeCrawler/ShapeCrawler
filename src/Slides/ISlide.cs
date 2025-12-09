@@ -507,8 +507,8 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         canvas.Save();
         ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
 
-        RenderFill(canvas, shape, rect, cornerRadius);
-        RenderOutline(canvas, shape, rect, cornerRadius);
+        this.RenderFill(canvas, shape, rect, cornerRadius);
+        this.RenderOutline(canvas, shape, rect, cornerRadius);
 
         canvas.Restore();
     }
@@ -625,7 +625,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         }
 
         // Check for style-based outline (lnRef with scheme color)
-        var styleColor = GetStyleOutlineColor(shape);
+        var styleColor = this.GetStyleOutlineColor(shape);
         if (styleColor is not null)
         {
             return styleColor;
