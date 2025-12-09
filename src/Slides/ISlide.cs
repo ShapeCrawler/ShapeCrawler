@@ -545,7 +545,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private void RenderFill(SKCanvas canvas, IShape shape, SKRect rect, decimal cornerRadius)
     {
-        var fillColor = GetShapeFillColor(shape);
+        var fillColor = this.GetShapeFillColor(shape);
         if (fillColor is null)
         {
             return;
@@ -594,7 +594,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private void RenderEllipseFill(SKCanvas canvas, IShape shape, SKRect rect)
     {
-        var fillColor = GetShapeFillColor(shape);
+        var fillColor = this.GetShapeFillColor(shape);
         if (fillColor is null)
         {
             return;
@@ -737,7 +737,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var colorScheme = GetColorScheme();
+        var colorScheme = this.GetColorScheme();
         if (colorScheme is null)
         {
             return null;
