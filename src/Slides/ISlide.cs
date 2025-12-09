@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -123,29 +124,21 @@ public interface ISlide
     T First<T>();
 }
 
-internal class Slide : ISlide
+internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, SlidePart slidePart) : ISlide
 {
-    protected internal readonly SlidePart SlidePart;
     private IShapeFill? fill;
+    
+    public ISlideLayout SlideLayout => slideLayout;
 
-    internal Slide(ISlideLayout slideLayout, ISlideShapeCollection shapes, SlidePart slidePart)
-    {
-        this.SlideLayout = slideLayout;
-        this.Shapes = shapes;
-        this.SlidePart = slidePart;
-    }
-
-    public ISlideLayout SlideLayout { get; }
-
-    public ISlideShapeCollection Shapes { get; }
+    public ISlideShapeCollection Shapes => shapes;
 
     public int Number
     {
         get
         {
-            var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+            var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
             var presPart = presDocument.PresentationPart!;
-            var currentSlidePartId = presPart.GetIdOfPart(this.SlidePart);
+            var currentSlidePartId = presPart.GetIdOfPart(slidePart);
             var slideIdList =
                 presPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
             for (var i = 0; i < slideIdList.Count; i++)
@@ -168,7 +161,7 @@ internal class Slide : ISlide
 
             var currentIndex = this.Number - 1;
             var newIndex = value - 1;
-            var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+            var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
             if (newIndex < 0 || newIndex >= presDocument.PresentationPart!.SlideParts.Count())
             {
                 throw new SCException("Slide number is out of range.");
@@ -219,8 +212,8 @@ internal class Slide : ISlide
         {
             if (this.fill is null)
             {
-                var pcSld = this.SlidePart.Slide.CommonSlideData
-                            ?? this.SlidePart.Slide.AppendChild<CommonSlideData>(
+                var pcSld = slidePart.Slide.CommonSlideData
+                            ?? slidePart.Slide.AppendChild<CommonSlideData>(
                                 new());
 
                 // Background element needs to be first, else it gets ignored.
@@ -237,18 +230,20 @@ internal class Slide : ISlide
         }
     }
 
-    public bool Hidden() => this.SlidePart.Slide.Show is not null && !this.SlidePart.Slide.Show.Value;
+    internal SlidePart SlidePart => slidePart;
+    
+    public bool Hidden() => slidePart.Slide.Show is not null && !slidePart.Slide.Show.Value;
 
     public void Hide()
     {
-        if (this.SlidePart.Slide.Show is null)
+        if (slidePart.Slide.Show is null)
         {
             var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
-            this.SlidePart.Slide.SetAttribute(showAttribute);
+            slidePart.Slide.SetAttribute(showAttribute);
         }
         else
         {
-            this.SlidePart.Slide.Show = false;
+            slidePart.Slide.Show = false;
         }
     }
 
@@ -268,7 +263,7 @@ internal class Slide : ISlide
 
     public PresentationPart GetSDKPresentationPart()
     {
-        var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+        var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
 
         return presDocument.Clone().PresentationPart!;
     }
@@ -308,13 +303,13 @@ internal class Slide : ISlide
     
     public void Remove()
     {
-        var presDocument = (PresentationDocument)this.SlidePart.OpenXmlPackage;
+        var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
         var pPresentation = presDocument.PresentationPart!.Presentation;
         var slideIdList = pPresentation.SlideIdList!;
 
         // Find the exact SlideId corresponding to this slide
-        var slideIdRelationship = presPart.GetIdOfPart(this.SlidePart);
+        var slideIdRelationship = presPart.GetIdOfPart(slidePart);
         var removingPSlideId = slideIdList.Elements<P.SlideId>()
                                    .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ??
                                throw new SCException("Could not find slide ID in presentation.");
@@ -372,7 +367,7 @@ internal class Slide : ISlide
 
     private ITextBox? GetNotes()
     {
-        var notes = this.SlidePart.NotesSlidePart;
+        var notes = slidePart.NotesSlidePart;
 
         if (notes is null)
         {
@@ -410,8 +405,8 @@ internal class Slide : ISlide
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = new SCOpenXmlPart(this.SlidePart).NextRelationshipId();
-        var notesSlidePart1 = this.SlidePart.AddNewPart<NotesSlidePart>(rid);
+        var rid = new SCOpenXmlPart(slidePart).NextRelationshipId();
+        var notesSlidePart1 = slidePart.AddNewPart<NotesSlidePart>(rid);
         var notesSlide = new NotesSlide(
             new CommonSlideData(
                 new ShapeTree(
@@ -460,7 +455,7 @@ internal class Slide : ISlide
         Stream customXmlPartStream;
         if (getCustomXmlPart == null)
         {
-            var newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+            var newSlideCustomXmlPart = slidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
         }
         else
@@ -474,7 +469,7 @@ internal class Slide : ISlide
 
     private CustomXmlPart? GetCustomXmlPartOrNull()
     {
-        foreach (var customXmlPart in this.SlidePart.CustomXmlParts)
+        foreach (var customXmlPart in slidePart.CustomXmlParts)
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             var customXmlPartText = customXmlPartStream.ReadToEnd();
