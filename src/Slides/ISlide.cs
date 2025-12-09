@@ -914,14 +914,15 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     private void RenderBackground(SKCanvas canvas)
     {
-        if (fill is { Type: FillType.Solid, Color: not null })
+        var slideFill = this.Fill;
+        if (slideFill is { Type: FillType.Solid, Color: not null })
         {
             var skColor = this.GetSkColor();
             canvas.Clear(skColor);
         }
-        else if (fill is { Type: FillType.Picture, Picture: not null })
+        else if (slideFill is { Type: FillType.Picture, Picture: not null })
         {
-            var bytes = fill.Picture.AsByteArray();
+            var bytes = slideFill.Picture.AsByteArray();
             using var stream = new MemoryStream(bytes);
             using var bitmap = SKBitmap.Decode(stream);
             var destRect = new SKRect(0, 0, canvas.DeviceClipBounds.Width, canvas.DeviceClipBounds.Height);
