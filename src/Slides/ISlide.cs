@@ -625,7 +625,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         }
 
         // Check for style-based outline (lnRef with scheme color)
-        var styleColor = GetStyleOutlineColor(shape);
+        var styleColor = this.GetStyleOutlineColor(shape);
         if (styleColor is not null)
         {
             return styleColor;
