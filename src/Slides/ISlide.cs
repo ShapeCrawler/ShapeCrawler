@@ -353,20 +353,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     public void SaveImageTo(Stream stream)
     {
-        var presPart = this.GetSDKPresentationPart();
-        var pSlideSize = presPart.Presentation.SlideSize!;
-        var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
-        var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
-
-        using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
-        var canvas = surface.Canvas;
-
-        this.RenderBackground(canvas);
-        this.RenderShapes(canvas);
-
-        using var image = surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        data.SaveTo(stream);
+        this.Save(stream, SKEncodedImageFormat.Png);
 
         if (stream.CanSeek)
         {
