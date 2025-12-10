@@ -167,7 +167,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.76.2 - 2025-12-04
-🐞Fixed adding table row with template [D1185](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1185)
+### Version 0.76.3 - 2025-12-10
+🐞Resolved security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
