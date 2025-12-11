@@ -378,6 +378,13 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     private void RenderShape(SKCanvas canvas, IShape shape)
     {
+        // Check for picture first, as pictures have their own rendering logic
+        if (shape.Picture is not null)
+        {
+            this.RenderPicture(canvas, shape);
+            return;
+        }
+
         var geometryType = shape.GeometryType;
 
         switch (geometryType)
@@ -407,6 +414,55 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         canvas.Save();
         ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
         this.textDrawing.Render(canvas, shape);
+        canvas.Restore();
+    }
+
+    private void RenderPicture(SKCanvas canvas, IShape shape)
+    {
+        var picture = shape.Picture!;
+        var image = picture.Image;
+        if (image is null)
+        {
+            return;
+        }
+
+        var imageBytes = image.AsByteArray();
+        using var bitmap = SKBitmap.Decode(imageBytes);
+        if (bitmap is null)
+        {
+            return;
+        }
+
+        var x = new Points(shape.X).AsPixels();
+        var y = new Points(shape.Y).AsPixels();
+        var width = new Points(shape.Width).AsPixels();
+        var height = new Points(shape.Height).AsPixels();
+
+        canvas.Save();
+        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
+
+        // Apply cropping if specified
+        var crop = picture.Crop;
+        var srcLeft = (float)(bitmap.Width * (double)(crop.Left / 100m));
+        var srcTop = (float)(bitmap.Height * (double)(crop.Top / 100m));
+        var srcRight = (float)(bitmap.Width * (1 - (double)(crop.Right / 100m)));
+        var srcBottom = (float)(bitmap.Height * (1 - (double)(crop.Bottom / 100m)));
+        var srcRect = new SKRect(srcLeft, srcTop, srcRight, srcBottom);
+
+        var destRect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
+
+        using var paint = new SKPaint();
+        paint.IsAntialias = true;
+
+        // Apply transparency if specified
+        var transparency = picture.Transparency;
+        if (transparency > 0)
+        {
+            var alpha = (byte)(255 * (1 - (double)(transparency / 100m)));
+            paint.Color = paint.Color.WithAlpha(alpha);
+        }
+
+        canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
         canvas.Restore();
     }
 

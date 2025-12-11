@@ -87,7 +87,7 @@ internal sealed class TextDrawing
 
         return string.IsNullOrWhiteSpace(hex)
             ? SKColors.Black
-            : new Color(hex).AsSkColor();
+            : new Color(hex!).AsSkColor();
     }
 
     private void RenderParagraph(SKCanvas canvas, IParagraph paragraph, float startX, ref float baseline)
