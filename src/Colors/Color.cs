@@ -1,4 +1,5 @@
 using System;
+using SkiaSharp;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -86,6 +87,42 @@ public struct Color
     ///     Creates color hexadecimal code.
     /// </summary>
     public override string ToString() => $"{this.red:X2}{this.green:X2}{this.blue:X2}";
+
+    /// <summary>
+    ///     Parses a hex color string and alpha percentage to an SKColor.
+    /// </summary>
+    /// <param name="hex">Hexadecimal color code.</param>
+    /// <param name="alphaPercentage">Alpha value as percentage (0-100).</param>
+    /// <returns>An SKColor instance.</returns>
+    internal static SKColor ToSKColor(string hex, double alphaPercentage)
+    {
+        hex = hex.TrimStart('#');
+
+        byte r;
+        byte g;
+        byte b;
+        byte a = (byte)(alphaPercentage / 100.0 * 255);
+
+        if (hex.Length == 6)
+        {
+            r = Convert.ToByte(hex[..2], 16);
+            g = Convert.ToByte(hex.Substring(2, 2), 16);
+            b = Convert.ToByte(hex.Substring(4, 2), 16);
+        }
+        else if (hex.Length == 8)
+        {
+            a = Convert.ToByte(hex[..2], 16);
+            r = Convert.ToByte(hex.Substring(2, 2), 16);
+            g = Convert.ToByte(hex.Substring(4, 2), 16);
+            b = Convert.ToByte(hex.Substring(6, 2), 16);
+        }
+        else
+        {
+            return SKColors.Transparent;
+        }
+
+        return new SKColor(r, g, b, a);
+    }
 
     /// <summary>
     ///     Returns a color of RGBA.

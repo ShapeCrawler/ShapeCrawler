@@ -21,10 +21,12 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
 {
+    private const double Epsilon = 1e-6;
+
     private readonly NewShapeProperties newShapeProperties = new(shapes);
     private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
     private readonly ConnectionShape connectionShape = new(slidePart, new NewShapeProperties(shapes));
-    private const double Epsilon = 1e-6;
+    private readonly TextDrawing textDrawing = new(Color.ToSKColor);
 
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
         new(StringComparer.Ordinal)
@@ -461,7 +463,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // Check for explicit solid fill first
         if (shapeFill is { Type: FillType.Solid, Color: not null })
         {
-            return ParseHexColor(shapeFill.Color, shapeFill.Alpha);
+            return Color.ToSKColor(shapeFill.Color, shapeFill.Alpha);
         }
 
         // Check for style-based fill (fillRef with scheme color)
@@ -484,7 +486,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // Check for explicit outline color first
         if (shapeOutline?.HexColor is not null)
         {
-            return ParseHexColor(shapeOutline.HexColor, 100);
+            return Color.ToSKColor(shapeOutline.HexColor, 100);
         }
 
         // Check for style-based outline (lnRef with scheme color)
@@ -522,7 +524,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             return null;
         }
 
-        var baseColor = ParseHexColor(hexColor, 100);
+        var baseColor = Color.ToSKColor(hexColor, 100);
         var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
 
         return shadeValue is null
@@ -559,7 +561,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
         var hexColor = this.ResolveSchemeColor(schemeColorValue);
 
-        return hexColor is not null ? ParseHexColor(hexColor, 100) : null;
+        return hexColor is not null ? Color.ToSKColor(hexColor, 100) : null;
     }
 
     private static decimal GetShapeOutlineWidth(IShape shape)
@@ -661,93 +663,4 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     private A.ColorScheme? GetColorScheme() =>
         slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
-
-    private readonly TextDrawing textDrawing = new(ParseHexColor);
-
-    private static (int, int, int, float) ParseHexValue(string hex)
-    {
-        if (string.IsNullOrEmpty(hex))
-        {
-            throw new ArgumentException("Hex value cannot be null or empty", nameof(hex));
-        }
-
-        return hex.Length switch
-        {
-            3 => ParseThreeDigitHex(hex), // F00
-            4 => ParseFourDigitHex(hex), // FFFF
-            6 => ParseSixDigitHex(hex), // FF0000
-            8 => ParseEightDigitHex(hex), // FFFFFF00
-            _ => throw new FormatException("Hex value is invalid")
-        };
-
-        // Helper method to convert a hex character to integer value
-        static int HexValue(char hex)
-        {
-            return Convert.ToInt32($"0x{hex}", 16);
-        }
-
-        // Parses 3-digit hex color (F00) -> (r,g,b,a)
-        static (int, int, int, float) ParseThreeDigitHex(string hex)
-        {
-            int r = 17 * HexValue(hex[0]);
-            int g = 17 * HexValue(hex[1]);
-            int b = 17 * HexValue(hex[2]);
-            return (r, g, b, 255); // Full opacity
-        }
-
-        // Parses 4-digit hex color (FFFF) -> (r,g,b,a)
-        static (int, int, int, float) ParseFourDigitHex(string hex)
-        {
-            var rgbTuple = ParseThreeDigitHex(hex);
-            int a = 17 * HexValue(hex[3]);
-            return (rgbTuple.Item1, rgbTuple.Item2, rgbTuple.Item3, a);
-        }
-
-        // Parses 6-digit hex color (FF0000) -> (r,g,b,a)
-        static (int, int, int, float) ParseSixDigitHex(string hex)
-        {
-            int r = (16 * HexValue(hex[0])) + HexValue(hex[1]);
-            int g = (16 * HexValue(hex[2])) + HexValue(hex[3]);
-            int b = (16 * HexValue(hex[4])) + HexValue(hex[5]);
-            return (r, g, b, 255); // Full opacity
-        }
-
-        // Parses 8-digit hex color (FFFFFF00) -> (r,g,b,a) 
-        static (int, int, int, float) ParseEightDigitHex(string hex)
-        {
-            var rgbTuple = ParseSixDigitHex(hex);
-            int a = (16 * HexValue(hex[6])) + HexValue(hex[7]);
-            return (rgbTuple.Item1, rgbTuple.Item2, rgbTuple.Item3, a);
-        }
-    }
-    
-    private static SKColor ParseHexColor(string hex, double alphaPercentage)
-    {
-        hex = hex.TrimStart('#');
-
-        byte r;
-        byte g;
-        byte b;
-        byte a = (byte)(alphaPercentage / 100.0 * 255);
-
-        if (hex.Length == 6)
-        {
-            r = Convert.ToByte(hex[..2], 16);
-            g = Convert.ToByte(hex.Substring(2, 2), 16);
-            b = Convert.ToByte(hex.Substring(4, 2), 16);
-        }
-        else if (hex.Length == 8)
-        {
-            a = Convert.ToByte(hex[..2], 16);
-            r = Convert.ToByte(hex.Substring(2, 2), 16);
-            g = Convert.ToByte(hex.Substring(4, 2), 16);
-            b = Convert.ToByte(hex.Substring(6, 2), 16);
-        }
-        else
-        {
-            return SKColors.Transparent;
-        }
-
-        return new SKColor(r, g, b, a);
-    }
 }

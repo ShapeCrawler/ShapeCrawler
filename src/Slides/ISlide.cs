@@ -12,7 +12,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using SkiaSharp;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -354,36 +353,6 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         }
     }
 
-    private static SKColor ParseHexColor(string hex, double alphaPercentage)
-    {
-        hex = hex.TrimStart('#');
-
-        byte r;
-        byte g;
-        byte b;
-        byte a = (byte)(alphaPercentage / 100.0 * 255);
-
-        if (hex.Length == 6)
-        {
-            r = Convert.ToByte(hex[..2], 16);
-            g = Convert.ToByte(hex.Substring(2, 2), 16);
-            b = Convert.ToByte(hex.Substring(4, 2), 16);
-        }
-        else if (hex.Length == 8)
-        {
-            a = Convert.ToByte(hex[..2], 16);
-            r = Convert.ToByte(hex.Substring(2, 2), 16);
-            g = Convert.ToByte(hex.Substring(4, 2), 16);
-            b = Convert.ToByte(hex.Substring(6, 2), 16);
-        }
-        else
-        {
-            return SKColors.Transparent;
-        }
-
-        return new SKColor(r, g, b, a);
-    }
-
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
         if (shape.TextBox is not null)
@@ -537,7 +506,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
             return SKColors.White; // used by the PowerPoint application as the default background color
         }
 
-        return ParseHexColor(hex, 100);
+        return Color.ToSKColor(hex, 100);
     }
 
     private void RenderBackground(SKCanvas canvas)
