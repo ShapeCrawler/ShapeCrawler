@@ -1,4 +1,5 @@
 using System;
+using SkiaSharp;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -30,9 +31,24 @@ public struct Color
     /// </summary>
     internal const float Opacity = 255;
 
-    private readonly int blue;
-    private readonly int green;
     private readonly int red;
+    private readonly int green;
+    private readonly int blue;
+
+    /// <summary>
+    ///     Creates color from hexadecimal code.
+    /// </summary>
+    /// <param name="hex">Hexadecimal code.</param>
+    public Color(string hex)
+    {
+        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
+        (int r, int g, int b, float a) = ParseHexValue(value);
+
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.Alpha = a;
+    }
 
     private Color(int red, int green, int blue)
         : this(red, green, blue, 255)
@@ -51,7 +67,7 @@ public struct Color
     ///     Gets or sets the alpha value.
     /// </summary>
     /// <remarks>
-    /// Values are 0 to 255, where 0 is totally transparent.
+    ///     Values are 0 to 255, where 0 is totally transparent.
     /// </remarks>
     public float Alpha { get; set; }
 
@@ -69,24 +85,13 @@ public struct Color
     ///     Gets a value indicating whether the color is solid.
     /// </summary>
     internal readonly bool IsSolid => Math.Abs(this.Alpha - 255) < 0.01;
-
-    /// <summary>
-    ///     Creates color from Hex value.
-    /// </summary>
-    /// <param name="hex">Hex value.</param>
-    /// <returns>Returns <see langword="true" /> if hex is a valid value. </returns>
-    public static Color FromHex(string hex)
-    {
-        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
-        (int r, int g, int b, float a) = ParseHexValue(value);
-
-        return new(r, g, b, a);
-    }
-
+    
     /// <summary>
     ///     Creates color hexadecimal code.
     /// </summary>
     public override string ToString() => $"{this.red:X2}{this.green:X2}{this.blue:X2}";
+
+    internal SKColor AsSkColor() => new((byte)this.red, (byte)this.green, (byte)this.blue, (byte)this.Alpha);
 
     /// <summary>
     ///     Returns a color of RGBA.

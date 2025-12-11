@@ -163,7 +163,7 @@ public class ParagraphPortionTests : SCTest
         var portion = shape.TextBox!.Paragraphs[0].Portions[0];
 
         // Act
-        portion.TextHighlightColor = Color.FromHex("FFFF00");
+        portion.TextHighlightColor = new Color("FFFF00");
 
         // Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
@@ -177,7 +177,7 @@ public class ParagraphPortionTests : SCTest
         var pres = new Presentation(pptx);
         var shape = pres.Slides[0].Shapes.Shape<IShape>("TextBox 4");
         var portion = shape.TextBox!.Paragraphs[0].Portions[0];
-        var color = Color.FromHex("FFFF00");
+        var color = new Color("FFFF00");
 
         // Act
         portion.TextHighlightColor = color;
@@ -197,7 +197,7 @@ public class ParagraphPortionTests : SCTest
                 s.TextBox(tb =>
                 {
                     tb.Text("Some text");
-                    tb.TextHighlightColor(Color.FromHex("FF5733"));
+                    tb.TextHighlightColor(new Color("FF5733"));
                 });
             });
         });

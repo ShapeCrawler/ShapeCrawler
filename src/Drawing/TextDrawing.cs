@@ -11,12 +11,9 @@ internal sealed class TextDrawing
 {
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
-    private readonly Func<string, double, SKColor> parseHexColor;
 
-    internal TextDrawing(Func<string, double, SKColor> parseHexColor)
+    internal TextDrawing()
     {
-        this.parseHexColor = parseHexColor;
-
         using var font = CreateFont(null);
         this.defaultLineHeight = font.Spacing;
     }
@@ -76,6 +73,22 @@ internal sealed class TextDrawing
     }
 
     private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
+    
+    private static SKPaint CreatePaint(ITextPortionFont? font)
+    {
+        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
+
+        return paint;
+    }
+
+    private static SKColor GetPaintColor(ITextPortionFont? font)
+    {
+        var hex = font?.Color.Hex;
+
+        return string.IsNullOrWhiteSpace(hex)
+            ? SKColors.Black
+            : new Color(hex).AsSkColor();
+    }
 
     private void RenderParagraph(SKCanvas canvas, IParagraph paragraph, float startX, ref float baseline)
     {
@@ -92,7 +105,7 @@ internal sealed class TextDrawing
             }
 
             using var font = CreateFont(portion.Font);
-            using var paint = this.CreatePaint(portion.Font);
+            using var paint = CreatePaint(portion.Font);
             var metrics = font.Metrics;
             var drawY = baseline - metrics.Ascent;
 
@@ -126,21 +139,5 @@ internal sealed class TextDrawing
         currentX = startX;
         lineHeight = 0;
         hasLineContent = false;
-    }
-
-    private SKPaint CreatePaint(ITextPortionFont? font)
-    {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = this.GetPaintColor(font) };
-
-        return paint;
-    }
-
-    private SKColor GetPaintColor(ITextPortionFont? font)
-    {
-        var hex = font?.Color.Hex;
-
-        return string.IsNullOrWhiteSpace(hex)
-            ? SKColors.Black
-            : this.parseHexColor(hex!, 100);
     }
 }
