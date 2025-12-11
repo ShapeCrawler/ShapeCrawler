@@ -72,7 +72,7 @@ internal sealed class Field : IParagraphPortion
         var hex = aSrgbClr.Val.ToString() !;
 
         // Check if color value is valid, we are expecting values as "000000".
-        var color = Color.FromHex(hex);
+        var color = new Color(hex);
 
         // Calculate alpha value if is defined in highlight node.
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;

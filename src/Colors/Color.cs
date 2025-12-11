@@ -31,9 +31,24 @@ public struct Color
     /// </summary>
     internal const float Opacity = 255;
 
-    private readonly int blue;
-    private readonly int green;
     private readonly int red;
+    private readonly int green;
+    private readonly int blue;
+
+    /// <summary>
+    ///     Creates color from hexadecimal code.
+    /// </summary>
+    /// <param name="hex">Hexadecimal code.</param>
+    public Color(string hex)
+    {
+        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
+        (int r, int g, int b, float a) = ParseHexValue(value);
+
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.Alpha = a;
+    }
 
     private Color(int red, int green, int blue)
         : this(red, green, blue, 255)
@@ -70,19 +85,7 @@ public struct Color
     ///     Gets a value indicating whether the color is solid.
     /// </summary>
     internal readonly bool IsSolid => Math.Abs(this.Alpha - 255) < 0.01;
-
-    /// <summary>
-    ///     Creates color from hexadecimal code.
-    /// </summary>
-    /// <param name="hex">Hexadecimal code.</param>
-    public static Color FromHex(string hex)
-    {
-        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
-        (int r, int g, int b, float a) = ParseHexValue(value);
-
-        return new(r, g, b, a);
-    }
-
+    
     /// <summary>
     ///     Creates color hexadecimal code.
     /// </summary>

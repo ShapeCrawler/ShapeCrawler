@@ -54,6 +54,6 @@ internal sealed class SlideNumberFont : ISlideNumberFont
     {
         var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !.RgbColorModelHex!.Val!.Value!;
 
-        return Color.FromHex(hex);
+        return new Color(hex);
     }
 }
