@@ -22,7 +22,7 @@ public sealed class DraftSlide
             slide.Shapes.AddPicture(image);
 
             // Modify the last added picture
-            var picture = slide.Shapes.Last();
+            var picture = slide.Shapes[^1];
             picture.Name = name;
             picture.X = x;
             picture.Y = y;
@@ -44,9 +44,12 @@ public sealed class DraftSlide
             slide.Shapes.AddPicture(stream);
 
             // Center the picture on the slide
-            var picture = slide.Shapes.Last();
-            picture.X = (int)((pres.SlideWidth - picture.Width) / 2);
-            picture.Y = (int)((pres.SlideHeight - picture.Height) / 2);
+            if (slide != null)
+            {
+                var picture = slide.Shapes[^1];
+                picture.X = (int)((pres.SlideWidth - picture.Width) / 2);
+                picture.Y = (int)((pres.SlideHeight - picture.Height) / 2);
+            }
         });
 
         return this;
