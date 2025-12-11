@@ -11,9 +11,9 @@ internal sealed class TextDrawing
 {
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
-    private readonly Func<string, double, SKColor> parseHexColor;
+    private readonly Func<string, SKColor> parseHexColor;
 
-    internal TextDrawing(Func<string, double, SKColor> parseHexColor)
+    internal TextDrawing(Func<string, SKColor> parseHexColor)
     {
         this.parseHexColor = parseHexColor;
 
@@ -141,6 +141,6 @@ internal sealed class TextDrawing
 
         return string.IsNullOrWhiteSpace(hex)
             ? SKColors.Black
-            : this.parseHexColor(hex!, 100);
+            : this.parseHexColor(hex!);
     }
 }

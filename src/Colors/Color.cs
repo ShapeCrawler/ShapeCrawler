@@ -95,12 +95,11 @@ public struct Color
     ///     Creates <see cref="SKColor"/> from hexadecimal color code and alpha percentage.
     /// </summary>
     /// <param name="hex">Hexadecimal color code.</param>
-    /// <param name="alphaPercentage">Alpha value as percentage (0-100).</param>
     /// <returns>An SKColor instance.</returns>
-    internal static SKColor ToSkColor(string hex, double alphaPercentage)
+    internal static SKColor ToSkColor(string hex)
     {
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
-        (int r, int g, int b, _) = ParseHexValue(value);
+        (int r, int g, int b, float a) = ParseHexValue(value);
 
         // If parsing failed, ParseHexValue returns (0,0,0,0) for empty/invalid input.
         // To match previous behavior, return transparent if input is invalid.
@@ -110,7 +109,7 @@ public struct Color
             return SKColors.Transparent;
         }
 
-        byte alpha = (byte)(alphaPercentage / 100.0 * 255);
+        byte alpha = (byte)a;
         return new SKColor((byte)r, (byte)g, (byte)b, alpha);
     }
 

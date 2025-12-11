@@ -543,7 +543,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // Check for explicit solid fill first
         if (shapeFill is { Type: FillType.Solid, Color: not null })
         {
-            return Color.ToSkColor(shapeFill.Color, shapeFill.Alpha);
+            return Color.ToSkColor(shapeFill.Color);
         }
 
         // Check for style-based fill (fillRef with scheme color)
@@ -566,7 +566,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // Check for explicit outline color first
         if (shapeOutline?.HexColor is not null)
         {
-            return Color.ToSkColor(shapeOutline.HexColor, 100);
+            return Color.ToSkColor(shapeOutline.HexColor);
         }
 
         // Check for style-based outline (lnRef with scheme color)
@@ -604,7 +604,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             return null;
         }
 
-        var baseColor = Color.ToSkColor(hexColor, 100);
+        var baseColor = Color.ToSkColor(hexColor);
         var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
 
         return shadeValue is null
@@ -641,7 +641,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
         var hexColor = this.ResolveSchemeColor(schemeColorValue);
 
-        return hexColor is not null ? Color.ToSkColor(hexColor, 100) : null;
+        return hexColor is not null ? Color.ToSkColor(hexColor) : null;
     }
 
     private string? ResolveSchemeColor(string schemeColorName)
