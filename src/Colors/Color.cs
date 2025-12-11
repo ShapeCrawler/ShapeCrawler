@@ -100,7 +100,7 @@ public struct Color
     internal static SKColor ToSkColor(string hex, double alphaPercentage)
     {
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
-        (int r, int g, int b, float a) = ParseHexValue(value);
+        (int r, int g, int b, _) = ParseHexValue(value);
 
         // If parsing failed, ParseHexValue returns (0,0,0,0) for empty/invalid input.
         // To match previous behavior, return transparent if input is invalid.
