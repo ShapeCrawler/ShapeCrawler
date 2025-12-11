@@ -51,7 +51,7 @@ public struct Color
     ///     Gets or sets the alpha value.
     /// </summary>
     /// <remarks>
-    /// Values are 0 to 255, where 0 is totally transparent.
+    ///     Values are 0 to 255, where 0 is totally transparent.
     /// </remarks>
     public float Alpha { get; set; }
 
@@ -71,10 +71,9 @@ public struct Color
     internal readonly bool IsSolid => Math.Abs(this.Alpha - 255) < 0.01;
 
     /// <summary>
-    ///     Creates color from Hex value.
+    ///     Creates color from hexadecimal code.
     /// </summary>
-    /// <param name="hex">Hex value.</param>
-    /// <returns>Returns <see langword="true" /> if hex is a valid value. </returns>
+    /// <param name="hex">Hexadecimal code.</param>
     public static Color FromHex(string hex)
     {
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
