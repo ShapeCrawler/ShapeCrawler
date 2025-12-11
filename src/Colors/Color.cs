@@ -89,12 +89,12 @@ public struct Color
     public override string ToString() => $"{this.red:X2}{this.green:X2}{this.blue:X2}";
 
     /// <summary>
-    ///     Parses a hex color string and alpha percentage to an SKColor.
+    ///     Creates <see cref="SKColor"/> from hexadecimal color code and alpha percentage.
     /// </summary>
     /// <param name="hex">Hexadecimal color code.</param>
     /// <param name="alphaPercentage">Alpha value as percentage (0-100).</param>
     /// <returns>An SKColor instance.</returns>
-    internal static SKColor ToSKColor(string hex, double alphaPercentage)
+    internal static SKColor ToSkColor(string hex, double alphaPercentage)
     {
         hex = hex.TrimStart('#');
 
