@@ -6,7 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class TableShape:Shape
+internal sealed class TableShape : Shape
 {
     internal TableShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.GraphicFrame pGraphicFrame)
         : base(position, shapeSize, shapeId, pGraphicFrame)
@@ -19,7 +19,7 @@ internal sealed class TableShape:Shape
             new TableStyleOptions(aTable.TableProperties!),
             pGraphicFrame);
     }
-    
+
     public override ITable? Table { get; }
 
     public override decimal Width

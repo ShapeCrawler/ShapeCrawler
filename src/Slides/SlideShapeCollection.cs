@@ -376,48 +376,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         return sysColor?.LastColor?.Value;
     }
 
-    private void RenderShape(SKCanvas canvas, IShape shape)
-    {
-        // Check for picture first, as pictures have their own rendering logic
-        if (shape.Picture is not null)
-        {
-            this.RenderPicture(canvas, shape);
-            return;
-        }
-
-        var geometryType = shape.GeometryType;
-
-        switch (geometryType)
-        {
-            case Geometry.Rectangle:
-            case Geometry.RoundedRectangle:
-                this.RenderRectangle(canvas, shape);
-                break;
-            case Geometry.Ellipse:
-                this.RenderEllipse(canvas, shape);
-                break;
-            default:
-                this.RenderText(canvas, shape);
-                return;
-        }
-
-        this.RenderText(canvas, shape);
-    }
-
-    private void RenderText(SKCanvas canvas, IShape shape)
-    {
-        if (shape.TextBox is null)
-        {
-            return;
-        }
-
-        canvas.Save();
-        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
-        this.textDrawing.Render(canvas, shape);
-        canvas.Restore();
-    }
-
-    private void RenderPicture(SKCanvas canvas, IShape shape)
+    private static void RenderPicture(SKCanvas canvas, IShape shape)
     {
         var picture = shape.Picture!;
         var image = picture.Image;
@@ -465,6 +424,48 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
         canvas.Restore();
     }
+    
+    private void RenderShape(SKCanvas canvas, IShape shape)
+    {
+        // Check for picture first, as pictures have their own rendering logic
+        if (shape.Picture is not null)
+        {
+            RenderPicture(canvas, shape);
+            return;
+        }
+
+        var geometryType = shape.GeometryType;
+
+        switch (geometryType)
+        {
+            case Geometry.Rectangle:
+            case Geometry.RoundedRectangle:
+                this.RenderRectangle(canvas, shape);
+                break;
+            case Geometry.Ellipse:
+                this.RenderEllipse(canvas, shape);
+                break;
+            default:
+                this.RenderText(canvas, shape);
+                return;
+        }
+
+        this.RenderText(canvas, shape);
+    }
+
+    private void RenderText(SKCanvas canvas, IShape shape)
+    {
+        if (shape.TextBox is null)
+        {
+            return;
+        }
+
+        canvas.Save();
+        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
+        this.textDrawing.Render(canvas, shape);
+        canvas.Restore();
+    }
+    
 
     private void RenderRectangle(SKCanvas canvas, IShape shape)
     {
