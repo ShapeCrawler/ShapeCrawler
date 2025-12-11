@@ -10,19 +10,19 @@ namespace ShapeCrawler.Presentations;
 /// </summary>
 public sealed class DraftSlide
 {
-    private readonly List<Action<ISlide>> actions = [];
+    private readonly List<Action<ISlide, Presentation>> actions = [];
 
     /// <summary>
     ///     Adds a picture to the slide with the specified name and geometry in points.
     /// </summary>
     public DraftSlide Picture(string name, int x, int y, int width, int height, Stream image)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddPicture(image);
 
             // Modify the last added picture
-            var picture = slide.Shapes.Last();
+            var picture = slide.Shapes[^1];
             picture.Name = name;
             picture.X = x;
             picture.Y = y;
@@ -34,11 +34,30 @@ public sealed class DraftSlide
     }
 
     /// <summary>
+    ///     Adds a picture to the slide, centered on the slide.
+    /// </summary>
+    public DraftSlide Picture(byte[] imageBytes)
+    {
+        this.actions.Add((slide, pres) =>
+        {
+            using var stream = new MemoryStream(imageBytes);
+            slide.Shapes.AddPicture(stream);
+
+
+            var picture = slide.Shapes[^1];
+            picture.X = (int)((pres.SlideWidth - picture.Width) / 2);
+            picture.Y = (int)((pres.SlideHeight - picture.Height) / 2);
+        });
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures a picture using a nested builder.
     /// </summary>
     public DraftSlide Picture(Action<DraftPicture> configure)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             var b = new DraftPicture();
             configure(b);
@@ -63,7 +82,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide TextBox(string name, int x, int y, int width, int height, string content)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddShape(x, y, width, height, Geometry.Rectangle, content);
             var addedShape = slide.Shapes.Last<IShape>();
@@ -78,7 +97,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide TextBox(Action<DraftTextBox> configure)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             var builder = new DraftTextBox();
             configure(builder);
@@ -104,7 +123,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide Line(string name, int startPointX, int startPointY, int endPointX, int endPointY)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
             var line = slide.Shapes.Last();
@@ -125,7 +144,7 @@ public sealed class DraftSlide
     /// <param name="content">Video stream.</param>
     public DraftSlide Video(string name, int x, int y, int elementWidth, int elementHeight, Stream content)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddVideo(x, y, content);
             var media = slide.Shapes.Last();
@@ -144,7 +163,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide Table(string name, int x, int y, int columnsCount, int rowsCount)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddTable(x, y, columnsCount, rowsCount);
             var table = slide.Shapes.Last<IShape>();
@@ -159,7 +178,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide Table(Action<DraftTable> configure)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             var builder = new DraftTable();
             configure(builder);
@@ -175,7 +194,9 @@ public sealed class DraftSlide
                 var draftRow = builder.Rows[rowIndex];
                 var tableRow = table.Rows[rowIndex];
 
-                for (var cellIndex = 0; cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count; cellIndex++)
+                for (var cellIndex = 0;
+                     cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count;
+                     cellIndex++)
                 {
                     var draftCell = draftRow.Cells[cellIndex];
                     if (!string.IsNullOrEmpty(draftCell.SolidColorHex))
@@ -200,13 +221,11 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide PieChart(string name)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             var categoryValues = new Dictionary<string, double>
             {
-                { "Category 1", 40 },
-                { "Category 2", 30 },
-                { "Category 3", 30 }
+                { "Category 1", 40 }, { "Category 2", 30 }, { "Category 3", 30 }
             };
             slide.Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Series 1", name);
         });
@@ -219,7 +238,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide ClusteredBarChart(Action<DraftChart> configure)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             var builder = new DraftChart();
             configure(builder);
@@ -242,7 +261,7 @@ public sealed class DraftSlide
     /// <param name="hexColor">Hex color string (e.g., "FF0000" for red).</param>
     public DraftSlide SolidBackground(string hexColor)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Fill.SetColor(hexColor);
         });
@@ -255,7 +274,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide ImageBackground(byte[] imageBytes)
     {
-        this.actions.Add(slide =>
+        this.actions.Add((slide, _) =>
         {
             slide.Fill.SetPicture(new MemoryStream(imageBytes));
         });
@@ -276,7 +295,7 @@ public sealed class DraftSlide
         var slide = presentation.Slides[presentation.Slides.Count - 1];
         foreach (var action in this.actions)
         {
-            action(slide);
+            action(slide, presentation);
         }
     }
 }
