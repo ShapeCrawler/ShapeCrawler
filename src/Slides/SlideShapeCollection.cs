@@ -416,7 +416,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         if (transparency > 0)
         {
             var alpha = (byte)(255 * (1 - (double)(transparency / 100m)));
-            paint.Color = paint.Color.WithAlpha(alpha);
+            paint.Alpha = alpha;
         }
 
         canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
