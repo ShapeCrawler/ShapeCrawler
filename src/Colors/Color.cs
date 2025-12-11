@@ -99,32 +99,19 @@ public struct Color
     /// <returns>An SKColor instance.</returns>
     internal static SKColor ToSkColor(string hex, double alphaPercentage)
     {
-        hex = hex.TrimStart('#');
+        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
+        (int r, int g, int b, float a) = ParseHexValue(value);
 
-        byte r;
-        byte g;
-        byte b;
-        byte a = (byte)(alphaPercentage / 100.0 * 255);
-
-        if (hex.Length == 6)
-        {
-            r = Convert.ToByte(hex[..2], 16);
-            g = Convert.ToByte(hex.Substring(2, 2), 16);
-            b = Convert.ToByte(hex.Substring(4, 2), 16);
-        }
-        else if (hex.Length == 8)
-        {
-            a = Convert.ToByte(hex[..2], 16);
-            r = Convert.ToByte(hex.Substring(2, 2), 16);
-            g = Convert.ToByte(hex.Substring(4, 2), 16);
-            b = Convert.ToByte(hex.Substring(6, 2), 16);
-        }
-        else
+        // If parsing failed, ParseHexValue returns (0,0,0,0) for empty/invalid input.
+        // To match previous behavior, return transparent if input is invalid.
+        if (string.IsNullOrEmpty(value) || 
+            (value.Length != 3 && value.Length != 4 && value.Length != 6 && value.Length != 8))
         {
             return SKColors.Transparent;
         }
 
-        return new SKColor(r, g, b, a);
+        byte alpha = (byte)(alphaPercentage / 100.0 * 255);
+        return new SKColor((byte)r, (byte)g, (byte)b, alpha);
     }
 
     /// <summary>
