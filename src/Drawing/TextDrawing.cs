@@ -73,6 +73,22 @@ internal sealed class TextDrawing
     }
 
     private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
+    
+    private static SKPaint CreatePaint(ITextPortionFont? font)
+    {
+        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
+
+        return paint;
+    }
+
+    private static SKColor GetPaintColor(ITextPortionFont? font)
+    {
+        var hex = font?.Color.Hex;
+
+        return string.IsNullOrWhiteSpace(hex)
+            ? SKColors.Black
+            : new Color(hex).AsSkColor();
+    }
 
     private void RenderParagraph(SKCanvas canvas, IParagraph paragraph, float startX, ref float baseline)
     {
@@ -123,21 +139,5 @@ internal sealed class TextDrawing
         currentX = startX;
         lineHeight = 0;
         hasLineContent = false;
-    }
-
-    private static SKPaint CreatePaint(ITextPortionFont? font)
-    {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
-
-        return paint;
-    }
-
-    private static SKColor GetPaintColor(ITextPortionFont? font)
-    {
-        var hex = font?.Color.Hex;
-
-        return string.IsNullOrWhiteSpace(hex)
-            ? SKColors.Black
-            : new Color(hex).AsSkColor();
     }
 }

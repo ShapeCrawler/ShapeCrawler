@@ -91,7 +91,7 @@ public struct Color
     /// </summary>
     public override string ToString() => $"{this.red:X2}{this.green:X2}{this.blue:X2}";
 
-    internal SKColor AsSkColor() => new SKColor((byte)this.red, (byte)this.green, (byte)this.blue, (byte)this.Alpha);
+    internal SKColor AsSkColor() => new((byte)this.red, (byte)this.green, (byte)this.blue, (byte)this.Alpha);
 
     /// <summary>
     ///     Returns a color of RGBA.
