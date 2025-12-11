@@ -43,13 +43,10 @@ public sealed class DraftSlide
             using var stream = new MemoryStream(imageBytes);
             slide.Shapes.AddPicture(stream);
 
-            // Center the picture on the slide
-            if (slide != null)
-            {
-                var picture = slide.Shapes[^1];
-                picture.X = (int)((pres.SlideWidth - picture.Width) / 2);
-                picture.Y = (int)((pres.SlideHeight - picture.Height) / 2);
-            }
+
+            var picture = slide.Shapes[^1];
+            picture.X = (int)((pres.SlideWidth - picture.Width) / 2);
+            picture.Y = (int)((pres.SlideHeight - picture.Height) / 2);
         });
 
         return this;
@@ -197,7 +194,9 @@ public sealed class DraftSlide
                 var draftRow = builder.Rows[rowIndex];
                 var tableRow = table.Rows[rowIndex];
 
-                for (var cellIndex = 0; cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count; cellIndex++)
+                for (var cellIndex = 0;
+                     cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count;
+                     cellIndex++)
                 {
                     var draftCell = draftRow.Cells[cellIndex];
                     if (!string.IsNullOrEmpty(draftCell.SolidColorHex))
@@ -226,9 +225,7 @@ public sealed class DraftSlide
         {
             var categoryValues = new Dictionary<string, double>
             {
-                { "Category 1", 40 },
-                { "Category 2", 30 },
-                { "Category 3", 30 }
+                { "Category 1", 40 }, { "Category 2", 30 }, { "Category 3", 30 }
             };
             slide.Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Series 1", name);
         });
