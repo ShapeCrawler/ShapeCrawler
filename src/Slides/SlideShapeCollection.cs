@@ -384,7 +384,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         {
             case Geometry.Rectangle:
             case Geometry.RoundedRectangle:
-                RenderRectangle(canvas, shape);
+                this.RenderRectangle(canvas, shape);
                 break;
             case Geometry.Ellipse:
                 this.RenderEllipse(canvas, shape);
