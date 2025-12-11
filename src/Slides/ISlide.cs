@@ -506,7 +506,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
             return SKColors.White; // used by the PowerPoint application as the default background color
         }
 
-        return Color.ToSkColor(hex);
+        return new Color(hex).AsSkColor();
     }
 
     private void RenderBackground(SKCanvas canvas)

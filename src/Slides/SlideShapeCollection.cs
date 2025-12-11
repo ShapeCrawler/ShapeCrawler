@@ -42,7 +42,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     private readonly NewShapeProperties newShapeProperties = new(shapes);
     private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
     private readonly ConnectionShape connectionShape = new(slidePart, new NewShapeProperties(shapes));
-    private readonly TextDrawing textDrawing = new(Color.ToSkColor);
+    private readonly TextDrawing textDrawing = new();
     
 
     public int Count => shapes.Count;
@@ -543,7 +543,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // Check for explicit solid fill first
         if (shapeFill is { Type: FillType.Solid, Color: not null })
         {
-            return Color.ToSkColor(shapeFill.Color);
+            return new Color(shapeFill.Color).AsSkColor();
         }
 
         // Check for style-based fill (fillRef with scheme color)
@@ -566,7 +566,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         // Check for explicit outline color first
         if (shapeOutline?.HexColor is not null)
         {
-            return Color.ToSkColor(shapeOutline.HexColor);
+            return new Color(shapeOutline.HexColor).AsSkColor();
         }
 
         // Check for style-based outline (lnRef with scheme color)
@@ -604,7 +604,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             return null;
         }
 
-        var baseColor = Color.ToSkColor(hexColor);
+        var baseColor = new Color(hexColor).AsSkColor();
         var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
 
         return shadeValue is null
@@ -641,7 +641,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
         var hexColor = this.ResolveSchemeColor(schemeColorValue);
 
-        return hexColor is not null ? Color.ToSkColor(hexColor) : null;
+        return hexColor is not null ? new Color(hexColor).AsSkColor() : null;
     }
 
     private string? ResolveSchemeColor(string schemeColorName)

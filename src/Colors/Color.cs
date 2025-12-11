@@ -91,27 +91,7 @@ public struct Color
     /// </summary>
     public override string ToString() => $"{this.red:X2}{this.green:X2}{this.blue:X2}";
 
-    /// <summary>
-    ///     Creates <see cref="SKColor"/> from hexadecimal color code and alpha percentage.
-    /// </summary>
-    /// <param name="hex">Hexadecimal color code.</param>
-    /// <returns>An SKColor instance.</returns>
-    internal static SKColor ToSkColor(string hex)
-    {
-        var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
-        (int r, int g, int b, float a) = ParseHexValue(value);
-
-        // If parsing failed, ParseHexValue returns (0,0,0,0) for empty/invalid input.
-        // To match previous behavior, return transparent if input is invalid.
-        if (string.IsNullOrEmpty(value) || 
-            (value.Length != 3 && value.Length != 4 && value.Length != 6 && value.Length != 8))
-        {
-            return SKColors.Transparent;
-        }
-
-        byte alpha = (byte)a;
-        return new SKColor((byte)r, (byte)g, (byte)b, alpha);
-    }
+    internal SKColor AsSkColor() => new SKColor((byte)this.red, (byte)this.green, (byte)this.blue, (byte)this.Alpha);
 
     /// <summary>
     ///     Returns a color of RGBA.

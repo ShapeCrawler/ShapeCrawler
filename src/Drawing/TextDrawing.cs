@@ -11,12 +11,9 @@ internal sealed class TextDrawing
 {
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
-    private readonly Func<string, SKColor> parseHexColor;
 
-    internal TextDrawing(Func<string, SKColor> parseHexColor)
+    internal TextDrawing()
     {
-        this.parseHexColor = parseHexColor;
-
         using var font = CreateFont(null);
         this.defaultLineHeight = font.Spacing;
     }
@@ -92,7 +89,7 @@ internal sealed class TextDrawing
             }
 
             using var font = CreateFont(portion.Font);
-            using var paint = this.CreatePaint(portion.Font);
+            using var paint = CreatePaint(portion.Font);
             var metrics = font.Metrics;
             var drawY = baseline - metrics.Ascent;
 
@@ -128,19 +125,19 @@ internal sealed class TextDrawing
         hasLineContent = false;
     }
 
-    private SKPaint CreatePaint(ITextPortionFont? font)
+    private static SKPaint CreatePaint(ITextPortionFont? font)
     {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = this.GetPaintColor(font) };
+        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
 
         return paint;
     }
 
-    private SKColor GetPaintColor(ITextPortionFont? font)
+    private static SKColor GetPaintColor(ITextPortionFont? font)
     {
         var hex = font?.Color.Hex;
 
         return string.IsNullOrWhiteSpace(hex)
             ? SKColors.Black
-            : this.parseHexColor(hex!);
+            : new Color(hex).AsSkColor();
     }
 }
