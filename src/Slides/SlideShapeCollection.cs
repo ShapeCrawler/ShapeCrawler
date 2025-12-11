@@ -40,10 +40,8 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         };
 
     private readonly NewShapeProperties newShapeProperties = new(shapes);
-    private readonly PlaceholderShapes placeholderShape = new(shapes, slidePart);
-    private readonly ConnectionShape connectionShape = new(slidePart, new NewShapeProperties(shapes));
+    private readonly PlaceholderShapes placeholderShapes = new(shapes, slidePart);
     private readonly TextDrawing textDrawing = new();
-    
 
     public int Count => shapes.Count;
 
@@ -190,7 +188,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
-        => this.connectionShape.Create(startPointX, startPointY, endPointX, endPointY);
+        => new ConnectionShape(slidePart, new NewShapeProperties(shapes)).Create(startPointX, startPointY, endPointX, endPointY);
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
         => this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
@@ -277,11 +275,11 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public IShape AddDateAndTime() => this.placeholderShape.AddDateAndTime();
+    public IShape AddDateAndTime() => this.placeholderShapes.AddDateAndTime();
 
-    public IShape AddFooter() => this.placeholderShape.AddFooter();
+    public IShape AddFooter() => this.placeholderShapes.AddFooter();
 
-    public IShape AddSlideNumber() => this.placeholderShape.AddSlideNumber();
+    public IShape AddSlideNumber() => this.placeholderShapes.AddSlideNumber();
 
     internal void Render(SKCanvas canvas)
     {
@@ -466,7 +464,6 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         canvas.Restore();
     }
     
-
     private void RenderRectangle(SKCanvas canvas, IShape shape)
     {
         var x = new Points(shape.X).AsPixels();

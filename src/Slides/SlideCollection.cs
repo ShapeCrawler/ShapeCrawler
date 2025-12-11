@@ -32,13 +32,14 @@ internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IRead
         foreach (var pSlideId in pSlideIdList)
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
+            var presImageFiles = new PresentationImageFiles(slideParts);
             yield return new Slide(
                 new SlideLayout(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(
                         new AudioVideoShapeCollection(
-                            new PictureCollection(new ShapeCollection(slidePart), new PresentationImageFiles(slideParts), slidePart),
-                            new PresentationImageFiles(slideParts), 
+                            new PictureCollection(new ShapeCollection(slidePart), presImageFiles, slidePart),
+                            presImageFiles, 
                             slidePart
                         ),
                         slidePart
