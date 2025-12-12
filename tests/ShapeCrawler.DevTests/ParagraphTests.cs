@@ -227,7 +227,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case001.pptx"));
-        var shape = pres.SlideMasters[0].Shapes.Shape<IShape>("AutoShape 1");
+        var shape = pres.MasterSlide[0].Shapes.Shape<IShape>("AutoShape 1");
         shape.TextBox!.Paragraphs.Add();
         var paragraph = shape.TextBox.Paragraphs.Last();
         var expectedPortionCount = paragraph.Portions.Count + 1;

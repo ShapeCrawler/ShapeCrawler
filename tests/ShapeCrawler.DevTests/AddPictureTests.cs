@@ -61,7 +61,7 @@ public class AddPictureTests : SCTest
     {
         // Arrange
         var pres = new Presentation(p=>p.Slide());
-        var layout = pres.SlideMasters[0].LayoutSlide.First(l => l.Name == "Blank");
+        var layout = pres.MasterSlide[0].LayoutSlide.First(l => l.Name == "Blank");
         pres.Slides.Add(layout.Number);
         var shapesSlide1 = pres.Slides[0].Shapes;
         var shapesSlide2 = pres.Slides[1].Shapes;
@@ -411,7 +411,7 @@ public class AddPictureTests : SCTest
     {
         // Arrange
         var pres = new Presentation(p=>p.Slide());
-        var layout = pres.SlideMasters[0].LayoutSlide.First(l => l.Name == "Blank");
+        var layout = pres.MasterSlide[0].LayoutSlide.First(l => l.Name == "Blank");
         pres.Slides.Add(layout.Number);
         var shapes = pres.Slides[0].Shapes;
         var image = TestAsset("09 png image.png");

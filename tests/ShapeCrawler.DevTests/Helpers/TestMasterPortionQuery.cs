@@ -4,7 +4,7 @@ public class TestMasterPortionQuery(string shapeName, int paragraphNumber, int p
 {
     public override IParagraphPortion Get(IPresentation pres)
     {
-        return pres.SlideMasters[0].Shapes.Shape<IShape>(shapeName).TextBox!
+        return pres.MasterSlide[0].Shapes.Shape<IShape>(shapeName).TextBox!
             .Paragraphs[paragraphNumber - 1].Portions[portionNumber - 1];
     }
 }

@@ -233,8 +233,8 @@ public class PresentationTests : SCTest
         var pres2 = new Presentation(TestAsset("002.pptx"));
 
         // Act
-        var slideMastersCountCase1 = pres1.SlideMasters.Count();
-        var slideMastersCountCase2 = pres2.SlideMasters.Count();
+        var slideMastersCountCase1 = pres1.MasterSlide.Count();
+        var slideMastersCountCase2 = pres2.MasterSlide.Count();
 
         // Assert
         slideMastersCountCase1.Should().Be(1);
@@ -249,7 +249,7 @@ public class PresentationTests : SCTest
         var pres = new Presentation(pptx);
 
         // Act
-        var masterShapesCount = pres.SlideMasters[0].Shapes.Count;
+        var masterShapesCount = pres.MasterSlide[0].Shapes.Count;
 
         // Assert
         masterShapesCount.Should().Be(7);
@@ -634,7 +634,7 @@ public class PresentationTests : SCTest
                     Fixtures.String());
             });
         });
-        var layoutNumber = pres.SlideMasters.Select(sm => sm.SlideLayout("Blank")).First().Number;
+        var layoutNumber = pres.MasterSlide.Select(sm => sm.SlideLayout("Blank")).First().Number;
 
         // Act
         pres.Slides.Add(layoutNumber, 1);

@@ -288,7 +288,7 @@ public sealed class DraftSlide
         var sdkPres = presentation.PresDocument.PresentationPart!.Presentation;
         sdkPres.SlideIdList ??= new DocumentFormat.OpenXml.Presentation.SlideIdList();
 
-        var blankLayout = presentation.SlideMasters[0].LayoutSlide.First(l => l.Name == "Blank");
+        var blankLayout = presentation.MasterSlide[0].LayoutSlide.First(l => l.Name == "Blank");
         presentation.Slides.Add(blankLayout.Number);
 
         // Target the newly added slide

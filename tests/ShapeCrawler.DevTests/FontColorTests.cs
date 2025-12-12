@@ -47,7 +47,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_SlideMaster_Non_Placeholder()
     {
         // Arrange
-        IShape nonPlaceholder = (IShape)new Presentation(TestAsset("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+        IShape nonPlaceholder = (IShape)new Presentation(TestAsset("001.pptx")).MasterSlide[0].Shapes.First(sp => sp.Id == 8);
         IFontColor colorFormat = nonPlaceholder.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -58,7 +58,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_Title_SlideMaster_Placeholder()
     {
         // Arrange
-        IShape titlePlaceholder = (IShape)new Presentation(TestAsset("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+        IShape titlePlaceholder = (IShape)new Presentation(TestAsset("001.pptx")).MasterSlide[0].Shapes.First(sp => sp.Id == 2);
         IFontColor colorFormat = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -136,7 +136,7 @@ public class FontColorTests : SCTest
         // Arrange
         var stream = new MemoryStream();
         var pres = new Presentation(TestAsset("061_font-color.pptx"));
-        var fontColor = pres.SlideMasters[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
+        var fontColor = pres.MasterSlide[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         
         // Act
         fontColor.Set("#007F00");
@@ -145,7 +145,7 @@ public class FontColorTests : SCTest
         pres.Save(stream);
         pres = new Presentation(stream);
         ValidatePresentation(pres);
-        fontColor = pres.SlideMasters[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
+        fontColor = pres.MasterSlide[0].Shapes.Shape("TextBox 1").TextBox.Paragraphs[0].Portions[0].Font!.Color;
         fontColor.Hex.Should().Be("007F00");
     }
     

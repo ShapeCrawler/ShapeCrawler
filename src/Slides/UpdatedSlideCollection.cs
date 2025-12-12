@@ -25,7 +25,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
     {
         var rId = new SCOpenXmlPart(presPart).NextRelationshipId();
         var newSlidePart = presPart.AddNewPart<SlidePart>(rId);
-        var layout = new SlideMasterCollection(presPart.SlideMasterParts).SlideMaster(1)
+        var layout = new MasterSlideCollection(presPart.SlideMasterParts).SlideMaster(1)
             .InternalSlideLayout(layoutNumber);
         newSlidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
@@ -105,7 +105,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
                     new P.GroupShapeProperties(new A.TransformGroup()))),
             new P.ColorMapOverride(new A.MasterColorMapping()));
 
-        var layout = new SlideMasterCollection(presPart.SlideMasterParts)
+        var layout = new MasterSlideCollection(presPart.SlideMasterParts)
             .SlideMaster(1)
             .InternalSlideLayout(layoutNumber);
         slidePart.AddPart(layout.SlideLayoutPart, "rId1");
