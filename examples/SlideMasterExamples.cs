@@ -7,7 +7,7 @@ public class SlideMasterExamples
     {
         using var pres = new Presentation("pres.pptx");
         
-        var slideMastersCount = pres.SlideMasters.Count();
+        var slideMastersCount = pres.MasterSlides.Count();
         
         var slideMaster = pres.SlideMaster(1);
         

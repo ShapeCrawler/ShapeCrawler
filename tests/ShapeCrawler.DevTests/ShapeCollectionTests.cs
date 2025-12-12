@@ -595,7 +595,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var layout = pres.MasterSlide[0].LayoutSlide[0];
+        var layout = pres.MasterSlides[0].LayoutSlides[0];
         var slides = pres.Slides;
 
         // Act
@@ -612,7 +612,7 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(p => p.Slide());
-        var layout = pres.MasterSlide[0].LayoutSlide.First(l => l.Name == "Blank");
+        var layout = pres.MasterSlides[0].LayoutSlides.First(l => l.Name == "Blank");
         var slides = pres.Slides;
 
         // Act

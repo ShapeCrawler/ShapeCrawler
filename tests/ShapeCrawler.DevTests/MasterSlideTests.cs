@@ -12,7 +12,7 @@ public class MasterSlideTests : SCTest
     public void SlideNumber_Font_Color_Setter(IPresentation pres)
     {
         // Arrange
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
         var green = new Color("00FF00");
 
         // Act
@@ -27,7 +27,7 @@ public class MasterSlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         pres.Footer.AddSlideNumber();
@@ -36,7 +36,7 @@ public class MasterSlideTests : SCTest
         // Assert
         pres.Save();
         pres = SaveAndOpenPresentation(pres);
-        slideMaster = pres.MasterSlide[0];
+        slideMaster = pres.MasterSlides[0];
         slideMaster.SlideNumber!.Font.Size.Should().Be(30);
     }
 
@@ -45,7 +45,7 @@ public class MasterSlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
         var shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
         // Act & Assert
@@ -58,7 +58,7 @@ public class MasterSlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
         var shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
         // Act & Assert
@@ -72,10 +72,10 @@ public class MasterSlideTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-case011_save-as-png.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
-        var layoutName = slideMaster.LayoutSlide[0].Name;
+        var layoutName = slideMaster.LayoutSlides[0].Name;
 
         // Assert
         layoutName.Should().Be("Title Slide");
@@ -86,7 +86,7 @@ public class MasterSlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
         var masterautoshapecase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         var masterautoshapecase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
         var masterautoshapecase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
@@ -106,7 +106,7 @@ public class MasterSlideTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        IMasterSlide masterSlide = pres.MasterSlide[0];
+        IMasterSlide masterSlide = pres.MasterSlides[0];
         IShape shapeCase1 = masterSlide.Shapes.First(sp => sp.Id == 2);
         IShape shapeCase2 = masterSlide.Shapes.First(sp => sp.Id == 8);
 
@@ -123,7 +123,7 @@ public class MasterSlideTests : SCTest
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        IMasterSlide masterSlide = new Presentation(TestAsset("001.pptx")).MasterSlide[0];
+        IMasterSlide masterSlide = new Presentation(TestAsset("001.pptx")).MasterSlides[0];
         IShape autoShape = (IShape)masterSlide.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert

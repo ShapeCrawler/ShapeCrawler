@@ -27,7 +27,7 @@ public interface IMasterSlide
     /// <summary>
     ///     Gets slide layout collection.
     /// </summary>
-    ILayoutSlideCollection LayoutSlide { get; }
+    ILayoutSlideCollection LayoutSlides { get; }
 
     /// <summary>
     ///     Gets the collection of master shapes.
@@ -78,7 +78,7 @@ internal sealed class MasterSlide : IMasterSlide
 
     public IImage? Background => null;
 
-    public ILayoutSlideCollection LayoutSlide => this.layouts;
+    public ILayoutSlideCollection LayoutSlides => this.layouts;
 
     public IShapeCollection Shapes { get; }
 

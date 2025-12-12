@@ -54,7 +54,7 @@ public sealed class DraftPresentation
             // If no slides yet, create the initial slide first to ensure consistent numbering
             if (p.Slides.Count == 0)
             {
-                var blank = p.SlideMaster(1).LayoutSlide.First(l => l.Name == "Blank");
+                var blank = p.SlideMaster(1).LayoutSlides.First(l => l.Name == "Blank");
                 p.Slides.Add(blank.Number);
             }
 

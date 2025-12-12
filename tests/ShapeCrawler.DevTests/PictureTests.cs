@@ -67,7 +67,7 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
-        var slideMaster = presentation.MasterSlide[0];
+        var slideMaster = presentation.MasterSlides[0];
         var picture = slideMaster.Shapes.Shape("Picture 9").Picture;
 
         // Act

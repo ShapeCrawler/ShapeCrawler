@@ -12,7 +12,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         var headingFontName = slideMaster.Theme.FontScheme.HeadLatinFont;
@@ -27,7 +27,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         var fontName = slideMaster.Theme.FontScheme.HeadEastAsianFont;
@@ -42,7 +42,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         slideMaster.Theme.FontScheme.HeadLatinFont = "Times New Roman";
@@ -57,7 +57,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         slideMaster.Theme.FontScheme.HeadEastAsianFont = "MingLiU-ExtB";
@@ -73,7 +73,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         var bodyFontName = slideMaster.Theme.FontScheme.BodyLatinFont;
@@ -88,7 +88,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         var bodyFontName = slideMaster.Theme.FontScheme.BodyEastAsianFont;
@@ -103,7 +103,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         slideMaster.Theme.FontScheme.BodyLatinFont = "Arial";
@@ -118,7 +118,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         slideMaster.Theme.FontScheme.BodyEastAsianFont = "SimSun";
@@ -133,7 +133,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         var dark1 = slideMaster.Theme.ColorScheme.Dark1;
@@ -170,7 +170,7 @@ public class ThemeTests : SCTest
         // Arrange
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
-        var slideMaster = pres.MasterSlide[0];
+        var slideMaster = pres.MasterSlides[0];
 
         // Act
         slideMaster.Theme.ColorScheme.Dark1 = "FFC0CB";

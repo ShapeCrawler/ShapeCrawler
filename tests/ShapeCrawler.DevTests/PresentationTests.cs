@@ -144,7 +144,7 @@ public class PresentationTests : SCTest
         destPres.Save(savedPre);
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
-        destPres.Slides[1].LayoutSlide.MasterSlide.LayoutSlide.Count().Should().Be(1);
+        destPres.Slides[1].LayoutSlide.MasterSlide.LayoutSlides.Count().Should().Be(1);
         ValidatePresentation(destPres);
     }
 
@@ -169,7 +169,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMaster(1).LayoutSlide.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).LayoutSlides.First(l => l.Name == "Blank");
 
         // Act
         pres.Slides.Add(layout.Number);
@@ -233,8 +233,8 @@ public class PresentationTests : SCTest
         var pres2 = new Presentation(TestAsset("002.pptx"));
 
         // Act
-        var slideMastersCountCase1 = pres1.MasterSlide.Count();
-        var slideMastersCountCase2 = pres2.MasterSlide.Count();
+        var slideMastersCountCase1 = pres1.MasterSlides.Count();
+        var slideMastersCountCase2 = pres2.MasterSlides.Count();
 
         // Assert
         slideMastersCountCase1.Should().Be(1);
@@ -249,7 +249,7 @@ public class PresentationTests : SCTest
         var pres = new Presentation(pptx);
 
         // Act
-        var masterShapesCount = pres.MasterSlide[0].Shapes.Count;
+        var masterShapesCount = pres.MasterSlides[0].Shapes.Count;
 
         // Assert
         masterShapesCount.Should().Be(7);
@@ -634,7 +634,7 @@ public class PresentationTests : SCTest
                     Fixtures.String());
             });
         });
-        var layoutNumber = pres.MasterSlide.Select(sm => sm.SlideLayout("Blank")).First().Number;
+        var layoutNumber = pres.MasterSlides.Select(sm => sm.SlideLayout("Blank")).First().Number;
 
         // Act
         pres.Slides.Add(layoutNumber, 1);

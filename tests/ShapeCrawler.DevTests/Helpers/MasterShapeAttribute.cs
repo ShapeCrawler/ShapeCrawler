@@ -15,11 +15,11 @@ public class MasterShapeAttribute(string pptxName, string shapeName, object expe
     {
         var pptxStream = SCTest.TestAsset(pptxName);
         var pres = new Presentation(pptxStream);
-        var shape = pres.MasterSlide[0].Shapes.Shape(shapeName);
+        var shape = pres.MasterSlides[0].Shapes.Shape(shapeName);
 
         var parameters = expectedResult != null
-            ? new TestCaseParameters(new[] { shape, expectedResult })
-            : new TestCaseParameters(new[] { shape });
+            ? new TestCaseParameters([shape, expectedResult])
+            : new TestCaseParameters([shape]);
         
         yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);
     }

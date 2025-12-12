@@ -138,7 +138,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("010.pptx"));
-        var shape = pres.MasterSlide[0].Shapes.Shape<IShape>("Date Placeholder 3");
+        var shape = pres.MasterSlides[0].Shapes.Shape<IShape>("Date Placeholder 3");
 
         // Act
         var id = shape.Id;

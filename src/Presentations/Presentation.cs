@@ -36,7 +36,7 @@ public sealed class Presentation : IPresentation
         
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
-        this.MasterSlide = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
             new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
@@ -60,7 +60,7 @@ public sealed class Presentation : IPresentation
         
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
-        this.MasterSlide = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
             new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
@@ -82,7 +82,7 @@ public sealed class Presentation : IPresentation
         
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
-        this.MasterSlide = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
+        this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
             new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
@@ -125,7 +125,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public IMasterSlideCollection MasterSlide { get; }
+    public IMasterSlideCollection MasterSlides { get; }
 
     /// <inheritdoc />
     public ISectionCollection Sections { get; }
@@ -160,7 +160,7 @@ public sealed class Presentation : IPresentation
     /// <summary>
     ///     Gets Slide Master by number.
     /// </summary>
-    public IMasterSlide SlideMaster(int number) => this.MasterSlide[number - 1];
+    public IMasterSlide SlideMaster(int number) => this.MasterSlides[number - 1];
 
     /// <inheritdoc />
     public void Save()

@@ -114,7 +114,7 @@ public class TextExamples
         textPortion.TextHighlightColor = Color.Black;
 
         // Set color by its hexadecimal code
-        var greenColor = Color.FromHex("00ff00");
+        var greenColor = new Color("00ff00");
         textPortion.TextHighlightColor = greenColor;
     }
 }
