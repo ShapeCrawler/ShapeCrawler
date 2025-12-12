@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
@@ -11,14 +9,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePart slidePart)
-    : IUserSlideShapeCollection
+internal sealed class ChartCollection(SlidePart slidePart)
 {
-    public int Count => shapes.Count;
-
-    public IShape this[int index] => shapes[index];
-    
-    public void AddPieChart(
+    internal void AddPieChart(
         int x,
         int y,
         int width,
@@ -29,7 +22,7 @@ internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePar
         this.AddPieChart(x, y, width, height, categoryValues, seriesName, "Pie Chart");
     }
 
-    public void AddPieChart(
+    internal void AddPieChart(
         int x,
         int y,
         int width,
@@ -44,7 +37,7 @@ internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePar
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
 
-    public void AddBarChart(
+    internal void AddBarChart(
         int x,
         int y,
         int width,
@@ -58,7 +51,7 @@ internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePar
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Bar Chart");
     }
 
-    public void AddScatterChart(
+    internal void AddScatterChart(
         int x,
         int y,
         int width,
@@ -72,7 +65,7 @@ internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePar
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Scatter Chart");
     }
 
-    public void AddStackedColumnChart(
+    internal void AddStackedColumnChart(
         int x,
         int y,
         int width,
@@ -86,7 +79,7 @@ internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePar
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Stacked Column Chart");
     }
 
-    public void AddClusteredBarChart(
+    internal void AddClusteredBarChart(
         int x,
         int y,
         int width,
@@ -101,97 +94,6 @@ internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePar
         new ClusteredBarChart(chartPart, categories, seriesTuples).Generate();
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
-
-    #region Shapes
-
-    public void Add(IShape addingShape) => shapes.Add(addingShape);
-
-    public void AddAudio(int x, int y, Stream audio) => shapes.AddAudio(x, y, audio);
-
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => shapes.AddAudio(x, y, audio, type);
-
-    public void AddVideo(int x, int y, Stream stream) => shapes.AddVideo(x, y, stream);
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry = Geometry.Rectangle
-    ) => shapes.AddShape(x, y, width, height, geometry);
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry,
-        string text
-    ) => shapes.AddShape(x, y, width, height, geometry, text);
-
-    public void AddLine(string xml) => shapes.AddLine(xml);
-
-    public void AddLine(
-        int startPointX,
-        int startPointY,
-        int endPointX,
-        int endPointY
-    ) => shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount
-    ) => shapes.AddTable(x, y, columnsCount, rowsCount);
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount,
-        ITableStyle style
-    ) => shapes.AddTable(x, y, columnsCount, rowsCount, style);
-
-    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
-
-    public IShape AddSmartArt(
-        int x,
-        int y,
-        int width,
-        int height,
-        SmartArtType smartArtType
-    ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
-
-    public IShape Group(IShape[] groupingShapes)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public IShape AddDateAndTime() => shapes.AddDateAndTime();
-
-    public IShape AddFooter() => shapes.AddFooter();
-
-    public IShape AddSlideNumber() => shapes.AddSlideNumber();
-
-    public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
-
-    public IShape GetById(int id) => shapes.GetById(id);
-
-    public T GetById<T>(int id)
-        where T : IShape => shapes.GetById<T>(id);
-
-    public IShape Shape(string name) => shapes.Shape(name);
-
-    public T Shape<T>(string name)
-        where T : IShape => shapes.Shape<T>(name);
-
-    public T Last<T>()
-        where T : IShape => shapes.Last<T>();
-
-    #endregion Shapes
 
     private void InsertChartGraphicFrame(ChartPart chartPart, int x, int y, int width, int height, string chartName)
     {

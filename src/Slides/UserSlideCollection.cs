@@ -37,10 +37,11 @@ internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : I
                 new LayoutSlide(slidePart.SlideLayoutPart!),
                 new UserSlideShapeCollection(
                     new ShapeCollection(slidePart),
-                    new PictureCollection(presImageFiles, slidePart),
-                    new AudioVideoShapeCollection(slidePart, presImageFiles),
+                    new PictureCollection(slidePart, presImageFiles),
+                    new AudioVideoCollection(slidePart, presImageFiles),
                     new ChartCollection(slidePart),
-                    slidePart)
+                    slidePart),
+                slidePart
             );
         }
     }
