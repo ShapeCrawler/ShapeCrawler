@@ -36,17 +36,11 @@ internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : I
             yield return new UserSlide(
                 new LayoutSlide(slidePart.SlideLayoutPart!),
                 new UserSlideShapeCollection(
-                    new ChartCollection(
-                        new AudioVideoShapeCollection(
-                            new PictureCollection(new ShapeCollection(slidePart), presImageFiles, slidePart),
-                            presImageFiles, 
-                            slidePart
-                        ),
-                        slidePart
-                    ),
-                    slidePart
-                ),
-                slidePart
+                    new ShapeCollection(slidePart),
+                    new PictureCollection(presImageFiles, slidePart),
+                    new AudioVideoShapeCollection(slidePart, presImageFiles),
+                    new ChartCollection(slidePart),
+                    slidePart)
             );
         }
     }
