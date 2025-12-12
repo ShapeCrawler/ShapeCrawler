@@ -73,7 +73,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             throw new SCException(nameof(slideNumber));
         }
 
-        var sourceSlidePresPart = userSlide.GetSDKPresentationPart();
+        var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
@@ -156,7 +156,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
     public void Add(IUserSlide userSlide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var sourceSlidePresPart = userSlide.GetSDKPresentationPart();
+        var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[userSlide.Number - 1];

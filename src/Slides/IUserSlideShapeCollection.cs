@@ -40,7 +40,12 @@ public interface IUserSlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds a new shape.
     /// </summary>
-    void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle);
+    void AddShape(int x, int y, int width, int height);
+    
+    /// <summary>
+    ///     Adds a new shape.
+    /// </summary>
+    void AddShape(int x, int y, int width, int height, Geometry geometry);
     
     /// <summary>
     ///     Adds a new shape.

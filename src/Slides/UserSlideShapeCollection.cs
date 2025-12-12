@@ -23,6 +23,7 @@ namespace ShapeCrawler.Slides;
 internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 {
     private const double Epsilon = 1e-6;
+
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
         new(StringComparer.Ordinal)
         {
@@ -167,7 +168,9 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     public IShape Group(IShape[] groupingShapes) =>
         new GroupShape(new P.GroupShape(), groupingShapes, this.newShapeProperties, this.slidePart);
 
-    public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
+    public void AddShape(int x, int y, int width, int height) => AddShape(x, y, width, height, Geometry.Rectangle);
+
+    public void AddShape(int x, int y, int width, int height, Geometry geometry)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
@@ -236,7 +239,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
         nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
 
-        const long DefaultTableWidthEMUs = 8128000L;
+        const long DefaultTableWidthEMUs = 8_128_000L;
         var offset = new A.Offset { X = xEmu, Y = yEmu };
         var extents = new A.Extents { Cx = DefaultTableWidthEMUs, Cy = tableHeightEmu };
         var pTransform = new P.Transform(offset, extents);
@@ -317,7 +320,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
             this.RenderShape(canvas, shape);
         }
     }
-    
+
     private static decimal GetShapeOutlineWidth(IShape shape)
     {
         var shapeOutline = shape.Outline;
@@ -384,7 +387,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
             );
         }
     }
-    
+
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
     {
         var rgbColor = colorElement.RgbColorModelHex;
@@ -445,7 +448,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
         canvas.Restore();
     }
-    
+
     private void RenderShape(SKCanvas canvas, IShape shape)
     {
         // Check for picture first, as pictures have their own rendering logic
@@ -486,7 +489,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         this.textDrawing.Render(canvas, shape);
         canvas.Restore();
     }
-    
+
     private void RenderRectangle(SKCanvas canvas, IShape shape)
     {
         var x = new Points(shape.X).AsPixels();
@@ -738,7 +741,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
         return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
-    
+
     private A.ColorScheme? GetColorScheme() =>
         this.slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
 }

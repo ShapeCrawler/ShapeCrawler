@@ -71,6 +71,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IUserSlideShape
         int height,
         Geometry geometry = Geometry.Rectangle
     ) => throw new NotImplementedException();
+    
+    public void AddShape(int x, int y, int width, int height)
+    {
+        throw new NotImplementedException();
+    }
 
     public void AddShape(
         int x,

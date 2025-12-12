@@ -67,8 +67,8 @@ internal sealed class AudioVideoCollection(SlidePart slidePart, PresentationImag
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = xEmu;
         transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = 609600L;
-        transform2D.Extents!.Cy = 609600L;
+        transform2D.Extents!.Cx = 609_600L;
+        transform2D.Extents!.Cy = 609_600L;
 
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
         var nonVisualDrawingProps = GetPNonVisualDrawingProperties(pPicture);
@@ -140,7 +140,7 @@ internal sealed class AudioVideoCollection(SlidePart slidePart, PresentationImag
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
         A.Offset offset = new() { X = xEmu, Y = yEmu };
-        A.Extents extents = new() { Cx = 609600L, Cy = 609600L };
+        A.Extents extents = new() { Cx = 609_600L, Cy = 609_600L };
 
         var transform2D = new A.Transform2D(offset, extents);
         A.PresetGeometry presetGeometry = new(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle };

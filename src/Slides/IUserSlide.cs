@@ -116,7 +116,7 @@ public interface IUserSlide
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    PresentationPart GetSDKPresentationPart();
+    PresentationPart GetSdkPresentationPart();
 
     /// <summary>
     ///     Gets the first shape in the slide.
@@ -260,7 +260,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         this.SaveImageTo(fileStream);
     }
 
-    public PresentationPart GetSDKPresentationPart()
+    public PresentationPart GetSdkPresentationPart()
     {
         var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
 
@@ -332,7 +332,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
 
     public void SaveImageTo(Stream stream)
     {
-        var presPart = this.GetSDKPresentationPart();
+        var presPart = this.GetSdkPresentationPart();
         var pSlideSize = presPart.Presentation.SlideSize!;
         var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
         var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
@@ -396,7 +396,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
     private void AddNotesSlide(IEnumerable<string> lines)
     {
         // Build up the children of the text body element
-        var textBodyChildren = new List<OpenXmlElement>() { new BodyProperties(), new ListStyle() };
+        var textBodyChildren = new List<OpenXmlElement> { new BodyProperties(), new ListStyle() };
 
         // Add in the text lines
         textBodyChildren.AddRange(
@@ -423,7 +423,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
             new CommonSlideData(
                 new ShapeTree(
                     new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeProperties(
-                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties()
+                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
                         {
                             Id = (UInt32Value)1U, Name = string.Empty
                         },
@@ -432,14 +432,14 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                     new GroupShapeProperties(new TransformGroup()),
                     new DocumentFormat.OpenXml.Presentation.Shape(
                         new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties(
-                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties()
+                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
                             {
                                 Id = (UInt32Value)2U, Name = "Notes Placeholder 2"
                             },
                             new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(
-                                new ShapeLocks() { NoGrouping = true }),
+                                new ShapeLocks { NoGrouping = true }),
                             new ApplicationNonVisualDrawingProperties(
-                                new PlaceholderShape() { Type = PlaceholderValues.Body })),
+                                new PlaceholderShape { Type = PlaceholderValues.Body })),
                         new DocumentFormat.OpenXml.Presentation.ShapeProperties(),
                         new DocumentFormat.OpenXml.Presentation.TextBody(
                             textBodyChildren)))),
