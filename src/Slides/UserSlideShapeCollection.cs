@@ -19,7 +19,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
+internal sealed class UserSlideShapeCollection(IUserSlideShapeCollection shapes, SlidePart slidePart) : IUserSlideShapeCollection
 {
     private const double Epsilon = 1e-6;
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =

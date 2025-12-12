@@ -18,10 +18,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Slides;
 
 internal sealed class AudioVideoShapeCollection(
-    ISlideShapeCollection shapes,
+    IUserSlideShapeCollection shapes,
     PresentationImageFiles presentationImageFiles,
     SlidePart slidePart
-) : ISlideShapeCollection
+) : IUserSlideShapeCollection
 {
     #region Shapes Properties
 

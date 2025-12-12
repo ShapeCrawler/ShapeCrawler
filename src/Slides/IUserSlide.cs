@@ -45,7 +45,7 @@ public interface IUserSlide
     /// <summary>
     ///     Gets the shape collection.
     /// </summary>
-    ISlideShapeCollection Shapes { get; }
+    IUserSlideShapeCollection Shapes { get; }
 
     /// <summary>
     ///     Gets the slide notes.
@@ -125,13 +125,13 @@ public interface IUserSlide
     T First<T>();
 }
 
-internal class UserSlide(ILayoutSlide layoutSlide, SlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
+internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
 {
     private IShapeFill? fill;
 
     public ILayoutSlide LayoutSlide => layoutSlide;
 
-    public ISlideShapeCollection Shapes => shapes;
+    public IUserSlideShapeCollection Shapes => shapes;
 
     public int Number
     {

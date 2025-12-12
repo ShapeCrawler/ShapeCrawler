@@ -7,7 +7,7 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Represents properties for the new shapes.
 /// </summary>
-internal sealed class NewShapeProperties(ISlideShapeCollection shapes)
+internal sealed class NewShapeProperties(IUserSlideShapeCollection shapes)
 {
     /// <summary>
     ///     Generates ID for the next new shape.

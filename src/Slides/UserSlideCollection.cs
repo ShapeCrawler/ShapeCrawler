@@ -35,7 +35,7 @@ internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : I
             var presImageFiles = new PresentationImageFiles(slideParts);
             yield return new UserSlide(
                 new LayoutSlide(slidePart.SlideLayoutPart!),
-                new SlideShapeCollection(
+                new UserSlideShapeCollection(
                     new ChartCollection(
                         new AudioVideoShapeCollection(
                             new PictureCollection(new ShapeCollection(slidePart), presImageFiles, slidePart),

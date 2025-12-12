@@ -13,10 +13,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Slides;
 
 internal sealed class PictureCollection(
-    ISlideShapeCollection shapes,
+    IUserSlideShapeCollection shapes,
     PresentationImageFiles imageFiles,
     SlidePart slidePart
-) : ISlideShapeCollection
+) : IUserSlideShapeCollection
 {
     public int Count => shapes.Count;
 

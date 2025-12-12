@@ -20,7 +20,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IUserSlideShapeCollection
 {
     public int Count => this.GetShapes().Count();
 

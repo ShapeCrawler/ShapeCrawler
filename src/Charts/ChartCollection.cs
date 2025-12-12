@@ -11,8 +11,8 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartCollection(ISlideShapeCollection shapes, SlidePart slidePart)
-    : ISlideShapeCollection
+internal sealed class ChartCollection(IUserSlideShapeCollection shapes, SlidePart slidePart)
+    : IUserSlideShapeCollection
 {
     public int Count => shapes.Count;
 

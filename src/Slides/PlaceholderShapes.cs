@@ -10,7 +10,7 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Represents placeholder shapes collection.
 /// </summary>
-internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart slidePart)
+internal sealed class PlaceholderShapes(IUserSlideShapeCollection shapes, SlidePart slidePart)
 {
     /// <summary>
     ///     Adds a date and time placeholder.
