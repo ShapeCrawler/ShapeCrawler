@@ -10,16 +10,16 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, PresentationPart presPart)
+internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollection, PresentationPart presPart)
     : ISlideCollection
 {
-    public int Count => slideCollection.Count;
+    public int Count => userSlideCollection.Count;
 
-    public ISlide this[int index] => slideCollection[index];
+    public IUserSlide this[int index] => userSlideCollection[index];
 
-    public IEnumerator<ISlide> GetEnumerator() => slideCollection.GetEnumerator();
+    public IEnumerator<IUserSlide> GetEnumerator() => userSlideCollection.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => slideCollection.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => userSlideCollection.GetEnumerator();
 
     public void Add(int layoutNumber)
     {
@@ -66,15 +66,15 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         pSlideIdList.Append(pSlideId);
     }
 
-    public void Add(ISlide slide, int slideNumber)
+    public void Add(IUserSlide userSlide, int slideNumber)
     {
         if (slideNumber < 1 || slideNumber > this.Count + 1)
         {
             throw new SCException(nameof(slideNumber));
         }
 
-        var sourceSlidePresPart = slide.GetSDKPresentationPart();
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlidePresPart = userSlide.GetSDKPresentationPart();
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
@@ -153,13 +153,13 @@ internal sealed class UpdatedSlideCollection(SlideCollection slideCollection, Pr
         presPart.Presentation.Save();
     }
 
-    public void Add(ISlide slide)
+    public void Add(IUserSlide userSlide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var sourceSlidePresPart = slide.GetSDKPresentationPart();
+        var sourceSlidePresPart = userSlide.GetSDKPresentationPart();
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[slide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
         new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart

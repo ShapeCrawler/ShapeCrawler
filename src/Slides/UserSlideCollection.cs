@@ -9,17 +9,17 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IReadOnlyList<ISlide>
+internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : IReadOnlyList<IUserSlide>
 {
     public int Count => this.GetSlides().Count();
 
-    public ISlide this[int index] => this.GetSlides().ElementAt(index);
+    public IUserSlide this[int index] => this.GetSlides().ElementAt(index);
 
-    public IEnumerator<ISlide> GetEnumerator() => this.GetSlides().GetEnumerator();
+    public IEnumerator<IUserSlide> GetEnumerator() => this.GetSlides().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private IEnumerable<Slide> GetSlides()
+    private IEnumerable<UserSlide> GetSlides()
     {
         if (!slideParts.Any())
         {
@@ -33,8 +33,8 @@ internal sealed class SlideCollection(IEnumerable<SlidePart> slideParts) : IRead
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
             var presImageFiles = new PresentationImageFiles(slideParts);
-            yield return new Slide(
-                new SlideLayout(slidePart.SlideLayoutPart!),
+            yield return new UserSlide(
+                new LayoutSlide(slidePart.SlideLayoutPart!),
                 new SlideShapeCollection(
                     new ChartCollection(
                         new AudioVideoShapeCollection(

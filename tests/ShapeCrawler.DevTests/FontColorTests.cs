@@ -36,7 +36,7 @@ public class FontColorTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
-        var titlePlaceholder = pres.Slides[0].SlideLayout.Shapes.GetById<IShape>(2);
+        var titlePlaceholder = pres.Slides[0].LayoutSlide.Shapes.GetById<IShape>(2);
         var fontColor = titlePlaceholder.TextBox!.Paragraphs[0].Portions[0].Font!.Color;
 
         // Act & Assert

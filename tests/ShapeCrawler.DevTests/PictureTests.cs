@@ -37,7 +37,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("pictures-case001.pptx"));
-        var picture = pres.Slides[0].SlideLayout.Shapes.Shape("Picture 7").Picture;
+        var picture = pres.Slides[0].LayoutSlide.Shapes.Shape("Picture 7").Picture;
 
         // Act
         var picByteArray = picture.Image.AsByteArray();
@@ -52,7 +52,7 @@ public class PictureTests : SCTest
         // Arrange
         var pptxStream = TestAsset("pictures-case001.pptx");
         var presentation = new Presentation(pptxStream);
-        var image = presentation.Slides[0].SlideLayout.Shapes.Shape("Picture 7").Picture.Image;
+        var image = presentation.Slides[0].LayoutSlide.Shapes.Shape("Picture 7").Picture.Image;
 
         // Act
         var mimeType = image.Mime;

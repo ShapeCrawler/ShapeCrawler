@@ -15,7 +15,7 @@ public interface ISection
     /// <summary>
     ///     Gets section slides.
     /// </summary>
-    IReadOnlyList<ISlide> Slides { get; }
+    IReadOnlyList<IUserSlide> Slides { get; }
 
     /// <summary>
     ///     Gets section name.
@@ -30,7 +30,7 @@ internal sealed class Section : ISection, IRemovable
     {
     }
 
-    private Section(P14.Section p14Section, IReadOnlyList<ISlide> slides)
+    private Section(P14.Section p14Section, IReadOnlyList<IUserSlide> slides)
     {
         this.P14Section = p14Section;
         this.Slides = slides;
@@ -38,7 +38,7 @@ internal sealed class Section : ISection, IRemovable
 
     public string Name => this.GetName();
     
-    public IReadOnlyList<ISlide> Slides { get; }
+    public IReadOnlyList<IUserSlide> Slides { get; }
     
     private P14.Section P14Section { get; }
     

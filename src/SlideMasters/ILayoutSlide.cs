@@ -10,7 +10,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a Slide Layout.
 /// </summary>
-public interface ISlideLayout
+public interface ILayoutSlide
 {
     /// <summary>
     ///     Gets layout name.
@@ -25,7 +25,7 @@ public interface ISlideLayout
     /// <summary>
     ///     Gets slide master.
     /// </summary>
-    ISlideMaster SlideMaster { get; }
+    IMasterSlide MasterSlide { get; }
 
     /// <summary>
     ///     Gets layout number.
@@ -35,25 +35,25 @@ public interface ISlideLayout
     /// <summary>
     ///     Gets layout background.
     /// </summary>
-    ISlideLayoutBackground Background { get; }
+    ILayoutSlideBackground Background { get; }
 }
 
-internal sealed class SlideLayout : ISlideLayout
+internal sealed class LayoutSlide : ILayoutSlide
 {
-    private readonly SlideLayoutBackground background;
+    private readonly LayoutSlideBackground background;
 
-    internal SlideLayout(SlideLayoutPart slideLayoutPart)
+    internal LayoutSlide(SlideLayoutPart slideLayoutPart)
     {
         this.SlideLayoutPart = slideLayoutPart;
         this.Shapes = new ShapeCollection(slideLayoutPart);
-        this.background = new SlideLayoutBackground(slideLayoutPart);
+        this.background = new LayoutSlideBackground(slideLayoutPart);
     }
     
     public string Name => this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
 
     public IShapeCollection Shapes { get; }
 
-    public ISlideMaster SlideMaster => new SlideMaster(this.SlideLayoutPart.SlideMasterPart!);
+    public IMasterSlide MasterSlide => new MasterSlide(this.SlideLayoutPart.SlideMasterPart!);
 
     public int Number
     {
@@ -64,7 +64,7 @@ internal sealed class SlideLayout : ISlideLayout
         }
     }
 
-    public ISlideLayoutBackground Background => this.background;
+    public ILayoutSlideBackground Background => this.background;
     
     internal SlideLayoutPart SlideLayoutPart { get; }
 }

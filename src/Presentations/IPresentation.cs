@@ -49,7 +49,7 @@ public interface IPresentation : IDisposable
     /// <summary>
     ///     Gets slide by number.
     /// </summary>
-    ISlide Slide(int number);
+    IUserSlide Slide(int number);
 
     /// <summary>
     ///     Saves presentation.

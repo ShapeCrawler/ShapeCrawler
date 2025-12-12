@@ -39,10 +39,10 @@ public sealed class Presentation : IPresentation
         this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
             this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -63,10 +63,10 @@ public sealed class Presentation : IPresentation
         this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
             this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -85,10 +85,10 @@ public sealed class Presentation : IPresentation
         this.SlideMasters = new SlideMasterCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
-            new SlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
             this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new SlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -147,7 +147,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public ISlide Slide(int number)
+    public IUserSlide Slide(int number)
     {
         if (number < 0)
         {
@@ -160,7 +160,7 @@ public sealed class Presentation : IPresentation
     /// <summary>
     ///     Gets Slide Master by number.
     /// </summary>
-    public ISlideMaster SlideMaster(int number) => this.SlideMasters[number - 1];
+    public IMasterSlide SlideMaster(int number) => this.SlideMasters[number - 1];
 
     /// <inheritdoc />
     public void Save()

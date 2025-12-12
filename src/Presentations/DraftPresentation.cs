@@ -47,14 +47,14 @@ public sealed class DraftPresentation
     /// <summary>
     ///     Adds a new slide using the specified layout.
     /// </summary>
-    public DraftPresentation Slide(ISlideLayout layout)
+    public DraftPresentation Slide(ILayoutSlide layout)
     {
         this.actions.Add(p =>
         {
             // If no slides yet, create the initial slide first to ensure consistent numbering
             if (p.Slides.Count == 0)
             {
-                var blank = p.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+                var blank = p.SlideMaster(1).LayoutSlide.First(l => l.Name == "Blank");
                 p.Slides.Add(blank.Number);
             }
 
@@ -89,7 +89,7 @@ public sealed class DraftPresentation
     /// <summary>
     ///     Gets slide master by number.
     /// </summary>
-    public ISlideMaster SlideMaster(int number)
+    public IMasterSlide SlideMaster(int number)
     {
         if (this.presentation == null)
         {

@@ -12,7 +12,7 @@ namespace ShapeCrawler.DevTests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
-public class SlideTests : SCTest
+public class UserSlideTests : SCTest
 {
     [Test]
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
@@ -35,10 +35,10 @@ public class SlideTests : SCTest
         // Arrange
         var pptx = TestAsset("002.pptx");
         var pres = new Presentation(pptx);
-        ISlide slideEx = pres.Slides[2];
+        IUserSlide userSlideEx = pres.Slides[2];
 
         // Act
-        bool hidden = slideEx.Hidden();
+        bool hidden = userSlideEx.Hidden();
 
         // Assert
         hidden.Should().BeTrue();

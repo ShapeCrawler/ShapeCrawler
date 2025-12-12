@@ -4,7 +4,7 @@ using ShapeCrawler.DevTests.Helpers;
 
 namespace ShapeCrawler.DevTests;
 
-public class SlideMasterTests : SCTest
+public class MasterSlideTests : SCTest
 {
     [Test]
     [Presentation("new")]
@@ -75,7 +75,7 @@ public class SlideMasterTests : SCTest
         var slideMaster = pres.SlideMasters[0];
 
         // Act
-        var layoutName = slideMaster.SlideLayouts[0].Name;
+        var layoutName = slideMaster.LayoutSlide[0].Name;
 
         // Assert
         layoutName.Should().Be("Title Slide");
@@ -106,9 +106,9 @@ public class SlideMasterTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pres = new Presentation(pptx);
-        ISlideMaster slideMaster = pres.SlideMasters[0];
-        IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
-        IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+        IMasterSlide masterSlide = pres.SlideMasters[0];
+        IShape shapeCase1 = masterSlide.Shapes.First(sp => sp.Id == 2);
+        IShape shapeCase2 = masterSlide.Shapes.First(sp => sp.Id == 8);
 
         // Act
         Geometry geometryTypeCase1 = shapeCase1.GeometryType;
@@ -123,8 +123,8 @@ public class SlideMasterTests : SCTest
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        ISlideMaster slideMaster = new Presentation(TestAsset("001.pptx")).SlideMasters[0];
-        IShape autoShape = (IShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+        IMasterSlide masterSlide = new Presentation(TestAsset("001.pptx")).SlideMasters[0];
+        IShape autoShape = (IShape)masterSlide.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert
         autoShape.TextBox.Text.Should().BeEquivalentTo("id8");

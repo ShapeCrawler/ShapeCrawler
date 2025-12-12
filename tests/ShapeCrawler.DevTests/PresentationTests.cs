@@ -144,7 +144,7 @@ public class PresentationTests : SCTest
         destPres.Save(savedPre);
         destPres = new Presentation(savedPre);
         destPres.Slides.Count.Should().Be(expectedCount);
-        destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count().Should().Be(1);
+        destPres.Slides[1].LayoutSlide.MasterSlide.LayoutSlide.Count().Should().Be(1);
         ValidatePresentation(destPres);
     }
 
@@ -169,7 +169,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var layout = pres.SlideMaster(1).SlideLayouts.First(l => l.Name == "Blank");
+        var layout = pres.SlideMaster(1).LayoutSlide.First(l => l.Name == "Blank");
 
         // Act
         pres.Slides.Add(layout.Number);

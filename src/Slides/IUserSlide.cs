@@ -25,7 +25,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide.
 /// </summary>
-public interface ISlide
+public interface IUserSlide
 {
     /// <summary>
     ///     Gets or sets custom data. Returns <see langword="null"/> if the custom data is not presented.
@@ -35,7 +35,7 @@ public interface ISlide
     /// <summary>
     ///     Gets slide layout.
     /// </summary>
-    ISlideLayout SlideLayout { get; }
+    ILayoutSlide LayoutSlide { get; }
 
     /// <summary>
     ///     Gets or sets slide number.
@@ -125,11 +125,11 @@ public interface ISlide
     T First<T>();
 }
 
-internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, SlidePart slidePart) : ISlide
+internal class UserSlide(ILayoutSlide layoutSlide, SlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
 {
     private IShapeFill? fill;
 
-    public ISlideLayout SlideLayout => slideLayout;
+    public ILayoutSlide LayoutSlide => layoutSlide;
 
     public ISlideShapeCollection Shapes => shapes;
 

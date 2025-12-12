@@ -361,7 +361,6 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         }
     }
     
-
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
     {
         var rgbColor = colorElement.RgbColorModelHex;
