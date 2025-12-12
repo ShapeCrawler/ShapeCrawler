@@ -125,7 +125,7 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public IMasterSlideCollection MasterSlide { get; }
+    public IMasterSlideCollection MasterSlides { get; }
 
     /// <inheritdoc />
     public ISectionCollection Sections { get; }
