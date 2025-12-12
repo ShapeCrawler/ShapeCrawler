@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -155,9 +153,6 @@ internal sealed class AudioVideoCollection(SlidePart slidePart, PresentationImag
         var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
 
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
-
-        DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId = new() { Val = (UInt32Value)3972997422U };
-        creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
     }
 
     private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
@@ -175,12 +170,12 @@ internal sealed class AudioVideoCollection(SlidePart slidePart, PresentationImag
 
     private int GetNextShapeId()
     {
-        if (shapes.Any())
-        {
-            return shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
-        }
+        var shapeIds = slidePart.Slide
+            .Descendants<P.NonVisualDrawingProperties>()
+            .Select(p => p.Id?.Value ?? 0U)
+            .ToList();
 
-        return 1;
+        return shapeIds.Count > 0 ? (int)shapeIds.Max() + 1 : 1;
     }
 
     private bool TryGetImageRId(string hash, out string imgPartRId)
