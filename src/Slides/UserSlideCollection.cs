@@ -37,9 +37,9 @@ internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : I
                 new LayoutSlide(slidePart.SlideLayoutPart!),
                 new UserSlideShapeCollection(
                     new ShapeCollection(slidePart),
-                    new PictureCollection(slidePart, presImageFiles),
-                    new AudioVideoCollection(slidePart, presImageFiles),
-                    new ChartCollection(slidePart),
+                    new PictureShapeCollection(slidePart, presImageFiles),
+                    new AudioVideoShapeCollection(slidePart, presImageFiles),
+                    new ChartShapeCollection(slidePart),
                     slidePart),
                 slidePart
             );

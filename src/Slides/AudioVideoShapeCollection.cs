@@ -15,7 +15,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class AudioVideoCollection(SlidePart slidePart, PresentationImageFiles presentationImageFiles)
+internal sealed class AudioVideoShapeCollection(SlidePart slidePart, PresentationImageFiles presentationImageFiles)
 {
     public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
 

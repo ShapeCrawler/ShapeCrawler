@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class PictureCollection(SlidePart slidePart, PresentationImageFiles imageFiles) 
+internal sealed class PictureShapeCollection(SlidePart slidePart, PresentationImageFiles imageFiles) 
 {
     internal void AddPicture(Stream imageStream)
     {

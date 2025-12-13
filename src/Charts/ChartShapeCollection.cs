@@ -9,7 +9,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartCollection(SlidePart slidePart)
+internal sealed class ChartShapeCollection(SlidePart slidePart)
 {
     internal void AddPieChart(
         int x,

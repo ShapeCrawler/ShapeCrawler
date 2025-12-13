@@ -41,10 +41,10 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         };
 
     private readonly ShapeCollection shapes;
-    private readonly PictureCollection pictures;
-    private readonly AudioVideoCollection audioVideoCollection;
-    private readonly ChartCollection chartCollection;
-    private readonly PlaceholderShapes placeholderShapes;
+    private readonly PictureShapeCollection pictureShapes;
+    private readonly AudioVideoShapeCollection audioVideoShapes;
+    private readonly ChartShapeCollection chartShapes;
+    private readonly FooterPlaceholderShapeCollection footerPlaceholderShapeCollection;
     
     private readonly NewShapeProperties newShapeProperties;
     private readonly SlidePart slidePart;
@@ -52,18 +52,18 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
     internal UserSlideShapeCollection(
         ShapeCollection shapeCollection,
-        PictureCollection pictureCollection,
-        AudioVideoCollection audioVideoCollection,
-        ChartCollection chartCollection,
+        PictureShapeCollection pictureShapeCollection,
+        AudioVideoShapeCollection audioVideoShapes,
+        ChartShapeCollection chartShapes,
         SlidePart slidePart)
     {
         this.shapes = shapeCollection;
-        this.pictures = pictureCollection;
-        this.audioVideoCollection = audioVideoCollection;
-        this.chartCollection = chartCollection;
+        this.pictureShapes = pictureShapeCollection;
+        this.audioVideoShapes = audioVideoShapes;
+        this.chartShapes = chartShapes;
         this.slidePart = slidePart;
         this.newShapeProperties = new NewShapeProperties(this);
-        this.placeholderShapes = new PlaceholderShapes(this, slidePart);
+        this.footerPlaceholderShapeCollection = new FooterPlaceholderShapeCollection(this, slidePart);
     }
 
     public int Count => this.shapes.Count;
@@ -92,14 +92,14 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio) => this.audioVideoCollection.AddAudio(x, y, audio);
+    public void AddAudio(int x, int y, Stream audio) => this.audioVideoShapes.AddAudio(x, y, audio);
 
     public void AddAudio(int x, int y, Stream audio, AudioType type) =>
-        this.audioVideoCollection.AddAudio(x, y, audio, type);
+        this.audioVideoShapes.AddAudio(x, y, audio, type);
 
-    public void AddVideo(int x, int y, Stream stream) => this.audioVideoCollection.AddVideo(x, y, stream);
+    public void AddVideo(int x, int y, Stream stream) => this.audioVideoShapes.AddVideo(x, y, stream);
 
-    public void AddPicture(Stream imageStream) => this.pictures.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream) => this.pictureShapes.AddPicture(imageStream);
 
     public void AddPieChart(
         int x,
@@ -108,7 +108,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         int height,
         Dictionary<string, double> categoryValues,
         string seriesName
-    ) => this.chartCollection.AddPieChart(x, y, width, height, categoryValues, seriesName);
+    ) => this.chartShapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddPieChart(
         int x,
@@ -118,7 +118,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         Dictionary<string, double> categoryValues,
         string seriesName,
         string chartName
-    ) => this.chartCollection.AddPieChart(x, y, width, height, categoryValues, seriesName, chartName);
+    ) => this.chartShapes.AddPieChart(x, y, width, height, categoryValues, seriesName, chartName);
 
     public void AddBarChart(
         int x,
@@ -127,7 +127,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         int height,
         Dictionary<string, double> categoryValues,
         string seriesName
-    ) => this.chartCollection.AddBarChart(x, y, width, height, categoryValues, seriesName);
+    ) => this.chartShapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddScatterChart(
         int x,
@@ -136,7 +136,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         int height,
         Dictionary<double, double> pointValues,
         string seriesName
-    ) => this.chartCollection.AddScatterChart(x, y, width, height, pointValues, seriesName);
+    ) => this.chartShapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
     public void AddStackedColumnChart(
         int x,
@@ -145,7 +145,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         int height,
         IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
-    ) => this.chartCollection.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+    ) => this.chartShapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
     public void AddClusteredBarChart(
         int x,
@@ -155,7 +155,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         IList<string> categories,
         IList<Presentations.DraftChart.SeriesData> seriesData,
         string chartName
-    ) => this.chartCollection.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
+    ) => this.chartShapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
 
     public IShape AddSmartArt(
         int x,
@@ -302,11 +302,11 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public IShape AddDateAndTime() => this.placeholderShapes.AddDateAndTime();
+    public IShape AddDateAndTime() => this.footerPlaceholderShapeCollection.AddDateAndTime();
 
-    public IShape AddFooter() => this.placeholderShapes.AddFooter();
+    public IShape AddFooter() => this.footerPlaceholderShapeCollection.AddFooter();
 
-    public IShape AddSlideNumber() => this.placeholderShapes.AddSlideNumber();
+    public IShape AddSlideNumber() => this.footerPlaceholderShapeCollection.AddSlideNumber();
 
     internal void Render(SKCanvas canvas)
     {
