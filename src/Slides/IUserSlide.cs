@@ -115,8 +115,7 @@ public interface IUserSlide
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
     /// </summary>
-    // ReSharper disable once InconsistentNaming
-    PresentationPart GetSdkPresentationPart();
+    PresentationPart GetSdkPresentationPart(); // NOSONAR
 
     /// <summary>
     ///     Gets the first shape in the slide.
