@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Units;
 using SkiaSharp;
@@ -9,7 +9,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal partial class Shape
+/// <summary>
+///     Represents a canvas for rendering shapes.
+/// </summary>
+internal sealed class ShapeCanvas
 {
     private const double Epsilon = 1e-6;
     private static readonly TextDrawing TextDrawing = new();
@@ -30,19 +33,35 @@ internal partial class Shape
             { "folHlink", scheme => scheme.FollowedHyperlinkColor }
         };
 
+    private readonly IShape shape;
+    private readonly OpenXmlElement pShapeTreeElement;
+    private readonly ShapeColorScheme shapeColorScheme;
+
     /// <summary>
-    ///     Renders the current shape onto the provided canvas.
+    ///     Initializes a new instance of the <see cref="ShapeCanvas"/> class.
+    /// </summary>
+    /// <param name="shape">The shape to render.</param>
+    /// <param name="pShapeTreeElement">The shape tree element.</param>
+    internal ShapeCanvas(IShape shape, OpenXmlElement pShapeTreeElement)
+    {
+        this.shape = shape;
+        this.pShapeTreeElement = pShapeTreeElement;
+        this.shapeColorScheme = new ShapeColorScheme(pShapeTreeElement);
+    }
+
+    /// <summary>
+    ///     Renders the shape onto the provided canvas.
     /// </summary>
     /// <param name="canvas">Target canvas.</param>
-    internal virtual void Render(SKCanvas canvas)
+    internal void Render(SKCanvas canvas)
     {
-        if (this.Picture is not null)
+        if (this.shape.Picture is not null)
         {
             this.RenderPicture(canvas);
             return;
         }
 
-        switch (this.GeometryType)
+        switch (this.shape.GeometryType)
         {
             case Geometry.Rectangle:
             case Geometry.RoundedRectangle:
@@ -135,7 +154,7 @@ internal partial class Shape
 
     private void RenderPicture(SKCanvas canvas)
     {
-        var picture = this.Picture!;
+        var picture = this.shape.Picture!;
         var image = picture.Image;
         if (image is null)
         {
@@ -149,13 +168,13 @@ internal partial class Shape
             return;
         }
 
-        var x = new Points(this.X).AsPixels();
-        var y = new Points(this.Y).AsPixels();
-        var width = new Points(this.Width).AsPixels();
-        var height = new Points(this.Height).AsPixels();
+        var x = new Points(this.shape.X).AsPixels();
+        var y = new Points(this.shape.Y).AsPixels();
+        var width = new Points(this.shape.Width).AsPixels();
+        var height = new Points(this.shape.Height).AsPixels();
 
         canvas.Save();
-        ApplyRotation(canvas, this, this.X, this.Y, this.Width, this.Height);
+        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
 
         var crop = picture.Crop;
         var srcLeft = (float)(bitmap.Width * (double)(crop.Left / 100m));
@@ -181,21 +200,21 @@ internal partial class Shape
 
     private void RenderRectangle(SKCanvas canvas)
     {
-        var x = new Points(this.X).AsPixels();
-        var y = new Points(this.Y).AsPixels();
-        var width = new Points(this.Width).AsPixels();
-        var height = new Points(this.Height).AsPixels();
+        var x = new Points(this.shape.X).AsPixels();
+        var y = new Points(this.shape.Y).AsPixels();
+        var width = new Points(this.shape.Width).AsPixels();
+        var height = new Points(this.shape.Height).AsPixels();
         var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         var cornerRadius = 0m;
-        if (this.GeometryType == Geometry.RoundedRectangle)
+        if (this.shape.GeometryType == Geometry.RoundedRectangle)
         {
             var shortestSide = Math.Min(width, height);
-            cornerRadius = this.CornerSize / 100m * (shortestSide / 2m);
+            cornerRadius = this.shape.CornerSize / 100m * (shortestSide / 2m);
         }
 
         canvas.Save();
-        ApplyRotation(canvas, this, this.X, this.Y, this.Width, this.Height);
+        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
 
         this.RenderFill(canvas, rect, cornerRadius);
         this.RenderOutline(canvas, rect, cornerRadius);
@@ -205,14 +224,14 @@ internal partial class Shape
 
     private void RenderEllipse(SKCanvas canvas)
     {
-        var x = new Points(this.X).AsPixels();
-        var y = new Points(this.Y).AsPixels();
-        var width = new Points(this.Width).AsPixels();
-        var height = new Points(this.Height).AsPixels();
+        var x = new Points(this.shape.X).AsPixels();
+        var y = new Points(this.shape.Y).AsPixels();
+        var width = new Points(this.shape.Width).AsPixels();
+        var height = new Points(this.shape.Height).AsPixels();
         var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         canvas.Save();
-        ApplyRotation(canvas, this, this.X, this.Y, this.Width, this.Height);
+        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
 
         this.RenderEllipseFill(canvas, rect);
         this.RenderEllipseOutline(canvas, rect);
@@ -222,14 +241,14 @@ internal partial class Shape
 
     private void RenderText(SKCanvas canvas)
     {
-        if (this.TextBox is null)
+        if (this.shape.TextBox is null)
         {
             return;
         }
 
         canvas.Save();
-        ApplyRotation(canvas, this, this.X, this.Y, this.Width, this.Height);
-        TextDrawing.Render(canvas, this);
+        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
+        TextDrawing.Render(canvas, this.shape);
         canvas.Restore();
     }
 
@@ -261,7 +280,7 @@ internal partial class Shape
     private void RenderOutline(SKCanvas canvas, SKRect rect, decimal cornerRadius)
     {
         var outlineColor = this.GetShapeOutlineColor();
-        var strokeWidth = GetShapeOutlineWidth(this);
+        var strokeWidth = GetShapeOutlineWidth(this.shape);
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -307,7 +326,7 @@ internal partial class Shape
     private void RenderEllipseOutline(SKCanvas canvas, SKRect rect)
     {
         var outlineColor = this.GetShapeOutlineColor();
-        var strokeWidth = GetShapeOutlineWidth(this);
+        var strokeWidth = GetShapeOutlineWidth(this.shape);
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -327,7 +346,7 @@ internal partial class Shape
 
     private SKColor? GetShapeFillColor()
     {
-        var shapeFill = this.Fill;
+        var shapeFill = this.shape.Fill;
 
         if (shapeFill is { Type: FillType.Solid, Color: not null })
         {
@@ -348,7 +367,7 @@ internal partial class Shape
 
     private SKColor? GetShapeOutlineColor()
     {
-        var shapeOutline = this.Outline;
+        var shapeOutline = this.shape.Outline;
 
         if (shapeOutline?.HexColor is not null)
         {
@@ -366,7 +385,7 @@ internal partial class Shape
 
     private SKColor? GetStyleOutlineColor()
     {
-        if (pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
+        if (this.pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
         {
             return null;
         }
@@ -393,7 +412,7 @@ internal partial class Shape
 
     private SKColor? GetStyleFillColor()
     {
-        if (pShapeTreeElement is not P.Shape pShape)
+        if (this.pShapeTreeElement is not P.Shape pShape)
         {
             return null;
         }
@@ -417,7 +436,7 @@ internal partial class Shape
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var colorScheme = this.GetColorScheme();
+        var colorScheme = this.shapeColorScheme.GetColorScheme();
         if (colorScheme is null)
         {
             return null;
@@ -431,63 +450,5 @@ internal partial class Shape
         var colorElement = selector(colorScheme);
 
         return colorElement is null ? null : GetHexFromColorElement(colorElement);
-    }
-
-    private A.ColorScheme? GetColorScheme()
-    {
-        var parentPart = new SCOpenXmlElement(pShapeTreeElement).ParentOpenXmlPart;
-
-        return parentPart switch
-        {
-            SlidePart slidePart => this.GetColorSchemeFromSlidePart(slidePart),
-            SlideLayoutPart slideLayoutPart => this.GetColorSchemeFromSlideLayoutPart(slideLayoutPart),
-            SlideMasterPart slideMasterPart => this.GetColorSchemeFromSlideMasterPart(slideMasterPart),
-            NotesSlidePart notesSlidePart => this.GetColorSchemeFromNotesSlidePart(notesSlidePart),
-            _ => null
-        };
-    }
-
-    private A.ColorScheme? GetColorSchemeFromSlidePart(SlidePart slidePart)
-    {
-        var slideLayoutPart = slidePart.SlideLayoutPart;
-        if (slideLayoutPart is null)
-        {
-            return null;
-        }
-
-        return this.GetColorSchemeFromSlideLayoutPart(slideLayoutPart);
-    }
-
-    private A.ColorScheme? GetColorSchemeFromSlideLayoutPart(SlideLayoutPart slideLayoutPart)
-    {
-        var slideMasterPart = slideLayoutPart.SlideMasterPart;
-        if (slideMasterPart is null)
-        {
-            return null;
-        }
-
-        return this.GetColorSchemeFromSlideMasterPart(slideMasterPart);
-    }
-
-    private A.ColorScheme? GetColorSchemeFromSlideMasterPart(SlideMasterPart slideMasterPart)
-    {
-        var themePart = slideMasterPart.ThemePart;
-        var themeElements = themePart?.Theme.ThemeElements;
-
-        return themeElements?.ColorScheme;
-    }
-
-    private A.ColorScheme? GetColorSchemeFromNotesSlidePart(NotesSlidePart notesSlidePart)
-    {
-        var notesMasterPart = notesSlidePart.NotesMasterPart;
-        if (notesMasterPart is null)
-        {
-            return null;
-        }
-
-        var themePart = notesMasterPart.ThemePart;
-        var themeElements = themePart?.Theme.ThemeElements;
-
-        return themeElements?.ColorScheme;
     }
 }
