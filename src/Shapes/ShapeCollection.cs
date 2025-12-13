@@ -20,9 +20,9 @@ namespace ShapeCrawler.Shapes;
 
 internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
 {
-    public int Count => this.GetShapes().Count();
+    public int Count => this.GetInternalShapes().Count();
 
-    public IShape this[int index] => this.GetShapes().ElementAt(index);
+    public IShape this[int index] => this.GetInternalShapes().ElementAt(index);
 
     public IShape GetById(int id) => this.GetById<IShape>(id);
 
@@ -44,11 +44,30 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     public T Last<T>()
         where T : IShape => (T)this.GetShapes().Last(shape => shape is T);
 
-    public IEnumerator<IShape> GetEnumerator() => this.GetShapes().GetEnumerator();
+    public IEnumerator<IShape> GetEnumerator() => this.GetInternalShapes().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
+    }
+    
+    internal IEnumerable<Shape> GetInternalShapes()
+    {
+        var pShapeTree = openXmlPart switch
+        {
+            SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+            NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+        };
+
+        foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
+        {
+            foreach (var shape in this.CreateShapesFromElement(element))
+            {
+                yield return shape;
+            }
+        }
     }
 
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
@@ -160,24 +179,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
     }
 
-    private IEnumerable<IShape> GetShapes()
-    {
-        var pShapeTree = openXmlPart switch
-        {
-            SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-            NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
-        };
-
-        foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
-        {
-            foreach (var shape in this.CreateShapesFromElement(element))
-            {
-                yield return shape;
-            }
-        }
-    }
+    private IEnumerable<IShape> GetShapes() => GetInternalShapes();
 
     private IEnumerable<Shape> CreateShapesFromElement(OpenXmlCompositeElement element)
     {
