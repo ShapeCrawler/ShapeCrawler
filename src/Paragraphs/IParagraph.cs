@@ -120,7 +120,7 @@ internal sealed class Paragraph : IParagraph
 
             var removingRuns = this.aParagraph.OfType<A.Run>().Skip(1); // to preserve text formatting
             var removingBreaks = this.aParagraph.OfType<A.Break>();
-            foreach (var removing in removingRuns.ToList())
+            foreach (var removing in removingRuns.ToArray())
             {
                 removing.Remove();
             }

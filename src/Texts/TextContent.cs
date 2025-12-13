@@ -18,7 +18,7 @@ internal sealed class TextContent(
     /// </summary>
     internal void ApplyTo()
     {
-        var paragraphsList = paragraphs.ToList();
+        var paragraphsList = paragraphs.ToArray();
         var firstParagraph = paragraphsList.FirstOrDefault();
 
         // Store LatinName from first portion if available
@@ -65,7 +65,7 @@ internal sealed class TextContent(
         }
     }
 
-    private IParagraph PrepareContainer(IParagraph? firstParagraph, System.Collections.Generic.List<IParagraph> paragraphsList)
+    private IParagraph PrepareContainer(IParagraph? firstParagraph, IParagraph[] paragraphsList)
     {
         if (firstParagraph == null)
         {

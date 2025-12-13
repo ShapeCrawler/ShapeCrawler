@@ -33,12 +33,11 @@ public class UserSlideTests : SCTest
     public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
     {
         // Arrange
-        var pptx = TestAsset("002.pptx");
-        var pres = new Presentation(pptx);
-        IUserSlide userSlideEx = pres.Slides[2];
+        var pres = new Presentation(TestAsset("002.pptx"));
+        var userSlide = pres.Slides[2];
 
         // Act
-        bool hidden = userSlideEx.Hidden();
+        bool hidden = userSlide.Hidden();
 
         // Assert
         hidden.Should().BeTrue();

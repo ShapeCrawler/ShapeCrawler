@@ -90,7 +90,7 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
-        var seriesTuples = seriesData.Select(s => (s.Name, s.Values)).ToList();
+        var seriesTuples = seriesData.Select(s => (s.Name, s.Values)).ToArray();
         new ClusteredBarChart(chartPart, categories, seriesTuples).Generate();
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
@@ -124,8 +124,8 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
     {
         var shapeIds = slidePart.Slide.Descendants<NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0)
-            .ToList();
+            .ToArray();
 
-        return shapeIds.Count > 0 ? shapeIds.Max() + 1 : 1;
+        return shapeIds.Length > 0 ? shapeIds.Max() + 1 : 1;
     }
 }

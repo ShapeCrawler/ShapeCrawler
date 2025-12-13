@@ -22,8 +22,8 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
-            if (pGroupShapes.Count == 0)
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToArray();
+            if (pGroupShapes.Length == 0)
             {
                 return base.X;
             }
@@ -93,8 +93,8 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
-            if (pGroupShapes.Count == 0)
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToArray();
+            if (pGroupShapes.Length == 0)
             {
                 return base.Y;
             }
@@ -164,8 +164,8 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
-            if (pGroupShapes.Count == 0)
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToArray();
+            if (pGroupShapes.Length == 0)
             {
                 return base.Width;
             }
@@ -228,8 +228,8 @@ internal sealed class GroupedShape : Shape
         get
         {
             // Get all ancestor group shapes to account for nested groups
-            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToList();
-            if (pGroupShapes.Count == 0)
+            var pGroupShapes = this.pShape.Ancestors<P.GroupShape>().ToArray();
+            if (pGroupShapes.Length == 0)
             {
                 return base.Height;
             }

@@ -30,7 +30,7 @@ public class SmartArtTests : SCTest
         smartArtShape.Width.Should().Be(width);
         smartArtShape.Height.Should().Be(height);
         var slidePart = pres.GetSDKPresentationDocument().PresentationPart!.SlideParts.First();
-        var relationshipTypes = slidePart.Parts.Select(part => part.OpenXmlPart.RelationshipType).ToList();
+        var relationshipTypes = slidePart.Parts.Select(part => part.OpenXmlPart.RelationshipType).ToArray();
         relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
     }
     
