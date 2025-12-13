@@ -23,7 +23,6 @@ namespace ShapeCrawler.Slides;
 internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 {
     private const double Epsilon = 1e-6;
-
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
         new(StringComparer.Ordinal)
         {
@@ -45,9 +44,10 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     private readonly PictureCollection pictures;
     private readonly AudioVideoCollection audioVideoCollection;
     private readonly ChartCollection chartCollection;
-    private readonly SlidePart slidePart;
-    private readonly NewShapeProperties newShapeProperties;
     private readonly PlaceholderShapes placeholderShapes;
+    
+    private readonly NewShapeProperties newShapeProperties;
+    private readonly SlidePart slidePart;
     private readonly TextDrawing textDrawing = new();
 
     internal UserSlideShapeCollection(

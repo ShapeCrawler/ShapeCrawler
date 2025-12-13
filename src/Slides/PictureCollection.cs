@@ -78,9 +78,9 @@ internal sealed class PictureCollection(SlidePart slidePart, PresentationImageFi
         var shapeIds = slidePart.Slide
             .Descendants<P.NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0U)
-            .ToList();
+            .ToArray();
 
-        return shapeIds.Count > 0 ? (int)shapeIds.Max() + 1 : 1;
+        return shapeIds.Length > 0 ? (int)shapeIds.Max() + 1 : 1;
     }
 
     private bool TryGetImageRId(string hash, out string imgPartRId)
