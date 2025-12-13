@@ -101,7 +101,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         return false;
     }
 
-    private static IEnumerable<IShape> CreateLineShapes(P.ConnectionShape pConnectionShape)
+    private static IEnumerable<Shape> CreateLineShapes(P.ConnectionShape pConnectionShape)
     {
         yield return new LineShape(
             new Position(pConnectionShape),
@@ -111,12 +111,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         );
     }
 
-    private static IEnumerable<IShape> CreateGroupShapes(P.GroupShape pGroupShape)
+    private static IEnumerable<Shape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
         yield return new GroupShape(pGroupShape);
     }
 
-    private static IEnumerable<IShape> CreateShapes(P.Shape pShape)
+    private static IEnumerable<Shape> CreateShapes(P.Shape pShape)
     {
         if (pShape.TextBody is not null)
         {
@@ -137,7 +137,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;
 
-    private static IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
+    private static IEnumerable<Shape> CreatePictureShapes(P.Picture pPicture)
     {
         var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
             .ChildElements.FirstOrDefault();
@@ -178,13 +178,13 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
     private OpenXmlElement GetShapeTreeFromPart() => openXmlPart switch
     {
-        SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
-        SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-        NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
+        SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
+        SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+        NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
         _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
     };
 
-    private IEnumerable<IShape> CreateShapesFromElement(OpenXmlCompositeElement element)
+    private IEnumerable<Shape> CreateShapesFromElement(OpenXmlCompositeElement element)
     {
         return element switch
         {
@@ -197,7 +197,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         };
     }
 
-    private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
+    private IEnumerable<Shape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
         if (aGraphicData == null)
@@ -258,7 +258,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
     }
 
-    private IShape CreateChart(P.GraphicFrame pGraphicFrame)
+    private Shape CreateChart(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
