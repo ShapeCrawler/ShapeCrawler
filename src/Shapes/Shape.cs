@@ -18,6 +18,25 @@ namespace ShapeCrawler.Shapes;
 
 internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
+    private const double Epsilon = 1e-6;
+    private static readonly TextDrawing TextDrawing = new();
+    private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
+        new(StringComparer.Ordinal)
+        {
+            { "dk1", scheme => scheme.Dark1Color },
+            { "lt1", scheme => scheme.Light1Color },
+            { "dk2", scheme => scheme.Dark2Color },
+            { "lt2", scheme => scheme.Light2Color },
+            { "accent1", scheme => scheme.Accent1Color },
+            { "accent2", scheme => scheme.Accent2Color },
+            { "accent3", scheme => scheme.Accent3Color },
+            { "accent4", scheme => scheme.Accent4Color },
+            { "accent5", scheme => scheme.Accent5Color },
+            { "accent6", scheme => scheme.Accent6Color },
+            { "hlink", scheme => scheme.Hyperlink },
+            { "folHlink", scheme => scheme.FollowedHyperlinkColor }
+        };
+ 
     public virtual decimal X
     {
         get => position.X;
@@ -317,27 +336,6 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
         var groupedShape = this.GroupedShapes.FirstOrDefault(shape => shape.Name == name);
         return groupedShape ?? throw new SCException($"Grouped shape with name '{name}' not found.");
     }
-    
-        private const double Epsilon = 1e-6;
-
-    private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
-        new(StringComparer.Ordinal)
-        {
-            { "dk1", scheme => scheme.Dark1Color },
-            { "lt1", scheme => scheme.Light1Color },
-            { "dk2", scheme => scheme.Dark2Color },
-            { "lt2", scheme => scheme.Light2Color },
-            { "accent1", scheme => scheme.Accent1Color },
-            { "accent2", scheme => scheme.Accent2Color },
-            { "accent3", scheme => scheme.Accent3Color },
-            { "accent4", scheme => scheme.Accent4Color },
-            { "accent5", scheme => scheme.Accent5Color },
-            { "accent6", scheme => scheme.Accent6Color },
-            { "hlink", scheme => scheme.Hyperlink },
-            { "folHlink", scheme => scheme.FollowedHyperlinkColor }
-        };
-
-    private static readonly TextDrawing TextDrawing = new();
 
     /// <summary>
     ///     Renders the current shape onto the provided canvas.
