@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide layout background.
 /// </summary>
-public interface ISlideLayoutBackground
+public interface ILayoutSlideBackground
 {
     /// <summary>
     ///     Gets the solid fill properties of the background.
@@ -38,7 +38,7 @@ public interface ISlideLayoutBackground
     MemoryStream Picture();
 }
 
-internal sealed class SlideLayoutBackground(SlideLayoutPart slideLayoutPart) : ISlideLayoutBackground
+internal sealed class LayoutSlideBackground(SlideLayoutPart slideLayoutPart) : ILayoutSlideBackground
 {
     private BackgroundSolidFill? solidFill;
 

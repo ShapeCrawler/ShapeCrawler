@@ -25,7 +25,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide.
 /// </summary>
-public interface ISlide
+public interface IUserSlide
 {
     /// <summary>
     ///     Gets or sets custom data. Returns <see langword="null"/> if the custom data is not presented.
@@ -35,7 +35,7 @@ public interface ISlide
     /// <summary>
     ///     Gets slide layout.
     /// </summary>
-    ISlideLayout SlideLayout { get; }
+    ILayoutSlide LayoutSlide { get; }
 
     /// <summary>
     ///     Gets or sets slide number.
@@ -45,7 +45,7 @@ public interface ISlide
     /// <summary>
     ///     Gets the shape collection.
     /// </summary>
-    ISlideShapeCollection Shapes { get; }
+    IUserSlideShapeCollection Shapes { get; }
 
     /// <summary>
     ///     Gets the slide notes.
@@ -115,8 +115,7 @@ public interface ISlide
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
     /// </summary>
-    // ReSharper disable once InconsistentNaming
-    PresentationPart GetSDKPresentationPart();
+    PresentationPart GetSdkPresentationPart(); // NOSONAR
 
     /// <summary>
     ///     Gets the first shape in the slide.
@@ -125,13 +124,13 @@ public interface ISlide
     T First<T>();
 }
 
-internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, SlidePart slidePart) : ISlide
+internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
 {
     private IShapeFill? fill;
 
-    public ISlideLayout SlideLayout => slideLayout;
+    public ILayoutSlide LayoutSlide => layoutSlide;
 
-    public ISlideShapeCollection Shapes => shapes;
+    public IUserSlideShapeCollection Shapes => shapes;
 
     public int Number
     {
@@ -260,7 +259,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
         this.SaveImageTo(fileStream);
     }
 
-    public PresentationPart GetSDKPresentationPart()
+    public PresentationPart GetSdkPresentationPart()
     {
         var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
 
@@ -332,7 +331,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
 
     public void SaveImageTo(Stream stream)
     {
-        var presPart = this.GetSDKPresentationPart();
+        var presPart = this.GetSdkPresentationPart();
         var pSlideSize = presPart.Presentation.SlideSize!;
         var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
         var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
@@ -396,7 +395,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
     private void AddNotesSlide(IEnumerable<string> lines)
     {
         // Build up the children of the text body element
-        var textBodyChildren = new List<OpenXmlElement>() { new BodyProperties(), new ListStyle() };
+        var textBodyChildren = new List<OpenXmlElement> { new BodyProperties(), new ListStyle() };
 
         // Add in the text lines
         textBodyChildren.AddRange(
@@ -423,7 +422,7 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
             new CommonSlideData(
                 new ShapeTree(
                     new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeProperties(
-                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties()
+                        new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
                         {
                             Id = (UInt32Value)1U, Name = string.Empty
                         },
@@ -432,14 +431,14 @@ internal class Slide(ISlideLayout slideLayout, SlideShapeCollection shapes, Slid
                     new GroupShapeProperties(new TransformGroup()),
                     new DocumentFormat.OpenXml.Presentation.Shape(
                         new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties(
-                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties()
+                            new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
                             {
                                 Id = (UInt32Value)2U, Name = "Notes Placeholder 2"
                             },
                             new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(
-                                new ShapeLocks() { NoGrouping = true }),
+                                new ShapeLocks { NoGrouping = true }),
                             new ApplicationNonVisualDrawingProperties(
-                                new PlaceholderShape() { Type = PlaceholderValues.Body })),
+                                new PlaceholderShape { Type = PlaceholderValues.Body })),
                         new DocumentFormat.OpenXml.Presentation.ShapeProperties(),
                         new DocumentFormat.OpenXml.Presentation.TextBody(
                             textBodyChildren)))),

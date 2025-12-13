@@ -10,30 +10,30 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents slide master collection.
 /// </summary>
-public interface ISlideMasterCollection : IEnumerable<ISlideMaster>
+public interface IMasterSlideCollection : IEnumerable<IMasterSlide>
 {
     /// <summary>
     ///     Gets slide master by index.
     /// </summary>
-    ISlideMaster this[int index] { get; }
+    IMasterSlide this[int index] { get; }
 }
 
-internal sealed class SlideMasterCollection(IEnumerable<SlideMasterPart> slideMasterParts) : ISlideMasterCollection
+internal sealed class MasterSlideCollection(IEnumerable<SlideMasterPart> slideMasterParts) : IMasterSlideCollection
 {
-    public ISlideMaster this[int index] => this.SlideMasters().ElementAt(index);
+    public IMasterSlide this[int index] => this.SlideMasters().ElementAt(index);
 
-    public IEnumerator<ISlideMaster> GetEnumerator() => this.SlideMasters().GetEnumerator();
+    public IEnumerator<IMasterSlide> GetEnumerator() => this.SlideMasters().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    internal SlideMaster SlideMaster(int number) =>
+    internal MasterSlide SlideMaster(int number) =>
         this.SlideMasters().First(slideMaster => slideMaster.Number == number);
 
-    private IEnumerable<SlideMaster> SlideMasters()
+    private IEnumerable<MasterSlide> SlideMasters()
     {
         foreach (var slideMaster in slideMasterParts)
         {
-            yield return new SlideMaster(slideMaster);
+            yield return new MasterSlide(slideMaster);
         }
     }
 }

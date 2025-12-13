@@ -10,38 +10,8 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Represents placeholder shapes collection.
 /// </summary>
-internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart slidePart)
+internal sealed class FooterPlaceholderShapeCollection(IUserSlideShapeCollection shapes, SlidePart slidePart)
 {
-    /// <summary>
-    ///     Adds a date and time placeholder.
-    /// </summary>
-    internal IShape AddDateAndTime()
-    {
-        // Check if a DateAndTime placeholder already exists
-        var existingDateTimePlaceholder = shapes
-            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
-
-        if (existingDateTimePlaceholder != null)
-        {
-            throw new SCException("The slide already contains a Date and Time placeholder.");
-        }
-
-        // Load the date-time placeholder XML template
-        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
-        var pShape = new P.Shape(xml);
-        var nextShapeId = new NewShapeProperties(shapes).Id();
-
-        // Append the shape to the slide
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
-
-        // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextShape>();
-        addedShape.Id = nextShapeId;
-        addedShape.Name = $"Date Placeholder {nextShapeId}";
-
-        return addedShape;
-    }
-
     /// <summary>
     ///     Adds a footer placeholder.
     /// </summary>
@@ -68,6 +38,36 @@ internal sealed class PlaceholderShapes(ISlideShapeCollection shapes, SlidePart 
         var addedShape = shapes.Last<TextShape>();
         addedShape.Id = nextShapeId;
         addedShape.Name = $"Footer Placeholder {nextShapeId}";
+
+        return addedShape;
+    }
+    
+    /// <summary>
+    ///     Adds a date and time placeholder.
+    /// </summary>
+    internal IShape AddDateAndTime()
+    {
+        // Check if a DateAndTime placeholder already exists
+        var existingDateTimePlaceholder = shapes
+            .FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.DateAndTime);
+
+        if (existingDateTimePlaceholder != null)
+        {
+            throw new SCException("The slide already contains a Date and Time placeholder.");
+        }
+
+        // Load the date-time placeholder XML template
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("date and time placeholder.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = new NewShapeProperties(shapes).Id();
+
+        // Append the shape to the slide
+        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        // Get the added shape and set its properties
+        var addedShape = shapes.Last<TextShape>();
+        addedShape.Id = nextShapeId;
+        addedShape.Name = $"Date Placeholder {nextShapeId}";
 
         return addedShape;
     }

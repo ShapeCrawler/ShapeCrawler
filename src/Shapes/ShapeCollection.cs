@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -17,10 +16,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
 {
     public int Count => this.GetShapes().Count();
 
@@ -30,12 +28,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     public T GetById<T>(int id)
         where T : IShape => (T)this.GetShapes().First(shape => shape.Id == id);
-
-    public T? TryGetById<T>(int id)
-        where T : IShape => (T?)this.GetShapes().FirstOrDefault(shape => shape.Id == id);
-
-    public T GetByName<T>(string name)
-        where T : IShape => (T)this.Shape(name);
 
     public T Shape<T>(string name)
         where T : IShape
@@ -54,133 +46,10 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     public IEnumerator<IShape> GetEnumerator() => this.GetShapes().GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    public void Add(IShape addingShape) => throw new NotImplementedException();
-
-    public void AddAudio(int x, int y, Stream audio) => throw new NotImplementedException();
-
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => throw new NotImplementedException();
-
-    public void AddVideo(int x, int y, Stream stream) => throw new NotImplementedException();
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry = Geometry.Rectangle
-    ) => throw new NotImplementedException();
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry,
-        string text
-    ) => throw new NotImplementedException();
-
-    public void AddLine(string xml) => throw new NotImplementedException();
-
-    public void AddLine(
-        int startPointX,
-        int startPointY,
-        int endPointX,
-        int endPointY
-    ) => throw new NotImplementedException();
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount
-    ) => throw new NotImplementedException();
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount,
-        ITableStyle style
-    ) => throw new NotImplementedException();
-
-    public void AddPicture(Stream imageStream) => throw new NotImplementedException();
-
-    public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName
-    ) => throw new NotImplementedException();
-
-    public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName,
-        string chartName
-    ) => throw new NotImplementedException();
-
-    public void AddBarChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName
-    ) => throw new NotImplementedException();
-
-    public void AddScatterChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<double, double> pointValues,
-        string seriesName
-    ) => throw new NotImplementedException();
-
-    public void AddStackedColumnChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        IDictionary<string, IList<double>> categoryValues,
-        IList<string> seriesNames
-    ) => throw new NotImplementedException();
-
-    public void AddClusteredBarChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        IList<string> categories,
-        IList<Presentations.DraftChart.SeriesData> seriesData,
-        string chartName
-    ) => throw new NotImplementedException();
-
-    public IShape AddSmartArt(
-        int x,
-        int y,
-        int width,
-        int height,
-        SmartArtType smartArtType
-    ) => throw new NotImplementedException();
-
-    public IShape Group(IShape[] groupingShapes)
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        throw new NotImplementedException();
+        return this.GetEnumerator();
     }
-
-    public IShape AddDateAndTime() => throw new NotImplementedException();
-
-    public IShape AddFooter() => throw new NotImplementedException();
-
-    public IShape AddSlideNumber() => throw new NotImplementedException();
 
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
@@ -230,7 +99,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         return false;
     }
 
-    private static IEnumerable<IShape> CreateLineShapes(P.ConnectionShape pConnectionShape)
+    private static IEnumerable<Shape> CreateLineShapes(P.ConnectionShape pConnectionShape)
     {
         yield return new LineShape(
             new Position(pConnectionShape),
@@ -240,12 +109,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         );
     }
 
-    private static IEnumerable<IShape> CreateGroupShapes(P.GroupShape pGroupShape)
+    private static IEnumerable<Shape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
         yield return new GroupShape(pGroupShape);
     }
 
-    private static IEnumerable<IShape> CreateShapes(P.Shape pShape)
+    private static IEnumerable<Shape> CreateShapes(P.Shape pShape)
     {
         if (pShape.TextBody is not null)
         {
@@ -260,13 +129,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         }
     }
 
-    // ReSharper disable once InconsistentNaming
-    private static bool IsOLEObject(A.GraphicData aGraphicData) =>
+    private static bool IsOleObject(A.GraphicData aGraphicData) =>
         aGraphicData.Uri?.Value?.Equals(
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;
 
-    private static IEnumerable<IShape> CreatePictureShapes(P.Picture pPicture)
+    private static IEnumerable<Shape> CreatePictureShapes(P.Picture pPicture)
     {
         var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
             .ChildElements.FirstOrDefault();
@@ -294,7 +162,13 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
 
     private IEnumerable<IShape> GetShapes()
     {
-        var pShapeTree = this.GetShapeTreeFromPart();
+        var pShapeTree = openXmlPart switch
+        {
+            SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+            NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+        };
 
         foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
@@ -305,15 +179,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         }
     }
 
-    private OpenXmlElement GetShapeTreeFromPart() => openXmlPart switch
-    {
-        SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
-        SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-        NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-        _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
-    };
-
-    private IEnumerable<IShape> CreateShapesFromElement(OpenXmlCompositeElement element)
+    private IEnumerable<Shape> CreateShapesFromElement(OpenXmlCompositeElement element)
     {
         return element switch
         {
@@ -326,7 +192,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         };
     }
 
-    private IEnumerable<IShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
+    private IEnumerable<Shape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
         if (aGraphicData == null)
@@ -334,7 +200,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             yield break;
         }
 
-        if (IsOLEObject(aGraphicData))
+        if (IsOleObject(aGraphicData))
         {
             yield return new OleObjectShape(
                 new Position(pGraphicFrame),
@@ -387,7 +253,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         }
     }
 
-    private IShape CreateChart(P.GraphicFrame pGraphicFrame)
+    private Shape CreateChart(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
@@ -474,7 +340,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
         }
 
         // Other
-        var otherChartCShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+        var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         var otherChartCxCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
@@ -489,4 +355,5 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : ISlideShapeColl
             pGraphicFrame
         );
     }
+
 }

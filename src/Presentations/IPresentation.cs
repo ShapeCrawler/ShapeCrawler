@@ -29,7 +29,7 @@ public interface IPresentation : IDisposable
     /// <summary>
     ///     Gets the collection of the slide masters.
     /// </summary>
-    ISlideMasterCollection SlideMasters { get; }
+    IMasterSlideCollection MasterSlides { get; }
     
     /// <summary>
     ///     Gets the collection of sections.
@@ -49,7 +49,7 @@ public interface IPresentation : IDisposable
     /// <summary>
     ///     Gets slide by number.
     /// </summary>
-    ISlide Slide(int number);
+    IUserSlide Slide(int number);
 
     /// <summary>
     ///     Saves presentation.

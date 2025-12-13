@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a Slide Master.
 /// </summary>
-public interface ISlideMaster
+public interface IMasterSlide
 {
     /// <summary>
     ///     Gets slide master order number.
@@ -27,7 +27,7 @@ public interface ISlideMaster
     /// <summary>
     ///     Gets slide layout collection.
     /// </summary>
-    ISlideLayoutCollection SlideLayouts { get; }
+    ILayoutSlideCollection LayoutSlides { get; }
 
     /// <summary>
     ///     Gets the collection of master shapes.
@@ -54,31 +54,31 @@ public interface ISlideMaster
     /// <summary>
     ///     Gets slide layout by name.
     /// </summary>
-    ISlideLayout SlideLayout(string name);
+    ILayoutSlide SlideLayout(string name);
 
     /// <summary>
     ///     Gets slide layout by number.
     /// </summary>
-    ISlideLayout SlideLayout(int number);
+    ILayoutSlide SlideLayout(int number);
 }
 
-internal sealed class SlideMaster : ISlideMaster
+internal sealed class MasterSlide : IMasterSlide
 {
-    private readonly SlideLayoutCollection layouts;
+    private readonly LayoutSlideCollection layouts;
     private readonly Lazy<MasterSlideNumber?> slideNumber;
     private readonly SlideMasterPart slideMasterPart;
 
-    internal SlideMaster(SlideMasterPart slideMasterPart)
+    internal MasterSlide(SlideMasterPart slideMasterPart)
     {
         this.slideMasterPart = slideMasterPart;
-        this.layouts = new SlideLayoutCollection(slideMasterPart);
+        this.layouts = new LayoutSlideCollection(slideMasterPart);
         this.slideNumber = new Lazy<MasterSlideNumber?>(this.CreateSlideNumber);
         this.Shapes = new ShapeCollection(this.slideMasterPart);
     }
 
     public IImage? Background => null;
 
-    public ISlideLayoutCollection SlideLayouts => this.layouts;
+    public ILayoutSlideCollection LayoutSlides => this.layouts;
 
     public IShapeCollection Shapes { get; }
 
@@ -97,11 +97,11 @@ internal sealed class SlideMaster : ISlideMaster
 
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
 
-    public ISlideLayout SlideLayout(string name) => this.layouts.First(l => l.Name == name);
+    public ILayoutSlide SlideLayout(string name) => this.layouts.First(l => l.Name == name);
 
-    public ISlideLayout SlideLayout(int number) => this.InternalSlideLayout(number);
+    public ILayoutSlide SlideLayout(int number) => this.InternalSlideLayout(number);
 
-    internal SlideLayout InternalSlideLayout(int number) => this.layouts.Layout(number);
+    internal LayoutSlide InternalSlideLayout(int number) => this.layouts.Layout(number);
 
     private MasterSlideNumber? CreateSlideNumber()
     {

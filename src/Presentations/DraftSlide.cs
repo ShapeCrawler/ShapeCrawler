@@ -10,7 +10,7 @@ namespace ShapeCrawler.Presentations;
 /// </summary>
 public sealed class DraftSlide
 {
-    private readonly List<Action<ISlide, Presentation>> actions = [];
+    private readonly List<Action<IUserSlide, Presentation>> actions = [];
 
     /// <summary>
     ///     Adds a picture to the slide with the specified name and geometry in points.
@@ -288,7 +288,7 @@ public sealed class DraftSlide
         var sdkPres = presentation.PresDocument.PresentationPart!.Presentation;
         sdkPres.SlideIdList ??= new DocumentFormat.OpenXml.Presentation.SlideIdList();
 
-        var blankLayout = presentation.SlideMasters[0].SlideLayouts.First(l => l.Name == "Blank");
+        var blankLayout = presentation.MasterSlides[0].LayoutSlides.First(l => l.Name == "Blank");
         presentation.Slides.Add(blankLayout.Number);
 
         // Target the newly added slide

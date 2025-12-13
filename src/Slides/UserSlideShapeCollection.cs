@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Groups;
 using ShapeCrawler.Shapes;
@@ -19,7 +20,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePart slidePart) : ISlideShapeCollection
+internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 {
     private const double Epsilon = 1e-6;
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
@@ -39,17 +40,39 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             { "folHlink", scheme => scheme.FollowedHyperlinkColor }
         };
 
-    private readonly NewShapeProperties newShapeProperties = new(shapes);
-    private readonly PlaceholderShapes placeholderShapes = new(shapes, slidePart);
+    private readonly ShapeCollection shapes;
+    private readonly PictureShapeCollection pictureShapes;
+    private readonly AudioVideoShapeCollection audioVideoShapes;
+    private readonly ChartShapeCollection chartShapes;
+    private readonly FooterPlaceholderShapeCollection footerPlaceholderShapeCollection;
+    
+    private readonly NewShapeProperties newShapeProperties;
+    private readonly SlidePart slidePart;
     private readonly TextDrawing textDrawing = new();
 
-    public int Count => shapes.Count;
+    internal UserSlideShapeCollection(
+        ShapeCollection shapes,
+        PictureShapeCollection pictureShapes,
+        AudioVideoShapeCollection audioVideoShapes,
+        ChartShapeCollection chartShapes,
+        SlidePart slidePart)
+    {
+        this.shapes = shapes;
+        this.pictureShapes = pictureShapes;
+        this.audioVideoShapes = audioVideoShapes;
+        this.chartShapes = chartShapes;
+        this.slidePart = slidePart;
+        this.newShapeProperties = new NewShapeProperties(this);
+        this.footerPlaceholderShapeCollection = new FooterPlaceholderShapeCollection(this, slidePart);
+    }
 
-    public IShape this[int index] => shapes[index];
+    public int Count => this.shapes.Count;
+
+    public IShape this[int index] => this.shapes[index];
 
     public void Add(IShape addingShape)
     {
-        var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
+        var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
         switch (addingShape)
         {
             case PictureShape picture:
@@ -69,13 +92,14 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio) => shapes.AddAudio(x, y, audio);
+    public void AddAudio(int x, int y, Stream audio) => this.audioVideoShapes.AddAudio(x, y, audio);
 
-    public void AddAudio(int x, int y, Stream audio, AudioType type) => shapes.AddAudio(x, y, audio, type);
+    public void AddAudio(int x, int y, Stream audio, AudioType type) =>
+        this.audioVideoShapes.AddAudio(x, y, audio, type);
 
-    public void AddVideo(int x, int y, Stream stream) => shapes.AddVideo(x, y, stream);
+    public void AddVideo(int x, int y, Stream stream) => this.audioVideoShapes.AddVideo(x, y, stream);
 
-    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
+    public void AddPicture(Stream imageStream) => this.pictureShapes.AddPicture(imageStream);
 
     public void AddPieChart(
         int x,
@@ -84,7 +108,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         int height,
         Dictionary<string, double> categoryValues,
         string seriesName
-    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
+    ) => this.chartShapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddPieChart(
         int x,
@@ -94,7 +118,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         Dictionary<string, double> categoryValues,
         string seriesName,
         string chartName
-    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName, chartName);
+    ) => this.chartShapes.AddPieChart(x, y, width, height, categoryValues, seriesName, chartName);
 
     public void AddBarChart(
         int x,
@@ -103,7 +127,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         int height,
         Dictionary<string, double> categoryValues,
         string seriesName
-    ) => shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
+    ) => this.chartShapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddScatterChart(
         int x,
@@ -112,7 +136,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         int height,
         Dictionary<double, double> pointValues,
         string seriesName
-    ) => shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
+    ) => this.chartShapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
     public void AddStackedColumnChart(
         int x,
@@ -121,7 +145,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         int height,
         IDictionary<string, IList<double>> categoryValues,
         IList<string> seriesNames
-    ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
+    ) => this.chartShapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
     public void AddClusteredBarChart(
         int x,
@@ -131,7 +155,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         IList<string> categories,
         IList<Presentations.DraftChart.SeriesData> seriesData,
         string chartName
-    ) => shapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
+    ) => this.chartShapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
 
     public IShape AddSmartArt(
         int x,
@@ -139,19 +163,21 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         int width,
         int height,
         SmartArtType smartArtType)
-        => new SCSlidePart(slidePart).AddSmartArt(x, y, width, height, smartArtType);
+        => new SCSlidePart(this.slidePart).AddSmartArt(x, y, width, height, smartArtType);
 
     public IShape Group(IShape[] groupingShapes) =>
-        new GroupShape(new P.GroupShape(), groupingShapes, this.newShapeProperties, slidePart);
+        new GroupShape(new P.GroupShape(), groupingShapes, this.newShapeProperties, this.slidePart);
 
-    public void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle)
+    public void AddShape(int x, int y, int width, int height) => AddShape(x, y, width, height, Geometry.Rectangle);
+
+    public void AddShape(int x, int y, int width, int height, Geometry geometry)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.newShapeProperties.Id();
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = shapes.Last<TextShape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -167,9 +193,9 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.newShapeProperties.Id();
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = shapes.Last<TextShape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -184,11 +210,12 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
     {
         var newPConnectionShape = new P.ConnectionShape(xml);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
-        => new ConnectionShape(slidePart, new NewShapeProperties(shapes)).Create(startPointX, startPointY, endPointX, endPointY);
+        => new ConnectionShape(this.slidePart, this.newShapeProperties)
+            .Create(startPointX, startPointY, endPointX, endPointY);
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
         => this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
@@ -212,13 +239,15 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
         nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
 
-        const long DefaultTableWidthEMUs = 8128000L;
+        const long DefaultTableWidthEMUs = 8_128_000L;
         var offset = new A.Offset { X = xEmu, Y = yEmu };
         var extents = new A.Extents { Cx = DefaultTableWidthEMUs, Cy = tableHeightEmu };
         var pTransform = new P.Transform(offset, extents);
 
         var graphic = new A.Graphic();
+#pragma warning disable S1075 // PowerPoint/Open XML requires this exact schema URI for table graphic data.
         var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
+#pragma warning restore S1075
         var aTable = new A.Table();
 
         var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
@@ -252,38 +281,38 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         graphicFrame.Append(pTransform);
         graphicFrame.Append(graphic);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
-    public IShape GetById(int id) => shapes.GetById(id);
+    public IShape GetById(int id) => this.shapes.GetById(id);
 
     public T GetById<T>(int id)
-        where T : IShape => shapes.GetById<T>(id);
+        where T : IShape => this.shapes.GetById<T>(id);
 
     public T GetByName<T>(string name)
-        where T : IShape => shapes.Shape<T>(name);
+        where T : IShape => this.shapes.Shape<T>(name);
 
     public T Shape<T>(string name)
-        where T : IShape => shapes.Shape<T>(name);
+        where T : IShape => this.shapes.Shape<T>(name);
 
-    public IShape Shape(string name) => shapes.Shape(name);
+    public IShape Shape(string name) => this.shapes.Shape(name);
 
     public T Last<T>()
-        where T : IShape => shapes.Last<T>();
+        where T : IShape => this.shapes.Last<T>();
 
-    public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
+    public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public IShape AddDateAndTime() => this.placeholderShapes.AddDateAndTime();
+    public IShape AddDateAndTime() => this.footerPlaceholderShapeCollection.AddDateAndTime();
 
-    public IShape AddFooter() => this.placeholderShapes.AddFooter();
+    public IShape AddFooter() => this.footerPlaceholderShapeCollection.AddFooter();
 
-    public IShape AddSlideNumber() => this.placeholderShapes.AddSlideNumber();
+    public IShape AddSlideNumber() => this.footerPlaceholderShapeCollection.AddSlideNumber();
 
     internal void Render(SKCanvas canvas)
     {
-        foreach (var shape in shapes)
+        foreach (var shape in this.shapes)
         {
             if (shape.Hidden)
             {
@@ -293,7 +322,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             this.RenderShape(canvas, shape);
         }
     }
-    
+
     private static decimal GetShapeOutlineWidth(IShape shape)
     {
         var shapeOutline = shape.Outline;
@@ -360,7 +389,6 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
             );
         }
     }
-    
 
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
     {
@@ -422,7 +450,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
         canvas.Restore();
     }
-    
+
     private void RenderShape(SKCanvas canvas, IShape shape)
     {
         // Check for picture first, as pictures have their own rendering logic
@@ -463,7 +491,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
         this.textDrawing.Render(canvas, shape);
         canvas.Restore();
     }
-    
+
     private void RenderRectangle(SKCanvas canvas, IShape shape)
     {
         var x = new Points(shape.X).AsPixels();
@@ -715,7 +743,7 @@ internal sealed class SlideShapeCollection(ISlideShapeCollection shapes, SlidePa
 
         return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
-    
+
     private A.ColorScheme? GetColorScheme() =>
-        slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
+        this.slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme;
 }

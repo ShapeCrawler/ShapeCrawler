@@ -75,7 +75,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
         foreach (var slide in slides)
         {
             var slideNumberPlaceholder =
-                slide.SlideLayout.Shapes.FirstOrDefault(shape =>
+                slide.LayoutSlide.Shapes.FirstOrDefault(shape =>
                     shape.PlaceholderType == PlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
@@ -132,7 +132,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
             return;
         }
 
-        var layoutFooter = slide.SlideLayout.Shapes
+        var layoutFooter = slide.LayoutSlide.Shapes
             .FirstOrDefault(s => s.PlaceholderType == PlaceholderType.Footer);
 
         if (layoutFooter?.TextBox != null)

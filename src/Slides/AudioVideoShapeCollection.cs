@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,20 +15,8 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class AudioVideoShapeCollection(
-    ISlideShapeCollection shapes,
-    PresentationImageFiles presentationImageFiles,
-    SlidePart slidePart
-) : ISlideShapeCollection
+internal sealed class AudioVideoShapeCollection(SlidePart slidePart, PresentationImageFiles presentationImageFiles)
 {
-    #region Shapes Properties
-
-    public int Count => shapes.Count;
-
-    public IShape this[int index] => shapes[index];
-
-    #endregion Shapes Properties
-
     public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
 
     public void AddAudio(int x, int y, Stream audio, AudioType type)
@@ -81,8 +67,8 @@ internal sealed class AudioVideoShapeCollection(
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = xEmu;
         transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = 609600L;
-        transform2D.Extents!.Cy = 609600L;
+        transform2D.Extents!.Cx = 609_600L;
+        transform2D.Extents!.Cy = 609_600L;
 
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
         var nonVisualDrawingProps = GetPNonVisualDrawingProperties(pPicture);
@@ -154,7 +140,7 @@ internal sealed class AudioVideoShapeCollection(
         var xEmu = new Points(x).AsEmus();
         var yEmu = new Points(y).AsEmus();
         A.Offset offset = new() { X = xEmu, Y = yEmu };
-        A.Extents extents = new() { Cx = 609600L, Cy = 609600L };
+        A.Extents extents = new() { Cx = 609_600L, Cy = 609_600L };
 
         var transform2D = new A.Transform2D(offset, extents);
         A.PresetGeometry presetGeometry = new(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle };
@@ -167,148 +153,7 @@ internal sealed class AudioVideoShapeCollection(
         var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
 
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
-
-        DocumentFormat.OpenXml.Office2010.PowerPoint.CreationId creationId = new() { Val = (UInt32Value)3972997422U };
-        creationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
     }
-
-    #region Shapes Public Methods
-
-    public void AddPicture(Stream imageStream) => shapes.AddPicture(imageStream);
-
-    public void Add(IShape addingShape) => shapes.Add(addingShape);
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry = Geometry.Rectangle
-    ) => shapes.AddShape(x, y, width, height, geometry);
-
-    public void AddShape(
-        int x,
-        int y,
-        int width,
-        int height,
-        Geometry geometry,
-        string text
-    ) => shapes.AddShape(x, y, width, height, geometry, text);
-
-    public void AddLine(string xml) => shapes.AddLine(xml);
-
-    public void AddLine(
-        int startPointX,
-        int startPointY,
-        int endPointX,
-        int endPointY
-    ) => shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount
-    ) => shapes.AddTable(x, y, columnsCount, rowsCount);
-
-    public void AddTable(
-        int x,
-        int y,
-        int columnsCount,
-        int rowsCount,
-        ITableStyle style
-    ) => shapes.AddTable(x, y, columnsCount, rowsCount, style);
-
-    public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName
-    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
-
-    public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName,
-        string chartName
-    ) => shapes.AddPieChart(x, y, width, height, categoryValues, seriesName, chartName);
-
-    public void AddBarChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<string, double> categoryValues,
-        string seriesName
-    ) => shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
-
-    public void AddScatterChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        Dictionary<double, double> pointValues,
-        string seriesName
-    ) => shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
-
-    public void AddStackedColumnChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        IDictionary<string, IList<double>> categoryValues,
-        IList<string> seriesNames
-    ) => shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
-
-    public void AddClusteredBarChart(
-        int x,
-        int y,
-        int width,
-        int height,
-        IList<string> categories,
-        IList<Presentations.DraftChart.SeriesData> seriesData,
-        string chartName
-    ) => shapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);
-
-    public IShape AddSmartArt(
-        int x,
-        int y,
-        int width,
-        int height,
-        SmartArtType smartArtType
-    ) => shapes.AddSmartArt(x, y, width, height, smartArtType);
-
-    public IShape Group(IShape[] groupingShapes) => shapes.Group(groupingShapes);
-
-    public IShape AddDateAndTime() => shapes.AddDateAndTime();
-
-    public IShape AddFooter() => shapes.AddFooter();
-
-    public IShape AddSlideNumber() => shapes.AddSlideNumber();
-
-    public IEnumerator<IShape> GetEnumerator() => shapes.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => shapes.GetEnumerator();
-
-    public IShape GetById(int id) => shapes.GetById<IShape>(id);
-
-    public T GetById<T>(int id)
-        where T : IShape => shapes.GetById<T>(id);
-
-    public IShape Shape(string name) => shapes.Shape<IShape>(name);
-
-    public T Shape<T>(string name)
-        where T : IShape => shapes.Shape<T>(name);
-
-    public T Last<T>()
-        where T : IShape => shapes.Last<T>();
-
-    #endregion Shapes Public Methods
 
     private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
     {
@@ -325,12 +170,12 @@ internal sealed class AudioVideoShapeCollection(
 
     private int GetNextShapeId()
     {
-        if (shapes.Any())
-        {
-            return shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
-        }
+        var shapeIds = slidePart.Slide
+            .Descendants<P.NonVisualDrawingProperties>()
+            .Select(p => p.Id?.Value ?? 0U)
+            .ToList();
 
-        return 1;
+        return shapeIds.Count > 0 ? (int)shapeIds.Max() + 1 : 1;
     }
 
     private bool TryGetImageRId(string hash, out string imgPartRId)

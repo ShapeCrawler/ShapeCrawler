@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape collection.
 /// </summary>
-public interface ISlideShapeCollection : IShapeCollection
+public interface IUserSlideShapeCollection : IShapeCollection
 {
     /// <summary>
     ///     Adds the specified shape.
@@ -40,7 +40,12 @@ public interface ISlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds a new shape.
     /// </summary>
-    void AddShape(int x, int y, int width, int height, Geometry geometry = Geometry.Rectangle);
+    void AddShape(int x, int y, int width, int height);
+    
+    /// <summary>
+    ///     Adds a new shape.
+    /// </summary>
+    void AddShape(int x, int y, int width, int height, Geometry geometry);
     
     /// <summary>
     ///     Adds a new shape.

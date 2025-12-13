@@ -8,17 +8,17 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Sections;
 
-internal sealed class SectionSlideCollection(P14.Section p14Section): IReadOnlyList<ISlide>
+internal sealed class SectionSlideCollection(P14.Section p14Section): IReadOnlyList<IUserSlide>
 {
     public int Count => this.GetSlides().Count;
 
-    public ISlide this[int index] => this.GetSlides()[index];
+    public IUserSlide this[int index] => this.GetSlides()[index];
 
-    public IEnumerator<ISlide> GetEnumerator() => this.GetSlides().GetEnumerator();
+    public IEnumerator<IUserSlide> GetEnumerator() => this.GetSlides().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private SlideCollection GetSlides()
+    private UserSlideCollection GetSlides()
     {
         var p14SectionSlideIdListEntryList = p14Section.Descendants<P14.SectionSlideIdListEntry>();
         var presDocument = new SCOpenXmlElement(p14Section).ParentPresentationDocument;
@@ -32,6 +32,6 @@ internal sealed class SectionSlideCollection(P14.Section p14Section): IReadOnlyL
             slideParts.Add(slidePart);
         }
 
-        return new SlideCollection(slideParts);
+        return new UserSlideCollection(slideParts);
     }
 }

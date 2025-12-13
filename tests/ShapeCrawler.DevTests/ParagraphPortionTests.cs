@@ -28,7 +28,7 @@ public class ParagraphPortionTests : SCTest
         // Arrange
         var pptxStream = TestAsset("autoshape-case001.pptx");
         var pres = new Presentation(pptxStream);
-        var autoShape = pres.SlideMasters[0].Shapes.Shape<IShape>("AutoShape 1");
+        var autoShape = pres.MasterSlides[0].Shapes.Shape<IShape>("AutoShape 1");
         var portion = autoShape.TextBox!.Paragraphs[0].Portions[0];
 
         // Act

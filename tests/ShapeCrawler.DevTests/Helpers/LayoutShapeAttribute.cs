@@ -14,7 +14,7 @@ public class LayoutShapeAttribute(string pptxName, int slideLayoutNumber, string
     {
         var pptxStream = SCTest.TestAsset(pptxName);
         var pres = new Presentation(pptxStream);
-        var shape = pres.SlideMasters[0].SlideLayouts[slideLayoutNumber - 1].Shapes.Shape(shapeName);
+        var shape = pres.MasterSlides[0].LayoutSlides[slideLayoutNumber - 1].Shapes.Shape(shapeName);
 
         var parameters = new TestCaseParameters(new[] { shape });
         

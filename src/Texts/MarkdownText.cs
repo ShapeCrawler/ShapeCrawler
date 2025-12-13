@@ -37,7 +37,7 @@ internal sealed class MarkdownText(
 
     private void RenderList(string[] lines)
     {
-        var paragraphsList = paragraphs.ToList();
+        var paragraphsList = paragraphs.ToArray();
         var firstPara = paragraphsList.FirstOrDefault();
         if (firstPara == null)
         {
@@ -49,7 +49,7 @@ internal sealed class MarkdownText(
             p.Remove();
         }
 
-        foreach (var portion in firstPara.Portions.ToList())
+        foreach (var portion in firstPara.Portions.ToArray())
         {
             portion.Remove();
         }
@@ -75,7 +75,7 @@ internal sealed class MarkdownText(
             }
 
             var paragraph = paragraphs[paraIndex];
-            foreach (var portion in paragraph.Portions.ToList())
+            foreach (var portion in paragraph.Portions.ToArray())
             {
                 portion.Remove();
             }
@@ -89,7 +89,7 @@ internal sealed class MarkdownText(
 
     private void RenderRegular(string text)
     {
-        var paragraphsList = paragraphs.ToList();
+        var paragraphsList = paragraphs.ToArray();
         var portionPara = paragraphsList.FirstOrDefault(p => p.Portions.Any()) ?? paragraphsList.First();
 
         // Clear other paragraphs

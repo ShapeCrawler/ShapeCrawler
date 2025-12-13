@@ -10,7 +10,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collection of slides.
 /// </summary>
-public interface ISlideCollection : IReadOnlyList<ISlide>
+public interface ISlideCollection : IReadOnlyList<IUserSlide>
 {
     /// <summary>
     ///     Adds a new slide using specified layout.
@@ -27,10 +27,10 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// <summary>
     ///     Adds slide.
     /// </summary>
-    void Add(ISlide slide);
+    void Add(IUserSlide userSlide);
 
     /// <summary>
     ///     Adds slide at the specified position.
     /// </summary>
-    void Add(ISlide slide, int slideNumber);
+    void Add(IUserSlide userSlide, int slideNumber);
 }
