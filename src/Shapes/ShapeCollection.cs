@@ -30,12 +30,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     public T GetById<T>(int id)
         where T : IShape => (T)this.GetShapes().First(shape => shape.Id == id);
 
-    public T? TryGetById<T>(int id)
-        where T : IShape => (T?)this.GetShapes().FirstOrDefault(shape => shape.Id == id);
-
-    public T GetByName<T>(string name)
-        where T : IShape => (T)this.Shape(name);
-
     public T Shape<T>(string name)
         where T : IShape
     {
@@ -131,8 +125,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
     }
 
-    // ReSharper disable once InconsistentNaming
-    private static bool IsOLEObject(A.GraphicData aGraphicData) =>
+    private static bool IsOleObject(A.GraphicData aGraphicData) =>
         aGraphicData.Uri?.Value?.Equals(
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;
@@ -165,7 +158,13 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
     private IEnumerable<IShape> GetShapes()
     {
-        var pShapeTree = this.GetShapeTreeFromPart();
+        var pShapeTree = openXmlPart switch
+        {
+            SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+            NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+        };
 
         foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
@@ -175,14 +174,6 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             }
         }
     }
-
-    private OpenXmlElement GetShapeTreeFromPart() => openXmlPart switch
-    {
-        SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
-        SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-        NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-        _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
-    };
 
     private IEnumerable<Shape> CreateShapesFromElement(OpenXmlCompositeElement element)
     {
@@ -205,7 +196,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             yield break;
         }
 
-        if (IsOLEObject(aGraphicData))
+        if (IsOleObject(aGraphicData))
         {
             yield return new OleObjectShape(
                 new Position(pGraphicFrame),
@@ -345,7 +336,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
 
         // Other
-        var otherChartCShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
+        var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         var otherChartCxCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
