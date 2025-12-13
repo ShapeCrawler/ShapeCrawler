@@ -30,15 +30,15 @@ internal sealed class ShapeColorScheme
 
         return parentPart switch
         {
-            SlidePart slidePart => this.GetColorSchemeFromSlidePart(slidePart),
-            SlideLayoutPart slideLayoutPart => this.GetColorSchemeFromSlideLayoutPart(slideLayoutPart),
-            SlideMasterPart slideMasterPart => this.GetColorSchemeFromSlideMasterPart(slideMasterPart),
-            NotesSlidePart notesSlidePart => this.GetColorSchemeFromNotesSlidePart(notesSlidePart),
+            SlidePart slidePart => GetColorSchemeFromSlidePart(slidePart),
+            SlideLayoutPart slideLayoutPart => GetColorSchemeFromSlideLayoutPart(slideLayoutPart),
+            SlideMasterPart slideMasterPart => GetColorSchemeFromSlideMasterPart(slideMasterPart),
+            NotesSlidePart notesSlidePart => GetColorSchemeFromNotesSlidePart(notesSlidePart),
             _ => null
         };
     }
 
-    private A.ColorScheme? GetColorSchemeFromSlidePart(SlidePart slidePart)
+    private static A.ColorScheme? GetColorSchemeFromSlidePart(SlidePart slidePart)
     {
         var slideLayoutPart = slidePart.SlideLayoutPart;
         if (slideLayoutPart is null)
@@ -46,10 +46,10 @@ internal sealed class ShapeColorScheme
             return null;
         }
 
-        return this.GetColorSchemeFromSlideLayoutPart(slideLayoutPart);
+        return GetColorSchemeFromSlideLayoutPart(slideLayoutPart);
     }
 
-    private A.ColorScheme? GetColorSchemeFromSlideLayoutPart(SlideLayoutPart slideLayoutPart)
+    private static A.ColorScheme? GetColorSchemeFromSlideLayoutPart(SlideLayoutPart slideLayoutPart)
     {
         var slideMasterPart = slideLayoutPart.SlideMasterPart;
         if (slideMasterPart is null)
@@ -57,10 +57,10 @@ internal sealed class ShapeColorScheme
             return null;
         }
 
-        return this.GetColorSchemeFromSlideMasterPart(slideMasterPart);
+        return GetColorSchemeFromSlideMasterPart(slideMasterPart);
     }
 
-    private A.ColorScheme? GetColorSchemeFromSlideMasterPart(SlideMasterPart slideMasterPart)
+    private static A.ColorScheme? GetColorSchemeFromSlideMasterPart(SlideMasterPart slideMasterPart)
     {
         var themePart = slideMasterPart.ThemePart;
         var themeElements = themePart?.Theme.ThemeElements;
@@ -68,7 +68,7 @@ internal sealed class ShapeColorScheme
         return themeElements?.ColorScheme;
     }
 
-    private A.ColorScheme? GetColorSchemeFromNotesSlidePart(NotesSlidePart notesSlidePart)
+    private static A.ColorScheme? GetColorSchemeFromNotesSlidePart(NotesSlidePart notesSlidePart)
     {
         var notesMasterPart = notesSlidePart.NotesMasterPart;
         if (notesMasterPart is null)
