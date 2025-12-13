@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -46,6 +45,11 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         where T : IShape => (T)this.GetShapes().Last(shape => shape is T);
 
     public IEnumerator<IShape> GetEnumerator() => this.GetShapes().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
 
     private static bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
@@ -352,8 +356,4 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         );
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
 }

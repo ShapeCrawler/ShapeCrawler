@@ -245,7 +245,9 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var pTransform = new P.Transform(offset, extents);
 
         var graphic = new A.Graphic();
+#pragma warning disable S1075 // PowerPoint/Open XML requires this exact schema URI for table graphic data.
         var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
+#pragma warning restore S1075
         var aTable = new A.Table();
 
         var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
