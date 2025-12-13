@@ -51,14 +51,14 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     private readonly TextDrawing textDrawing = new();
 
     internal UserSlideShapeCollection(
-        ShapeCollection shapeCollection,
-        PictureShapeCollection pictureShapeCollection,
+        ShapeCollection shapes,
+        PictureShapeCollection pictureShapes,
         AudioVideoShapeCollection audioVideoShapes,
         ChartShapeCollection chartShapes,
         SlidePart slidePart)
     {
-        this.shapes = shapeCollection;
-        this.pictureShapes = pictureShapeCollection;
+        this.shapes = shapes;
+        this.pictureShapes = pictureShapes;
         this.audioVideoShapes = audioVideoShapes;
         this.chartShapes = chartShapes;
         this.slidePart = slidePart;
