@@ -746,11 +746,55 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
 
         return parentPart switch
         {
-            SlidePart slidePart => slidePart.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme,
-            SlideMasterPart slideMasterPart => slideMasterPart.ThemePart?.Theme.ThemeElements?.ColorScheme,
-            NotesSlidePart notesSlidePart => notesSlidePart.NotesMasterPart?.ThemePart?.Theme.ThemeElements?.ColorScheme,
+            SlidePart slidePart => this.GetColorSchemeFromSlidePart(slidePart),
+            SlideLayoutPart slideLayoutPart => this.GetColorSchemeFromSlideLayoutPart(slideLayoutPart),
+            SlideMasterPart slideMasterPart => this.GetColorSchemeFromSlideMasterPart(slideMasterPart),
+            NotesSlidePart notesSlidePart => this.GetColorSchemeFromNotesSlidePart(notesSlidePart),
             _ => null
         };
+    }
+
+    private A.ColorScheme? GetColorSchemeFromSlidePart(SlidePart slidePart)
+    {
+        var slideLayoutPart = slidePart.SlideLayoutPart;
+        if (slideLayoutPart is null)
+        {
+            return null;
+        }
+
+        return this.GetColorSchemeFromSlideLayoutPart(slideLayoutPart);
+    }
+
+    private A.ColorScheme? GetColorSchemeFromSlideLayoutPart(SlideLayoutPart slideLayoutPart)
+    {
+        var slideMasterPart = slideLayoutPart.SlideMasterPart;
+        if (slideMasterPart is null)
+        {
+            return null;
+        }
+
+        return this.GetColorSchemeFromSlideMasterPart(slideMasterPart);
+    }
+
+    private A.ColorScheme? GetColorSchemeFromSlideMasterPart(SlideMasterPart slideMasterPart)
+    {
+        var themePart = slideMasterPart.ThemePart;
+        var themeElements = themePart?.Theme.ThemeElements;
+
+        return themeElements?.ColorScheme;
+    }
+
+    private A.ColorScheme? GetColorSchemeFromNotesSlidePart(NotesSlidePart notesSlidePart)
+    {
+        var notesMasterPart = notesSlidePart.NotesMasterPart;
+        if (notesMasterPart is null)
+        {
+            return null;
+        }
+
+        var themePart = notesMasterPart.ThemePart;
+        var themeElements = themePart?.Theme.ThemeElements;
+
+        return themeElements?.ColorScheme;
     }
 }
