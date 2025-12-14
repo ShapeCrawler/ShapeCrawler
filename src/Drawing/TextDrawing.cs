@@ -178,6 +178,11 @@ internal sealed class TextDrawing
         return ascent >= 0 ? 0 : -ascent;
     }
 
+    private static decimal ClampToZero(decimal value)
+    {
+        return value < 0 ? 0 : value;
+    }
+
     private static IEnumerable<string> SplitToFittingParts(string token, SKFont font, float maxWidth)
     {
         var offset = 0;
@@ -419,23 +424,13 @@ internal sealed class TextDrawing
 
     private float GetAvailableWidth(IShape shape, ITextBox textBox)
     {
-        var width = shape.Width - textBox.LeftMargin - textBox.RightMargin;
-        if (width < 0)
-        {
-            width = 0;
-        }
-
+        var width = ClampToZero(shape.Width - textBox.LeftMargin - textBox.RightMargin);
         return (float)new Points(width).AsPixels();
     }
 
     private float GetAvailableHeight(IShape shape, ITextBox textBox)
     {
-        var height = shape.Height - textBox.TopMargin - textBox.BottomMargin;
-        if (height < 0)
-        {
-            height = 0;
-        }
-
+        var height = ClampToZero(shape.Height - textBox.TopMargin - textBox.BottomMargin);
         return (float)new Points(height).AsPixels();
     }
 
