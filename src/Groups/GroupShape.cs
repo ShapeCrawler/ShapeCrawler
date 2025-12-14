@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
+using ShapeCrawler.Units;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Groups;
@@ -113,4 +115,93 @@ internal sealed class GroupShape : Shape
 
     public T Shape<T>(string groupedShapeName) =>
         (T)this.GroupedShapes.First(groupedShape => groupedShape is T && groupedShape.Name == groupedShapeName);
+
+    internal override void Render(SKCanvas canvas)
+    {
+        canvas.Save();
+        this.ApplyRotation(canvas);
+        this.RenderGroupedShapes(canvas);
+        canvas.Restore();
+    }
+
+    private void ApplyRotation(SKCanvas canvas)
+    {
+        const double epsilon = 1e-6;
+        if (Math.Abs(this.Rotation) <= epsilon)
+        {
+            return;
+        }
+
+        var (x, y, width, height) = this.AbsoluteBounds();
+        var centerX = x + (width / 2);
+        var centerY = y + (height / 2);
+        canvas.RotateDegrees(
+            (float)this.Rotation,
+            (float)new Points(centerX).AsPixels(),
+            (float)new Points(centerY).AsPixels()
+        );
+    }
+
+    private void RenderGroupedShapes(SKCanvas canvas)
+    {
+        foreach (var shape in this.GroupedShapes)
+        {
+            if (shape.Hidden)
+            {
+                continue;
+            }
+
+            if (shape is Shape internalShape)
+            {
+                internalShape.Render(canvas);
+            }
+        }
+    }
+
+    private (decimal X, decimal Y, decimal Width, decimal Height) AbsoluteBounds()
+    {
+        var pGroupShapes = this.pGroupShape.Ancestors<P.GroupShape>().ToArray();
+        if (pGroupShapes.Length == 0)
+        {
+            return (this.X, this.Y, this.Width, this.Height);
+        }
+
+        decimal absoluteX = this.X;
+        decimal absoluteY = this.Y;
+        decimal scaleFactorX = 1.0m;
+        decimal scaleFactorY = 1.0m;
+
+        foreach (var pGroupShape in pGroupShapes)
+        {
+            var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var childOffset = transformGroup.ChildOffset!;
+            var childExtents = transformGroup.ChildExtents!;
+            var offset = transformGroup.Offset!;
+            var extents = transformGroup.Extents!;
+
+            decimal currentScaleFactorX = 1.0m;
+            if (childExtents.Cx!.Value != 0)
+            {
+                currentScaleFactorX = (decimal)extents.Cx!.Value / childExtents.Cx!.Value;
+            }
+
+            decimal currentScaleFactorY = 1.0m;
+            if (childExtents.Cy!.Value != 0)
+            {
+                currentScaleFactorY = (decimal)extents.Cy!.Value / childExtents.Cy!.Value;
+            }
+
+            var childOffsetX = new Emus(childOffset.X!.Value).AsPoints();
+            var childOffsetY = new Emus(childOffset.Y!.Value).AsPoints();
+            absoluteX = ((absoluteX - childOffsetX) * currentScaleFactorX) + new Emus(offset.X!.Value).AsPoints();
+            absoluteY = ((absoluteY - childOffsetY) * currentScaleFactorY) + new Emus(offset.Y!.Value).AsPoints();
+            scaleFactorX *= currentScaleFactorX;
+            scaleFactorY *= currentScaleFactorY;
+        }
+
+        var absoluteWidth = this.Width * scaleFactorX;
+        var absoluteHeight = this.Height * scaleFactorY;
+
+        return (absoluteX, absoluteY, absoluteWidth, absoluteHeight);
+    }
 }

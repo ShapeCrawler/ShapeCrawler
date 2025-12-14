@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -54,7 +54,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
                     break;
 
                 case P.Shape pShape:
-                    shape = new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
+                    shape = new GroupedShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
                     break;
 
                 case P.Picture pPicture:
