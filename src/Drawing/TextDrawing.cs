@@ -93,15 +93,7 @@ internal sealed class TextDrawing
             return true;
         }
 
-        foreach (var ch in value)
-        {
-            if (!char.IsWhiteSpace(ch))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return value.All(char.IsWhiteSpace);
     }
 
     private static IEnumerable<string> SplitToTokens(string text)
