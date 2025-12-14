@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -99,18 +100,18 @@ public interface IUserSlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
-
+    
     /// <summary>
     ///     Saves the slide image to the specified stream.
     /// </summary>
+    [Experimental("EXP001", Message = "This Slide Image generation API is experimental and doesn't work yet.")]
     void SaveImageTo(Stream stream);
-
-#if DEBUG
+    
     /// <summary>
     ///     Saves the slide image to the specified file.
     /// </summary>
+    [Experimental("EXP001", Message = "This Slide Image generation API is experimental and doesn't work yet.")]
     void SaveImageTo(string file);
-#endif
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
