@@ -32,8 +32,8 @@ internal sealed class TextDrawing
 
         var originX = (float)new Points(shape.X + textBox.LeftMargin).AsPixels();
         var originY = (float)new Points(shape.Y + textBox.TopMargin).AsPixels();
-        var availableWidth = this.GetAvailableWidth(shape, textBox);
-        var availableHeight = this.GetAvailableHeight(shape, textBox);
+        var availableWidth = GetAvailableWidth(shape, textBox);
+        var availableHeight = GetAvailableHeight(shape, textBox);
 
         var wrap = textBox.TextWrapped && availableWidth > 0;
         var lines = this.LayoutLines(textBox, availableWidth, wrap);
@@ -47,7 +47,7 @@ internal sealed class TextDrawing
             var horizontalOffset = GetHorizontalOffset(line.HorizontalAlignment, availableWidth, line.Width);
             var startX = originX + horizontalOffset;
 
-            this.RenderLine(canvas, line, startX, lineTop);
+            RenderLine(canvas, line, startX, lineTop);
             lineTop += line.Height;
         }
     }
@@ -224,6 +224,33 @@ internal sealed class TextDrawing
         return best == 0 ? 1 : best;
     }
 
+    private static float GetAvailableWidth(IShape shape, ITextBox textBox)
+    {
+        var width = ClampToZero(shape.Width - textBox.LeftMargin - textBox.RightMargin);
+        return (float)new Points(width).AsPixels();
+    }
+
+    private static float GetAvailableHeight(IShape shape, ITextBox textBox)
+    {
+        var height = ClampToZero(shape.Height - textBox.TopMargin - textBox.BottomMargin);
+        return (float)new Points(height).AsPixels();
+    }
+
+    private static void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
+    {
+        var baselineY = lineTop + line.BaselineOffset;
+        var currentX = startX;
+
+        foreach (var run in line.Runs)
+        {
+            using var font = CreateFont(run.Font);
+            using var paint = CreatePaint(run.Font);
+
+            canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);
+            currentX += run.Width;
+        }
+    }
+
     private IReadOnlyList<TextLine> LayoutLines(ITextBox textBox, float availableWidth, bool wrap)
     {
         var lines = new List<TextLine>();
@@ -341,7 +368,7 @@ internal sealed class TextDrawing
     {
         if (currentLine.Width + tokenWidth <= availableWidth)
         {
-            currentLine.Add(new TextRun(token, font, tokenWidth), spacing, baselineOffset);
+            currentLine.Add(new PixelTextPortion(token, font, tokenWidth), spacing, baselineOffset);
             return currentLine;
         }
 
@@ -362,7 +389,7 @@ internal sealed class TextDrawing
     {
         if (currentLine.Width + tokenWidth <= availableWidth)
         {
-            currentLine.Add(new TextRun(token, font, tokenWidth), skFont.Spacing, baselineOffset);
+            currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
         }
 
@@ -415,33 +442,6 @@ internal sealed class TextDrawing
         return currentLine;
     }
 
-    private float GetAvailableWidth(IShape shape, ITextBox textBox)
-    {
-        var width = ClampToZero(shape.Width - textBox.LeftMargin - textBox.RightMargin);
-        return (float)new Points(width).AsPixels();
-    }
-
-    private float GetAvailableHeight(IShape shape, ITextBox textBox)
-    {
-        var height = ClampToZero(shape.Height - textBox.TopMargin - textBox.BottomMargin);
-        return (float)new Points(height).AsPixels();
-    }
-
-    private void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
-    {
-        var baselineY = lineTop + line.BaselineOffset;
-        var currentX = startX;
-
-        foreach (var run in line.Runs)
-        {
-            using var font = CreateFont(run.Font);
-            using var paint = CreatePaint(run.Font);
-
-            canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);
-            currentX += run.Width;
-        }
-    }
-
     private sealed class TextLine
     {
         internal TextLine(
@@ -474,6 +474,7 @@ internal sealed class TextDrawing
         private readonly List<PixelTextPortion> runs;
         private readonly TextHorizontalAlignment paragraphAlignment;
 
+
         internal LineBuilder(TextHorizontalAlignment paragraphAlignment)
         {
             this.paragraphAlignment = paragraphAlignment;
@@ -482,11 +483,11 @@ internal sealed class TextDrawing
 
         internal float Width { get; private set; }
 
-        internal float Height { get; private set; }
-
-        internal float BaselineOffset { get; private set; }
-
         internal bool HasRuns => this.runs.Count > 0;
+
+        private float Height { get; set; }
+
+        private float BaselineOffset { get; set; }
 
         internal void Add(PixelTextPortion portion, float spacing, float baselineOffset)
         {
