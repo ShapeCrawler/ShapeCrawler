@@ -267,6 +267,29 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         using var fileStream = File.Create(file);
         this.SaveImageTo(fileStream);
     }
+    
+    public void SaveImageTo(Stream stream)
+    {
+        var presPart = this.GetSdkPresentationPart();
+        var pSlideSize = presPart.Presentation.SlideSize!;
+        var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
+        var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
+
+        using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
+        var canvas = surface.Canvas;
+
+        this.RenderBackground(canvas);
+        shapes.Render(canvas);
+
+        using var image = surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        data.SaveTo(stream);
+
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
+    }
 
     public PresentationPart GetSdkPresentationPart()
     {
@@ -336,29 +359,6 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         presPart.DeletePart(removingSlidePart);
 
         presPart.Presentation.Save();
-    }
-
-    public void SaveImageTo(Stream stream)
-    {
-        var presPart = this.GetSdkPresentationPart();
-        var pSlideSize = presPart.Presentation.SlideSize!;
-        var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
-        var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
-
-        using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
-        var canvas = surface.Canvas;
-
-        this.RenderBackground(canvas);
-        shapes.Render(canvas);
-
-        using var image = surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        data.SaveTo(stream);
-
-        if (stream.CanSeek)
-        {
-            stream.Position = 0;
-        }
     }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
