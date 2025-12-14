@@ -16,14 +16,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
 
     internal override void Render(SKCanvas canvas)
     {
-        var picture = this.Picture;
-        var image = picture.Image;
-        if (image is null)
-        {
-            return;
-        }
-
-        var imageBytes = image.AsByteArray();
+        var imageBytes = picture.Image.AsByteArray();
         using var bitmap = SKBitmap.Decode(imageBytes);
         if (bitmap is null)
         {
@@ -36,7 +29,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         var height = new Points(this.Height).AsPixels();
 
         canvas.Save();
-        ApplyRotation(canvas, this, this.X, this.Y, this.Width, this.Height);
+        ApplyRotation(canvas);
 
         var crop = picture.Crop;
         var srcLeft = (float)(bitmap.Width * (double)(crop.Left / 100m));
@@ -61,24 +54,20 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         canvas.Restore();
     }
 
-    private static void ApplyRotation(
-        SKCanvas canvas,
-        IShape shape,
-        decimal x,
-        decimal y,
-        decimal width,
-        decimal height)
+    private void ApplyRotation(SKCanvas canvas)
     {
         const double epsilon = 1e-6;
-        if (Math.Abs(shape.Rotation) > epsilon)
+        if (!(Math.Abs(this.Rotation) > epsilon))
         {
-            var centerX = x + (width / 2);
-            var centerY = y + (height / 2);
-            canvas.RotateDegrees(
-                (float)shape.Rotation,
-                (float)new Points(centerX).AsPixels(),
-                (float)new Points(centerY).AsPixels()
-            );
+            return;
         }
+
+        var centerX = this.X + (this.Width / 2);
+        var centerY = this.Y + (this.Height / 2);
+        canvas.RotateDegrees(
+            (float)this.Rotation,
+            (float)new Points(centerX).AsPixels(),
+            (float)new Points(centerY).AsPixels()
+        );
     }
 }
