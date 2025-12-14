@@ -57,7 +57,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
     private void ApplyRotation(SKCanvas canvas)
     {
         const double epsilon = 1e-6;
-        if (!(Math.Abs(this.Rotation) > epsilon))
+        if (Math.Abs(this.Rotation) <= epsilon)
         {
             return;
         }
