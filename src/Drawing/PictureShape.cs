@@ -18,11 +18,6 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
     {
         var imageBytes = picture.Image.AsByteArray();
         using var bitmap = SKBitmap.Decode(imageBytes);
-        if (bitmap is null)
-        {
-            return;
-        }
-
         var x = new Points(this.X).AsPixels();
         var y = new Points(this.Y).AsPixels();
         var width = new Points(this.Width).AsPixels();
