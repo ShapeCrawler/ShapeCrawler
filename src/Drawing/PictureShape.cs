@@ -92,6 +92,27 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         canvas.Restore();
     }
 
+    private static long ChildDiff(long parentDiff, long extents, long childExtents)
+    {
+        if (parentDiff == 0)
+        {
+            return 0;
+        }
+
+        if (childExtents == 0)
+        {
+            return parentDiff;
+        }
+
+        var scaleFactor = (decimal)extents / childExtents;
+        if (scaleFactor == 0)
+        {
+            return parentDiff;
+        }
+
+        return (long)decimal.Round(parentDiff / scaleFactor, 0, MidpointRounding.AwayFromZero);
+    }
+    
     private void ApplyRotation(SKCanvas canvas)
     {
         const double epsilon = 1e-6;
@@ -318,7 +339,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         if (groupedShapeXEmus < groupShapeXEmus)
         {
             var diffParent = groupShapeXEmus - groupedShapeXEmus;
-            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            var diffChild = ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
             aOffset.X = new Int64Value(aOffset.X!.Value - diffParent);
             aExtents.Cx = new Int64Value(aExtents.Cx!.Value + diffParent);
             aChildOffset.X = new Int64Value(aChildOffset.X!.Value - diffChild);
@@ -332,7 +353,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         if (groupedRightEmu > groupRightEmu)
         {
             var diffParent = groupedRightEmu - groupRightEmu;
-            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            var diffChild = ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
             aExtents.Cx = new Int64Value(aExtents.Cx!.Value + diffParent);
             aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value + diffChild);
         }
@@ -356,7 +377,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         if (groupedYEmus < groupYEmus)
         {
             var diffParent = groupYEmus - groupedYEmus;
-            var diffChild = this.ChildDiff(diffParent, aExtents.Cy!.Value, aChildExtents.Cy!.Value);
+            var diffChild = ChildDiff(diffParent, aExtents.Cy!.Value, aChildExtents.Cy!.Value);
             aOffset.Y = new Int64Value(aOffset.Y!.Value - diffParent);
             aExtents.Cy = new Int64Value(aExtents.Cy!.Value + diffParent);
             aChildOffset.Y = new Int64Value(aChildOffset.Y!.Value - diffChild);
@@ -370,7 +391,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         if (groupedBottomEmu > groupBottomEmu)
         {
             var diffParent = groupedBottomEmu - groupBottomEmu;
-            var diffChild = this.ChildDiff(diffParent, aExtents.Cy!.Value, aChildExtents.Cy!.Value);
+            var diffChild = ChildDiff(diffParent, aExtents.Cy!.Value, aChildExtents.Cy!.Value);
             aExtents.Cy = new Int64Value(aExtents.Cy!.Value + diffParent);
             aChildExtents.Cy = new Int64Value(aChildExtents.Cy!.Value + diffChild);
         }
@@ -394,7 +415,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         if (groupedShapeWidthEmus < groupShapeWidthEmus)
         {
             var diffParent = groupShapeWidthEmus - groupedShapeWidthEmus;
-            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            var diffChild = ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
             aExtents.Cx = new Int64Value(aExtents.Cx!.Value - diffParent);
             aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value - diffChild);
 
@@ -406,31 +427,10 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         if (groupedRightEmu > groupRightEmu)
         {
             var diffParent = groupedRightEmu - groupRightEmu;
-            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            var diffChild = ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
             aExtents.Cx = new Int64Value(aExtents.Cx!.Value + diffParent);
             aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value + diffChild);
         }
-    }
-
-    private long ChildDiff(long parentDiff, long extents, long childExtents)
-    {
-        if (parentDiff == 0)
-        {
-            return 0;
-        }
-
-        if (childExtents == 0)
-        {
-            return parentDiff;
-        }
-
-        var scaleFactor = (decimal)extents / childExtents;
-        if (scaleFactor == 0)
-        {
-            return parentDiff;
-        }
-
-        return (long)decimal.Round((decimal)parentDiff / scaleFactor, 0, MidpointRounding.AwayFromZero);
     }
 
     // Helper for absolute position/size calculations
