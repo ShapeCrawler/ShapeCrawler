@@ -19,7 +19,7 @@ namespace ShapeCrawler;
 public interface IPicture
 {
     /// <summary>
-    ///     Gets image. Returns <see langword="null"/> if the content of the picture element is not a binary image. 
+    ///     Gets image. Returns <see langword="null"/> if the content of the picture element is not a binary image (e.g., SVG). 
     /// </summary>
     IImage? Image { get; }
 
