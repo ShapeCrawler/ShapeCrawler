@@ -55,12 +55,6 @@ internal sealed class ShapeCanvas
     /// <param name="canvas">Target canvas.</param>
     internal void Render(SKCanvas canvas)
     {
-        if (this.shape.Picture is not null)
-        {
-            this.RenderPicture(canvas);
-            return;
-        }
-
         switch (this.shape.GeometryType)
         {
             case Geometry.Rectangle:
@@ -151,53 +145,7 @@ internal sealed class ShapeCanvas
 
         return new Points(defaultWidth).AsPixels();
     }
-
-    private void RenderPicture(SKCanvas canvas)
-    {
-        var picture = this.shape.Picture!;
-        var image = picture.Image;
-        if (image is null)
-        {
-            return;
-        }
-
-        var imageBytes = image.AsByteArray();
-        using var bitmap = SKBitmap.Decode(imageBytes);
-        if (bitmap is null)
-        {
-            return;
-        }
-
-        var x = new Points(this.shape.X).AsPixels();
-        var y = new Points(this.shape.Y).AsPixels();
-        var width = new Points(this.shape.Width).AsPixels();
-        var height = new Points(this.shape.Height).AsPixels();
-
-        canvas.Save();
-        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
-
-        var crop = picture.Crop;
-        var srcLeft = (float)(bitmap.Width * (double)(crop.Left / 100m));
-        var srcTop = (float)(bitmap.Height * (double)(crop.Top / 100m));
-        var srcRight = (float)(bitmap.Width * (1 - (double)(crop.Right / 100m)));
-        var srcBottom = (float)(bitmap.Height * (1 - (double)(crop.Bottom / 100m)));
-        var srcRect = new SKRect(srcLeft, srcTop, srcRight, srcBottom);
-
-        var destRect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
-
-        using var paint = new SKPaint { IsAntialias = true };
-
-        var transparency = picture.Transparency;
-        if (transparency > 0)
-        {
-            var alpha = (byte)(255 * (1 - (double)(transparency / 100m)));
-            paint.Color = paint.Color.WithAlpha(alpha);
-        }
-
-        canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
-        canvas.Restore();
-    }
-
+    
     private void RenderRectangle(SKCanvas canvas)
     {
         var x = new Points(this.shape.X).AsPixels();
