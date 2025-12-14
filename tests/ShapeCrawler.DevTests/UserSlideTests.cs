@@ -77,7 +77,7 @@ public class UserSlideTests : SCTest
         slide.Fill.Picture.Should().NotBeNull();
         ValidatePresentation(pres);
     }
-    
+
     [Test]
     public void Fill_Picture_is_null_when_slide_doesnt_have_background()
     {
@@ -105,7 +105,7 @@ public class UserSlideTests : SCTest
     public void Fill_SetColor_sets_solid_color_for_slide_background()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slideFill = pres.Slide(1).Fill;
         var green = "00ff00";
 
@@ -120,7 +120,7 @@ public class UserSlideTests : SCTest
     public void Fill_SolidColor_twice_sets_fill()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         var expected = "ABCDEF";
 
@@ -188,7 +188,7 @@ public class UserSlideTests : SCTest
         slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
         slide2.Number.Should().Be(2);
     }
-    
+
     [Test]
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
@@ -250,7 +250,7 @@ public class UserSlideTests : SCTest
     public void Notes_Paragraph_Text_Setter_updates_paragraph_of_added_note()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         slide.AddNotes(new[] { "SlideAddNotes_can_change_notes_with_many_lines" });
         var notes = slide.Notes;
@@ -273,7 +273,7 @@ public class UserSlideTests : SCTest
     public void AddNotes_with_no_notes_adds_empty_line()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
 
         // Act
@@ -300,7 +300,7 @@ public class UserSlideTests : SCTest
     public void Notes_Getter_returns_null_for_new_presentation()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
 
         // Act-Assert
@@ -311,7 +311,7 @@ public class UserSlideTests : SCTest
     public void AddNotes_adds_notes()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         var expected = "SlideAddNotes_adds_notes";
 
@@ -328,7 +328,7 @@ public class UserSlideTests : SCTest
     public void AddNotes_adds_many_notes()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         var adding = new[] { "1", "2", "3" };
         var expected = string.Join(Environment.NewLine, adding);
@@ -345,7 +345,7 @@ public class UserSlideTests : SCTest
     public void Notes_Text_Setter_updates_notes()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slide(1);
         slide.AddNotes(["My notes"]);
         var notes = slide.Notes!;
@@ -358,7 +358,7 @@ public class UserSlideTests : SCTest
         notes.Text.Should().Be(expected);
         ValidatePresentation(pres);
     }
-    
+
     [Test]
     public void Remove_removes_slide_from_section()
     {
@@ -380,15 +380,12 @@ public class UserSlideTests : SCTest
         sectionSlides = pres.Sections[0].Slides;
         sectionSlides.Count.Should().Be(0);
     }
-    
+
     [Test]
     public void SaveImageTo_saves_slide_image()
     {
         // Arrange
-        var pres = new Presentation(p =>
-        {
-            p.Slide();
-        });
+        var pres = new Presentation(p => { p.Slide(); });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -398,18 +395,12 @@ public class UserSlideTests : SCTest
         // Assert
         stream.Length.Should().BeGreaterThan(0);
     }
-    
+
     [Test]
     public void SaveImageTo_saves_slide_image_with_solid_background()
     {
         // Arrange
-        var pres = new Presentation(p =>
-        {
-            p.Slide(s=>
-            {
-                s.SolidBackground("FF0000");
-            });
-        });
+        var pres = new Presentation(p => { p.Slide(s => { s.SolidBackground("FF0000"); }); });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -424,20 +415,16 @@ public class UserSlideTests : SCTest
         centerPixel.Green.Should().Be(0, "Green component");
         centerPixel.Blue.Should().Be(0, "Blue component");
     }
-    
+
     [Test]
-    [Platform(Exclude = "Linux", Reason = "ImageMagick.MagickTypeErrorException : UnableToReadFont `Arial' @ error/annotate.c/RenderFreetype/1658")]
+    [Platform(Exclude = "Linux",
+        Reason =
+            "ImageMagick.MagickTypeErrorException : UnableToReadFont `Arial' @ error/annotate.c/RenderFreetype/1658")]
     public void SaveImageTo_saves_slide_image_with_image_background()
     {
         // Arrange
         var image = TestImage();
-        var pres = new Presentation(p =>
-        {
-            p.Slide(s=>
-            {
-                s.ImageBackground(image);
-            });
-        });
+        var pres = new Presentation(p => { p.Slide(s => { s.ImageBackground(image); }); });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -448,13 +435,13 @@ public class UserSlideTests : SCTest
         stream.Position = 0;
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
         var cornerPixel = bitmap.GetPixel(10, 10); // corner to avoid "Shape" text in center
-        
+
         // The test image background is peach #F5C8A8 (RGB: 245, 200, 168)
         cornerPixel.Red.Should().BeInRange(240, 250);
         cornerPixel.Green.Should().BeInRange(195, 205);
         cornerPixel.Blue.Should().BeInRange(163, 173);
     }
-    
+
     [Test]
     public void SaveImageTo_saves_slide_image_with_text_box()
     {
@@ -468,7 +455,7 @@ public class UserSlideTests : SCTest
                     textBox.X(50);
                     textBox.Y(50);
                     textBox.Width(100);
-                    textBox.Height(50);    
+                    textBox.Height(50);
                     textBox.Text("Hello, World!");
                 });
             });
