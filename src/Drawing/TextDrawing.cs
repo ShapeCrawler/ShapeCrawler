@@ -170,6 +170,11 @@ internal sealed class TextDrawing
         return ascent >= 0 ? 0 : -ascent;
     }
 
+    private static decimal ClampToZero(decimal value)
+    {
+        return value < 0 ? 0 : value;
+    }
+
     private static IEnumerable<string> SplitToFittingParts(string token, SKFont font, float maxWidth)
     {
         var offset = 0;
@@ -197,11 +202,12 @@ internal sealed class TextDrawing
         var low = 1;
         var high = remaining;
         var best = 0;
+        var tokenSpan = token.AsSpan();
 
         while (low <= high)
         {
             var mid = low + ((high - low) / 2);
-            var candidate = token.Substring(offset, mid);
+            var candidate = tokenSpan.Slice(offset, mid);
             var width = font.MeasureText(candidate);
 
             if (width <= maxWidth)
@@ -298,19 +304,65 @@ internal sealed class TextDrawing
 
         if (IsWhitespace(token))
         {
-            if (currentLine.Width + tokenWidth <= availableWidth)
-            {
-                currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
-                return currentLine;
-            }
-
-            buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
-            return new LineBuilder(paragraphAlignment); // Drop whitespace at wrap boundary.
+            return this.LayoutWhitespaceToken(
+                token,
+                font,
+                tokenWidth,
+                skFont.Spacing,
+                baselineOffset,
+                paragraphAlignment,
+                availableWidth,
+                currentLine,
+                buffer);
         }
 
+        return this.LayoutNonWhitespaceToken(
+            token,
+            font,
+            skFont,
+            tokenWidth,
+            baselineOffset,
+            paragraphAlignment,
+            availableWidth,
+            currentLine,
+            buffer);
+    }
+
+    private LineBuilder LayoutWhitespaceToken(
+        string token,
+        ITextPortionFont? font,
+        float tokenWidth,
+        float spacing,
+        float baselineOffset,
+        TextHorizontalAlignment paragraphAlignment,
+        float availableWidth,
+        LineBuilder currentLine,
+        ICollection<TextLine> buffer)
+    {
         if (currentLine.Width + tokenWidth <= availableWidth)
         {
-            currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
+            currentLine.Add(new TextRun(token, font, tokenWidth), spacing, baselineOffset);
+            return currentLine;
+        }
+
+        buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+        return new LineBuilder(paragraphAlignment); // Drop whitespace at wrap boundary.
+    }
+
+    private LineBuilder LayoutNonWhitespaceToken(
+        string token,
+        ITextPortionFont? font,
+        SKFont skFont,
+        float tokenWidth,
+        float baselineOffset,
+        TextHorizontalAlignment paragraphAlignment,
+        float availableWidth,
+        LineBuilder currentLine,
+        ICollection<TextLine> buffer)
+    {
+        if (currentLine.Width + tokenWidth <= availableWidth)
+        {
+            currentLine.Add(new TextRun(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
         }
 
@@ -326,6 +378,27 @@ internal sealed class TextDrawing
             return currentLine;
         }
 
+        return this.LayoutSplitToken(
+            token,
+            font,
+            skFont,
+            baselineOffset,
+            paragraphAlignment,
+            availableWidth,
+            currentLine,
+            buffer);
+    }
+
+    private LineBuilder LayoutSplitToken(
+        string token,
+        ITextPortionFont? font,
+        SKFont skFont,
+        float baselineOffset,
+        TextHorizontalAlignment paragraphAlignment,
+        float availableWidth,
+        LineBuilder currentLine,
+        ICollection<TextLine> buffer)
+    {
         foreach (var part in SplitToFittingParts(token, skFont, availableWidth))
         {
             var partWidth = skFont.MeasureText(part);
@@ -344,23 +417,13 @@ internal sealed class TextDrawing
 
     private float GetAvailableWidth(IShape shape, ITextBox textBox)
     {
-        var width = shape.Width - textBox.LeftMargin - textBox.RightMargin;
-        if (width < 0)
-        {
-            width = 0;
-        }
-
+        var width = ClampToZero(shape.Width - textBox.LeftMargin - textBox.RightMargin);
         return (float)new Points(width).AsPixels();
     }
 
     private float GetAvailableHeight(IShape shape, ITextBox textBox)
     {
-        var height = shape.Height - textBox.TopMargin - textBox.BottomMargin;
-        if (height < 0)
-        {
-            height = 0;
-        }
-
+        var height = ClampToZero(shape.Height - textBox.TopMargin - textBox.BottomMargin);
         return (float)new Points(height).AsPixels();
     }
 
