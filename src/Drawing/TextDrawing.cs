@@ -86,23 +86,7 @@ internal sealed class TextDrawing
         };
     }
 
-    private static bool IsWhitespace(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return true;
-        }
-
-        foreach (var ch in value)
-        {
-            if (!char.IsWhiteSpace(ch))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static bool IsWhitespace(string value) => string.IsNullOrEmpty(value) || value.All(char.IsWhiteSpace);
 
     private static IEnumerable<string> SplitToTokens(string text)
     {
@@ -308,7 +292,7 @@ internal sealed class TextDrawing
 
         if (!wrap || availableWidth <= 0)
         {
-            currentLine.Add(new TextRun(token, font, tokenWidth), skFont.Spacing, baselineOffset);
+            currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
         }
 
@@ -316,7 +300,7 @@ internal sealed class TextDrawing
         {
             if (currentLine.Width + tokenWidth <= availableWidth)
             {
-                currentLine.Add(new TextRun(token, font, tokenWidth), skFont.Spacing, baselineOffset);
+                currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
                 return currentLine;
             }
 
@@ -326,7 +310,7 @@ internal sealed class TextDrawing
 
         if (currentLine.Width + tokenWidth <= availableWidth)
         {
-            currentLine.Add(new TextRun(token, font, tokenWidth), skFont.Spacing, baselineOffset);
+            currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
         }
 
@@ -338,7 +322,7 @@ internal sealed class TextDrawing
 
         if (tokenWidth <= availableWidth)
         {
-            currentLine.Add(new TextRun(token, font, tokenWidth), skFont.Spacing, baselineOffset);
+            currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
         }
 
@@ -352,7 +336,7 @@ internal sealed class TextDrawing
                 currentLine = new LineBuilder(paragraphAlignment);
             }
 
-            currentLine.Add(new TextRun(part, font, partWidth), skFont.Spacing, baselineOffset);
+            currentLine.Add(new PixelTextPortion(part, font, partWidth), skFont.Spacing, baselineOffset);
         }
 
         return currentLine;
@@ -395,28 +379,10 @@ internal sealed class TextDrawing
         }
     }
 
-    private readonly struct TextRun
-    {
-        internal TextRun(string text, ITextPortionFont? font, float width)
-        {
-            this.Text = text;
-            this.Font = font;
-            this.Width = width;
-        }
-
-        internal string Text { get; }
-
-        internal ITextPortionFont? Font { get; }
-
-        internal float Width { get; }
-
-        internal bool IsWhitespace => IsWhitespace(this.Text);
-    }
-
     private sealed class TextLine
     {
         internal TextLine(
-            TextRun[] runs,
+            PixelTextPortion[] runs,
             TextHorizontalAlignment horizontalAlignment,
             float width,
             float height,
@@ -429,7 +395,7 @@ internal sealed class TextDrawing
             this.BaselineOffset = baselineOffset;
         }
 
-        internal TextRun[] Runs { get; }
+        internal PixelTextPortion[] Runs { get; }
 
         internal TextHorizontalAlignment HorizontalAlignment { get; }
 
@@ -442,7 +408,7 @@ internal sealed class TextDrawing
 
     private sealed class LineBuilder
     {
-        private readonly List<TextRun> runs;
+        private readonly List<PixelTextPortion> runs;
         private readonly TextHorizontalAlignment paragraphAlignment;
 
         internal LineBuilder(TextHorizontalAlignment paragraphAlignment)
@@ -459,10 +425,10 @@ internal sealed class TextDrawing
 
         internal bool HasRuns => this.runs.Count > 0;
 
-        internal void Add(TextRun run, float spacing, float baselineOffset)
+        internal void Add(PixelTextPortion portion, float spacing, float baselineOffset)
         {
-            this.runs.Add(run);
-            this.Width += run.Width;
+            this.runs.Add(portion);
+            this.Width += portion.Width;
             this.Height = Math.Max(this.Height, spacing);
             this.BaselineOffset = Math.Max(this.BaselineOffset, baselineOffset);
         }
