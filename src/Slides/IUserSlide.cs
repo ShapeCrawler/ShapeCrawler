@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -99,18 +100,26 @@ public interface IUserSlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
-
+    
     /// <summary>
     ///     Saves the slide image to the specified stream.
     /// </summary>
+#if NET10_0_OR_GREATER
+    [Experimental("EXP001", Message = "This Slide Image generation API is experimental and doesn't work yet.")]
+#else
+    [Experimental("EXP001")]
+#endif
     void SaveImageTo(Stream stream);
-
-#if DEBUG
+    
     /// <summary>
     ///     Saves the slide image to the specified file.
     /// </summary>
-    void SaveImageTo(string file);
+#if NET10_0_OR_GREATER
+    [Experimental("EXP001", Message = "This Slide Image generation API is experimental and doesn't work yet.")]
+#else
+    [Experimental("EXP001")]
 #endif
+    void SaveImageTo(string file);
 
     /// <summary>
     ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
@@ -258,6 +267,29 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         using var fileStream = File.Create(file);
         this.SaveImageTo(fileStream);
     }
+    
+    public void SaveImageTo(Stream stream)
+    {
+        var presPart = this.GetSdkPresentationPart();
+        var pSlideSize = presPart.Presentation.SlideSize!;
+        var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
+        var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
+
+        using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
+        var canvas = surface.Canvas;
+
+        this.RenderBackground(canvas);
+        shapes.Render(canvas);
+
+        using var image = surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        data.SaveTo(stream);
+
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
+    }
 
     public PresentationPart GetSdkPresentationPart()
     {
@@ -327,29 +359,6 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         presPart.DeletePart(removingSlidePart);
 
         presPart.Presentation.Save();
-    }
-
-    public void SaveImageTo(Stream stream)
-    {
-        var presPart = this.GetSdkPresentationPart();
-        var pSlideSize = presPart.Presentation.SlideSize!;
-        var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
-        var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
-
-        using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
-        var canvas = surface.Canvas;
-
-        this.RenderBackground(canvas);
-        shapes.Render(canvas);
-
-        using var image = surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        data.SaveTo(stream);
-
-        if (stream.CanSeek)
-        {
-            stream.Position = 0;
-        }
     }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)

@@ -482,13 +482,29 @@ public class UserSlideTests : SCTest
         // ASSERT - verify the text box's background rectangle is rendered at position (50, 50) with accent1 color (4472C4)
         stream.Position = 0;
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
-        
-        // Check a pixel inside the rectangle (center of shape at ~100pt, ~75pt -> ~133px, ~100px)
-        var centerPixel = bitmap.GetPixel(133, 100);
-        
-        // Accent1 theme color is #4472C4 (R=68, G=114, B=196)
-        centerPixel.Red.Should().BeInRange(60, 76);
-        centerPixel.Green.Should().BeInRange(106, 122);
-        centerPixel.Blue.Should().BeInRange(188, 204);
+
+        var left = ToPixels(50);
+        var top = ToPixels(50);
+        var right = ToPixels(50 + 100);
+        var bottom = ToPixels(50 + 50);
+
+        // Avoid the center since it's expected to contain text (and anti-aliased glyphs).
+        const int inset = 10;
+
+        AssertAccent1(bitmap.GetPixel(left + inset, top + inset));
+        AssertAccent1(bitmap.GetPixel(right - inset, top + inset));
+        AssertAccent1(bitmap.GetPixel(left + inset, bottom - inset));
+        AssertAccent1(bitmap.GetPixel(right - inset, bottom - inset));
+        return;
+
+        void AssertAccent1(SkiaSharp.SKColor pixel)
+        {
+            // Accent1 theme color is #4472C4 (R=68, G=114, B=196)
+            pixel.Red.Should().BeInRange(60, 76);
+            pixel.Green.Should().BeInRange(106, 122);
+            pixel.Blue.Should().BeInRange(188, 204);
+        }
+
+        static int ToPixels(int points) => (int)Math.Round(points * 96d / 72d, MidpointRounding.AwayFromZero);
     }
 }
