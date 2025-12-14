@@ -292,6 +292,7 @@ internal sealed class TextDrawing
     {
         using var font = CreateFont(portion.Font);
         var baselineOffset = GetBaselineOffset(font);
+        var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, wrap, buffer);
 
         foreach (var token in SplitToTokens(portion.Text))
         {
@@ -300,11 +301,8 @@ internal sealed class TextDrawing
                 portion.Font,
                 font,
                 baselineOffset,
-                paragraphAlignment,
-                availableWidth,
-                wrap,
-                currentLine,
-                buffer);
+                paragraphLayout,
+                currentLine);
         }
 
         return currentLine;
@@ -315,15 +313,12 @@ internal sealed class TextDrawing
         ITextPortionFont? font,
         SKFont skFont,
         float baselineOffset,
-        TextHorizontalAlignment paragraphAlignment,
-        float availableWidth,
-        bool wrap,
-        LineBuilder currentLine,
-        ICollection<TextLine> buffer)
+        ParagraphLayout paragraphLayout,
+        LineBuilder currentLine)
     {
         var tokenWidth = skFont.MeasureText(token);
 
-        if (!wrap || availableWidth <= 0)
+        if (!paragraphLayout.Wrap || paragraphLayout.AvailableWidth <= 0)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
@@ -337,10 +332,8 @@ internal sealed class TextDrawing
                 tokenWidth,
                 skFont.Spacing,
                 baselineOffset,
-                paragraphAlignment,
-                availableWidth,
-                currentLine,
-                buffer);
+                paragraphLayout,
+                currentLine);
         }
 
         return this.LayoutNonWhitespaceToken(
@@ -349,10 +342,8 @@ internal sealed class TextDrawing
             skFont,
             tokenWidth,
             baselineOffset,
-            paragraphAlignment,
-            availableWidth,
-            currentLine,
-            buffer);
+            paragraphLayout,
+            currentLine);
     }
 
     private LineBuilder LayoutWhitespaceToken(
@@ -361,19 +352,17 @@ internal sealed class TextDrawing
         float tokenWidth,
         float spacing,
         float baselineOffset,
-        TextHorizontalAlignment paragraphAlignment,
-        float availableWidth,
-        LineBuilder currentLine,
-        ICollection<TextLine> buffer)
+        ParagraphLayout paragraphLayout,
+        LineBuilder currentLine)
     {
-        if (currentLine.Width + tokenWidth <= availableWidth)
+        if (currentLine.Width + tokenWidth <= paragraphLayout.AvailableWidth)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), spacing, baselineOffset);
             return currentLine;
         }
 
-        buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
-        return new LineBuilder(paragraphAlignment); // Drop whitespace at wrap boundary.
+        paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+        return new LineBuilder(paragraphLayout.ParagraphAlignment); // Drop whitespace at wrap boundary.
     }
 
     private LineBuilder LayoutNonWhitespaceToken(
@@ -382,12 +371,10 @@ internal sealed class TextDrawing
         SKFont skFont,
         float tokenWidth,
         float baselineOffset,
-        TextHorizontalAlignment paragraphAlignment,
-        float availableWidth,
-        LineBuilder currentLine,
-        ICollection<TextLine> buffer)
+        ParagraphLayout paragraphLayout,
+        LineBuilder currentLine)
     {
-        if (currentLine.Width + tokenWidth <= availableWidth)
+        if (currentLine.Width + tokenWidth <= paragraphLayout.AvailableWidth)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
@@ -395,11 +382,11 @@ internal sealed class TextDrawing
 
         if (currentLine.HasRuns)
         {
-            buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
-            currentLine = new LineBuilder(paragraphAlignment);
+            paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+            currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
         }
 
-        if (tokenWidth <= availableWidth)
+        if (tokenWidth <= paragraphLayout.AvailableWidth)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
@@ -410,10 +397,8 @@ internal sealed class TextDrawing
             font,
             skFont,
             baselineOffset,
-            paragraphAlignment,
-            availableWidth,
-            currentLine,
-            buffer);
+            paragraphLayout,
+            currentLine);
     }
 
     private LineBuilder LayoutSplitToken(
@@ -421,25 +406,46 @@ internal sealed class TextDrawing
         ITextPortionFont? font,
         SKFont skFont,
         float baselineOffset,
-        TextHorizontalAlignment paragraphAlignment,
-        float availableWidth,
-        LineBuilder currentLine,
-        ICollection<TextLine> buffer)
+        ParagraphLayout paragraphLayout,
+        LineBuilder currentLine)
     {
-        foreach (var part in SplitToFittingParts(token, skFont, availableWidth))
+        foreach (var part in SplitToFittingParts(token, skFont, paragraphLayout.AvailableWidth))
         {
             var partWidth = skFont.MeasureText(part);
 
-            if (currentLine.HasRuns && currentLine.Width + partWidth > availableWidth)
+            if (currentLine.HasRuns && currentLine.Width + partWidth > paragraphLayout.AvailableWidth)
             {
-                buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
-                currentLine = new LineBuilder(paragraphAlignment);
+                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
             }
 
             currentLine.Add(new PixelTextPortion(part, font, partWidth), skFont.Spacing, baselineOffset);
         }
 
         return currentLine;
+    }
+
+    private readonly struct ParagraphLayout
+    {
+        internal ParagraphLayout(
+            TextHorizontalAlignment paragraphAlignment,
+            float availableWidth,
+            bool wrap,
+            ICollection<TextLine> buffer)
+        {
+            this.ParagraphAlignment = paragraphAlignment;
+            this.AvailableWidth = availableWidth;
+            this.Wrap = wrap;
+            this.Buffer = buffer;
+        }
+
+        internal TextHorizontalAlignment ParagraphAlignment { get; }
+
+        internal float AvailableWidth { get; }
+
+        internal bool Wrap { get; }
+
+        internal ICollection<TextLine> Buffer { get; }
     }
 
     private sealed class TextLine
