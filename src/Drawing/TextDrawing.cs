@@ -210,11 +210,12 @@ internal sealed class TextDrawing
         var low = 1;
         var high = remaining;
         var best = 0;
+        var tokenSpan = token.AsSpan();
 
         while (low <= high)
         {
             var mid = low + ((high - low) / 2);
-            var candidate = token.Substring(offset, mid);
+            var candidate = tokenSpan.Slice(offset, mid);
             var width = font.MeasureText(candidate);
 
             if (width <= maxWidth)
