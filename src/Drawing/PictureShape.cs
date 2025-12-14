@@ -16,6 +16,10 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
 
     internal override void Render(SKCanvas canvas)
     {
+        if (picture.Image == null)
+        {
+            return;
+        }
         var imageBytes = picture.Image.AsByteArray();
         using var bitmap = SKBitmap.Decode(imageBytes);
         var x = new Points(this.X).AsPixels();
