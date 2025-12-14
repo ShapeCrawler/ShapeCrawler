@@ -173,54 +173,55 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
 
     private decimal AbsoluteWidth()
     {
-        var pGroupShapes = pPicture.Ancestors<P.GroupShape>().ToArray();
-        if (pGroupShapes.Length == 0)
-        {
-            return base.Width;
-        }
-
-        decimal cumulativeScaleFactor = 1.0m;
-        foreach (var pGroupShape in pGroupShapes)
-        {
-            var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
-            var childExtentsWidth = transformGroup.ChildExtents!.Cx!.Value;
-            var extentsWidth = transformGroup.Extents!.Cx!.Value;
-            if (childExtentsWidth == 0)
-            {
-                continue;
-            }
-
-            var scaleFactor = (decimal)extentsWidth / childExtentsWidth;
-            cumulativeScaleFactor *= scaleFactor;
-        }
-
-        return base.Width * cumulativeScaleFactor;
+        return ShapePositionHelper.CalculateAbsoluteDimension(
+            base.Width,
+            pPicture,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.ChildExtents!.Cx!.Value,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.Extents!.Cx!.Value
+        );
     }
 
     private decimal AbsoluteHeight()
     {
-        var pGroupShapes = pPicture.Ancestors<P.GroupShape>().ToArray();
-        if (pGroupShapes.Length == 0)
-        {
-            return base.Height;
-        }
+        return ShapePositionHelper.CalculateAbsoluteDimension(
+            base.Height,
+            pPicture,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.ChildExtents!.Cy!.Value,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.Extents!.Cy!.Value
+        );
+    }
 
-        decimal cumulativeScaleFactor = 1.0m;
-        foreach (var pGroupShape in pGroupShapes)
+    // Helper for absolute position/size calculations
+    internal static class ShapePositionHelper
+    {
+        public static decimal CalculateAbsoluteDimension(
+            decimal baseValue,
+            OpenXmlElement shapeElement,
+            Func<P.GroupShape, long> getChildExtents,
+            Func<P.GroupShape, long> getExtents)
         {
-            var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
-            var childExtentsHeight = transformGroup.ChildExtents!.Cy!.Value;
-            var extentsHeight = transformGroup.Extents!.Cy!.Value;
-            if (childExtentsHeight == 0)
+            var pGroupShapes = shapeElement.Ancestors<P.GroupShape>().ToArray();
+            if (pGroupShapes.Length == 0)
             {
-                continue;
+                return baseValue;
             }
 
-            var scaleFactor = (decimal)extentsHeight / childExtentsHeight;
-            cumulativeScaleFactor *= scaleFactor;
-        }
+            decimal cumulativeScaleFactor = 1.0m;
+            foreach (var pGroupShape in pGroupShapes)
+            {
+                var childExtents = getChildExtents(pGroupShape);
+                var extents = getExtents(pGroupShape);
+                if (childExtents == 0)
+                {
+                    continue;
+                }
 
-        return base.Height * cumulativeScaleFactor;
+                var scaleFactor = (decimal)extents / childExtents;
+                cumulativeScaleFactor *= scaleFactor;
+            }
+
+            return baseValue * cumulativeScaleFactor;
+        }
     }
 
     private void UpdateParentGroupX()
