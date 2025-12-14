@@ -17,7 +17,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         get => this.AbsoluteX();
         set
         {
-            base.X = value;
+            base.X = this.LocalX(value);
             this.UpdateParentGroupX();
         }
     }
@@ -27,7 +27,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         get => this.AbsoluteY();
         set
         {
-            base.Y = value;
+            base.Y = this.LocalY(value);
             this.UpdateParentGroupY();
         }
     }
@@ -37,7 +37,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         get => this.AbsoluteWidth();
         set
         {
-            base.Width = value;
+            base.Width = this.LocalWidth(value);
             this.UpdateParentGroupWidth();
         }
     }
@@ -45,7 +45,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
     public override decimal Height
     {
         get => this.AbsoluteHeight();
-        set => base.Height = value;
+        set => base.Height = this.LocalHeight(value);
     }
 
     public override IPicture Picture => picture;
@@ -171,6 +171,114 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         return absoluteY;
     }
 
+    private decimal LocalX(decimal absoluteX)
+    {
+        var pGroupShapes = pPicture.Ancestors<P.GroupShape>().ToArray();
+        if (pGroupShapes.Length == 0)
+        {
+            return absoluteX;
+        }
+
+        var localX = absoluteX;
+        for (var i = pGroupShapes.Length - 1; i >= 0; i--)
+        {
+            var pGroupShape = pGroupShapes[i];
+            var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var childOffset = transformGroup.ChildOffset!;
+            var childExtents = transformGroup.ChildExtents!;
+            var offset = transformGroup.Offset!;
+            var extents = transformGroup.Extents!;
+
+            decimal scaleFactor = 1.0m;
+            if (childExtents.Cx!.Value != 0)
+            {
+                scaleFactor = (decimal)extents.Cx!.Value / childExtents.Cx!.Value;
+            }
+
+            if (scaleFactor == 0)
+            {
+                scaleFactor = 1.0m;
+            }
+
+            var childOffsetX = new Emus(childOffset.X!.Value).AsPoints();
+            var offsetX = new Emus(offset.X!.Value).AsPoints();
+            localX = ((localX - offsetX) / scaleFactor) + childOffsetX;
+        }
+
+        return localX;
+    }
+
+    private decimal LocalY(decimal absoluteY)
+    {
+        var pGroupShapes = pPicture.Ancestors<P.GroupShape>().ToArray();
+        if (pGroupShapes.Length == 0)
+        {
+            return absoluteY;
+        }
+
+        var localY = absoluteY;
+        for (var i = pGroupShapes.Length - 1; i >= 0; i--)
+        {
+            var pGroupShape = pGroupShapes[i];
+            var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var childOffset = transformGroup.ChildOffset!;
+            var childExtents = transformGroup.ChildExtents!;
+            var offset = transformGroup.Offset!;
+            var extents = transformGroup.Extents!;
+
+            decimal scaleFactor = 1.0m;
+            if (childExtents.Cy!.Value != 0)
+            {
+                scaleFactor = (decimal)extents.Cy!.Value / childExtents.Cy!.Value;
+            }
+
+            if (scaleFactor == 0)
+            {
+                scaleFactor = 1.0m;
+            }
+
+            var childOffsetY = new Emus(childOffset.Y!.Value).AsPoints();
+            var offsetY = new Emus(offset.Y!.Value).AsPoints();
+            localY = ((localY - offsetY) / scaleFactor) + childOffsetY;
+        }
+
+        return localY;
+    }
+
+    private decimal LocalWidth(decimal absoluteWidth)
+    {
+        var scaleFactor = ShapePositionHelper.CalculateAbsoluteDimension(
+            1.0m,
+            pPicture,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.ChildExtents!.Cx!.Value,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.Extents!.Cx!.Value
+        );
+
+        if (scaleFactor == 0)
+        {
+            return absoluteWidth;
+        }
+
+        return absoluteWidth / scaleFactor;
+    }
+
+    private decimal LocalHeight(decimal absoluteHeight)
+    {
+        var scaleFactor = ShapePositionHelper.CalculateAbsoluteDimension(
+            1.0m,
+            pPicture,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.ChildExtents!.Cy!.Value,
+            groupShape => groupShape.GroupShapeProperties!.TransformGroup!.Extents!.Cy!.Value
+        );
+
+        if (scaleFactor == 0)
+        {
+            return absoluteHeight;
+        }
+
+        return absoluteHeight / scaleFactor;
+    }
+
     private decimal AbsoluteWidth()
     {
         return ShapePositionHelper.CalculateAbsoluteDimension(
@@ -205,26 +313,28 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         var aChildOffset = aTransformGroup.ChildOffset!;
         var aChildExtents = aTransformGroup.ChildExtents!;
         var groupedShapeXEmus = new Points(this.X).AsEmus();
-        var groupShapeXEmus = aOffset.X!;
+        var groupShapeXEmus = aOffset.X!.Value;
 
         if (groupedShapeXEmus < groupShapeXEmus)
         {
-            var diff = groupShapeXEmus - groupedShapeXEmus;
-            aOffset.X = new Int64Value(aOffset.X! - diff);
-            aExtents.Cx = new Int64Value(aExtents.Cx! + diff);
-            aChildOffset.X = new Int64Value(aChildOffset.X! - diff);
-            aChildExtents.Cx = new Int64Value(aChildExtents.Cx! + diff);
+            var diffParent = groupShapeXEmus - groupedShapeXEmus;
+            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            aOffset.X = new Int64Value(aOffset.X!.Value - diffParent);
+            aExtents.Cx = new Int64Value(aExtents.Cx!.Value + diffParent);
+            aChildOffset.X = new Int64Value(aChildOffset.X!.Value - diffChild);
+            aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value + diffChild);
 
             return;
         }
 
         var groupRightEmu = aOffset.X!.Value + aExtents.Cx!.Value;
-        var groupedRightEmu = new Points(base.X + base.Width).AsEmus();
+        var groupedRightEmu = new Points(this.X + this.Width).AsEmus();
         if (groupedRightEmu > groupRightEmu)
         {
-            var diffEmu = groupedRightEmu - groupRightEmu;
-            aExtents.Cx = new Int64Value(aExtents.Cx! + diffEmu);
-            aChildExtents.Cx = new Int64Value(aChildExtents.Cx! + diffEmu);
+            var diffParent = groupedRightEmu - groupRightEmu;
+            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            aExtents.Cx = new Int64Value(aExtents.Cx!.Value + diffParent);
+            aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value + diffChild);
         }
     }
 
@@ -242,25 +352,27 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         var aChildOffset = aTransformGroup.ChildOffset!;
         var aChildExtents = aTransformGroup.ChildExtents!;
         var groupedYEmus = new Points(this.Y).AsEmus();
-        var groupYEmus = aOffset.Y!;
+        var groupYEmus = aOffset.Y!.Value;
         if (groupedYEmus < groupYEmus)
         {
-            var diff = groupYEmus - groupedYEmus;
-            aOffset.Y = new Int64Value(aOffset.Y! - diff);
-            aExtents.Cy = new Int64Value(aExtents.Cy! + diff);
-            aChildOffset.Y = new Int64Value(aChildOffset.Y! - diff);
-            aChildExtents.Cy = new Int64Value(aChildExtents.Cy! + diff);
+            var diffParent = groupYEmus - groupedYEmus;
+            var diffChild = this.ChildDiff(diffParent, aExtents.Cy!.Value, aChildExtents.Cy!.Value);
+            aOffset.Y = new Int64Value(aOffset.Y!.Value - diffParent);
+            aExtents.Cy = new Int64Value(aExtents.Cy!.Value + diffParent);
+            aChildOffset.Y = new Int64Value(aChildOffset.Y!.Value - diffChild);
+            aChildExtents.Cy = new Int64Value(aChildExtents.Cy!.Value + diffChild);
 
             return;
         }
 
         var groupBottomEmu = aOffset.Y!.Value + aExtents.Cy!.Value;
-        var groupedBottomEmu = groupedYEmus + new Points(base.Height).AsEmus();
+        var groupedBottomEmu = new Points(this.Y + this.Height).AsEmus();
         if (groupedBottomEmu > groupBottomEmu)
         {
-            var diffEmu = groupedBottomEmu - groupBottomEmu;
-            aExtents.Cy = new Int64Value(aExtents.Cy! + diffEmu);
-            aChildExtents.Cy = new Int64Value(aChildExtents.Cy! + diffEmu);
+            var diffParent = groupedBottomEmu - groupBottomEmu;
+            var diffChild = this.ChildDiff(diffParent, aExtents.Cy!.Value, aChildExtents.Cy!.Value);
+            aExtents.Cy = new Int64Value(aExtents.Cy!.Value + diffParent);
+            aChildExtents.Cy = new Int64Value(aChildExtents.Cy!.Value + diffChild);
         }
     }
 
@@ -277,25 +389,48 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         var aExtents = aTransformGroup.Extents!;
         var aChildExtents = aTransformGroup.ChildExtents!;
         var groupedShapeWidthEmus = new Points(this.Width).AsEmus();
-        var groupShapeWidthEmus = aExtents.Cx!;
+        var groupShapeWidthEmus = aExtents.Cx!.Value;
 
         if (groupedShapeWidthEmus < groupShapeWidthEmus)
         {
-            var diff = groupShapeWidthEmus - groupedShapeWidthEmus;
-            aExtents.Cx = new Int64Value(aExtents.Cx! - diff);
-            aChildExtents.Cx = new Int64Value(aChildExtents.Cx! - diff);
+            var diffParent = groupShapeWidthEmus - groupedShapeWidthEmus;
+            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            aExtents.Cx = new Int64Value(aExtents.Cx!.Value - diffParent);
+            aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value - diffChild);
 
             return;
         }
 
         var groupRightEmu = aOffset.X!.Value + aExtents.Cx!.Value;
-        var groupedRightEmu = new Points(base.X + base.Width).AsEmus();
+        var groupedRightEmu = new Points(this.X + this.Width).AsEmus();
         if (groupedRightEmu > groupRightEmu)
         {
-            var diffEmu = groupedRightEmu - groupRightEmu;
-            aExtents.Cx = new Int64Value(aExtents.Cx! + diffEmu);
-            aChildExtents.Cx = new Int64Value(aChildExtents.Cx! + diffEmu);
+            var diffParent = groupedRightEmu - groupRightEmu;
+            var diffChild = this.ChildDiff(diffParent, aExtents.Cx!.Value, aChildExtents.Cx!.Value);
+            aExtents.Cx = new Int64Value(aExtents.Cx!.Value + diffParent);
+            aChildExtents.Cx = new Int64Value(aChildExtents.Cx!.Value + diffChild);
         }
+    }
+
+    private long ChildDiff(long parentDiff, long extents, long childExtents)
+    {
+        if (parentDiff == 0)
+        {
+            return 0;
+        }
+
+        if (childExtents == 0)
+        {
+            return parentDiff;
+        }
+
+        var scaleFactor = (decimal)extents / childExtents;
+        if (scaleFactor == 0)
+        {
+            return parentDiff;
+        }
+
+        return (long)decimal.Round((decimal)parentDiff / scaleFactor, 0, MidpointRounding.AwayFromZero);
     }
 
     // Helper for absolute position/size calculations
