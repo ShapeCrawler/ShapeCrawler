@@ -192,7 +192,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
     }
 
     // Helper for absolute position/size calculations
-    internal static class ShapePositionHelper
+    private static class ShapePositionHelper
     {
         public static decimal CalculateAbsoluteDimension(
             decimal baseValue,
