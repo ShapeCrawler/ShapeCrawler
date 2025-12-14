@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -171,9 +171,9 @@ internal sealed class GroupShape : Shape
         decimal scaleFactorX = 1.0m;
         decimal scaleFactorY = 1.0m;
 
-        foreach (var pGroupShape in pGroupShapes)
+        foreach (var childPGroupShape in pGroupShapes)
         {
-            var transformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var transformGroup = childPGroupShape.GroupShapeProperties!.TransformGroup!;
             var childOffset = transformGroup.ChildOffset!;
             var childExtents = transformGroup.ChildExtents!;
             var offset = transformGroup.Offset!;
