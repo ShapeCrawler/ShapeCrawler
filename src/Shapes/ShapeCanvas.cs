@@ -33,7 +33,7 @@ internal sealed class ShapeCanvas
             { "folHlink", scheme => scheme.FollowedHyperlinkColor }
         };
 
-    private readonly IShape shape;
+    private readonly Shape shape;
     private readonly OpenXmlElement pShapeTreeElement;
     private readonly ShapeColorScheme shapeColorScheme;
 
@@ -42,7 +42,7 @@ internal sealed class ShapeCanvas
     /// </summary>
     /// <param name="shape">The shape to render.</param>
     /// <param name="pShapeTreeElement">The shape tree element.</param>
-    internal ShapeCanvas(IShape shape, OpenXmlElement pShapeTreeElement)
+    internal ShapeCanvas(Shape shape, OpenXmlElement pShapeTreeElement)
     {
         this.shape = shape;
         this.pShapeTreeElement = pShapeTreeElement;
@@ -74,7 +74,7 @@ internal sealed class ShapeCanvas
 
     private static void ApplyRotation(
         SKCanvas canvas,
-        IShape shape,
+        Shape shape,
         decimal x,
         decimal y,
         decimal width,
