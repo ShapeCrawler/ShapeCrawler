@@ -191,39 +191,6 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
         );
     }
 
-    // Helper for absolute position/size calculations
-    private static class ShapePositionHelper
-    {
-        public static decimal CalculateAbsoluteDimension(
-            decimal baseValue,
-            OpenXmlElement shapeElement,
-            Func<P.GroupShape, long> getChildExtents,
-            Func<P.GroupShape, long> getExtents)
-        {
-            var pGroupShapes = shapeElement.Ancestors<P.GroupShape>().ToArray();
-            if (pGroupShapes.Length == 0)
-            {
-                return baseValue;
-            }
-
-            decimal cumulativeScaleFactor = 1.0m;
-            foreach (var pGroupShape in pGroupShapes)
-            {
-                var childExtents = getChildExtents(pGroupShape);
-                var extents = getExtents(pGroupShape);
-                if (childExtents == 0)
-                {
-                    continue;
-                }
-
-                var scaleFactor = (decimal)extents / childExtents;
-                cumulativeScaleFactor *= scaleFactor;
-            }
-
-            return baseValue * cumulativeScaleFactor;
-        }
-    }
-
     private void UpdateParentGroupX()
     {
         var pGroupShape = pPicture.Ancestors<P.GroupShape>().FirstOrDefault();
@@ -328,6 +295,39 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Pos
             var diffEmu = groupedRightEmu - groupRightEmu;
             aExtents.Cx = new Int64Value(aExtents.Cx! + diffEmu);
             aChildExtents.Cx = new Int64Value(aChildExtents.Cx! + diffEmu);
+        }
+    }
+
+    // Helper for absolute position/size calculations
+    private static class ShapePositionHelper
+    {
+        public static decimal CalculateAbsoluteDimension(
+            decimal baseValue,
+            OpenXmlElement shapeElement,
+            Func<P.GroupShape, long> getChildExtents,
+            Func<P.GroupShape, long> getExtents)
+        {
+            var pGroupShapes = shapeElement.Ancestors<P.GroupShape>().ToArray();
+            if (pGroupShapes.Length == 0)
+            {
+                return baseValue;
+            }
+
+            decimal cumulativeScaleFactor = 1.0m;
+            foreach (var pGroupShape in pGroupShapes)
+            {
+                var childExtents = getChildExtents(pGroupShape);
+                var extents = getExtents(pGroupShape);
+                if (childExtents == 0)
+                {
+                    continue;
+                }
+
+                var scaleFactor = (decimal)extents / childExtents;
+                cumulativeScaleFactor *= scaleFactor;
+            }
+
+            return baseValue * cumulativeScaleFactor;
         }
     }
 }
