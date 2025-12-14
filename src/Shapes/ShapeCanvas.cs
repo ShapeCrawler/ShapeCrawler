@@ -145,6 +145,7 @@ internal sealed class ShapeCanvas
 
         return new Points(defaultWidth).AsPixels();
     }
+
     private void RenderRectangle(SKCanvas canvas)
     {
         var x = new Points(this.shape.X).AsPixels();
