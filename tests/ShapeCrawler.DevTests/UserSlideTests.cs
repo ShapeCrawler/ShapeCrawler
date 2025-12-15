@@ -520,19 +520,20 @@ public class UserSlideTests : SCTest
         // Assert
         stream.Position = 0;
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
-        var nonBackgroundPixels = 0;
-        for (var x = 0; x < 50; x++)
+        
+        // Scan first 50 pixels horizontally from left edge at text vertical center
+        // to verify the bullet character was rendered (non-white pixels should be present)
+        var foundNonWhitePixel = false;
+        var scanY = 30; // approximate vertical center of textbox at default position
+        for (var x = 0; x < 50 && !foundNonWhitePixel; x++)
         {
-            for (var y = 0; y < 50; y++)
+            var pixel = bitmap.GetPixel(x, scanY);
+            if (pixel.Red < 250 || pixel.Green < 250 || pixel.Blue < 250)
             {
-                var pixel = bitmap.GetPixel(x, y);
-                if (pixel.Red != 255 || pixel.Green != 255 || pixel.Blue != 255)
-                {
-                    nonBackgroundPixels++;
-                }
+                foundNonWhitePixel = true;
             }
         }
 
-        nonBackgroundPixels.Should().BeGreaterThan(0);
+        foundNonWhitePixel.Should().BeTrue("bullet character should be rendered at the start of the text");
     }
 }
