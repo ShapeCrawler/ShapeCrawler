@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -157,6 +159,17 @@ public sealed class Bullet
     }
 
     #endregion Public Properties
+
+    /// <summary>
+    ///     Applies default PowerPoint spacing between the bullet and text.
+    /// </summary>
+    internal void ApplyDefaultSpacing()
+    {
+        // PowerPoint uses a hanging indent where bullet is at 0 and text starts at 22.5pt.
+        var leftMarginEmu = (int)new Points(22.5m).AsEmus();
+        this.aParagraphProperties.LeftMargin = new Int32Value(leftMarginEmu);
+        this.aParagraphProperties.Indent = new Int32Value(-leftMarginEmu);
+    }
 
     private BulletType ParseType()
     {

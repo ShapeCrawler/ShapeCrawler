@@ -31,8 +31,8 @@ public class ParagraphTests : SCTest
         var pptx = TestAsset("002.pptx");
         var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
-        var shape3Pr1Bullet = ((IShape)shapes.First(x => x.Id == 3)).TextBox.Paragraphs[0].Bullet;
-        var shape4Pr2Bullet = ((IShape)shapes.First(x => x.Id == 4)).TextBox.Paragraphs[1].Bullet;
+        var shape3Pr1Bullet = (shapes.First(x => x.Id == 3)).TextBox.Paragraphs[0].Bullet;
+        var shape4Pr2Bullet = (shapes.First(x => x.Id == 4)).TextBox.Paragraphs[1].Bullet;
 
         // Act
         var shape3BulletFontName = shape3Pr1Bullet.FontName;
@@ -52,9 +52,9 @@ public class ParagraphTests : SCTest
         var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape5 = shapeList.First(x => x.Id == 5);
-        var shape4Pr2Bullet = ((IShape)shape4).TextBox.Paragraphs[1].Bullet;
-        var shape5Pr1Bullet = ((IShape)shape5).TextBox.Paragraphs[0].Bullet;
-        var shape5Pr2Bullet = ((IShape)shape5).TextBox.Paragraphs[1].Bullet;
+        var shape4Pr2Bullet = shape4.TextBox.Paragraphs[1].Bullet;
+        var shape5Pr1Bullet = shape5.TextBox.Paragraphs[0].Bullet;
+        var shape5Pr2Bullet = shape5.TextBox.Paragraphs[1].Bullet;
 
         // Act
         var shape5Pr1BulletType = shape5Pr1Bullet.Type;
@@ -287,10 +287,10 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    // [TestCase("002.pptx", 2, 4, 3, "Text", 1)]
-    // [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}", 2)]
-    // [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2", 3)]
-    // [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2{NewLine}", 4)]
+    [TestCase("002.pptx", 2, 4, 3, "Text", 1)]
+    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}", 2)]
+    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2", 3)]
+    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2{NewLine}", 4)]
     [TestCase("023.pptx", 1, 2, 2, "Text", 1)]
     public void Text_Setter_sets_paragraph_text(string presName, int slideNumber, int shapeId, int paraNumber,
         string paraText, int expectedPortionsCount)
@@ -441,5 +441,28 @@ public class ParagraphTests : SCTest
 
         // Assert
         shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
+    }
+
+    [Test]
+    public void Bullet_Character_Getter_returns_list_paragraph_bullet_character()
+    {
+        // Arrange
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(textBox => 
+                {
+                    textBox.Paragraph(para => {
+                        para.Text("Hello, World!");
+                        para.BulletedList();
+                    });
+                });
+            });
+        });
+        var paragraph = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First();
+
+        // Act-Assert
+        paragraph.Bullet.Character.Should().Be("•");
     }
 }
