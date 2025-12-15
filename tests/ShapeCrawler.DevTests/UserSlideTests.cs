@@ -512,10 +512,27 @@ public class UserSlideTests : SCTest
                 });
             });
         });
+        using var stream = new MemoryStream();
 
         // Act
-        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\result.png");
+        pres.Slide(1).SaveImageTo(stream);
         
         // Assert
+        stream.Position = 0;
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        var nonBackgroundPixels = 0;
+        for (var x = 0; x < 50; x++)
+        {
+            for (var y = 0; y < 50; y++)
+            {
+                var pixel = bitmap.GetPixel(x, y);
+                if (pixel.Red != 255 || pixel.Green != 255 || pixel.Blue != 255)
+                {
+                    nonBackgroundPixels++;
+                }
+            }
+        }
+
+        nonBackgroundPixels.Should().BeGreaterThan(0);
     }
 }
