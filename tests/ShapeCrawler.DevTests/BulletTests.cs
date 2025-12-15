@@ -171,7 +171,7 @@ public class BulletTests : SCTest
     }
     
     [Test]
-    public void ColorHex_bullet_color()
+    public void ColorHex_Getter_returns_bullet_properties()
     {
         // Arrange
         var pres = new Presentation(TestAsset("002.pptx"));
