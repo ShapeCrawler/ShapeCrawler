@@ -463,7 +463,6 @@ public class ParagraphTests : SCTest
         var paragraph = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First();
 
         // Act-Assert
-        pres.Save(@"c:\temp\result.pptx");
-        paragraph.Bullet.Character.Should().NotBeNull();
+        paragraph.Bullet.Character.Should().Be("•");
     }
 }
