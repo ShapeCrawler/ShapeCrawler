@@ -444,7 +444,7 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    public void Bullet_Character_Getter_return_list_paragraph_bullet_character()
+    public void Bullet_Character_Getter_returns_list_paragraph_bullet_character()
     {
         // Arrange
         var pres = new Presentation(pres =>
