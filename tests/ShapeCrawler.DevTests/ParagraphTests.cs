@@ -442,4 +442,28 @@ public class ParagraphTests : SCTest
         // Assert
         shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
     }
+
+    [Test]
+    public void Bullet_Character_Getter_return_list_paragraph_bullet_character()
+    {
+        // Arrange
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(textBox => 
+                {
+                    textBox.Paragraph(para => {
+                        para.Text("Hello, World!");
+                        para.BulletedList();
+                    });
+                });
+            });
+        });
+        var paragraph = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First();
+
+        // Act-Assert
+        pres.Save(@"c:\temp\result.pptx");
+        paragraph.Bullet.Character.Should().NotBeNull();
+    }
 }

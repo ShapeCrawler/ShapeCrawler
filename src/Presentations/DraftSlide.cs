@@ -166,6 +166,31 @@ public sealed class DraftSlide
             {
                 addedShape.TextBox!.Paragraphs[0].Portions[0].TextHighlightColor = builder.HighlightColor.Value;
             }
+
+            // Apply draft paragraphs with bullet settings
+            var textBox = addedShape.TextBox!;
+            for (var i = 0; i < builder.Paragraphs.Count; i++)
+            {
+                if (i > 0)
+                {
+                    textBox.Paragraphs.Add();
+                }
+
+                var draftParagraph = builder.Paragraphs[i];
+                var paragraph = textBox.Paragraphs[i];
+                if (!string.IsNullOrEmpty(draftParagraph.Content))
+                {
+                    paragraph.Text = draftParagraph.Content!;
+                }
+
+                if (draftParagraph.IsBulletedList)
+                {
+                    paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
+                    paragraph.Bullet.Type = BulletType.Character;
+                    paragraph.Bullet.Character = draftParagraph.BulletCharacter;
+                    paragraph.Bullet.ApplyDefaultSpacing();
+                }
+            }
         });
 
         return this;

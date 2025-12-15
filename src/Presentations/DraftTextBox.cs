@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ShapeCrawler.Presentations;
 
@@ -22,6 +23,8 @@ public sealed class DraftTextBox
     internal Color? HighlightColor { get; private set; }
 
     internal Geometry ShapeGeometry { get; private set; } = ShapeCrawler.Geometry.Rectangle;
+
+    internal List<DraftParagraph> Paragraphs { get; } = [];
 
     /// <summary>
     ///     Sets the geometry type of the text box.
@@ -97,6 +100,17 @@ public sealed class DraftTextBox
     public DraftTextBox Paragraph(string content)
     {
         this.Content = AppendParagraph(this.Content, content);
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a paragraph using a nested builder.
+    /// </summary>
+    public DraftTextBox Paragraph(Action<DraftParagraph> configure)
+    {
+        var draftParagraph = new DraftParagraph();
+        configure(draftParagraph);
+        this.Paragraphs.Add(draftParagraph);
         return this;
     }
 
