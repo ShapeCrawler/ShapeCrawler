@@ -80,6 +80,59 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a text box (auto shape) and sets its content.
     /// </summary>
+    /// <param name="content">Text content.</param>
+    public DraftSlide TextBox(string content)
+    {
+        return this.TextBox(content, x: null, y: null, width: 100, height: 50);
+    }
+
+    /// <summary>
+    ///     Adds a text box (auto shape) at the specified position and sets its content.
+    /// </summary>
+    /// <param name="content">Text content.</param>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    public DraftSlide TextBox(string content, int x, int y)
+    {
+        return this.TextBox(content, x, y, width: 100, height: 50);
+    }
+
+    /// <summary>
+    ///     Adds a text box (auto shape) at the specified position, with the specified size and content.
+    /// </summary>
+    /// <param name="content">Text content.</param>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in points.</param>
+    /// <param name="height">Height in points.</param>
+    public DraftSlide TextBox(string content, int x, int y, int width, int height)
+    {
+        return this.TextBox(content, (int?)x, (int?)y, width, height);
+    }
+
+    /// <summary>
+    ///     Adds a text box (auto shape) and sets its content.
+    /// </summary>
+    /// <param name="content">Text content.</param>
+    /// <param name="x">X coordinate in points. If <see langword="null"/>, the text box is centered horizontally.</param>
+    /// <param name="y">Y coordinate in points. If <see langword="null"/>, the text box is centered vertically.</param>
+    /// <param name="width">Width in points.</param>
+    /// <param name="height">Height in points.</param>
+    public DraftSlide TextBox(string content, int? x, int? y, int width, int height)
+    {
+        this.actions.Add((slide, pres) =>
+        {
+            var effectiveX = x ?? (int)((pres.SlideWidth - width) / 2);
+            var effectiveY = y ?? (int)((pres.SlideHeight - height) / 2);
+            slide.Shapes.AddShape(effectiveX, effectiveY, width, height, Geometry.Rectangle, content);
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a text box (auto shape) and sets its content.
+    /// </summary>
     public DraftSlide TextBox(string name, int x, int y, int width, int height, string content)
     {
         this.actions.Add((slide, _) =>

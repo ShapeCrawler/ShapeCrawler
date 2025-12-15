@@ -422,6 +422,23 @@ namespace ShapeCrawler.DevTests
             // Assert
             text.Should().BeEquivalentTo(expectedText);
         }
+        
+        [Test]
+        public void Text_Getter_returns_text_box_text()
+        {
+            // Arrange
+            var pres = new Presentation(pres =>
+            {
+                pres.Slide(slide =>
+                {
+                    slide.TextBox("Hello World!");
+                });
+            });
+            var textBox = pres.Slide(1).Shapes.First().TextBox!;
+        
+            // Act-Assert
+            textBox.Text.Should().Be("Hello World!");
+        }
 
         [Test]
         [TestCase("001.pptx", 1, "TextBox 2")]
