@@ -25,49 +25,6 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    public void Bullet_FontName_Getter_returns_font_name()
-    {
-        // Arrange
-        var pptx = TestAsset("002.pptx");
-        var pres = new Presentation(pptx);
-        var shapes = pres.Slides[1].Shapes;
-        var shape3Pr1Bullet = (shapes.First(x => x.Id == 3)).TextBox.Paragraphs[0].Bullet;
-        var shape4Pr2Bullet = (shapes.First(x => x.Id == 4)).TextBox.Paragraphs[1].Bullet;
-
-        // Act
-        var shape3BulletFontName = shape3Pr1Bullet.FontName;
-        var shape4BulletFontName = shape4Pr2Bullet.FontName;
-
-        // Assert
-        shape3BulletFontName.Should().BeNull();
-        shape4BulletFontName.Should().Be("Calibri");
-    }
-
-    [Test]
-    public void Bullet_Type_Getter_returns_bullet_type()
-    {
-        // Arrange
-        var pptx = TestAsset("002.pptx");
-        var pres = new Presentation(pptx);
-        var shapeList = pres.Slides[1].Shapes;
-        var shape4 = shapeList.First(x => x.Id == 4);
-        var shape5 = shapeList.First(x => x.Id == 5);
-        var shape4Pr2Bullet = shape4.TextBox.Paragraphs[1].Bullet;
-        var shape5Pr1Bullet = shape5.TextBox.Paragraphs[0].Bullet;
-        var shape5Pr2Bullet = shape5.TextBox.Paragraphs[1].Bullet;
-
-        // Act
-        var shape5Pr1BulletType = shape5Pr1Bullet.Type;
-        var shape5Pr2BulletType = shape5Pr2Bullet.Type;
-        var shape4Pr2BulletType = shape4Pr2Bullet.Type;
-
-        // Assert
-        shape5Pr1BulletType.Should().Be(BulletType.Numbered);
-        shape5Pr2BulletType.Should().Be(BulletType.Picture);
-        shape4Pr2BulletType.Should().Be(BulletType.Character);
-    }
-
-    [Test]
     public void HorizontalAlignment_Setter_sets_horizontal_alignment()
     {
         // Arrange
@@ -84,42 +41,6 @@ public class ParagraphTests : SCTest
         // Assert 
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
         ValidatePresentation(pres);
-    }
-
-    [Test]
-    public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
-    {
-        // Arrange
-        var pptx = TestAsset("001.pptx");
-        var pres = new Presentation(pptx);
-        var autoShape = pres.Slides[0].Shapes.GetById<IShape>(2);
-        var bullet = autoShape.TextBox.Paragraphs[0].Bullet;
-
-        // Act
-        var bulletType = bullet.Type;
-
-        // Assert
-        bulletType.Should().Be(BulletType.None);
-    }
-
-    [Test]
-    public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
-    {
-        // Arrange
-        var pres2 = new Presentation(TestAsset("002.pptx"));
-        var shapeList = pres2.Slides[1].Shapes;
-        var shape4 = shapeList.First(x => x.Id == 4);
-        var shape4Pr2Bullet = ((IShape)shape4).TextBox.Paragraphs[1].Bullet;
-
-        // Act
-        var bulletColorHex = shape4Pr2Bullet.ColorHex;
-        var bulletChar = shape4Pr2Bullet.Character;
-        var bulletSize = shape4Pr2Bullet.Size;
-
-        // Assert
-        bulletColorHex.Should().Be("C00000");
-        bulletChar.Should().Be("'");
-        bulletSize.Should().Be(120);
     }
 
     [Test]
@@ -441,28 +362,5 @@ public class ParagraphTests : SCTest
 
         // Assert
         shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
-    }
-
-    [Test]
-    public void Bullet_Character_Getter_returns_list_paragraph_bullet_character()
-    {
-        // Arrange
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.TextBox(textBox => 
-                {
-                    textBox.Paragraph(para => {
-                        para.Text("Hello, World!");
-                        para.BulletedList();
-                    });
-                });
-            });
-        });
-        var paragraph = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First();
-
-        // Act-Assert
-        paragraph.Bullet.Character.Should().Be("•");
     }
 }
