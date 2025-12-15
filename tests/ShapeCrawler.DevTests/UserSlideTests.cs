@@ -494,4 +494,28 @@ public class UserSlideTests : SCTest
 
         static int ToPixels(int points) => (int)Math.Round(points * 96d / 72d, MidpointRounding.AwayFromZero);
     }
+    
+    [Test]
+    public void SaveImageTo_saves_slide_with_bulleted_list()
+    {
+        // Arrange
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(textBox => 
+                {
+                    textBox.Paragraph(para => {
+                        para.Text("Hello, World!");
+                        para.BulletedList();
+                    });
+                });
+            });
+        });
+
+        // Act
+        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\result.png");
+        
+        // Assert
+    }
 }

@@ -39,3 +39,4 @@ public sealed class DraftParagraph
         return this;
     }
 }
+

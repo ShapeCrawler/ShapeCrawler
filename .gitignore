@@ -345,4 +345,4 @@ healthchecksdb
 
 coverage/
 
-context/
+.context/
