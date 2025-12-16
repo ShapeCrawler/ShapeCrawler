@@ -496,7 +496,7 @@ public class UserSlideTests : SCTest
     }
     
     [Test]
-    [Platform(Exclude = "Linux", Reason = "Diff 15%")]
+    [Platform(Exclude = "Linux", Reason = "Difference is 15%")]
     public Task SaveImageTo_saves_slide_with_bulleted_list()
     {
         // Arrange
