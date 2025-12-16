@@ -266,6 +266,19 @@ internal sealed class TextDrawing
     private void LayoutParagraph(IParagraph paragraph, float availableWidth, bool wrap, ICollection<TextLine> buffer)
     {
         var line = new LineBuilder(paragraph.HorizontalAlignment);
+        if (paragraph.Bullet.Type == BulletType.Character && paragraph.Bullet.Character != null)
+        {
+            var font = paragraph.Portions.FirstOrDefault()?.Font;
+            if (font != null)
+            {
+                using var skFont = CreateFont(font);
+                var bulletText = paragraph.Bullet.Character + " ";
+                var width = skFont.MeasureText(bulletText);
+                var bulletPortion = new PixelTextPortion(bulletText, font, width);
+
+                line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
+            }
+        }
 
         foreach (var portion in paragraph.Portions)
         {

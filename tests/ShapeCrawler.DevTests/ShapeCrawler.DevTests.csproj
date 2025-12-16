@@ -31,6 +31,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Verify.ImageMagick" Version="3.8.1" />
+    <PackageReference Include="Verify.NUnit" Version="31.8.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -93,7 +93,7 @@ The project uses strict `.editorconfig` rules. Key settings:
 - **Never use**: Other test projects (they're for CI/CD)
 
 ### Test Requirements
-- **Side-Effect Tests**: Tests that modify presentations must call `.Validate()` in assertions
+- **Side-Effect Tests**: Tests that modify presentations must call `ValidatePresentation()` in assertions
 - **Quantity**: Write only ONE test when asked unless explicitly requested otherwise
 
 ### Running Tests
