@@ -496,7 +496,7 @@ public class UserSlideTests : SCTest
     }
     
     [Test]
-    public void SaveImageTo_saves_slide_with_bulleted_list()
+    public Task SaveImageTo_saves_slide_with_bulleted_list()
     {
         // Arrange
         var pres = new Presentation(pres =>
@@ -518,5 +518,7 @@ public class UserSlideTests : SCTest
         pres.Slide(1).SaveImageTo(stream);
         
         // Assert
+        var imageBytes = stream.ToArray();
+        return Verify(imageBytes, "png");
     }
 }

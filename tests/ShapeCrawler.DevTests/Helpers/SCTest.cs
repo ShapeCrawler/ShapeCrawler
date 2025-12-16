@@ -15,6 +15,11 @@ public abstract class SCTest
 {
     protected readonly Fixtures fixture = new();
 
+    protected SCTest()
+    {
+        UseProjectRelativeDirectory("snapshots");
+    }
+
     protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
     {
         var stream = new MemoryStream(workbookByteArray);
