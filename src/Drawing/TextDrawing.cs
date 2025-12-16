@@ -269,12 +269,15 @@ internal sealed class TextDrawing
         if (paragraph.Bullet.Type == BulletType.Character && paragraph.Bullet.Character != null)
         {
             var font = paragraph.Portions.FirstOrDefault()?.Font;
-            using var skFont = CreateFont(font);
-            var bulletText = paragraph.Bullet.Character + " ";
-            var width = skFont.MeasureText(bulletText);
-            var bulletPortion = new PixelTextPortion(bulletText, font, width);
+            if (font != null)
+            {
+                using var skFont = CreateFont(font);
+                var bulletText = paragraph.Bullet.Character + " ";
+                var width = skFont.MeasureText(bulletText);
+                var bulletPortion = new PixelTextPortion(bulletText, font, width);
 
-            line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
+                line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
+            }
         }
 
         foreach (var portion in paragraph.Portions)
