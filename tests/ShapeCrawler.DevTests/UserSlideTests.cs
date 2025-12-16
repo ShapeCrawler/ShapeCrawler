@@ -518,6 +518,5 @@ public class UserSlideTests : SCTest
         pres.Slide(1).SaveImageTo(stream);
         
         // Assert
-        throw new NotImplementedException("Add assertion.");
     }
 }

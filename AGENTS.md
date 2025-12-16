@@ -96,6 +96,22 @@ The project uses strict `.editorconfig` rules. Key settings:
 - **Side-Effect Tests**: Tests that modify presentations must call `.Validate()` in assertions
 - **Quantity**: Write only ONE test when asked unless explicitly requested otherwise
 
+### Slide Image Generation (2D rendering) - Testing Strategy
+**Goal**: Verify that slides are rendered correctly (shapes, text, styles) without being fragile to pixel-perfect differences caused by font rendering or platform variations.
+
+1.  **Avoid Pixel-Perfect Equality**:
+    - Do **not** assert that `actual.png` bytes equal `expected.png` bytes. Always decode images and compare pixel data; PNG encoding bytes can differ even when pixels look identical.
+    - Do **not** assert that a specific pixel at `(x, y)` has an exact hex color if that pixel is near text or anti-aliased edges. Font rendering (hinting, anti-aliasing) varies by OS and runtime.
+
+2.  **Resilient Verification Methods**:
+    - **Fill-Only Sampling**: To verify a shape's background color, sample a 10x10 pixel patch well inside the shape (away from edges and centered text). Calculate the **median** or **average** color of that patch and assert it matches the expected color within a tolerance.
+    - **Match Ratio**: For complex shapes/text, assert that a high percentage (e.g., >95%) of pixels in a region match the expected color range. This tolerates minor glyph shifts.
+    - **SSIM / Perceptual Diff**: For full-slide regression tests, use Structural Similarity Index (SSIM) or similar perceptual metrics with a threshold (e.g., 0.99) rather than exact equality.
+
+3.  **Determinism**:
+    - When snapshot testing, pin the environment (OS, installed fonts) if possible.
+    - Prefer verifying **geometry logic** (layout calculations) via fast Dev tests over full image rendering where possible.
+
 ### Running Tests
 ```bash
 dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
