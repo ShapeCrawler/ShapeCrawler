@@ -19,9 +19,9 @@ public sealed class DraftTextBox
 
     internal int PosY { get; private set; }
 
-    internal int BoxWidth { get; private set; } = 100;
+    internal int BoxWidth { get; private set; } = 600;
 
-    internal int BoxHeight { get; private set; } = 50;
+    internal int BoxHeight { get; private set; } = 100;
 
     internal string? Content { get; private set; }
 

@@ -83,7 +83,7 @@ public sealed class DraftSlide
     /// <param name="content">Text content.</param>
     public DraftSlide TextBox(string content)
     {
-        return this.TextBox(content, x: null, y: null, width: 100, height: 50);
+        return this.TextBox(content, x: null, y: null, width: 600, height: 100);
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public sealed class DraftSlide
     /// <param name="y">Y coordinate in points.</param>
     public DraftSlide TextBox(string content, int x, int y)
     {
-        return this.TextBox(content, x, y, width: 100, height: 50);
+        return this.TextBox(content, x, y, width: 600, height: 100);
     }
 
     /// <summary>
