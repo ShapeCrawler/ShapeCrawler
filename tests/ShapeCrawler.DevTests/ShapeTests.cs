@@ -851,9 +851,20 @@ public class ShapeTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox("Hello World!");
+                slide.TextBox(tx =>
+                {
+                    tx.Text("Hello World!");
+                    tx.X(40);
+                    tx.Y(40);
+                    tx.Font(font =>
+                    {
+                        font.Size(32);
+                        font.Bold();
+                    });
+                });
             });
         });
+        
         pres.Save(@"c:\temp\result.pptx");
     }
 }

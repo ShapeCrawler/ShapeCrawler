@@ -146,6 +146,18 @@ public sealed class DraftSlide
     }
 
     /// <summary>
+    ///     Configures a text box using a nested builder.
+    /// </summary>
+    public DraftSlide TextBox(Action<DraftTextBox> configure)
+    {
+        return this.RectangleShape(t =>
+        {
+            t.IsTextBox = true;
+            configure(t);
+        });
+    }
+
+    /// <summary>
     ///     Configures a rectangular auto shape and its text box content using a nested builder.
     /// </summary>
     public DraftSlide RectangleShape(Action<DraftTextBox> configure)
@@ -154,12 +166,39 @@ public sealed class DraftSlide
         {
             var builder = new DraftTextBox();
             configure(builder);
-            slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
+
+            if (builder.IsTextBox)
+            {
+                slide.Shapes.AddTextBox(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.Content ?? string.Empty);
+                slide.Shapes.Last<IShape>().TextBox!.AutofitType = AutofitType.Resize;
+            }
+            else
+            {
+                slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
+                if (!string.IsNullOrEmpty(builder.Content))
+                {
+                    slide.Shapes.Last<IShape>().TextBox!.SetText(builder.Content!);
+                }
+            }
+
             var addedShape = slide.Shapes.Last<IShape>();
             addedShape.Name = builder.TextBoxName;
-            if (!string.IsNullOrEmpty(builder.Content))
+
+            if (builder.FontDraft != null)
             {
-                addedShape.TextBox!.SetText(builder.Content!);
+                var portion = addedShape.TextBox!.Paragraphs[0].Portions[0];
+                if (portion.Font != null)
+                {
+                    if (builder.FontDraft.SizeValue.HasValue)
+                    {
+                        portion.Font.Size = builder.FontDraft.SizeValue.Value;
+                    }
+
+                    if (builder.FontDraft.IsBoldValue)
+                    {
+                        portion.Font.IsBold = true;
+                    }
+                }
             }
 
             if (builder.HighlightColor.HasValue)
