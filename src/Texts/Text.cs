@@ -41,8 +41,10 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
         var fontFamily = string.IsNullOrEmpty(font.LatinName) ? "Calibri" : font.LatinName;
         var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
         var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
-        var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
-        skFont.Typeface = SKTypeface.FromFamilyName(fontFamily, style);
+        using (var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant))
+        {
+            skFont.Typeface = SKTypeface.FromFamilyName(fontFamily, style);
+        }
 
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
