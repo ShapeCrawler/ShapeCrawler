@@ -162,81 +162,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide RectangleShape(Action<DraftTextBox> configure)
     {
-        this.actions.Add((slide, _) =>
-        {
-            var builder = new DraftTextBox();
-            configure(builder);
-
-            if (builder.IsTextBox)
-            {
-                slide.Shapes.AddTextBox(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.Content ?? string.Empty);
-            }
-            else
-            {
-                slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
-                if (!string.IsNullOrEmpty(builder.Content))
-                {
-                    slide.Shapes.Last<IShape>().TextBox!.SetText(builder.Content!);
-                }
-            }
-
-            var addedShape = slide.Shapes.Last<IShape>();
-            addedShape.Name = builder.TextBoxName;
-
-            if (builder.FontDraft != null)
-            {
-                var portion = addedShape.TextBox!.Paragraphs[0].Portions[0];
-                if (portion.Font != null)
-                {
-                    if (builder.FontDraft.SizeValue.HasValue)
-                    {
-                        portion.Font.Size = builder.FontDraft.SizeValue.Value;
-                    }
-
-                    if (builder.FontDraft.IsBoldValue)
-                    {
-                        portion.Font.IsBold = true;
-                    }
-                }
-            }
-
-            if (builder.HighlightColor.HasValue)
-            {
-                addedShape.TextBox!.Paragraphs[0].Portions[0].TextHighlightColor = builder.HighlightColor.Value;
-            }
-
-            // Apply draft paragraphs with bullet settings
-            var textBox = addedShape.TextBox!;
-            for (var i = 0; i < builder.Paragraphs.Count; i++)
-            {
-                if (i > 0)
-                {
-                    textBox.Paragraphs.Add();
-                }
-
-                var draftParagraph = builder.Paragraphs[i];
-                var paragraph = textBox.Paragraphs[i];
-                if (!string.IsNullOrEmpty(draftParagraph.Content))
-                {
-                    paragraph.Text = draftParagraph.Content!;
-                }
-
-                if (draftParagraph.IsBulletedList)
-                {
-                    paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
-                    paragraph.Bullet.Type = BulletType.Character;
-                    paragraph.Bullet.Character = draftParagraph.BulletCharacter;
-                    paragraph.Bullet.ApplyDefaultSpacing();
-                }
-            }
-
-            if (builder.IsTextBox)
-            {
-                var scTextBox = (ShapeCrawler.Texts.TextBox)textBox;
-                scTextBox.DisableWrapping();
-                scTextBox.AutofitType = AutofitType.Resize;
-            }
-        });
+        this.actions.Add((slide, _) => this.AddRectangleShape(slide, configure));
 
         return this;
     }
@@ -420,5 +346,132 @@ public sealed class DraftSlide
         {
             action(slide, presentation);
         }
+    }
+
+    private void AddRectangleShape(IUserSlide slide, Action<DraftTextBox> configure)
+    {
+        var builder = new DraftTextBox();
+        configure(builder);
+
+        var addedShape = this.AddRectangleShape(slide, builder);
+        addedShape.Name = builder.TextBoxName;
+
+        this.ApplyDraftFont(addedShape, builder.FontDraft);
+        this.ApplyTextHighlightColor(addedShape, builder.HighlightColor);
+        this.ApplyDraftParagraphs(addedShape, builder.Paragraphs);
+        this.ApplyTextBoxAutofit(addedShape, builder.IsTextBox);
+    }
+
+    private IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
+    {
+        if (builder.IsTextBox)
+        {
+            slide.Shapes.AddTextBox(
+                builder.PosX,
+                builder.PosY,
+                builder.BoxWidth,
+                builder.BoxHeight,
+                builder.Content ?? string.Empty);
+            return slide.Shapes.Last<IShape>();
+        }
+
+        slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
+        var addedShape = slide.Shapes.Last<IShape>();
+        this.SetTextIfProvided(addedShape, builder.Content);
+        return addedShape;
+    }
+
+    private void SetTextIfProvided(IShape shape, string? content)
+    {
+        if (string.IsNullOrEmpty(content))
+        {
+            return;
+        }
+
+        shape.TextBox!.SetText(content!);
+    }
+
+    private void ApplyDraftFont(IShape shape, DraftFont? fontDraft)
+    {
+        if (fontDraft == null)
+        {
+            return;
+        }
+
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font;
+        if (font == null)
+        {
+            return;
+        }
+
+        if (fontDraft.SizeValue.HasValue)
+        {
+            font.Size = fontDraft.SizeValue.Value;
+        }
+
+        if (fontDraft.IsBoldValue)
+        {
+            font.IsBold = true;
+        }
+    }
+
+    private void ApplyTextHighlightColor(IShape shape, Color? highlightColor)
+    {
+        if (!highlightColor.HasValue)
+        {
+            return;
+        }
+
+        shape.TextBox!.Paragraphs[0].Portions[0].TextHighlightColor = highlightColor.Value;
+    }
+
+    private void ApplyDraftParagraphs(IShape shape, IReadOnlyList<DraftParagraph> draftParagraphs)
+    {
+        if (draftParagraphs.Count == 0)
+        {
+            return;
+        }
+
+        var textBox = shape.TextBox!;
+        for (var i = 0; i < draftParagraphs.Count; i++)
+        {
+            this.ApplyDraftParagraph(textBox, i, draftParagraphs[i]);
+        }
+    }
+
+    private void ApplyDraftParagraph(ITextBox textBox, int paragraphIndex, DraftParagraph draftParagraph)
+    {
+        if (paragraphIndex > 0)
+        {
+            textBox.Paragraphs.Add();
+        }
+
+        var paragraph = textBox.Paragraphs[paragraphIndex];
+        if (!string.IsNullOrEmpty(draftParagraph.Content))
+        {
+            paragraph.Text = draftParagraph.Content!;
+        }
+
+        if (!draftParagraph.IsBulletedList)
+        {
+            return;
+        }
+
+        paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
+        paragraph.Bullet.Type = BulletType.Character;
+        paragraph.Bullet.Character = draftParagraph.BulletCharacter;
+        paragraph.Bullet.ApplyDefaultSpacing();
+    }
+
+    private void ApplyTextBoxAutofit(IShape shape, bool isTextBox)
+    {
+        if (!isTextBox)
+        {
+            return;
+        }
+
+        var scTextBox = (ShapeCrawler.Texts.TextBox)shape.TextBox!;
+        scTextBox.DisableWrapping();
+        scTextBox.AutofitType = AutofitType.Resize;
     }
 }
