@@ -19,7 +19,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
                     : font.LatinName;
             var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
             var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
-            var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
+            using var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
             using var skFont = new SKFont
             {
                 Size = (float)font.Size, Typeface = SKTypeface.FromFamilyName(fontFamily, style)
