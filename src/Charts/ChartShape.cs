@@ -4,7 +4,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartShape : Shape
+internal sealed class ChartShape : DrawingShape
 {
     internal ChartShape(Chart chart, P.GraphicFrame pGraphicFrame)
         : base(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame)

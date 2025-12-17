@@ -9,7 +9,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal class PictureShape(Picture picture, P.Picture pPicture) : Shape(new Position(pPicture),
+internal class PictureShape(Picture picture, P.Picture pPicture) : DrawingShape(new Position(pPicture),
     new ShapeSize(pPicture), new ShapeId(pPicture), pPicture)
 {
     public override decimal X

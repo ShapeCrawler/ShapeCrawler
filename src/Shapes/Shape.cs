@@ -7,13 +7,12 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Slides;
-using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
 
-internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
+internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
     public virtual decimal X
     {
@@ -313,15 +312,5 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
 
         var groupedShape = this.GroupedShapes.FirstOrDefault(shape => shape.Name == name);
         return groupedShape ?? throw new SCException($"Grouped shape with name '{name}' not found.");
-    }
-
-    /// <summary>
-    ///     Renders the current shape onto the provided canvas.
-    /// </summary>
-    /// <param name="canvas">Target canvas.</param>
-    internal virtual void Render(SKCanvas canvas)
-    {
-        var shapeCanvas = new ShapeCanvas(canvas, new ShapeColorScheme(pShapeTreeElement), pShapeTreeElement);
-        shapeCanvas.Render(this);
     }
 }

@@ -10,7 +10,7 @@ using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.MediaContent;
 
-internal sealed class MediaShape : Shape
+internal sealed class MediaShape : DrawingShape
 {
     private readonly P.Picture pPicture;
 

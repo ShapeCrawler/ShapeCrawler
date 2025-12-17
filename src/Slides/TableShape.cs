@@ -6,7 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Slides;
 
-internal sealed class TableShape : Shape
+internal sealed class TableShape : DrawingShape
 {
     internal TableShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.GraphicFrame pGraphicFrame)
         : base(position, shapeSize, shapeId, pGraphicFrame)

@@ -12,7 +12,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Groups;
 using P = DocumentFormat.OpenXml.Presentation;
 
-internal sealed class GroupShape : Shape
+internal sealed class GroupShape : DrawingShape
 {
     private readonly P.GroupShape pGroupShape;
 
@@ -151,7 +151,7 @@ internal sealed class GroupShape : Shape
                 continue;
             }
 
-            if (shape is Shape internalShape)
+            if (shape is DrawingShape internalShape)
             {
                 internalShape.Render(canvas);
             }

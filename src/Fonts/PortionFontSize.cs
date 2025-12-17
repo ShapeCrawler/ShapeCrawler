@@ -188,7 +188,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
 
         var pShape = aText.Ancestors<P.Shape>().First();
 
-        return new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
+        return new DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
     }
     
     private decimal ApplyNormAutofitScaling(decimal size)
