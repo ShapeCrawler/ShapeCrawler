@@ -79,7 +79,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             color.Alpha);
     }
 
-    private decimal GetShapeOutlineWidth(SKCanvas canvas)
+    private decimal GetShapeOutlineWidth()
     {
         var shapeOutline = this.Outline;
 
@@ -88,11 +88,12 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return new Points(shapeOutline.Weight).AsPixels();
         }
 
-        var styleWidth = GetStyleOutlineWidth(canvas);
+        var styleWidth = GetStyleOutlineWidth();
         return styleWidth;
     }
 
-    private decimal GetStyleOutlineWidth(SKCanvas canvas)
+    private decimal GetStyleOutlineWidth(
+        )
     {
         if (this.SDKOpenXmlElement is not P.Shape pShape)
         {
@@ -180,13 +181,16 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private void RenderFill(SKCanvas canvas, SKRect rect, decimal cornerRadius)
     {
-        var fillColor = this.GetShapeFillColor(canvas);
+        var fillColor = this.GetShapeFillColor();
         if (fillColor is null)
         {
             return;
         }
 
-        using var fillPaint = new SKPaint { Color = fillColor.Value, Style = SKPaintStyle.Fill, IsAntialias = true };
+        using var fillPaint = new SKPaint();
+        fillPaint.Color = fillColor.Value;
+        fillPaint.Style = SKPaintStyle.Fill;
+        fillPaint.IsAntialias = true;
 
         if (cornerRadius > 0)
         {
@@ -200,8 +204,8 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private void RenderOutline(SKCanvas canvas, SKRect rect, decimal cornerRadius)
     {
-        var outlineColor = this.GetShapeOutlineColor(canvas);
-        var strokeWidth = GetShapeOutlineWidth(canvas);
+        var outlineColor = this.GetShapeOutlineColor();
+        var strokeWidth = GetShapeOutlineWidth();
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -228,39 +232,40 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private void RenderEllipseFill(SKCanvas canvas, SKRect rect)
     {
-        var fillColor = this.GetShapeFillColor(canvas);
+        var fillColor = this.GetShapeFillColor();
         if (fillColor is null)
         {
             return;
         }
 
-        using var fillPaint = new SKPaint { Color = fillColor.Value, Style = SKPaintStyle.Fill, IsAntialias = true };
+        using var fillPaint = new SKPaint();
+        fillPaint.Color = fillColor.Value;
+        fillPaint.Style = SKPaintStyle.Fill;
+        fillPaint.IsAntialias = true;
 
         canvas.DrawOval(rect, fillPaint);
     }
 
     private void RenderEllipseOutline(SKCanvas canvas, SKRect rect)
     {
-        var outlineColor = this.GetShapeOutlineColor(canvas);
-        var strokeWidth = GetShapeOutlineWidth(canvas);
+        var outlineColor = this.GetShapeOutlineColor();
+        var strokeWidth = GetShapeOutlineWidth();
 
         if (outlineColor is null || strokeWidth <= 0)
         {
             return;
         }
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = outlineColor.Value,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = (float)strokeWidth,
-            IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = outlineColor.Value;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = (float)strokeWidth;
+        outlinePaint.IsAntialias = true;
 
         canvas.DrawOval(rect, outlinePaint);
     }
 
-    private SKColor? GetShapeFillColor(SKCanvas canvas)
+    private SKColor? GetShapeFillColor()
     {
         var shapeFill = this.Fill;
 
@@ -281,7 +286,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         return null;
     }
 
-    private SKColor? GetShapeOutlineColor(SKCanvas canvas)
+    private SKColor? GetShapeOutlineColor()
     {
         var shapeOutline = this.Outline;
 
