@@ -104,7 +104,7 @@ public class BulletTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox(textBox => 
+                slide.RectangleShape(textBox => 
                 {
                     textBox.Paragraph(para => {
                         para.Text("Hello, World!");

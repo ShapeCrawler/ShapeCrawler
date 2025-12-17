@@ -451,7 +451,7 @@ public class UserSlideTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox(textBox =>
+                slide.RectangleShape(textBox =>
                 {
                     textBox.X(50);
                     textBox.Y(50);
@@ -505,7 +505,7 @@ public class UserSlideTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox(textBox => 
+                slide.RectangleShape(textBox => 
                 {
                     textBox.Paragraph(para => {
                         para.Text("Hello, World!");
