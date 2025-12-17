@@ -12,18 +12,27 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
     {
         get
         {
-            var fontFamily = string.IsNullOrEmpty(font.LatinName)
-                ? "Calibri"
-                : font.LatinName == "Calibri Light"
-                    ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
-                    : font.LatinName;
+            string fontFamily;
+            if (string.IsNullOrEmpty(font.LatinName))
+            {
+                fontFamily = "Calibri";
+            }
+            else if (font.LatinName == "Calibri Light")
+            {
+                // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
+                fontFamily = "Calibri";
+            }
+            else
+            {
+                fontFamily = font.LatinName;
+            }
+            
             var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
             var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
             using var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
-            using var skFont = new SKFont
-            {
-                Size = (float)font.Size, Typeface = SKTypeface.FromFamilyName(fontFamily, style)
-            };
+            using var skFont = new SKFont();
+            skFont.Size = (float)font.Size;
+            skFont.Typeface = SKTypeface.FromFamilyName(fontFamily, style);
 
             return (decimal)skFont.MeasureText(content);
         }
