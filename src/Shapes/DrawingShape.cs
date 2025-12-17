@@ -92,8 +92,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         return styleWidth;
     }
 
-    private decimal GetStyleOutlineWidth(
-        )
+    private decimal GetStyleOutlineWidth()
     {
         if (this.SDKOpenXmlElement is not P.Shape pShape)
         {
