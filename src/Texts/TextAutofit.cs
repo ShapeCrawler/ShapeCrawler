@@ -102,6 +102,9 @@ internal sealed class TextAutofit(
         var textWidth = new Text(longerText, font).Width;
         var leftMargin = margins.Left;
         var rightMargin = margins.Right;
+        // WidthTolerance compensates for small discrepancies between measured text width and actual rendering
+        // (font metrics, DPI conversion 72→96, and rounding), chosen as 2pt empirically to prevent edge clipping
+        // without noticeably oversizing shapes.
 
         // Used to avoid edge clipping due to font metrics and rounding differences between measured and rendered text.
         const decimal WidthTolerance = 2m;
