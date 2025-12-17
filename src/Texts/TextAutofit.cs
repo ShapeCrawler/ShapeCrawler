@@ -28,6 +28,7 @@ internal sealed class TextAutofit(
             return;
         }
 
+        var isTextWrapped = getTextWrapped();
         var shapeWidthCapacity = shapeSize.Width - margins.Left - margins.Right;
         var shapeHeightCapacity = shapeSize.Height - margins.Top - margins.Bottom;
 
@@ -48,19 +49,24 @@ internal sealed class TextAutofit(
             var paragraphText = paragraph.Text.ToUpper();
             var paragraphTextWidth = new Text(paragraphText, scFont).Width;
             var paragraphTextHeight = scFont.Size;
-            var requiredRowsCount = paragraphTextWidth / shapeWidthCapacity;
-            var intRequiredRowsCount = (int)requiredRowsCount;
-            var fractionalPart = requiredRowsCount - intRequiredRowsCount;
-            if (fractionalPart > 0)
+
+            var intRequiredRowsCount = 1;
+            if (isTextWrapped)
             {
-                intRequiredRowsCount++;
+                var requiredRowsCount = paragraphTextWidth / shapeWidthCapacity;
+                intRequiredRowsCount = (int)requiredRowsCount;
+                var fractionalPart = requiredRowsCount - intRequiredRowsCount;
+                if (fractionalPart > 0)
+                {
+                    intRequiredRowsCount++;
+                }
             }
 
             textHeight += intRequiredRowsCount * (int)paragraphTextHeight;
         }
 
         this.UpdateHeight(textHeight, shapeHeightCapacity);
-        if (!getTextWrapped())
+        if (!isTextWrapped)
         {
             this.UpdateWidth();
         }
@@ -96,10 +102,17 @@ internal sealed class TextAutofit(
         var textWidth = new Text(longerText, font).Width;
         var leftMargin = margins.Left;
         var rightMargin = margins.Right;
+
+        // WidthTolerance compensates for small discrepancies between measured text width and actual rendering
+        // (font metrics, DPI conversion 72→96, and rounding), chosen as 2pt empirically to prevent edge clipping
+        // without noticeably oversizing shapes.
+
+        // Used to avoid edge clipping due to font metrics and rounding differences between measured and rendered text.
+        const decimal widthTolerance = 2m;
         var newWidth =
             (int)(textWidth *
                   1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
-            + leftMargin + rightMargin;
+            + leftMargin + rightMargin + widthTolerance;
         shapeSize.Width = newWidth;
     }
 

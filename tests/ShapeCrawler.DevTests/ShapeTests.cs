@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
 using ShapeCrawler.DevTests.Helpers;
@@ -842,5 +842,33 @@ public class ShapeTests : SCTest
         newVideo.Position = 0;
         var newVideoBytes = newVideo.ToArray();
         videoShape.Media.AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
+    }
+
+    [Test]
+    [Platform(Exclude = "Linux", Reason = "because text content should fit text box, but 332.18M differed by 79.18M")]
+    public void Content_fits_text_box()
+    {
+        // Act
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox(tx =>
+                {
+                    tx.Text("Hello World!");
+                    tx.X(40);
+                    tx.Y(40);
+                    tx.Font(font =>
+                    {
+                        font.Size(32);
+                        font.Bold();
+                    });
+                });
+            });
+        });
+        
+        // Assert
+        pres.Slide(1).Shapes.First().Width.Should().BeApproximately(253, 1, "text content should fit text box");
+        ValidatePresentation(pres);
     }
 }

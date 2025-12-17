@@ -8,6 +8,11 @@ namespace ShapeCrawler.Presentations;
 /// </summary>
 public sealed class DraftTextBox
 {
+    /// <summary>
+    ///    Gets or sets a value indicating whether this is a text box.
+    /// </summary>
+    internal bool IsTextBox { get; set; }
+
     internal string TextBoxName { get; private set; } = "Text Box";
 
     internal int PosX { get; private set; }
@@ -27,11 +32,26 @@ public sealed class DraftTextBox
     internal List<DraftParagraph> Paragraphs { get; } = [];
 
     /// <summary>
+    ///    Gets draft font.
+    /// </summary>
+    internal DraftFont? FontDraft { get; private set; }
+
+    /// <summary>
     ///     Sets the geometry type of the text box.
     /// </summary>
     public DraftTextBox Geometry(Geometry geometry)
     {
         this.ShapeGeometry = geometry;
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures font using a nested builder.
+    /// </summary>
+    public DraftTextBox Font(Action<DraftFont> configure)
+    {
+        this.FontDraft = new DraftFont();
+        configure(this.FontDraft);
         return this;
     }
 

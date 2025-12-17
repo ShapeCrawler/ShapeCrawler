@@ -186,6 +186,32 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         addedShape.TextBox.SetText(text);
     }
 
+    public void AddTextBox(int x, int y, int width, int height, string text)
+    {
+        var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
+        var pShape = new P.Shape(xml);
+        var nextShapeId = this.newShapeProperties.Id();
+        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+
+        var addedShape = this.shapes.Last<TextShape>();
+        addedShape.Name = "Text Box";
+        addedShape.X = x;
+        addedShape.Y = y;
+        addedShape.Width = width;
+        addedShape.Height = height;
+        addedShape.Id = nextShapeId;
+
+        var pNvSpPr = pShape.NonVisualShapeProperties!.GetFirstChild<P.NonVisualShapeDrawingProperties>()!;
+        pNvSpPr.TextBox = true;
+        pShape.ShapeStyle = null;
+
+        addedShape.TextBox.SetText(text);
+        foreach (var paragraph in addedShape.TextBox.Paragraphs)
+        {
+            paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
+        }
+    }
+
     public void AddLine(string xml)
     {
         var newPConnectionShape = new P.ConnectionShape(xml);

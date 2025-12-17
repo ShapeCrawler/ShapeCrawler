@@ -59,6 +59,11 @@ public interface IUserSlideShapeCollection : IShapeCollection
     void AddShape(int x, int y, int width, int height, Geometry geometry, string text);
 
     /// <summary>
+    ///     Adds a new text box.
+    /// </summary>
+    void AddTextBox(int x, int y, int width, int height, string text);
+
+    /// <summary>
     ///     Adds a line from XML.
     /// </summary>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>

@@ -232,6 +232,15 @@ internal sealed class TextBox : ITextBox
         textContent.ApplyTo();
     }
 
+    /// <summary>
+    ///     Disables text wrapping in the text box.
+    /// </summary>
+    internal void DisableWrapping()
+    {
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>()!;
+        bodyProperties.SetAttribute(new OpenXmlAttribute("wrap", string.Empty, "none"));
+    }
+
     internal void ResizeParentShapeOnDemand()
     {
         this.autofit.Apply();
