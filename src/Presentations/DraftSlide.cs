@@ -83,7 +83,7 @@ public sealed class DraftSlide
     /// <param name="content">Text content.</param>
     public DraftSlide TextBox(string content)
     {
-        return this.TextBox(content, x: null, y: null, width: 600, height: 100);
+        return this.TextBox(content, x: null, y: null, width: 100, height: 50);
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public sealed class DraftSlide
     /// <param name="y">Y coordinate in points.</param>
     public DraftSlide TextBox(string content, int x, int y)
     {
-        return this.TextBox(content, x, y, width: 600, height: 100);
+        return this.TextBox(content, x, y, width: 100, height: 50);
     }
 
     /// <summary>
@@ -170,7 +170,6 @@ public sealed class DraftSlide
             if (builder.IsTextBox)
             {
                 slide.Shapes.AddTextBox(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.Content ?? string.Empty);
-                slide.Shapes.Last<IShape>().TextBox!.AutofitType = AutofitType.Resize;
             }
             else
             {
@@ -229,6 +228,13 @@ public sealed class DraftSlide
                     paragraph.Bullet.Character = draftParagraph.BulletCharacter;
                     paragraph.Bullet.ApplyDefaultSpacing();
                 }
+            }
+
+            if (builder.IsTextBox)
+            {
+                var scTextBox = (ShapeCrawler.Texts.TextBox)textBox;
+                scTextBox.DisableWrapping();
+                scTextBox.AutofitType = AutofitType.Resize;
             }
         });
 

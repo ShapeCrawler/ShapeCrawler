@@ -12,12 +12,17 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
     {
         get
         {
-            var fontFamily = font.LatinName == "Calibri Light"
-                ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
-                : font.LatinName;
-            var skFont = new SKFont
+            var fontFamily = string.IsNullOrEmpty(font.LatinName)
+                ? "Calibri"
+                : font.LatinName == "Calibri Light"
+                    ? "Calibri" // for unknown reasons, SkiaSharp uses "Segoe UI" instead of "Calibri Light"
+                    : font.LatinName;
+            var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
+            var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+            var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
+            using var skFont = new SKFont
             {
-                Size = (float)font.Size, Typeface = SKTypeface.FromFamilyName(fontFamily)
+                Size = (float)font.Size, Typeface = SKTypeface.FromFamilyName(fontFamily, style)
             };
 
             return (decimal)skFont.MeasureText(content);
@@ -33,7 +38,11 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
 
         using var skFont = new SKFont();
         skFont.Size = (float)font.Size;
-        skFont.Typeface = SKTypeface.FromFamilyName(font.LatinName);
+        var fontFamily = string.IsNullOrEmpty(font.LatinName) ? "Calibri" : font.LatinName;
+        var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
+        var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+        var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
+        skFont.Typeface = SKTypeface.FromFamilyName(fontFamily, style);
 
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
