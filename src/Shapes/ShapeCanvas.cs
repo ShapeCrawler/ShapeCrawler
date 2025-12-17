@@ -12,7 +12,7 @@ namespace ShapeCrawler.Shapes;
 /// <summary>
 ///     Represents a canvas for rendering shapes.
 /// </summary>
-internal sealed class ShapeCanvas
+internal sealed class ShapeCanvas(SKCanvas canvas, ShapeColorScheme shapeColorScheme, OpenXmlElement pShapeTreeElement)
 {
     private const double Epsilon = 1e-6;
     private static readonly TextDrawing TextDrawing = new();
@@ -33,63 +33,26 @@ internal sealed class ShapeCanvas
             { "folHlink", scheme => scheme.FollowedHyperlinkColor }
         };
 
-    private readonly Shape shape;
-    private readonly OpenXmlElement pShapeTreeElement;
-    private readonly ShapeColorScheme shapeColorScheme;
-
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ShapeCanvas"/> class.
+    ///     Renders the shape.
     /// </summary>
-    /// <param name="shape">The shape to render.</param>
-    /// <param name="pShapeTreeElement">The shape tree element.</param>
-    internal ShapeCanvas(Shape shape, OpenXmlElement pShapeTreeElement)
+    internal void Render(Shape shape)
     {
-        this.shape = shape;
-        this.pShapeTreeElement = pShapeTreeElement;
-        this.shapeColorScheme = new ShapeColorScheme(pShapeTreeElement);
-    }
-
-    /// <summary>
-    ///     Renders the shape onto the provided canvas.
-    /// </summary>
-    /// <param name="canvas">Target canvas.</param>
-    internal void Render(SKCanvas canvas)
-    {
-        switch (this.shape.GeometryType)
+        switch (shape.GeometryType)
         {
             case Geometry.Rectangle:
             case Geometry.RoundedRectangle:
-                this.RenderRectangle(canvas);
+                this.RenderRectangle(shape);
                 break;
             case Geometry.Ellipse:
-                this.RenderEllipse(canvas);
+                this.RenderEllipse(shape);
                 break;
             default:
-                this.RenderText(canvas);
+                this.RenderText(shape);
                 return;
         }
 
-        this.RenderText(canvas);
-    }
-
-    private static void ApplyRotation(
-        SKCanvas canvas,
-        Shape shape,
-        decimal x,
-        decimal y,
-        decimal width,
-        decimal height)
-    {
-        if (Math.Abs(shape.Rotation) > Epsilon)
-        {
-            var centerX = x + (width / 2);
-            var centerY = y + (height / 2);
-            canvas.RotateDegrees(
-                (float)shape.Rotation,
-                (float)new Points(centerX).AsPixels(),
-                (float)new Points(centerY).AsPixels()
-            );
-        }
+        this.RenderText(shape);
     }
 
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
@@ -103,7 +66,7 @@ internal sealed class ShapeCanvas
         var sysColor = colorElement.SystemColor;
         return sysColor?.LastColor?.Value;
     }
-
+    
     private static SKColor ApplyShade(SKColor color, int shadeValue)
     {
         var shadeFactor = shadeValue / 100_000f;
@@ -115,7 +78,7 @@ internal sealed class ShapeCanvas
             color.Alpha);
     }
 
-    private static decimal GetShapeOutlineWidth(IShape shape)
+    private static decimal GetShapeOutlineWidth(Shape shape)
     {
         var shapeOutline = shape.Outline;
 
@@ -128,7 +91,7 @@ internal sealed class ShapeCanvas
         return styleWidth;
     }
 
-    private static decimal GetStyleOutlineWidth(IShape shape)
+    private static decimal GetStyleOutlineWidth(Shape shape)
     {
         if (shape.SDKOpenXmlElement is not P.Shape pShape)
         {
@@ -145,64 +108,78 @@ internal sealed class ShapeCanvas
 
         return new Points(defaultWidth).AsPixels();
     }
-
-    private void RenderRectangle(SKCanvas canvas)
+    
+    private void ApplyRotation(Shape shape)
     {
-        var x = new Points(this.shape.X).AsPixels();
-        var y = new Points(this.shape.Y).AsPixels();
-        var width = new Points(this.shape.Width).AsPixels();
-        var height = new Points(this.shape.Height).AsPixels();
+        if (Math.Abs(shape.Rotation) > Epsilon)
+        {
+            var centerX = shape.X + (shape.Width / 2);
+            var centerY = shape.Y + (shape.Height / 2);
+            canvas.RotateDegrees(
+                (float)shape.Rotation,
+                (float)new Points(centerX).AsPixels(),
+                (float)new Points(centerY).AsPixels()
+            );
+        }
+    }
+    
+    private void RenderRectangle(Shape shape)
+    {
+        var x = new Points(shape.X).AsPixels();
+        var y = new Points(shape.Y).AsPixels();
+        var width = new Points(shape.Width).AsPixels();
+        var height = new Points(shape.Height).AsPixels();
         var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         var cornerRadius = 0m;
-        if (this.shape.GeometryType == Geometry.RoundedRectangle)
+        if (shape.GeometryType == Geometry.RoundedRectangle)
         {
             var shortestSide = Math.Min(width, height);
-            cornerRadius = this.shape.CornerSize / 100m * (shortestSide / 2m);
+            cornerRadius = shape.CornerSize / 100m * (shortestSide / 2m);
         }
 
         canvas.Save();
-        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
+        ApplyRotation(shape);
 
-        this.RenderFill(canvas, rect, cornerRadius);
-        this.RenderOutline(canvas, rect, cornerRadius);
+        this.RenderFill(shape, rect, cornerRadius);
+        this.RenderOutline(shape, rect, cornerRadius);
 
         canvas.Restore();
     }
 
-    private void RenderEllipse(SKCanvas canvas)
+    private void RenderEllipse(Shape shape)
     {
-        var x = new Points(this.shape.X).AsPixels();
-        var y = new Points(this.shape.Y).AsPixels();
-        var width = new Points(this.shape.Width).AsPixels();
-        var height = new Points(this.shape.Height).AsPixels();
+        var x = new Points(shape.X).AsPixels();
+        var y = new Points(shape.Y).AsPixels();
+        var width = new Points(shape.Width).AsPixels();
+        var height = new Points(shape.Height).AsPixels();
         var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         canvas.Save();
-        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
+        ApplyRotation(shape);
 
-        this.RenderEllipseFill(canvas, rect);
-        this.RenderEllipseOutline(canvas, rect);
+        this.RenderEllipseFill(shape, rect);
+        this.RenderEllipseOutline(shape, rect);
 
         canvas.Restore();
     }
 
-    private void RenderText(SKCanvas canvas)
+    private void RenderText(Shape shape)
     {
-        if (this.shape.TextBox is null)
+        if (shape.TextBox is null)
         {
             return;
         }
 
         canvas.Save();
-        ApplyRotation(canvas, this.shape, this.shape.X, this.shape.Y, this.shape.Width, this.shape.Height);
-        TextDrawing.Render(canvas, this.shape);
+        ApplyRotation(shape);
+        TextDrawing.Render(canvas, shape);
         canvas.Restore();
     }
 
-    private void RenderFill(SKCanvas canvas, SKRect rect, decimal cornerRadius)
+    private void RenderFill(Shape shape, SKRect rect, decimal cornerRadius)
     {
-        var fillColor = this.GetShapeFillColor();
+        var fillColor = this.GetShapeFillColor(shape);
         if (fillColor is null)
         {
             return;
@@ -225,10 +202,10 @@ internal sealed class ShapeCanvas
         }
     }
 
-    private void RenderOutline(SKCanvas canvas, SKRect rect, decimal cornerRadius)
+    private void RenderOutline(Shape shape, SKRect rect, decimal cornerRadius)
     {
-        var outlineColor = this.GetShapeOutlineColor();
-        var strokeWidth = GetShapeOutlineWidth(this.shape);
+        var outlineColor = this.GetShapeOutlineColor(shape);
+        var strokeWidth = GetShapeOutlineWidth(shape);
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -253,9 +230,9 @@ internal sealed class ShapeCanvas
         }
     }
 
-    private void RenderEllipseFill(SKCanvas canvas, SKRect rect)
+    private void RenderEllipseFill(Shape shape, SKRect rect)
     {
-        var fillColor = this.GetShapeFillColor();
+        var fillColor = this.GetShapeFillColor(shape);
         if (fillColor is null)
         {
             return;
@@ -271,10 +248,10 @@ internal sealed class ShapeCanvas
         canvas.DrawOval(rect, fillPaint);
     }
 
-    private void RenderEllipseOutline(SKCanvas canvas, SKRect rect)
+    private void RenderEllipseOutline(Shape shape, SKRect rect)
     {
-        var outlineColor = this.GetShapeOutlineColor();
-        var strokeWidth = GetShapeOutlineWidth(this.shape);
+        var outlineColor = this.GetShapeOutlineColor(shape);
+        var strokeWidth = GetShapeOutlineWidth(shape);
 
         if (outlineColor is null || strokeWidth <= 0)
         {
@@ -292,9 +269,9 @@ internal sealed class ShapeCanvas
         canvas.DrawOval(rect, outlinePaint);
     }
 
-    private SKColor? GetShapeFillColor()
+    private SKColor? GetShapeFillColor(Shape shape)
     {
-        var shapeFill = this.shape.Fill;
+        var shapeFill = shape.Fill;
 
         if (shapeFill is { Type: FillType.Solid, Color: not null })
         {
@@ -313,9 +290,9 @@ internal sealed class ShapeCanvas
         return null;
     }
 
-    private SKColor? GetShapeOutlineColor()
+    private SKColor? GetShapeOutlineColor(Shape shape)
     {
-        var shapeOutline = this.shape.Outline;
+        var shapeOutline = shape.Outline;
 
         if (shapeOutline?.HexColor is not null)
         {
@@ -333,7 +310,7 @@ internal sealed class ShapeCanvas
 
     private SKColor? GetStyleOutlineColor()
     {
-        if (this.pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
+        if (pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
         {
             return null;
         }
@@ -360,7 +337,7 @@ internal sealed class ShapeCanvas
 
     private SKColor? GetStyleFillColor()
     {
-        if (this.pShapeTreeElement is not P.Shape pShape)
+        if (pShapeTreeElement is not P.Shape pShape)
         {
             return null;
         }
@@ -384,7 +361,7 @@ internal sealed class ShapeCanvas
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var colorScheme = this.shapeColorScheme.GetColorScheme();
+        var colorScheme = shapeColorScheme.GetColorScheme();
         if (colorScheme is null)
         {
             return null;
