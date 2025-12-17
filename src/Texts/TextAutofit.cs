@@ -102,6 +102,8 @@ internal sealed class TextAutofit(
         var textWidth = new Text(longerText, font).Width;
         var leftMargin = margins.Left;
         var rightMargin = margins.Right;
+
+        // Used to avoid edge clipping due to font metrics and rounding differences between measured and rendered text.
         const decimal WidthTolerance = 2m;
         var newWidth =
             (int)(textWidth *

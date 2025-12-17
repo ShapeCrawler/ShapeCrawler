@@ -23,7 +23,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
             return this.SlideFontBoldFlagOrNull();
         }
 
-        throw new SCException("Not implemented.");
+        return null;
     }
 
     internal decimal? SizeOrNull()
@@ -153,7 +153,12 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         if (refLayoutPShapeOfSlide == null)
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNull(slidePShape);
-            var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+            if (refMasterPShape?.TextBody?.ListStyle == null)
+            {
+                return null;
+            }
+
+            var fonts = new IndentFonts(refMasterPShape.TextBody.ListStyle);
 
             return fonts.BoldFlagOrNull(indentLevel);
         }

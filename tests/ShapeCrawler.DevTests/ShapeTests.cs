@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
 using ShapeCrawler.DevTests.Helpers;
@@ -866,7 +866,8 @@ public class ShapeTests : SCTest
             });
         });
         
-        // Act-Assert
+        // Assert
         pres.Slide(1).Shapes.First().Width.Should().BeApproximately(253, 1, "text content should fit text box");
+        ValidatePresentation(pres);
     }
 }
