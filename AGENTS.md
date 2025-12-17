@@ -22,7 +22,11 @@ tests/
 
 ### Key Design Patterns
 
-1. **Interface-based API**: Public API is exposed through interfaces (e.g., `IPresentation`, `ISlide`, `IShape`)
+1. **Interface-based API**: Public API is exposed through interfaces, for example:
+  - `IPresentation` -> PowerPoint presentation
+  - `IUserSlide`    -> PowerPoint slide
+  - `ILayoutSlide`  -> PowerPoint slide layout
+  - `IMasterSlide`  -> PowerPoint slide master
 2. **Wrapper Pattern**: Internal classes wrap Open XML SDK elements
 3. **Object-Oriented Design**: Emphasis on nouns for class names, no static members in classes
 4. **Encapsulation**: Logic is encapsulated in constructors and internal/public methods
