@@ -12,7 +12,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
     {
         get
         {
-            string fontFamily;
+            string? fontFamily;
             if (string.IsNullOrEmpty(font.LatinName))
             {
                 fontFamily = "Calibri";
