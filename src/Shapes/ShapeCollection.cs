@@ -51,7 +51,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         return this.GetEnumerator();
     }
     
-    internal IEnumerable<Shape> GetInternalShapes()
+    internal IEnumerable<DrawingShape> GetInternalShapes()
     {
         var pShapeTree = openXmlPart switch
         {
@@ -118,7 +118,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         return false;
     }
 
-    private static IEnumerable<Shape> CreateLineShapes(P.ConnectionShape pConnectionShape)
+    private static IEnumerable<DrawingShape> CreateLineShapes(P.ConnectionShape pConnectionShape)
     {
         yield return new LineShape(
             new Position(pConnectionShape),
@@ -128,12 +128,12 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         );
     }
 
-    private static IEnumerable<Shape> CreateGroupShapes(P.GroupShape pGroupShape)
+    private static IEnumerable<DrawingShape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
         yield return new GroupShape(pGroupShape);
     }
 
-    private static IEnumerable<Shape> CreateShapes(P.Shape pShape)
+    private static IEnumerable<DrawingShape> CreateShapes(P.Shape pShape)
     {
         if (pShape.TextBody is not null)
         {
@@ -144,7 +144,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
         else
         {
-            yield return new Shape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
+            yield return new DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
         }
     }
 
@@ -153,7 +153,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
             "http://schemas.openxmlformats.org/presentationml/2006/ole",
             StringComparison.Ordinal) ?? false;
 
-    private static IEnumerable<Shape> CreatePictureShapes(P.Picture pPicture)
+    private static IEnumerable<DrawingShape> CreatePictureShapes(P.Picture pPicture)
     {
         var element = pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties?
             .ChildElements.FirstOrDefault();
@@ -181,7 +181,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
     private IEnumerable<IShape> GetShapes() => GetInternalShapes();
 
-    private IEnumerable<Shape> CreateShapesFromElement(OpenXmlCompositeElement element)
+    private IEnumerable<DrawingShape> CreateShapesFromElement(OpenXmlCompositeElement element)
     {
         return element switch
         {
@@ -194,7 +194,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         };
     }
 
-    private IEnumerable<Shape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
+    private IEnumerable<DrawingShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
         if (aGraphicData == null)
@@ -255,7 +255,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
     }
 
-    private Shape CreateChart(P.GraphicFrame pGraphicFrame)
+    private DrawingShape CreateChart(P.GraphicFrame pGraphicFrame)
     {
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;

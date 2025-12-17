@@ -3,7 +3,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class LineShape : Shape
+internal sealed class LineShape : DrawingShape
 {
     internal LineShape(
         Position position,
