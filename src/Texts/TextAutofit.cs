@@ -102,16 +102,17 @@ internal sealed class TextAutofit(
         var textWidth = new Text(longerText, font).Width;
         var leftMargin = margins.Left;
         var rightMargin = margins.Right;
+
         // WidthTolerance compensates for small discrepancies between measured text width and actual rendering
         // (font metrics, DPI conversion 72→96, and rounding), chosen as 2pt empirically to prevent edge clipping
         // without noticeably oversizing shapes.
 
         // Used to avoid edge clipping due to font metrics and rounding differences between measured and rendered text.
-        const decimal WidthTolerance = 2m;
+        const decimal widthTolerance = 2m;
         var newWidth =
             (int)(textWidth *
                   1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
-            + leftMargin + rightMargin + WidthTolerance;
+            + leftMargin + rightMargin + widthTolerance;
         shapeSize.Width = newWidth;
     }
 

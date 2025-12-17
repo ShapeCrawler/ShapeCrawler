@@ -162,7 +162,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide RectangleShape(Action<DraftTextBox> configure)
     {
-        this.actions.Add((slide, _) => this.AddRectangleShape(slide, configure));
+        this.actions.Add((slide, _) => AddRectangleShape(slide, configure));
 
         return this;
     }
@@ -348,21 +348,21 @@ public sealed class DraftSlide
         }
     }
 
-    private void AddRectangleShape(IUserSlide slide, Action<DraftTextBox> configure)
+    private static void AddRectangleShape(IUserSlide slide, Action<DraftTextBox> configure)
     {
         var builder = new DraftTextBox();
         configure(builder);
 
-        var addedShape = this.AddRectangleShape(slide, builder);
+        var addedShape = AddRectangleShape(slide, builder);
         addedShape.Name = builder.TextBoxName;
 
-        this.ApplyDraftFont(addedShape, builder.FontDraft);
-        this.ApplyTextHighlightColor(addedShape, builder.HighlightColor);
-        this.ApplyDraftParagraphs(addedShape, builder.Paragraphs);
-        this.ApplyTextBoxAutofit(addedShape, builder.IsTextBox);
+        ApplyDraftFont(addedShape, builder.FontDraft);
+        ApplyTextHighlightColor(addedShape, builder.HighlightColor);
+        ApplyDraftParagraphs(addedShape, builder.Paragraphs);
+        ApplyTextBoxAutofit(addedShape, builder.IsTextBox);
     }
 
-    private IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
+    private static IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
     {
         if (builder.IsTextBox)
         {
@@ -377,11 +377,11 @@ public sealed class DraftSlide
 
         slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
         var addedShape = slide.Shapes.Last<IShape>();
-        this.SetTextIfProvided(addedShape, builder.Content);
+        SetTextIfProvided(addedShape, builder.Content);
         return addedShape;
     }
 
-    private void SetTextIfProvided(IShape shape, string? content)
+    private static void SetTextIfProvided(IShape shape, string? content)
     {
         if (string.IsNullOrEmpty(content))
         {
@@ -391,7 +391,7 @@ public sealed class DraftSlide
         shape.TextBox!.SetText(content!);
     }
 
-    private void ApplyDraftFont(IShape shape, DraftFont? fontDraft)
+    private static void ApplyDraftFont(IShape shape, DraftFont? fontDraft)
     {
         if (fontDraft == null)
         {
@@ -415,7 +415,7 @@ public sealed class DraftSlide
         }
     }
 
-    private void ApplyTextHighlightColor(IShape shape, Color? highlightColor)
+    private static void ApplyTextHighlightColor(IShape shape, Color? highlightColor)
     {
         if (!highlightColor.HasValue)
         {
@@ -425,7 +425,7 @@ public sealed class DraftSlide
         shape.TextBox!.Paragraphs[0].Portions[0].TextHighlightColor = highlightColor.Value;
     }
 
-    private void ApplyDraftParagraphs(IShape shape, IReadOnlyList<DraftParagraph> draftParagraphs)
+    private static void ApplyDraftParagraphs(IShape shape, IReadOnlyList<DraftParagraph> draftParagraphs)
     {
         if (draftParagraphs.Count == 0)
         {
@@ -435,11 +435,11 @@ public sealed class DraftSlide
         var textBox = shape.TextBox!;
         for (var i = 0; i < draftParagraphs.Count; i++)
         {
-            this.ApplyDraftParagraph(textBox, i, draftParagraphs[i]);
+            ApplyDraftParagraph(textBox, i, draftParagraphs[i]);
         }
     }
 
-    private void ApplyDraftParagraph(ITextBox textBox, int paragraphIndex, DraftParagraph draftParagraph)
+    private static void ApplyDraftParagraph(ITextBox textBox, int paragraphIndex, DraftParagraph draftParagraph)
     {
         if (paragraphIndex > 0)
         {
@@ -463,7 +463,7 @@ public sealed class DraftSlide
         paragraph.Bullet.ApplyDefaultSpacing();
     }
 
-    private void ApplyTextBoxAutofit(IShape shape, bool isTextBox)
+    private static void ApplyTextBoxAutofit(IShape shape, bool isTextBox)
     {
         if (!isTextBox)
         {
