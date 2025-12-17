@@ -55,20 +55,6 @@ internal sealed class ShapeCanvas(SKCanvas canvas, ShapeColorScheme shapeColorSc
         this.RenderText(shape);
     }
 
-    private void ApplyRotation(Shape shape)
-    {
-        if (Math.Abs(shape.Rotation) > Epsilon)
-        {
-            var centerX = shape.X + (shape.Width / 2);
-            var centerY = shape.Y + (shape.Height / 2);
-            canvas.RotateDegrees(
-                (float)shape.Rotation,
-                (float)new Points(centerX).AsPixels(),
-                (float)new Points(centerY).AsPixels()
-            );
-        }
-    }
-
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
     {
         var rgbColor = colorElement.RgbColorModelHex;
@@ -80,7 +66,7 @@ internal sealed class ShapeCanvas(SKCanvas canvas, ShapeColorScheme shapeColorSc
         var sysColor = colorElement.SystemColor;
         return sysColor?.LastColor?.Value;
     }
-
+    
     private static SKColor ApplyShade(SKColor color, int shadeValue)
     {
         var shadeFactor = shadeValue / 100_000f;
@@ -122,7 +108,21 @@ internal sealed class ShapeCanvas(SKCanvas canvas, ShapeColorScheme shapeColorSc
 
         return new Points(defaultWidth).AsPixels();
     }
-
+    
+    private void ApplyRotation(Shape shape)
+    {
+        if (Math.Abs(shape.Rotation) > Epsilon)
+        {
+            var centerX = shape.X + (shape.Width / 2);
+            var centerY = shape.Y + (shape.Height / 2);
+            canvas.RotateDegrees(
+                (float)shape.Rotation,
+                (float)new Points(centerX).AsPixels(),
+                (float)new Points(centerY).AsPixels()
+            );
+        }
+    }
+    
     private void RenderRectangle(Shape shape)
     {
         var x = new Points(shape.X).AsPixels();
