@@ -124,7 +124,7 @@ public sealed class DraftSlide
         {
             var effectiveX = x ?? (int)((pres.SlideWidth - width) / 2);
             var effectiveY = y ?? (int)((pres.SlideHeight - height) / 2);
-            slide.Shapes.AddShape(effectiveX, effectiveY, width, height, Geometry.Rectangle, content);
+            slide.Shapes.AddTextBox(effectiveX, effectiveY, width, height, content);
         });
 
         return this;
@@ -137,7 +137,7 @@ public sealed class DraftSlide
     {
         this.actions.Add((slide, _) =>
         {
-            slide.Shapes.AddShape(x, y, width, height, Geometry.Rectangle, content);
+            slide.Shapes.AddTextBox(x, y, width, height, content);
             var addedShape = slide.Shapes.Last<IShape>();
             addedShape.Name = name;
         });

@@ -843,4 +843,17 @@ public class ShapeTests : SCTest
         var newVideoBytes = newVideo.ToArray();
         videoShape.Media.AsByteArray().SequenceEqual(newVideoBytes).Should().Be(true);
     }
+
+    [Test]
+    public void WIP()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextBox("Hello World!");
+            });
+        });
+        pres.Save(@"c:\temp\result.pptx");
+    }
 }
