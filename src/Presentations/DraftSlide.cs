@@ -146,7 +146,7 @@ public sealed class DraftSlide
     }
 
     /// <summary>
-    ///     Configures a text box using a nested builder.
+    ///     Configures a rectangular auto shape and its text box content using a nested builder.
     /// </summary>
     public DraftSlide RectangleShape(Action<DraftTextBox> configure)
     {
