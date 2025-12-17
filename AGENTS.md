@@ -27,6 +27,7 @@ tests/
   - `IUserSlide`    -> PowerPoint slide
   - `ILayoutSlide`  -> PowerPoint slide layout
   - `IMasterSlide`  -> PowerPoint slide master
+  - `IShape`        -> All elements on a slide are shapes and implement this interface.
 2. **Wrapper Pattern**: Internal classes wrap Open XML SDK elements
 3. **Object-Oriented Design**: Emphasis on nouns for class names, no static members in classes
 4. **Encapsulation**: Logic is encapsulated in constructors and internal/public methods
