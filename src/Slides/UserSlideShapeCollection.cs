@@ -206,6 +206,10 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         pShape.ShapeStyle = null;
 
         addedShape.TextBox.SetText(text);
+        foreach (var paragraph in addedShape.TextBox.Paragraphs)
+        {
+            paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
+        }
     }
 
     public void AddLine(string xml)

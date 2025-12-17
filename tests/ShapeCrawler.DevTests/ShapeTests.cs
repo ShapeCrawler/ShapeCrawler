@@ -845,8 +845,9 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    public void WIP()
+    public void Content_fits_text_box()
     {
+        // Act
         var pres = new Presentation(pres =>
         {
             pres.Slide(slide =>
@@ -865,6 +866,7 @@ public class ShapeTests : SCTest
             });
         });
         
-        pres.Save(@"c:\temp\result.pptx");
+        // Act-Assert
+        pres.Slide(1).Shapes.First().Width.Should().BeApproximately(253, 1, "text content should fit text box");;
     }
 }
