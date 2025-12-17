@@ -1,13 +1,14 @@
-﻿using System.Runtime.CompilerServices;
+using NUnit.Framework;
 
-namespace ShapeCrawler.DevTests.helpers;
+namespace ShapeCrawler.DevTests;
 
-public static class ModuleInitializer
+[SetUpFixture]
+public sealed class AssemblySetUp
 {
-    [ModuleInitializer]
-    public static void Init()
+    [OneTimeSetUp]
+    public void Init()
     {
-        // Initialize the ImageMagick plugin
+        // Initialize the ImageMagick plugin.
         VerifyImageMagick.Initialize();
 
         // Register comparers with a tolerance (threshold).
