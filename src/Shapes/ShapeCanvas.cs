@@ -12,7 +12,7 @@ namespace ShapeCrawler.Shapes;
 /// <summary>
 ///     Represents a canvas for rendering shapes.
 /// </summary>
-internal sealed class ShapeCanvas
+internal sealed class ShapeCanvas(SKCanvas canvas, ShapeColorScheme shapeColorScheme, OpenXmlElement pShapeTreeElement)
 {
     private const double Epsilon = 1e-6;
     private static readonly TextDrawing TextDrawing = new();
@@ -32,22 +32,6 @@ internal sealed class ShapeCanvas
             { "hlink", scheme => scheme.Hyperlink },
             { "folHlink", scheme => scheme.FollowedHyperlinkColor }
         };
-
-    private readonly SKCanvas canvas;
-    private readonly OpenXmlElement pShapeTreeElement;
-    private readonly ShapeColorScheme shapeColorScheme;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ShapeCanvas"/> class.
-    /// </summary>
-    /// <param name="canvas">The shape to render.</param>
-    /// <param name="pShapeTreeElement">The shape tree element.</param>
-    internal ShapeCanvas(SKCanvas canvas, OpenXmlElement pShapeTreeElement)
-    {
-        this.canvas = canvas;
-        this.pShapeTreeElement = pShapeTreeElement;
-        this.shapeColorScheme = new ShapeColorScheme(pShapeTreeElement);
-    }
 
     /// <summary>
     ///     Renders the shape.
@@ -71,18 +55,12 @@ internal sealed class ShapeCanvas
         this.RenderText(shape);
     }
 
-    private static void ApplyRotation(
-        SKCanvas canvas,
-        Shape shape,
-        decimal x,
-        decimal y,
-        decimal width,
-        decimal height)
+    private void ApplyRotation(Shape shape)
     {
         if (Math.Abs(shape.Rotation) > Epsilon)
         {
-            var centerX = x + (width / 2);
-            var centerY = y + (height / 2);
+            var centerX = shape.X + (shape.Width / 2);
+            var centerY = shape.Y + (shape.Height / 2);
             canvas.RotateDegrees(
                 (float)shape.Rotation,
                 (float)new Points(centerX).AsPixels(),
@@ -114,7 +92,7 @@ internal sealed class ShapeCanvas
             color.Alpha);
     }
 
-    private static decimal GetShapeOutlineWidth(IShape shape)
+    private static decimal GetShapeOutlineWidth(Shape shape)
     {
         var shapeOutline = shape.Outline;
 
@@ -127,7 +105,7 @@ internal sealed class ShapeCanvas
         return styleWidth;
     }
 
-    private static decimal GetStyleOutlineWidth(IShape shape)
+    private static decimal GetStyleOutlineWidth(Shape shape)
     {
         if (shape.SDKOpenXmlElement is not P.Shape pShape)
         {
@@ -161,7 +139,7 @@ internal sealed class ShapeCanvas
         }
 
         canvas.Save();
-        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
+        ApplyRotation(shape);
 
         this.RenderFill(shape, rect, cornerRadius);
         this.RenderOutline(shape, rect, cornerRadius);
@@ -178,7 +156,7 @@ internal sealed class ShapeCanvas
         var rect = new SKRect((float)x, (float)y, (float)(x + width), (float)(y + height));
 
         canvas.Save();
-        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
+        ApplyRotation(shape);
 
         this.RenderEllipseFill(shape, rect);
         this.RenderEllipseOutline(shape, rect);
@@ -194,7 +172,7 @@ internal sealed class ShapeCanvas
         }
 
         canvas.Save();
-        ApplyRotation(canvas, shape, shape.X, shape.Y, shape.Width, shape.Height);
+        ApplyRotation(shape);
         TextDrawing.Render(canvas, shape);
         canvas.Restore();
     }
@@ -332,7 +310,7 @@ internal sealed class ShapeCanvas
 
     private SKColor? GetStyleOutlineColor()
     {
-        if (this.pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
+        if (pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
         {
             return null;
         }
@@ -359,7 +337,7 @@ internal sealed class ShapeCanvas
 
     private SKColor? GetStyleFillColor()
     {
-        if (this.pShapeTreeElement is not P.Shape pShape)
+        if (pShapeTreeElement is not P.Shape pShape)
         {
             return null;
         }
@@ -383,7 +361,7 @@ internal sealed class ShapeCanvas
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var colorScheme = this.shapeColorScheme.GetColorScheme();
+        var colorScheme = shapeColorScheme.GetColorScheme();
         if (colorScheme is null)
         {
             return null;

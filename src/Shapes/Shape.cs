@@ -321,7 +321,7 @@ internal class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, Op
     /// <param name="canvas">Target canvas.</param>
     internal virtual void Render(SKCanvas canvas)
     {
-        var shapeCanvas = new ShapeCanvas(canvas, pShapeTreeElement);
+        var shapeCanvas = new ShapeCanvas(canvas, new ShapeColorScheme(pShapeTreeElement), pShapeTreeElement);
         shapeCanvas.Render(this);
     }
 }
