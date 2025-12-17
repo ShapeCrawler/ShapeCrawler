@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
@@ -357,7 +357,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var shapeColorScheme = new ShapeColorScheme(this.SDKOpenXmlElement);
+        var shapeColorScheme = new ShapeColorScheme(pShapeTreeElement);
         var colorScheme = shapeColorScheme.GetColorScheme();
         if (colorScheme is null)
         {
