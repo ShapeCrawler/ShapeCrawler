@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -13,6 +14,32 @@ namespace ShapeCrawler.Paragraphs;
 /// </summary>
 internal sealed class ParagraphHorizontalAlignment
 {
+    private static readonly HashSet<string> LeftAlignmentAliases = new(StringComparer.Ordinal)
+    {
+        "l",
+        "left"
+    };
+
+    private static readonly HashSet<string> CenterAlignmentAliases = new(StringComparer.Ordinal)
+    {
+        "ctr",
+        "center"
+    };
+
+    private static readonly HashSet<string> RightAlignmentAliases = new(StringComparer.Ordinal)
+    {
+        "r",
+        "right"
+    };
+
+    private static readonly HashSet<string> JustifyAlignmentAliases = new(StringComparer.Ordinal)
+    {
+        "just",
+        "justlow",
+        "dist",
+        "thaidist"
+    };
+
     private readonly A.Paragraph aParagraph;
     private readonly SCAParagraph scAParagraph;
 
@@ -211,22 +238,22 @@ internal sealed class ParagraphHorizontalAlignment
 
         var algn = rawAlignment!.Trim().ToLowerInvariant();
 
-        if (algn == "l" || algn == "left")
+        if (LeftAlignmentAliases.Contains(algn))
         {
             return TextHorizontalAlignment.Left;
         }
 
-        if (algn == "ctr" || algn == "center")
+        if (CenterAlignmentAliases.Contains(algn))
         {
             return TextHorizontalAlignment.Center;
         }
 
-        if (algn == "r" || algn == "right")
+        if (RightAlignmentAliases.Contains(algn))
         {
             return TextHorizontalAlignment.Right;
         }
 
-        if (algn == "just" || algn == "justlow" || algn == "dist" || algn == "thaidist")
+        if (JustifyAlignmentAliases.Contains(algn))
         {
             return TextHorizontalAlignment.Justify;
         }
