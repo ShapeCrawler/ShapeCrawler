@@ -13,11 +13,35 @@ namespace ShapeCrawler.DevTests.Helpers;
 
 public abstract class SCTest
 {
+    private static readonly object VerifySync = new();
+    private static bool isVerifyInitialized;
     protected readonly Fixtures fixture = new();
 
     protected SCTest()
     {
-        UseProjectRelativeDirectory("snapshots");
+        EnsureVerifyIsInitialized();
+    }
+
+    private static void EnsureVerifyIsInitialized()
+    {
+        lock (VerifySync)
+        {
+            if (isVerifyInitialized)
+            {
+                return;
+            }
+
+            UseProjectRelativeDirectory("snapshots");
+
+            // Initialize the ImageMagick plugin.
+            VerifyImageMagick.Initialize();
+
+            // Register comparers with a tolerance (threshold).
+            // This handles cross-environment font rendering issues.
+            VerifyImageMagick.RegisterComparers();
+
+            isVerifyInitialized = true;
+        }
     }
 
     protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)

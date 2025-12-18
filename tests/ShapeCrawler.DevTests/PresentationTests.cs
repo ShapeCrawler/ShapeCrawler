@@ -761,6 +761,16 @@ public class PresentationTests : SCTest
         // Act-Assert
         new Presentation().Slides.Should().BeEmpty();
     }
+    
+    [Test]
+    public void Constructor_opens_existing_presentation()
+    {
+        // Act
+        var pres = new Presentation(@"c:\My OneDrive\OneDrive\ShapeCrawler\Slide Image\Text Shape samples.pptx");
+        
+        // Assert
+        ValidatePresentation(pres);
+    }
 
     [Test]
     public void AsMarkdown_returns_markdown_string()

@@ -1,12 +1,9 @@
-﻿using System;
+using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Paragraphs;
-using ShapeCrawler.Positions;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -170,39 +167,8 @@ internal sealed class Paragraph : IParagraph
                 return this.alignment.Value;
             }
 
-            var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment;
-            if (aTextAlignmentType == null)
-            {
-                var pShape = this.aParagraph.Ancestors<P.Shape>().First();
-                var parentShape = new DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
-                if (parentShape.PlaceholderType == PlaceholderType.Title)
-                {
-                    return TextHorizontalAlignment.Center;
-                }
-            }
-
-            if (aTextAlignmentType is null)
-            {
-                return TextHorizontalAlignment.Center;
-            }
-
-            if (aTextAlignmentType.Value == A.TextAlignmentTypeValues.Center)
-            {
-                this.alignment = TextHorizontalAlignment.Center;
-            }
-            else if (aTextAlignmentType.Value == A.TextAlignmentTypeValues.Right)
-            {
-                this.alignment = TextHorizontalAlignment.Right;
-            }
-            else if (aTextAlignmentType.Value == A.TextAlignmentTypeValues.Justified)
-            {
-                this.alignment = TextHorizontalAlignment.Justify;
-            }
-            else
-            {
-                this.alignment = TextHorizontalAlignment.Left;
-            }
-
+            var calculatedAlignment = new ParagraphHorizontalAlignment(this.aParagraph).ValueOrNull();
+            this.alignment = calculatedAlignment ?? TextHorizontalAlignment.Left;
             return this.alignment.Value;
         }
         set => this.SetAlignment(value);
