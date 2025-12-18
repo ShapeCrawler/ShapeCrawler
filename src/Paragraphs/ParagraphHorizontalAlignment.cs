@@ -40,61 +40,7 @@ internal sealed class ParagraphHorizontalAlignment
         return this.ReferencedAlignmentOrNull();
     }
 
-    private TextHorizontalAlignment? ExplicitAlignmentOrNull()
-    {
-        var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment?.Value;
-        if (aTextAlignmentType is null)
-        {
-            return null;
-        }
-
-        return this.ToHorizontalAlignment(aTextAlignmentType.Value);
-    }
-
-    private TextHorizontalAlignment? ReferencedAlignmentOrNull()
-    {
-        var pShape = this.aParagraph.Ancestors<P.Shape>().FirstOrDefault();
-        if (pShape?.TextBody == null)
-        {
-            return null;
-        }
-
-        var indentLevel = this.scAParagraph.GetIndentLevel();
-        var textBodyAlignment = this.AlignmentFromIndentStylesOrNull(pShape.TextBody.ListStyle, indentLevel);
-        if (textBodyAlignment.HasValue)
-        {
-            return textBodyAlignment.Value;
-        }
-
-        var pPlaceholderShape = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
-            .GetFirstChild<P.PlaceholderShape>();
-        if (pPlaceholderShape is null)
-        {
-            return null;
-        }
-
-        var openXmlPart = this.aParagraph.Ancestors<OpenXmlPartRootElement>().FirstOrDefault()?.OpenXmlPart;
-        if (openXmlPart is null)
-        {
-            return null;
-        }
-
-        var layoutAlignment = this.AlignmentFromReferencedLayoutOrNull(openXmlPart, pPlaceholderShape, indentLevel);
-        if (layoutAlignment.HasValue)
-        {
-            return layoutAlignment.Value;
-        }
-
-        var masterShapeAlignment = this.AlignmentFromReferencedMasterShapeOrNull(openXmlPart, pPlaceholderShape, indentLevel);
-        if (masterShapeAlignment.HasValue)
-        {
-            return masterShapeAlignment.Value;
-        }
-
-        return this.AlignmentFromSlideMasterTextStylesOrNull(openXmlPart, pPlaceholderShape, indentLevel);
-    }
-
-    private TextHorizontalAlignment ToHorizontalAlignment(A.TextAlignmentTypeValues value)
+    private static TextHorizontalAlignment ToHorizontalAlignment(A.TextAlignmentTypeValues value)
     {
         if (value == A.TextAlignmentTypeValues.Center)
         {
@@ -114,7 +60,7 @@ internal sealed class ParagraphHorizontalAlignment
         return TextHorizontalAlignment.Left;
     }
 
-    private TextHorizontalAlignment? AlignmentFromReferencedLayoutOrNull(
+    private static TextHorizontalAlignment? AlignmentFromReferencedLayoutOrNull(
         OpenXmlPart openXmlPart,
         P.PlaceholderShape pPlaceholderShape,
         int indentLevel)
@@ -131,10 +77,10 @@ internal sealed class ParagraphHorizontalAlignment
             return null;
         }
 
-        return this.AlignmentFromIndentStylesOrNull(referencedLayoutShape.TextBody.ListStyle, indentLevel);
+        return AlignmentFromIndentStylesOrNull(referencedLayoutShape.TextBody.ListStyle, indentLevel);
     }
 
-    private TextHorizontalAlignment? AlignmentFromReferencedMasterShapeOrNull(
+    private static TextHorizontalAlignment? AlignmentFromReferencedMasterShapeOrNull(
         OpenXmlPart openXmlPart,
         P.PlaceholderShape pPlaceholderShape,
         int indentLevel)
@@ -164,15 +110,15 @@ internal sealed class ParagraphHorizontalAlignment
             return null;
         }
 
-        return this.AlignmentFromIndentStylesOrNull(referencedMasterShape.TextBody.ListStyle, indentLevel);
+        return AlignmentFromIndentStylesOrNull(referencedMasterShape.TextBody.ListStyle, indentLevel);
     }
 
-    private TextHorizontalAlignment? AlignmentFromSlideMasterTextStylesOrNull(
+    private static TextHorizontalAlignment? AlignmentFromSlideMasterTextStylesOrNull(
         OpenXmlPart openXmlPart,
         P.PlaceholderShape pPlaceholderShape,
         int indentLevel)
     {
-        var slideMasterPart = this.SlideMasterPartOrNull(openXmlPart);
+        var slideMasterPart = SlideMasterPartOrNull(openXmlPart);
         var textStyles = slideMasterPart?.SlideMaster.TextStyles;
         if (textStyles is null)
         {
@@ -194,10 +140,10 @@ internal sealed class ParagraphHorizontalAlignment
             styles = textStyles.OtherStyle;
         }
 
-        return this.AlignmentFromIndentStylesOrNull(styles, indentLevel);
+        return AlignmentFromIndentStylesOrNull(styles, indentLevel);
     }
 
-    private SlideMasterPart? SlideMasterPartOrNull(OpenXmlPart openXmlPart)
+    private static SlideMasterPart? SlideMasterPartOrNull(OpenXmlPart openXmlPart)
     {
         if (openXmlPart is SlidePart slidePart)
         {
@@ -212,7 +158,7 @@ internal sealed class ParagraphHorizontalAlignment
         return openXmlPart is SlideMasterPart slideMasterPart ? slideMasterPart : null;
     }
 
-    private TextHorizontalAlignment? AlignmentFromIndentStylesOrNull(
+    private static TextHorizontalAlignment? AlignmentFromIndentStylesOrNull(
         OpenXmlCompositeElement? openXmlCompositeElement,
         int indentLevel)
     {
@@ -224,13 +170,13 @@ internal sealed class ParagraphHorizontalAlignment
         foreach (var levelProperties in openXmlCompositeElement.Elements()
                      .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal)))
         {
-            var level = this.ExtractLevelNumberOrZero(levelProperties.LocalName);
+            var level = ExtractLevelNumberOrZero(levelProperties.LocalName);
             if (level != indentLevel)
             {
                 continue;
             }
 
-            var alignment = this.AlignmentFromAttributesOrNull(levelProperties);
+            var alignment = AlignmentFromAttributesOrNull(levelProperties);
             if (alignment.HasValue)
             {
                 return alignment.Value;
@@ -240,7 +186,7 @@ internal sealed class ParagraphHorizontalAlignment
         return null;
     }
 
-    private int ExtractLevelNumberOrZero(string localName)
+    private static int ExtractLevelNumberOrZero(string localName)
     {
         if (localName.Length < 4)
         {
@@ -251,7 +197,7 @@ internal sealed class ParagraphHorizontalAlignment
         return levelChar >= '0' && levelChar <= '9' ? levelChar - '0' : 0;
     }
 
-    private TextHorizontalAlignment? AlignmentFromAttributesOrNull(OpenXmlElement levelParagraphProperties)
+    private static TextHorizontalAlignment? AlignmentFromAttributesOrNull(OpenXmlElement levelParagraphProperties)
     {
         var rawAlignment = levelParagraphProperties.GetAttributes().FirstOrDefault(a => a.LocalName == "algn").Value;
         if (string.IsNullOrWhiteSpace(rawAlignment))
@@ -282,5 +228,60 @@ internal sealed class ParagraphHorizontalAlignment
         }
 
         return null;
+    }
+
+    private TextHorizontalAlignment? ExplicitAlignmentOrNull()
+    {
+        var aTextAlignmentType = this.aParagraph.ParagraphProperties?.Alignment?.Value;
+        if (aTextAlignmentType is null)
+        {
+            return null;
+        }
+
+        return ToHorizontalAlignment(aTextAlignmentType.Value);
+    }
+
+    private TextHorizontalAlignment? ReferencedAlignmentOrNull()
+    {
+        var pShape = this.aParagraph.Ancestors<P.Shape>().FirstOrDefault();
+        if (pShape?.TextBody == null)
+        {
+            return null;
+        }
+
+        var indentLevel = this.scAParagraph.GetIndentLevel();
+        var textBodyAlignment = AlignmentFromIndentStylesOrNull(pShape.TextBody.ListStyle, indentLevel);
+        if (textBodyAlignment.HasValue)
+        {
+            return textBodyAlignment.Value;
+        }
+
+        var pPlaceholderShape = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
+            .GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholderShape is null)
+        {
+            return null;
+        }
+
+        var openXmlPart = this.aParagraph.Ancestors<OpenXmlPartRootElement>().FirstOrDefault()?.OpenXmlPart;
+        if (openXmlPart is null)
+        {
+            return null;
+        }
+
+        var layoutAlignment = AlignmentFromReferencedLayoutOrNull(openXmlPart, pPlaceholderShape, indentLevel);
+        if (layoutAlignment.HasValue)
+        {
+            return layoutAlignment.Value;
+        }
+
+        var masterShapeAlignment =
+            AlignmentFromReferencedMasterShapeOrNull(openXmlPart, pPlaceholderShape, indentLevel);
+        if (masterShapeAlignment.HasValue)
+        {
+            return masterShapeAlignment.Value;
+        }
+
+        return AlignmentFromSlideMasterTextStylesOrNull(openXmlPart, pPlaceholderShape, indentLevel);
     }
 }
