@@ -59,9 +59,9 @@ public interface IUserSlide
     IShapeFill Fill { get; }
 
     /// <summary>
-    ///     Gets all slide text boxes.
+    ///     Gets all text content from shapes on the slide.
     /// </summary>
-    public IList<IShapeText> GetTextBoxes();
+    public IList<IShapeText> GetShapeTexts();
 
     /// <summary>
     ///     Hides slide.
@@ -300,7 +300,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
 
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
-    public IList<IShapeText> GetTextBoxes()
+    public IList<IShapeText> GetShapeTexts()
     {
         var collectedTextBoxes = new List<IShapeText>();
 
