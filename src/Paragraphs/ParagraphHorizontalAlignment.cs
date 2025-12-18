@@ -253,7 +253,11 @@ internal sealed class ParagraphHorizontalAlignment
 
     private TextHorizontalAlignment? AlignmentFromAttributesOrNull(OpenXmlElement levelParagraphProperties)
     {
-        var rawAlignment = levelParagraphProperties.GetAttributes().FirstOrDefault(a => a.LocalName == "algn").Value;
+        var rawAlignment = levelParagraphProperties
+            .GetAttributes()
+            .Where(a => a.LocalName == "algn")
+            .Select(a => a.Value)
+            .FirstOrDefault();
         if (string.IsNullOrWhiteSpace(rawAlignment))
         {
             return null;
