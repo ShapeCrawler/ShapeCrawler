@@ -215,23 +215,23 @@ public sealed class Presentation : IPresentation
         foreach (var slide in this.Slides)
         {
             markdown.AppendLine($"# Slide {slide.Number}");
-            var textShapes = slide.Shapes.Where(shape => shape.ShapeText is not null && shape.ShapeText.Text != string.Empty
-                && shape.PlaceholderType != PlaceholderType.SlideNumber);
-            var titleShape = textShapes.FirstOrDefault(shape =>
-                shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
-            var nonTitleShapes =
-                textShapes.Where(shape => !shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
+            var textShapes = slide.Shapes
+                .Select(shape => new { shape, shapeText = shape.ShapeText })
+                .Where(x => x.shapeText is not null
+                            && x.shapeText.Text != string.Empty
+                            && x.shape.PlaceholderType != PlaceholderType.SlideNumber);
+
+            var titleShape = textShapes.FirstOrDefault(x =>
+                x.shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase));
             if (titleShape != null)
             {
-                markdown.AppendLine($"## {titleShape.ShapeText!.Text}");
+                markdown.AppendLine($"## {titleShape.shapeText!.Text}");
             }
 
-            foreach (var shape in nonTitleShapes)
+            foreach (var nonTitleShape in textShapes
+                         .Where(x => !x.shape.Name.StartsWith("Title", StringComparison.OrdinalIgnoreCase)))
             {
-                if (shape.ShapeText is not null)
-                {
-                    markdown.AppendLine(shape.ShapeText.Text);
-                }
+                markdown.AppendLine(nonTitleShape.shapeText!.Text);
             }
 
             markdown.AppendLine();
