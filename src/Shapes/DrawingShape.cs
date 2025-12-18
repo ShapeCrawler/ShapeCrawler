@@ -305,7 +305,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private SKColor? GetStyleOutlineColor()
     {
-        if (pShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
+        if (this.PShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
         {
             return null;
         }
@@ -332,7 +332,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private SKColor? GetStyleFillColor()
     {
-        if (pShapeTreeElement is not P.Shape pShape)
+        if (this.PShapeTreeElement is not P.Shape pShape)
         {
             return null;
         }
@@ -356,7 +356,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private string? ResolveSchemeColor(string schemeColorName)
     {
-        var shapeColorScheme = new ShapeColorScheme(pShapeTreeElement);
+        var shapeColorScheme = new ShapeColorScheme(this.PShapeTreeElement);
         var colorScheme = shapeColorScheme.GetColorScheme();
         if (colorScheme is null)
         {
