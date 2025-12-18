@@ -438,7 +438,7 @@ public class ShapeTests : SCTest
     public void SDKXPath_returns_shape_xpath(IShape shape, string expectedXPath)
     {
         // Act
-        var shapeXPath = shape.SDKXPath;
+        var shapeXPath = shape.SdkXPath;
 
         // Assert
         shapeXPath.Should().Be(expectedXPath);

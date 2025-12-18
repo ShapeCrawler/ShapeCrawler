@@ -273,7 +273,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public bool Removable => false;
 
-    public string SDKXPath => new XmlPath(pShapeTreeElement).XPath;
+    public string SdkXPath => new XmlPath(pShapeTreeElement).XPath;
 
     public OpenXmlElement SDKOpenXmlElement => pShapeTreeElement.CloneNode(true);
 

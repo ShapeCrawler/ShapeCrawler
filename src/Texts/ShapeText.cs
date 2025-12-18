@@ -145,7 +145,7 @@ internal sealed class ShapeText : IShapeText
         }
     }
 
-    public string SDKXPath => new XmlPath(this.textBody).XPath;
+    public string SdkXPath => new XmlPath(this.textBody).XPath;
 
     public TextVerticalAlignment VerticalAlignment
     {

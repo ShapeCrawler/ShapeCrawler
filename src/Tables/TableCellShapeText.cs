@@ -130,7 +130,7 @@ internal sealed class TableCellShapeText(A.TableCell aTableCell): IShapeText
 
     public bool TextWrapped => true;
 
-    public string SDKXPath => new XmlPath(aTableCell.TextBody!).XPath;
+    public string SdkXPath => new XmlPath(aTableCell.TextBody!).XPath;
 
     public TextDirection TextDirection 
     { 

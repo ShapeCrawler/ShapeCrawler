@@ -109,7 +109,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets XPath of the underlying Open XML element.
     /// </summary>
-    public string SDKXPath { get; }
+    public string SdkXPath { get; }
     
     /// <summary>
     ///     Gets a copy of the underlying Open XML element.

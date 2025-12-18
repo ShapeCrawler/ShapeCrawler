@@ -63,7 +63,7 @@ public interface IShapeText
     /// <summary>
     ///     Gets XPath.
     /// </summary>
-    public string SDKXPath { get; }
+    public string SdkXPath { get; }
 
     /// <summary>
     ///     Sets text.

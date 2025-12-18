@@ -712,7 +712,7 @@ namespace ShapeCrawler.DevTests
             var textFrame = pres.Slides[slideNumber - 1].GetTextBoxes().First();
 
             // Act
-            var sdkXPath = textFrame.SDKXPath;
+            var sdkXPath = textFrame.SdkXPath;
 
             // Assert
             sdkXPath.Should().Be(expectedXPath);
