@@ -62,7 +62,7 @@ public interface IShape : IPosition, IShapeGeometry
     IShapeFill? Fill { get; }
     
     /// <summary>
-    ///     Gets Text Box. Returns <c>null</c> if the shape is not a text holder.
+    ///     Gets the shape text. Returns <c>null</c> if the shape is not a text holder.
     /// </summary>
     IShapeText? ShapeText { get; }
     
