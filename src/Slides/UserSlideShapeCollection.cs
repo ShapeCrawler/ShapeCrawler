@@ -183,7 +183,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         addedShape.Height = height;
         addedShape.Id = nextShapeId;
         addedShape.GeometryType = geometry;
-        addedShape.TextBox.SetText(text);
+        addedShape.ShapeText.SetText(text);
     }
 
     public void AddTextBox(int x, int y, int width, int height, string text)
@@ -205,8 +205,8 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         pNvSpPr.TextBox = true;
         pShape.ShapeStyle = null;
 
-        addedShape.TextBox.SetText(text);
-        foreach (var paragraph in addedShape.TextBox.Paragraphs)
+        addedShape.ShapeText.SetText(text);
+        foreach (var paragraph in addedShape.ShapeText.Paragraphs)
         {
             paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
         }

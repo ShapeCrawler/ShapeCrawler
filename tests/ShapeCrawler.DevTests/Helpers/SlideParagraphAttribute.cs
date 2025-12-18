@@ -17,7 +17,7 @@ public class SlideParagraphAttribute(
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
         var pres = new Presentation(SCTest.TestAsset(pptxName));
-        var paragraph = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).TextBox
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.Shape(shapeName).ShapeText
             .Paragraphs[paragraphNumber - 1];
 
         var parameters = new TestCaseParameters(new[] { paragraph, expectedResult });

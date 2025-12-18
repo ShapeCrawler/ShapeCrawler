@@ -28,13 +28,13 @@ public class ParagraphCollectionTests : SCTest
         });
         var slide = pres.Slide(1);
         var addedShape = slide.Shapes.Last();
-        var paragraphs = addedShape.TextBox!.Paragraphs;
+        var paragraphs = addedShape.ShapeText!.Paragraphs;
 
         // Act
         paragraphs.Add("New Paragraph 2", 1);
 
         // Assert
-        addedShape.TextBox.Text.Should().Be($"Paragraph 1{Environment.NewLine}New Paragraph 2{Environment.NewLine}Paragraph 2");
+        addedShape.ShapeText.Text.Should().Be($"Paragraph 1{Environment.NewLine}New Paragraph 2{Environment.NewLine}Paragraph 2");
         ValidatePresentation(pres);
     }
     
@@ -51,13 +51,13 @@ public class ParagraphCollectionTests : SCTest
         });
         var slide = pres.Slide(1);
         var addedShape = slide.Shapes.Last();
-        var paragraphs = addedShape.TextBox!.Paragraphs;
+        var paragraphs = addedShape.ShapeText!.Paragraphs;
 
         // Act
         paragraphs.Add("New Paragraph 1", 0);
 
         // Assert
-        addedShape.TextBox.Text.Should().Be($"New Paragraph 1{Environment.NewLine}Paragraph 1");
+        addedShape.ShapeText.Text.Should().Be($"New Paragraph 1{Environment.NewLine}Paragraph 1");
         ValidatePresentation(pres);
     }
 }

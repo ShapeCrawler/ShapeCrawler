@@ -4,8 +4,8 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class GroupedTextShape(P.Shape pShape, TextBox textBox, GroupedShape groupedShape)
-    : TextShape(pShape, textBox)
+internal sealed class GroupedTextShape(P.Shape pShape, ShapeText shapeText, GroupedShape groupedShape)
+    : TextShape(pShape, shapeText)
 {
     public override decimal X
     {

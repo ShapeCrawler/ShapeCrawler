@@ -32,7 +32,7 @@ public class SlidePortionAttribute(
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
         var pres = new Presentation(SCTest.TestAsset(pptxName));
-        var portion1 = pres.Slides[slide - 1].Shapes.GetById<IShape>(shapeId).TextBox
+        var portion1 = pres.Slides[slide - 1].Shapes.GetById<IShape>(shapeId).ShapeText
             .Paragraphs[paragraph - 1].Portions[portion - 1];
 
         var parameters = new TestCaseParameters(new[] { portion1, expectedResult });

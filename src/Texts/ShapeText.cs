@@ -8,24 +8,23 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextBox : ITextBox
+internal sealed class ShapeText : IShapeText
 {
     private readonly TextBoxMargins margins;
     private readonly OpenXmlElement textBody;
-    private readonly ShapeSize shapeSize;
     private readonly TextAutofit autofit;
     private TextVerticalAlignment? vAlignment;
     private TextDirection? textDirection;
 
-    internal TextBox(TextBoxMargins margins, OpenXmlElement textBody)
+    internal ShapeText(TextBoxMargins margins, OpenXmlElement textBody)
     {
         this.margins = margins;
         this.textBody = textBody;
-        this.shapeSize = new ShapeSize(textBody.Parent!);
+        var shapeSize1 = new ShapeSize(textBody.Parent!);
         this.autofit = new TextAutofit(
             this.Paragraphs,
             () => this.AutofitType,
-            this.shapeSize,
+            shapeSize1,
             this.margins,
             () => this.TextWrapped,
             this.textBody);

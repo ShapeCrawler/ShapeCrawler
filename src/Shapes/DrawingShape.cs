@@ -167,7 +167,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private void RenderText(SKCanvas canvas)
     {
-        if (this.TextBox is null)
+        if (this.ShapeText is null)
         {
             return;
         }

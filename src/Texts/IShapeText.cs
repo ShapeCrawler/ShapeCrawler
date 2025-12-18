@@ -8,7 +8,7 @@ using ShapeCrawler.Texts;
 /// <summary>
 ///     Represents a text box.
 /// </summary>
-public interface ITextBox
+public interface IShapeText
 {
     /// <summary>
     ///     Gets the collection of paragraphs.

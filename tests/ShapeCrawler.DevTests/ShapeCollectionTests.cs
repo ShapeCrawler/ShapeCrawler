@@ -445,7 +445,7 @@ public class ShapeCollectionTests : SCTest
         rectangle.Y.Should().Be(60);
         rectangle.Width.Should().Be(100);
         rectangle.Height.Should().Be(70);
-        rectangle.TextBox!.Paragraphs.Count.Should().Be(1);
+        rectangle.ShapeText!.Paragraphs.Count.Should().Be(1);
         rectangle.Outline.HexColor.Should().BeNull();
         ValidatePresentation(pres);
     }

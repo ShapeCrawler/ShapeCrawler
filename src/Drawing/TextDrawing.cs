@@ -24,7 +24,7 @@ internal sealed class TextDrawing
 
     internal void Render(SKCanvas canvas, IShape shape)
     {
-        var textBox = shape.TextBox;
+        var textBox = shape.ShapeText;
         if (textBox is null || string.IsNullOrWhiteSpace(textBox.Text))
         {
             return;
@@ -224,15 +224,15 @@ internal sealed class TextDrawing
         return best == 0 ? 1 : best;
     }
 
-    private static float GetAvailableWidth(IShape shape, ITextBox textBox)
+    private static float GetAvailableWidth(IShape shape, IShapeText shapeText)
     {
-        var width = ClampToZero(shape.Width - textBox.LeftMargin - textBox.RightMargin);
+        var width = ClampToZero(shape.Width - shapeText.LeftMargin - shapeText.RightMargin);
         return (float)new Points(width).AsPixels();
     }
 
-    private static float GetAvailableHeight(IShape shape, ITextBox textBox)
+    private static float GetAvailableHeight(IShape shape, IShapeText shapeText)
     {
-        var height = ClampToZero(shape.Height - textBox.TopMargin - textBox.BottomMargin);
+        var height = ClampToZero(shape.Height - shapeText.TopMargin - shapeText.BottomMargin);
         return (float)new Points(height).AsPixels();
     }
 
@@ -251,11 +251,11 @@ internal sealed class TextDrawing
         }
     }
 
-    private IReadOnlyList<TextLine> LayoutLines(ITextBox textBox, float availableWidth, bool wrap)
+    private IReadOnlyList<TextLine> LayoutLines(IShapeText shapeText, float availableWidth, bool wrap)
     {
         var lines = new List<TextLine>();
 
-        foreach (var paragraph in textBox.Paragraphs)
+        foreach (var paragraph in shapeText.Paragraphs)
         {
             this.LayoutParagraph(paragraph, availableWidth, wrap, lines);
         }

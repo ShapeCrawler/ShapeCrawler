@@ -90,10 +90,10 @@ public class TableTests : SCTest
 
         // Assert
         var tableCell = table[0, 0];
-        tableCell.TextBox.TopMargin.Should().BeApproximately(28.34m, 0.01m);
-        tableCell.TextBox.RightMargin.Should().BeApproximately(28.34m, 0.01m);
-        tableCell.TextBox.LeftMargin.Should().BeApproximately(28.34m, 0.01m);
-        tableCell.TextBox.BottomMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.ShapeText.TopMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.ShapeText.RightMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.ShapeText.LeftMargin.Should().BeApproximately(28.34m, 0.01m);
+        tableCell.ShapeText.BottomMargin.Should().BeApproximately(28.34m, 0.01m);
     }
 
     [Test]
@@ -106,23 +106,23 @@ public class TableTests : SCTest
 
         // Act
         var tableCell = table[0, 0];
-        tableCell.TextBox.LeftMargin = 10m;
-        tableCell.TextBox.RightMargin = 10m;
-        tableCell.TextBox.TopMargin = 20m;
-        tableCell.TextBox.BottomMargin = 20m;
+        tableCell.ShapeText.LeftMargin = 10m;
+        tableCell.ShapeText.RightMargin = 10m;
+        tableCell.ShapeText.TopMargin = 20m;
+        tableCell.ShapeText.BottomMargin = 20m;
 
         // Assert
-        tableCell.TextBox.TopMargin.Should().Be(20m);
+        tableCell.ShapeText.TopMargin.Should().Be(20m);
         pres.Save(mStream);
 
         pres = new Presentation(mStream);
         table = pres.Slide(1).Shape("Table 2").Table;
 
         tableCell = table[0, 0];
-        tableCell.TextBox.LeftMargin.Should().Be(10m);
-        tableCell.TextBox.RightMargin.Should().Be(10m);
-        tableCell.TextBox.TopMargin.Should().Be(20m);
-        tableCell.TextBox.BottomMargin.Should().Be(20m);
+        tableCell.ShapeText.LeftMargin.Should().Be(10m);
+        tableCell.ShapeText.RightMargin.Should().Be(10m);
+        tableCell.ShapeText.TopMargin.Should().Be(20m);
+        tableCell.ShapeText.BottomMargin.Should().Be(20m);
 
         ValidatePresentation(pres);
     }
@@ -136,8 +136,8 @@ public class TableTests : SCTest
 
         // Assert
         var tableCell = table[3, 2];
-        tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
-        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
+        tableCell.ShapeText.VerticalAlignment.Should().Be(TextVerticalAlignment.Bottom);
+        tableCell.ShapeText.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
     }
 
     [Test]
@@ -150,20 +150,20 @@ public class TableTests : SCTest
 
         // Act
         var tableCell = table[1, 1];
-        tableCell.TextBox.VerticalAlignment = TextVerticalAlignment.Middle;
-        tableCell.TextBox.Paragraphs[0].HorizontalAlignment = TextHorizontalAlignment.Center;
+        tableCell.ShapeText.VerticalAlignment = TextVerticalAlignment.Middle;
+        tableCell.ShapeText.Paragraphs[0].HorizontalAlignment = TextHorizontalAlignment.Center;
 
         // Assert
-        tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
-        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
+        tableCell.ShapeText.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
+        tableCell.ShapeText.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
         pres.Save(mStream);
 
         pres = new Presentation(mStream);
         table = pres.Slide(1).Shape("Table 2").Table;
 
         tableCell = table[1, 1];
-        tableCell.TextBox.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
-        tableCell.TextBox.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
+        tableCell.ShapeText.VerticalAlignment.Should().Be(TextVerticalAlignment.Middle);
+        tableCell.ShapeText.Paragraphs[0].HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
 
         ValidatePresentation(pres);
     }
@@ -297,7 +297,7 @@ public class TableTests : SCTest
         });
         var row = pres.Slide(1).Shapes.First().Table.Rows.First();
         var text = fixtures.String(s => s.Length(75));
-        var textBox = row.Cells[0].TextBox;
+        var textBox = row.Cells[0].ShapeText;
         var expectedFontSize = textBox.Paragraphs.First().Portions.First().Font.Size;
 
         // Act
@@ -321,7 +321,7 @@ public class TableTests : SCTest
         var text = fixtures.String(s => s.Length(75));
 
         // Act
-        row.Cells.First().TextBox.SetText(text);
+        row.Cells.First().ShapeText.SetText(text);
 
         // Arrange
         row.Height.Should().BeApproximately(29.2m, 0.9m);
@@ -374,14 +374,14 @@ public class TableTests : SCTest
         // Assert
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
-        table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
+        table[0, 0].ShapeText.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
         table = pres.Slide(3).Shape(5).Table;
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
-        table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
+        table[0, 0].ShapeText.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
     }
 
     [Test]
@@ -406,8 +406,8 @@ public class TableTests : SCTest
         {
             tableSc[0, 1].IsMergedCell.Should().BeTrue();
             tableSc[0, 2].IsMergedCell.Should().BeTrue();
-            tableSc[0, 1].TextBox.Text.Should().Be("Text0_2");
-            tableSc[0, 2].TextBox.Text.Should().Be("Text0_2");
+            tableSc[0, 1].ShapeText.Text.Should().Be("Text0_2");
+            tableSc[0, 2].ShapeText.Text.Should().Be("Text0_2");
         }
     }
 
@@ -482,8 +482,8 @@ public class TableTests : SCTest
             string expectedText = $"id5{Environment.NewLine}Text1_0";
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeFalse();
-            table[0, 0].TextBox.Text.Should().Be(expectedText);
-            table[1, 0].TextBox.Text.Should().Be(expectedText);
+            table[0, 0].ShapeText.Text.Should().Be(expectedText);
+            table[1, 0].ShapeText.Text.Should().Be(expectedText);
         }
     }
 
@@ -509,14 +509,14 @@ public class TableTests : SCTest
         var pres = new Presentation(p => p.Slide());
         pres.Slide(1).Shapes.AddTable(10, 10, 3, 4);
         var table = pres.Slide(1).Shapes.Last().Table;
-        table[1, 0].TextBox.SetText("A");
-        table[3, 0].TextBox.SetText("B");
+        table[1, 0].ShapeText.SetText("A");
+        table[3, 0].ShapeText.SetText("B");
 
         // Act
         table.MergeCells(table[1, 0], table[2, 0]);
 
         // Assert
-        table[1, 0].TextBox.Text.Should().Be("A");
+        table[1, 0].ShapeText.Text.Should().Be("A");
     }
 
     [Test]
@@ -986,7 +986,7 @@ public class TableTests : SCTest
 
         // Assert
         table.Rows.Should().HaveCount(rowsCountBefore + 1);
-        table.Rows[1].Cells[0].TextBox.Text.Should().BeEmpty();
+        table.Rows[1].Cells[0].ShapeText.Text.Should().BeEmpty();
         pres = SaveAndOpenPresentation(pres);
         table = pres.Slide(1).Shape("Table 1").Table;
         table.Rows.Should().HaveCount(rowsCountBefore + 1);
@@ -1038,7 +1038,7 @@ public class TableTests : SCTest
         table.Rows.Add(1, 0);
         
         // Assert
-        table.Rows[1].Cells[0].TextBox.Paragraphs[0].FontColor.Should().Be(expectedRedColor);
+        table.Rows[1].Cells[0].ShapeText.Paragraphs[0].FontColor.Should().Be(expectedRedColor);
     }
     
     [Test]

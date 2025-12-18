@@ -51,7 +51,7 @@ public interface IUserSlide
     /// <summary>
     ///     Gets the slide notes.
     /// </summary>
-    ITextBox? Notes { get; }
+    IShapeText? Notes { get; }
 
     /// <summary>
     ///     Gets the slide fill.
@@ -61,7 +61,7 @@ public interface IUserSlide
     /// <summary>
     ///     Gets all slide text boxes.
     /// </summary>
-    public IList<ITextBox> GetTextBoxes();
+    public IList<IShapeText> GetTextBoxes();
 
     /// <summary>
     ///     Hides slide.
@@ -213,7 +213,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         set => this.SetCustomData(value);
     }
 
-    public ITextBox? Notes => this.GetNotes();
+    public IShapeText? Notes => this.GetNotes();
 
     public IShapeFill Fill
     {
@@ -300,9 +300,9 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
 
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
-    public IList<ITextBox> GetTextBoxes()
+    public IList<IShapeText> GetTextBoxes()
     {
-        var collectedTextBoxes = new List<ITextBox>();
+        var collectedTextBoxes = new List<IShapeText>();
 
         foreach (var shape in this.Shapes)
         {
@@ -361,18 +361,18 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         presPart.Presentation.Save();
     }
 
-    private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
+    private void CollectTextBoxes(IShape shape, List<IShapeText> buffer)
     {
-        if (shape.TextBox is not null)
+        if (shape.ShapeText is not null)
         {
-            buffer.Add(shape.TextBox);
+            buffer.Add(shape.ShapeText);
         }
 
         if (shape.Table is not null)
         {
             foreach (var cell in shape.Table.Rows.SelectMany(row => row.Cells))
             {
-                buffer.Add(cell.TextBox);
+                buffer.Add(cell.ShapeText);
             }
         }
 
@@ -385,7 +385,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         }
     }
 
-    private ITextBox? GetNotes()
+    private IShapeText? GetNotes()
     {
         var notesSlidePart = slidePart.NotesSlidePart;
 
@@ -397,8 +397,8 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         var notesShapes = new ShapeCollection(notesSlidePart);
         var notesPlaceholder = notesShapes
             .FirstOrDefault(shape =>
-                shape is { PlaceholderType: not null, TextBox: not null, PlaceholderType: PlaceholderType.Text });
-        return notesPlaceholder?.TextBox;
+                shape is { PlaceholderType: not null, ShapeText: not null, PlaceholderType: PlaceholderType.Text });
+        return notesPlaceholder?.ShapeText;
     }
 
     private void AddNotesSlide(IEnumerable<string> lines)
