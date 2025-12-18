@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 public interface ITableCell
 {
     /// <summary>
-    ///     Gets text box.
+    ///     Gets the shape text.
     /// </summary>
     IShapeText ShapeText { get; }
 
