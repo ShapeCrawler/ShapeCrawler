@@ -14,7 +14,7 @@ public class ParagraphCollectionTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.RectangleShape(textBox =>
+                slide.Shape(textBox =>
                 {
                     textBox.Name("TextBox 1");
                     textBox.X(100);

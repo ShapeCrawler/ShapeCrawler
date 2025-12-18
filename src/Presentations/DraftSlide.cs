@@ -150,7 +150,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide TextBox(Action<DraftTextBox> configure)
     {
-        return this.RectangleShape(t =>
+        return this.Shape(t =>
         {
             t.IsTextBox = true;
             configure(t);
@@ -160,7 +160,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a rectangular auto shape and its text box content using a nested builder.
     /// </summary>
-    public DraftSlide RectangleShape(Action<DraftTextBox> configure)
+    public DraftSlide Shape(Action<DraftTextBox> configure)
     {
         this.actions.Add((slide, _) => AddRectangleShape(slide, configure));
 

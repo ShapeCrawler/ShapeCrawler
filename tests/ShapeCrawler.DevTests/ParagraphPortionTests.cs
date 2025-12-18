@@ -194,7 +194,7 @@ public class ParagraphPortionTests : SCTest
         {
             p.Slide(s =>
             {
-                s.RectangleShape(tb =>
+                s.Shape(tb =>
                 {
                     tb.Text("Some text");
                     tb.TextHighlightColor(new Color("FF5733"));
