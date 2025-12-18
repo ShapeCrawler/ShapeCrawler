@@ -274,45 +274,62 @@ internal sealed class ParagraphHorizontalAlignment
 
     private TextHorizontalAlignment? ReferencedAlignmentOrNull()
     {
+        if (!this.TryGetReferencedAlignmentContext(
+                out var listStyle,
+                out var placeholderShape,
+                out var openXmlPart,
+                out var indentLevel))
+        {
+            return null;
+        }
+
+        return AlignmentFromIndentStylesOrNull(listStyle, indentLevel)
+               ?? AlignmentFromReferencedLayoutOrNull(openXmlPart, placeholderShape, indentLevel)
+               ?? AlignmentFromReferencedMasterShapeOrNull(openXmlPart, placeholderShape, indentLevel)
+               ?? AlignmentFromSlideMasterTextStylesOrNull(openXmlPart, placeholderShape, indentLevel);
+    }
+
+    private bool TryGetReferencedAlignmentContext(
+        out OpenXmlCompositeElement? listStyle,
+        out P.PlaceholderShape placeholderShape,
+        out OpenXmlPart openXmlPart,
+        out int indentLevel)
+    {
+        listStyle = null;
+        placeholderShape = null!;
+        openXmlPart = null!;
+        indentLevel = 0;
+
         var pShape = this.aParagraph.Ancestors<P.Shape>().FirstOrDefault();
-        if (pShape?.TextBody == null)
+        if (pShape is null)
         {
-            return null;
+            return false;
         }
 
-        var indentLevel = this.scAParagraph.GetIndentLevel();
-        var textBodyAlignment = AlignmentFromIndentStylesOrNull(pShape.TextBody.ListStyle, indentLevel);
-        if (textBodyAlignment.HasValue)
+        var textBody = pShape.TextBody;
+        if (textBody is null)
         {
-            return textBodyAlignment.Value;
+            return false;
         }
 
-        var pPlaceholderShape = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
+        indentLevel = this.scAParagraph.GetIndentLevel();
+        listStyle = textBody.ListStyle;
+
+        var placeholderShapeOrNull = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
             .GetFirstChild<P.PlaceholderShape>();
-        if (pPlaceholderShape is null)
+        if (placeholderShapeOrNull is null)
         {
-            return null;
+            return false;
         }
 
-        var openXmlPart = this.aParagraph.Ancestors<OpenXmlPartRootElement>().FirstOrDefault()?.OpenXmlPart;
-        if (openXmlPart is null)
+        placeholderShape = placeholderShapeOrNull;
+        var openXmlPartOrNull = this.aParagraph.Ancestors<OpenXmlPartRootElement>().FirstOrDefault()?.OpenXmlPart;
+        if (openXmlPartOrNull is null)
         {
-            return null;
+            return false;
         }
 
-        var layoutAlignment = AlignmentFromReferencedLayoutOrNull(openXmlPart, pPlaceholderShape, indentLevel);
-        if (layoutAlignment.HasValue)
-        {
-            return layoutAlignment.Value;
-        }
-
-        var masterShapeAlignment =
-            AlignmentFromReferencedMasterShapeOrNull(openXmlPart, pPlaceholderShape, indentLevel);
-        if (masterShapeAlignment.HasValue)
-        {
-            return masterShapeAlignment.Value;
-        }
-
-        return AlignmentFromSlideMasterTextStylesOrNull(openXmlPart, pPlaceholderShape, indentLevel);
+        openXmlPart = openXmlPartOrNull;
+        return true;
     }
 }
