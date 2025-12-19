@@ -4,7 +4,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal class TextHolderShape(P.Shape pShape, ShapeText shapeText) : DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
+internal class TextShape(P.Shape pShape, ShapeText shapeText) : DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
 {
     public override IShapeText ShapeText => shapeText;
 

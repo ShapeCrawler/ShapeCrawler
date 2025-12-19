@@ -6,7 +6,7 @@ using ShapeCrawler.Texts;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a text box.
+///     Represents a shape text. In PowerPoint UI, it is Text Box property (Format Shape → Shape Options → Size & Properties → Text Box).
 /// </summary>
 public interface IShapeText
 {

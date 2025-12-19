@@ -54,7 +54,7 @@ internal sealed class TableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.ShapeText = new TableCellShapeText(this.ATableCell);
+        this.ShapeText = new TableCellText(this.ATableCell);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);

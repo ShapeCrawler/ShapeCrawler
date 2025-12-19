@@ -137,7 +137,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         if (pShape.TextBody is not null)
         {
-            yield return new TextHolderShape(
+            yield return new TextShape(
                 pShape,
                 new ShapeText(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
             );

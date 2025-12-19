@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables;
 
-internal sealed class TableCellShapeText(A.TableCell aTableCell): IShapeText
+internal sealed class TableCellText(A.TableCell aTableCell): IShapeText
 {
     private TextVerticalAlignment? vAlignment;
     private TextDirection? textDirection;

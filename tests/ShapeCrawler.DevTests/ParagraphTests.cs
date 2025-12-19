@@ -10,7 +10,7 @@ public class ParagraphTests : SCTest
     public void IndentLevel_Setter_sets_indent_level()
     {
         // Act
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         pres.Slides[0].Shapes.AddShape(100, 100, 500, 100);
         var addedShape = pres.Slides[0].Shapes.Last();
         addedShape.ShapeText!.Paragraphs.Add();
@@ -28,7 +28,7 @@ public class ParagraphTests : SCTest
     public void HorizontalAlignment_Setter_sets_horizontal_alignment()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
         var table = pres.Slide(1).Shapes.Last().Table;
         var textBox = table.Rows[0].Cells[0].ShapeText!;
@@ -64,7 +64,7 @@ public class ParagraphTests : SCTest
     public void Text_Setter_sets_paragraph_text_in_New_Presentation()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes.Last();
@@ -100,8 +100,8 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(37) .ShapeText;
-        var textBox2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table .Rows[0].Cells[0] .ShapeText;
+        var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(37).ShapeText;
+        var textBox2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table.Rows[0].Cells[0].ShapeText;
 
         // Act
         string paragraphTextCase1 = textBox1.Paragraphs[0].Text;
@@ -296,7 +296,7 @@ public class ParagraphTests : SCTest
     public void Spacing_BeforeSpacingPoints_Setter_sets_before_spacing()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes[0];
@@ -320,7 +320,7 @@ public class ParagraphTests : SCTest
     public void Spacing_AfterSpacingPoints_Setter_sets_after_spacing()
     {
         // Arrange
-        var pres = new Presentation(p=>p.Slide());
+        var pres = new Presentation(p => p.Slide());
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes[0];
@@ -338,7 +338,7 @@ public class ParagraphTests : SCTest
         paragraph = pres.Slides[0].Shapes.Last().ShapeText.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
     }
-    
+
     [Test]
     [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
     public void Replacing_Paragraph_Text_Preserves_Newlines(IShape shape)

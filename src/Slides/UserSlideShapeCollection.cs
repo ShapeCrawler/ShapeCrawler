@@ -58,7 +58,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
             case PictureShape picture:
                 picture.CopyTo(pShapeTree);
                 break;
-            case TextHolderShape textShape:
+            case TextShape textShape:
                 textShape.CopyTo(pShapeTree);
                 break;
             case TableShape table:
@@ -157,7 +157,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var nextShapeId = this.newShapeProperties.Id();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<TextHolderShape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -175,7 +175,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var nextShapeId = this.newShapeProperties.Id();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<TextHolderShape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
         addedShape.X = x;
         addedShape.Y = y;
@@ -193,7 +193,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var nextShapeId = this.newShapeProperties.Id();
         this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
-        var addedShape = this.shapes.Last<TextHolderShape>();
+        var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = "Text Box";
         addedShape.X = x;
         addedShape.Y = y;
