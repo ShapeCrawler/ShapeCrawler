@@ -853,9 +853,9 @@ public class ShapeTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox(tx =>
+                slide.TextShape(tx =>
                 {
-                    tx.Text("Hello World!");
+                    tx.ShapeText("Hello World!");
                     tx.X(40);
                     tx.Y(40);
                     tx.Font(font =>

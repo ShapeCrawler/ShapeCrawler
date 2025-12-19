@@ -457,7 +457,7 @@ public class UserSlideTests : SCTest
                     textBox.Y(50);
                     textBox.Width(100);
                     textBox.Height(50);
-                    textBox.Text("Hello, World!");
+                    textBox.ShapeText("Hello, World!");
                 });
             });
         });
@@ -495,7 +495,7 @@ public class UserSlideTests : SCTest
 
         static int ToPixels(int points) => (int)Math.Round(points * 96d / 72d, MidpointRounding.AwayFromZero);
     }
-    
+
     [Test]
     [Platform(Exclude = "Linux", Reason = "Difference is 15%")]
     public Task SaveImageTo_saves_slide_with_bulleted_list()
@@ -505,9 +505,10 @@ public class UserSlideTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.Shape(shape => 
+                slide.Shape(shape =>
                 {
-                    shape.Paragraph(para => {
+                    shape.Paragraph(para =>
+                    {
                         para.Text("Hello, World!");
                         para.BulletedList();
                     });
@@ -518,7 +519,7 @@ public class UserSlideTests : SCTest
 
         // Act
         pres.Slide(1).SaveImageTo(stream);
-        
+
         // Assert
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");

@@ -46,7 +46,7 @@ public class ParagraphCollectionTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox("TextBox 1", 100, 100, 200, 200, "Paragraph 1");
+                slide.TextShape("TextBox 1", 100, 100, 200, 200, "Paragraph 1");
             });
         });
         var slide = pres.Slide(1);

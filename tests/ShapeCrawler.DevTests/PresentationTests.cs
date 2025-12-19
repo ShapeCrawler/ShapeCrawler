@@ -630,7 +630,7 @@ public class PresentationTests : SCTest
         {
             p.Slide(s =>
             {
-                s.TextBox(Fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
+                s.TextShape(Fixtures.String(), fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int(),
                     Fixtures.String());
             });
         });

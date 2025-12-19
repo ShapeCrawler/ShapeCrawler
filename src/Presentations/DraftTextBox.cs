@@ -58,9 +58,23 @@ public sealed class DraftTextBox
     /// <summary>
     ///     Sets text content.
     /// </summary>
-    public DraftTextBox Text(string text)
+    public DraftTextBox ShapeText(string text)
     {
         this.Content = text;
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures shape text using a nested builder.
+    /// </summary>
+    public DraftTextBox ShapeText(Action<DraftShapeText> configure)
+    {
+        var draftShapeText = new DraftShapeText();
+        configure(draftShapeText);
+
+        this.Content = null;
+        this.Paragraphs.Clear();
+        this.Paragraphs.AddRange(draftShapeText.Paragraphs);
         return this;
     }
 

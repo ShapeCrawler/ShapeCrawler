@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using Fixture;
 using ImageMagick;
+using VerifyTests;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.DevTests.Helpers;

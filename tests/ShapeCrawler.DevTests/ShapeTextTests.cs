@@ -431,7 +431,7 @@ namespace ShapeCrawler.DevTests
             {
                 pres.Slide(slide =>
                 {
-                    slide.TextBox("Hello World!");
+                    slide.TextShape("Hello World!");
                 });
             });
             var textBox = pres.Slide(1).Shapes.First().ShapeText!;

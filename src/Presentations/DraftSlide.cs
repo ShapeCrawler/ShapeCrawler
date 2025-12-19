@@ -81,9 +81,9 @@ public sealed class DraftSlide
     ///     Adds a text box (auto shape) and sets its content.
     /// </summary>
     /// <param name="content">Text content.</param>
-    public DraftSlide TextBox(string content)
+    public DraftSlide TextShape(string content)
     {
-        return this.TextBox(content, x: null, y: null, width: 100, height: 50);
+        return this.TextShape(content, x: null, y: null, width: 100, height: 50);
     }
 
     /// <summary>
@@ -92,9 +92,9 @@ public sealed class DraftSlide
     /// <param name="content">Text content.</param>
     /// <param name="x">X coordinate in points.</param>
     /// <param name="y">Y coordinate in points.</param>
-    public DraftSlide TextBox(string content, int x, int y)
+    public DraftSlide TextShape(string content, int x, int y)
     {
-        return this.TextBox(content, x, y, width: 100, height: 50);
+        return this.TextShape(content, x, y, width: 100, height: 50);
     }
 
     /// <summary>
@@ -105,9 +105,9 @@ public sealed class DraftSlide
     /// <param name="y">Y coordinate in points.</param>
     /// <param name="width">Width in points.</param>
     /// <param name="height">Height in points.</param>
-    public DraftSlide TextBox(string content, int x, int y, int width, int height)
+    public DraftSlide TextShape(string content, int x, int y, int width, int height)
     {
-        return this.TextBox(content, (int?)x, (int?)y, width, height);
+        return this.TextShape(content, (int?)x, (int?)y, width, height);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public sealed class DraftSlide
     /// <param name="y">Y coordinate in points. If <see langword="null"/>, the text box is centered vertically.</param>
     /// <param name="width">Width in points.</param>
     /// <param name="height">Height in points.</param>
-    public DraftSlide TextBox(string content, int? x, int? y, int width, int height)
+    public DraftSlide TextShape(string content, int? x, int? y, int width, int height)
     {
         this.actions.Add((slide, pres) =>
         {
@@ -133,7 +133,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a text box (auto shape) and sets its content.
     /// </summary>
-    public DraftSlide TextBox(string name, int x, int y, int width, int height, string content)
+    public DraftSlide TextShape(string name, int x, int y, int width, int height, string content)
     {
         this.actions.Add((slide, _) =>
         {
@@ -148,7 +148,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a text box using a nested builder.
     /// </summary>
-    public DraftSlide TextBox(Action<DraftTextBox> configure)
+    public DraftSlide TextShape(Action<DraftTextBox> configure)
     {
         return this.Shape(t =>
         {
