@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a slide.
+///     Represents a regular Slide in PowerPoint UI.
 /// </summary>
 public interface IUserSlide
 {
