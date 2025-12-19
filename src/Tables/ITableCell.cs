@@ -12,9 +12,9 @@ namespace ShapeCrawler;
 public interface ITableCell
 {
     /// <summary>
-    ///     Gets text box.
+    ///     Gets the shape text.
     /// </summary>
-    ITextBox TextBox { get; }
+    IShapeText ShapeText { get; }
 
     /// <summary>
     ///     Gets a value indicating whether cell belongs to merged cell.
@@ -54,7 +54,7 @@ internal sealed class TableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.TextBox = new TableCellTextBox(this.ATableCell);
+        this.ShapeText = new TableCellText(this.ATableCell);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);
@@ -78,7 +78,7 @@ internal sealed class TableCell : ITableCell
 
     public IBorder RightBorder { get; }
 
-    public ITextBox TextBox { get; }
+    public IShapeText ShapeText { get; }
 
     internal A.TableCell ATableCell { get; }
 

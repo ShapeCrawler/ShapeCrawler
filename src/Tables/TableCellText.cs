@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables;
 
-internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
+internal sealed class TableCellText(A.TableCell aTableCell): IShapeText
 {
     private TextVerticalAlignment? vAlignment;
     private TextDirection? textDirection;
@@ -130,7 +130,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
     public bool TextWrapped => true;
 
-    public string SDKXPath => new XmlPath(aTableCell.TextBody!).XPath;
+    public string SdkXPath => new XmlPath(aTableCell.TextBody!).XPath;
 
     public TextDirection TextDirection 
     { 

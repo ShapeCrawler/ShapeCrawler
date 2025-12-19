@@ -126,18 +126,18 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
         var slide = slides[slideNumber - 1];
         var existingFooterShape = slide.Shapes.FirstOrDefault(shape => shape.PlaceholderType == PlaceholderType.Footer);
 
-        if (existingFooterShape?.TextBox != null)
+        if (existingFooterShape?.ShapeText != null)
         {
-            existingFooterShape.TextBox.SetText(text);
+            existingFooterShape.ShapeText.SetText(text);
             return;
         }
 
         var layoutFooter = slide.LayoutSlide.Shapes
             .FirstOrDefault(s => s.PlaceholderType == PlaceholderType.Footer);
 
-        if (layoutFooter?.TextBox != null)
+        if (layoutFooter?.ShapeText != null)
         {
-            layoutFooter.TextBox.SetText(text);
+            layoutFooter.ShapeText.SetText(text);
             slide.Shapes.Add(layoutFooter);
         }
     }

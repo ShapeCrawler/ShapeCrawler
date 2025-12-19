@@ -197,7 +197,7 @@ public class UserSlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act-Assert
-        slide.GetTextBoxes().Count.Should().Be(11);
+        slide.GetShapeTexts().Count.Should().Be(11);
     }
 
     [Test]
@@ -208,7 +208,7 @@ public class UserSlideTests : SCTest
         var slide = pres.Slide(1);
 
         // Act & Assert
-        slide.GetTextBoxes().Count.Should().Be(4);
+        slide.GetShapeTexts().Count.Should().Be(4);
     }
 
     [Test]
@@ -451,7 +451,7 @@ public class UserSlideTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.RectangleShape(textBox =>
+                slide.Shape(textBox =>
                 {
                     textBox.X(50);
                     textBox.Y(50);
@@ -505,9 +505,9 @@ public class UserSlideTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.RectangleShape(textBox => 
+                slide.Shape(shape => 
                 {
-                    textBox.Paragraph(para => {
+                    shape.Paragraph(para => {
                         para.Text("Hello, World!");
                         para.BulletedList();
                     });

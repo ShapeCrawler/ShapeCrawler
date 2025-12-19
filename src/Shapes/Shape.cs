@@ -225,7 +225,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
         }
     }
 
-    public virtual ITextBox? TextBox => null;
+    public virtual IShapeText? ShapeText => null;
 
     public virtual IPicture? Picture => null;
 
@@ -273,9 +273,11 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public bool Removable => false;
 
-    public string SDKXPath => new XmlPath(pShapeTreeElement).XPath;
+    public string SdkXPath => new XmlPath(pShapeTreeElement).XPath;
 
     public OpenXmlElement SDKOpenXmlElement => pShapeTreeElement.CloneNode(true);
+
+    protected OpenXmlElement PShapeTreeElement => pShapeTreeElement;
 
     public void Duplicate()
     {
