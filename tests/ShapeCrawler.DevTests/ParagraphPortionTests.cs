@@ -196,7 +196,7 @@ public class ParagraphPortionTests : SCTest
             {
                 s.Shape(tb =>
                 {
-                    tb.Text("Some text");
+                    tb.ShapeText("Some text");
                     tb.TextHighlightColor(new Color("FF5733"));
                 });
             });

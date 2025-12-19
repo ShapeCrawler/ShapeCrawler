@@ -17,7 +17,7 @@ public class FontTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox(
+                slide.TextShape(
                     name: "TextBox",
                     x: 100,
                     y: 100,
@@ -352,8 +352,8 @@ public class FontTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox("TextBox 1", x: 10, y: 20, width: 30, height: 40, content: "Shape 1");
-                slide.TextBox("TextBox 2", x: 100, y: 20, width: 30, height: 40, content: "Test");
+                slide.TextShape("TextBox 1", x: 10, y: 20, width: 30, height: 40, content: "Shape 1");
+                slide.TextShape("TextBox 2", x: 100, y: 20, width: 30, height: 40, content: "Test");
             });
         });
         var shape1 = pres.Slide(1).Shape("TextBox 1");
@@ -459,7 +459,7 @@ public class FontTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.TextBox("TextBox 1", 0, 0, 100, 100, "Test");
+                slide.TextShape("TextBox 1", 0, 0, 100, 100, "Test");
             });
         });
         var slide = pres.Slide(1);
