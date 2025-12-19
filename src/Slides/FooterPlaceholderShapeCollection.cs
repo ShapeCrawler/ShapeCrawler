@@ -35,7 +35,7 @@ internal sealed class FooterPlaceholderShapeCollection(IUserSlideShapeCollection
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextHolderShape>();
+        var addedShape = shapes.Last<TextShape>();
         addedShape.Id = nextShapeId;
         addedShape.Name = $"Footer Placeholder {nextShapeId}";
 
@@ -65,7 +65,7 @@ internal sealed class FooterPlaceholderShapeCollection(IUserSlideShapeCollection
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextHolderShape>();
+        var addedShape = shapes.Last<TextShape>();
         addedShape.Id = nextShapeId;
         addedShape.Name = $"Date Placeholder {nextShapeId}";
 
@@ -95,7 +95,7 @@ internal sealed class FooterPlaceholderShapeCollection(IUserSlideShapeCollection
         slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
 
         // Get the added shape and set its properties
-        var addedShape = shapes.Last<TextHolderShape>();
+        var addedShape = shapes.Last<TextShape>();
         addedShape.Id = nextShapeId;
         addedShape.Name = $"Slide Number Placeholder {nextShapeId}";
 
