@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ImageMagick;
 using NUnit.Framework;
