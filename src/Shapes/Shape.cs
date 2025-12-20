@@ -225,7 +225,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
         }
     }
 
-    public virtual IShapeText? ShapeText => null;
+    public virtual ITextBox? TextBox => null;
 
     public virtual IPicture? Picture => null;
 

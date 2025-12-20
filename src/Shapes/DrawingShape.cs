@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -14,7 +13,6 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
     : Shape(position, shapeSize, shapeId, pShapeTreeElement)
 {
     private const double Epsilon = 1e-6;
-    private static readonly TextDrawing TextDrawing = new();
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
         new(StringComparer.Ordinal)
         {
@@ -49,11 +47,8 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
                 this.RenderEllipse(canvas);
                 break;
             default:
-                this.RenderText(canvas);
-                return;
+                throw new SCException("Unsupported shape geometry type.");
         }
-
-        this.RenderText(canvas);
     }
 
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
@@ -162,19 +157,6 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         this.RenderEllipseFill(canvas, rect);
         this.RenderEllipseOutline(canvas, rect);
 
-        canvas.Restore();
-    }
-
-    private void RenderText(SKCanvas canvas)
-    {
-        if (this.ShapeText is null)
-        {
-            return;
-        }
-
-        canvas.Save();
-        ApplyRotation(canvas);
-        TextDrawing.Render(canvas, this);
         canvas.Restore();
     }
 

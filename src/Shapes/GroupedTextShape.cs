@@ -1,11 +1,11 @@
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Groups;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class GroupedTextShape(P.Shape pShape, ShapeText shapeText, GroupedShape groupedShape)
-    : TextShape(pShape, shapeText)
+internal sealed class GroupedTextShape(P.Shape pShape, DrawingTextBox textBox, GroupedShape groupedShape)
+    : TextShape(pShape, textBox)
 {
     public override decimal X
     {

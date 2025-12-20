@@ -14,7 +14,7 @@ public interface ITableCell
     /// <summary>
     ///     Gets the shape text.
     /// </summary>
-    IShapeText ShapeText { get; }
+    ITextBox TextBox { get; }
 
     /// <summary>
     ///     Gets a value indicating whether cell belongs to merged cell.
@@ -54,7 +54,7 @@ internal sealed class TableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.ShapeText = new TableCellText(this.ATableCell);
+        this.TextBox = new TableCellTextBox(this.ATableCell);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(aTcPr);
         this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);
@@ -78,7 +78,7 @@ internal sealed class TableCell : ITableCell
 
     public IBorder RightBorder { get; }
 
-    public IShapeText ShapeText { get; }
+    public ITextBox TextBox { get; }
 
     internal A.TableCell ATableCell { get; }
 

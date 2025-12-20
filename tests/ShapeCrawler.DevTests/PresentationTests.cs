@@ -321,7 +321,7 @@ public class PresentationTests : SCTest
         // Arrange
         var presStream = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(presStream);
-        var textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").ShapeText!;
+        var textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.SetText("Test");
 
         // Act
@@ -329,7 +329,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres = new Presentation(presStream);
-        textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").ShapeText!;
+        textBox = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 2").TextBox!;
         textBox.Text.Should().Be("Test");
     }
 
@@ -427,7 +427,7 @@ public class PresentationTests : SCTest
                 .Should()
                 .Contain(shape =>
                     shape.PlaceholderType == PlaceholderType.Footer
-                    && shape.ShapeText.Text == text);
+                    && shape.TextBox.Text == text);
         });
     }
 
@@ -475,7 +475,7 @@ public class PresentationTests : SCTest
 
         // Assert
         pres.Slides[1].Shapes.Should()
-            .Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.ShapeText.Text == text);
+            .Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
         pres.Slides[0].Shapes.Should().NotContain(s => s.PlaceholderType == PlaceholderType.Footer);
 
         addInOutOfRangeSlide.Should().Throw<ArgumentOutOfRangeException>();
@@ -500,7 +500,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Slides[0].Shapes.Should().NotContain(s => s.PlaceholderType == PlaceholderType.Footer);
         pres.Slides[1].Shapes.Should()
-            .Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.ShapeText.Text == text);
+            .Contain(s => s.PlaceholderType == PlaceholderType.Footer && s.TextBox.Text == text);
 
         removeFromOutOfRangeSlide.Should().Throw<ArgumentOutOfRangeException>();
     }

@@ -64,7 +64,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets the shape text. Returns <c>null</c> if the shape is not a text holder.
     /// </summary>
-    IShapeText? ShapeText { get; }
+    ITextBox? TextBox { get; }
     
     /// <summary>
     ///     Gets picture. Returns <c>null</c> if the shape doesn't contain image content.
@@ -138,14 +138,14 @@ public interface IShape : IPosition, IShapeGeometry
 
     /// <summary>
     ///     Sets text content. 
-    ///     Use property <see cref="ShapeText"/> to check whether the shape is a text holder.
+    ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
     /// </summary>
     /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
     void SetText(string text);
     
     /// <summary>
     ///     Sets text content. 
-    ///     Use property <see cref="ShapeText"/> to check whether the shape is a text holder.
+    ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
     /// </summary>
     /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
     void SetMarkdownText(string text);

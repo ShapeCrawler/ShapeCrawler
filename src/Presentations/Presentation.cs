@@ -216,7 +216,7 @@ public sealed class Presentation : IPresentation
         {
             markdown.AppendLine($"# Slide {slide.Number}");
             var textShapes = slide.Shapes
-                .Select(shape => new { shape, shapeText = shape.ShapeText })
+                .Select(shape => new { shape, shapeText = shape.TextBox })
                 .Where(x => x.shapeText is not null
                             && x.shapeText.Text != string.Empty
                             && x.shape.PlaceholderType != PlaceholderType.SlideNumber);

@@ -56,7 +56,7 @@ public class TableColumnTests : SCTest
         var cell = table.Cell(1, 2);
 
         // Assert
-        cell.ShapeText.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
+        cell.TextBox.Text.Should().BeEmpty("because before adding column the cell (1,2) was not empty.");
         ValidatePresentation(pres);
     }
 
@@ -135,7 +135,7 @@ public class TableColumnTests : SCTest
         foreach (var row in table.Rows)
         {
             row.Cells.Should().HaveCount(table.Columns.Count);
-            row.Cells[0].ShapeText.Text.Should().Be(row.Cells[table.Columns.Count - 1].ShapeText.Text);
+            row.Cells[0].TextBox.Text.Should().Be(row.Cells[table.Columns.Count - 1].TextBox.Text);
         }
     }
 
@@ -155,7 +155,7 @@ public class TableColumnTests : SCTest
         foreach (var row in table.Rows)
         {
             row.Cells.Should().HaveCount(table.Columns.Count);
-            row.Cells[1].ShapeText.Text.Should().Be(row.Cells[table.Columns.Count - 1].ShapeText.Text);
+            row.Cells[1].TextBox.Text.Should().Be(row.Cells[table.Columns.Count - 1].TextBox.Text);
         }
     }
 

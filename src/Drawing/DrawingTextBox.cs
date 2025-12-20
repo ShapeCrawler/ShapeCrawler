@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using SkiaSharp;
 
@@ -9,37 +11,37 @@ namespace ShapeCrawler.Drawing;
 /// <summary>
 ///     Represents text drawing.
 /// </summary>
-internal sealed class TextDrawing
+internal sealed class DrawingTextBox : TextBox
 {
     private const decimal DefaultFontSize = 12m;
     private readonly float defaultLineHeight;
     private readonly float defaultBaselineOffset;
 
-    internal TextDrawing()
+    internal DrawingTextBox(TextBoxMargins margins, OpenXmlElement textBody)
+        : base(margins, textBody)
     {
         using var font = CreateFont(null);
-        this.defaultLineHeight = font.Spacing;
-        this.defaultBaselineOffset = GetBaselineOffset(font);
+        defaultLineHeight = font.Spacing;
+        defaultBaselineOffset = GetBaselineOffset(font);
     }
 
-    internal void Render(SKCanvas canvas, IShape shape)
+    internal void Render(SKCanvas canvas, decimal parentShapeX, decimal parentShapeY, decimal parentShapeWidth, decimal parentShapeHeight)
     {
-        var textBox = shape.ShapeText;
-        if (textBox is null || string.IsNullOrWhiteSpace(textBox.Text))
+        if (string.IsNullOrWhiteSpace(Text))
         {
             return;
         }
 
-        var originX = (float)new Points(shape.X + textBox.LeftMargin).AsPixels();
-        var originY = (float)new Points(shape.Y + textBox.TopMargin).AsPixels();
-        var availableWidth = GetAvailableWidth(shape, textBox);
-        var availableHeight = GetAvailableHeight(shape, textBox);
+        var originX = (float)new Points(parentShapeX + LeftMargin).AsPixels();
+        var originY = (float)new Points(parentShapeY + TopMargin).AsPixels();
+        var availableWidth = GetAvailableWidth(parentShapeWidth);
+        var availableHeight = GetAvailableHeight(parentShapeHeight);
 
-        var wrap = textBox.TextWrapped && availableWidth > 0;
-        var lines = this.LayoutLines(textBox, availableWidth, wrap);
+        var wrap = this.TextWrapped && availableWidth > 0;
+        var lines = LayoutLines(availableWidth, wrap);
         var textBlockHeight = lines.Sum(l => l.Height);
 
-        var verticalOffset = GetVerticalOffset(textBox.VerticalAlignment, availableHeight, textBlockHeight);
+        var verticalOffset = GetVerticalOffset(VerticalAlignment, availableHeight, textBlockHeight);
         var lineTop = originY + verticalOffset;
 
         foreach (var line in lines)
@@ -223,19 +225,7 @@ internal sealed class TextDrawing
 
         return best == 0 ? 1 : best;
     }
-
-    private static float GetAvailableWidth(IShape shape, IShapeText shapeText)
-    {
-        var width = ClampToZero(shape.Width - shapeText.LeftMargin - shapeText.RightMargin);
-        return (float)new Points(width).AsPixels();
-    }
-
-    private static float GetAvailableHeight(IShape shape, IShapeText shapeText)
-    {
-        var height = ClampToZero(shape.Height - shapeText.TopMargin - shapeText.BottomMargin);
-        return (float)new Points(height).AsPixels();
-    }
-
+    
     private static void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
     {
         var baselineY = lineTop + line.BaselineOffset;
@@ -256,13 +246,25 @@ internal sealed class TextDrawing
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
     }
 
-    private IReadOnlyList<TextLine> LayoutLines(IShapeText shapeText, float availableWidth, bool wrap)
+    private float GetAvailableWidth(decimal parentShapeWidth)
+    {
+        var width = ClampToZero(parentShapeWidth - this.LeftMargin - this.RightMargin);
+        return (float)new Points(width).AsPixels();
+    }
+
+    private float GetAvailableHeight(decimal parentShapeHeight)
+    {
+        var height = ClampToZero(parentShapeHeight - this.TopMargin - this.BottomMargin);
+        return (float)new Points(height).AsPixels();
+    }
+
+    private IReadOnlyList<TextLine> LayoutLines(float availableWidth, bool wrap)
     {
         var lines = new List<TextLine>();
 
-        foreach (var paragraph in shapeText.Paragraphs)
+        foreach (var paragraph in this.Paragraphs)
         {
-            this.LayoutParagraph(paragraph, availableWidth, wrap, lines);
+            LayoutParagraph(paragraph, availableWidth, wrap, lines);
         }
 
         return lines;
@@ -289,15 +291,15 @@ internal sealed class TextDrawing
         {
             if (IsLineBreak(portion))
             {
-                buffer.Add(line.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+                buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
                 line = new LineBuilder(paragraph.HorizontalAlignment);
                 continue;
             }
 
-            line = this.LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, availableWidth, wrap, buffer);
+            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, availableWidth, wrap, buffer);
         }
 
-        buffer.Add(line.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+        buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
     }
 
     private LineBuilder LayoutTextPortion(
@@ -319,7 +321,7 @@ internal sealed class TextDrawing
         {
             foreach (var token in SplitToTokens(segments[i]))
             {
-                currentLine = this.LayoutToken(
+                currentLine = LayoutToken(
                     token,
                     portion.Font,
                     font,
@@ -330,7 +332,7 @@ internal sealed class TextDrawing
             
             if (i < segments.Length - 1)
             {
-                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
                 currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
             }
         }
@@ -356,7 +358,7 @@ internal sealed class TextDrawing
 
         if (IsWhitespace(token))
         {
-            return this.LayoutWhitespaceToken(
+            return LayoutWhitespaceToken(
                 token,
                 font,
                 tokenWidth,
@@ -366,7 +368,7 @@ internal sealed class TextDrawing
                 currentLine);
         }
 
-        return this.LayoutNonWhitespaceToken(
+        return LayoutNonWhitespaceToken(
             token,
             font,
             skFont,
@@ -391,7 +393,7 @@ internal sealed class TextDrawing
             return currentLine;
         }
 
-        paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+        paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
         return new LineBuilder(paragraphLayout.ParagraphAlignment); // Drop whitespace at wrap boundary.
     }
 
@@ -412,7 +414,7 @@ internal sealed class TextDrawing
 
         if (currentLine.HasRuns)
         {
-            paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+            paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
             currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
         }
 
@@ -422,7 +424,7 @@ internal sealed class TextDrawing
             return currentLine;
         }
 
-        return this.LayoutSplitToken(
+        return LayoutSplitToken(
             token,
             font,
             skFont,
@@ -445,7 +447,7 @@ internal sealed class TextDrawing
 
             if (currentLine.HasRuns && currentLine.Width + partWidth > paragraphLayout.AvailableWidth)
             {
-                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
                 currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
             }
 
@@ -463,10 +465,10 @@ internal sealed class TextDrawing
             bool wrap,
             ICollection<TextLine> buffer)
         {
-            this.ParagraphAlignment = paragraphAlignment;
-            this.AvailableWidth = availableWidth;
-            this.Wrap = wrap;
-            this.Buffer = buffer;
+            ParagraphAlignment = paragraphAlignment;
+            AvailableWidth = availableWidth;
+            Wrap = wrap;
+            Buffer = buffer;
         }
 
         internal TextHorizontalAlignment ParagraphAlignment { get; }
@@ -487,11 +489,11 @@ internal sealed class TextDrawing
             float height,
             float baselineOffset)
         {
-            this.Runs = runs;
-            this.HorizontalAlignment = horizontalAlignment;
-            this.Width = width;
-            this.Height = height;
-            this.BaselineOffset = baselineOffset;
+            Runs = runs;
+            HorizontalAlignment = horizontalAlignment;
+            Width = width;
+            Height = height;
+            BaselineOffset = baselineOffset;
         }
 
         internal PixelTextPortion[] Runs { get; }
@@ -505,21 +507,13 @@ internal sealed class TextDrawing
         internal float BaselineOffset { get; }
     }
 
-    private sealed class LineBuilder
+    private sealed class LineBuilder(TextHorizontalAlignment paragraphAlignment)
     {
-        private readonly List<PixelTextPortion> runs;
-        private readonly TextHorizontalAlignment paragraphAlignment;
-
-
-        internal LineBuilder(TextHorizontalAlignment paragraphAlignment)
-        {
-            this.paragraphAlignment = paragraphAlignment;
-            this.runs = [];
-        }
+        private readonly List<PixelTextPortion> runs = [];
 
         internal float Width { get; private set; }
 
-        internal bool HasRuns => this.runs.Count > 0;
+        internal bool HasRuns => runs.Count > 0;
 
         private float Height { get; set; }
 
@@ -527,28 +521,28 @@ internal sealed class TextDrawing
 
         internal void Add(PixelTextPortion portion, float spacing, float baselineOffset)
         {
-            this.runs.Add(portion);
-            this.Width += portion.Width;
-            this.Height = Math.Max(this.Height, spacing);
-            this.BaselineOffset = Math.Max(this.BaselineOffset, baselineOffset);
+            runs.Add(portion);
+            Width += portion.Width;
+            Height = Math.Max(Height, spacing);
+            BaselineOffset = Math.Max(BaselineOffset, baselineOffset);
         }
 
         internal TextLine Build(float defaultHeight, float defaultBaselineOffset)
         {
-            this.TrimTrailingWhitespace();
+            TrimTrailingWhitespace();
 
-            var height = this.Height <= 0 ? defaultHeight : this.Height;
-            var baselineOffset = this.BaselineOffset <= 0 ? defaultBaselineOffset : this.BaselineOffset;
-            return new TextLine([.. this.runs], this.paragraphAlignment, this.Width, height, baselineOffset);
+            var height = Height <= 0 ? defaultHeight : Height;
+            var baselineOffset = BaselineOffset <= 0 ? defaultBaselineOffset : BaselineOffset;
+            return new TextLine([.. runs], paragraphAlignment, Width, height, baselineOffset);
         }
 
         private void TrimTrailingWhitespace()
         {
-            while (this.runs.Count > 0 && this.runs[^1].IsWhitespace)
+            while (runs.Count > 0 && runs[^1].IsWhitespace)
             {
-                var removingRun = this.runs[^1];
-                this.Width -= removingRun.Width;
-                this.runs.RemoveAt(this.runs.Count - 1);
+                var removingRun = runs[^1];
+                Width -= removingRun.Width;
+                runs.RemoveAt(runs.Count - 1);
             }
         }
     }
