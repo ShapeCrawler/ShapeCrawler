@@ -398,21 +398,7 @@ public sealed class DraftSlide
             return;
         }
 
-        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font;
-        if (font == null)
-        {
-            return;
-        }
-
-        if (fontDraft.SizeValue.HasValue)
-        {
-            font.Size = fontDraft.SizeValue.Value;
-        }
-
-        if (fontDraft.IsBoldValue)
-        {
-            font.IsBold = true;
-        }
+        ApplyDraftFontToParagraph(shape.TextBox!.Paragraphs[0], fontDraft);
     }
 
     private static void ApplyTextHighlightColor(IShape shape, Color? highlightColor)
@@ -452,6 +438,9 @@ public sealed class DraftSlide
             paragraph.Text = draftParagraph.Content!;
         }
 
+        ApplyDraftFontToParagraph(paragraph, draftParagraph.FontDraft);
+        ApplyDraftIndentation(paragraph, draftParagraph.IndentationDraft);
+
         if (!draftParagraph.IsBulletedList)
         {
             return;
@@ -461,6 +450,33 @@ public sealed class DraftSlide
         paragraph.Bullet.Type = BulletType.Character;
         paragraph.Bullet.Character = draftParagraph.BulletCharacter;
         paragraph.Bullet.ApplyDefaultSpacing();
+    }
+
+    private static void ApplyDraftFontToParagraph(IParagraph paragraph, DraftFont? fontDraft)
+    {
+        foreach (var font in paragraph.Portions.Where(p => p.Font is not null).Select(p => p.Font))
+        {
+            // Each draft paragraph should be independent: do not inherit bold from the previous paragraph.
+            font!.IsBold = fontDraft?.IsBoldValue ?? false;
+
+            if (fontDraft?.SizeValue is not null)
+            {
+                font.Size = fontDraft.SizeValue.Value;
+            }
+        }
+    }
+
+    private static void ApplyDraftIndentation(IParagraph paragraph, DraftIndentation? indentationDraft)
+    {
+        if (indentationDraft == null)
+        {
+            return;
+        }
+
+        if (indentationDraft.BeforeTextPoints.HasValue)
+        {
+            paragraph.SetLeftMargin(indentationDraft.BeforeTextPoints.Value);
+        }
     }
 
     private static void ApplyTextBoxAutofit(IShape shape, bool isTextBox)

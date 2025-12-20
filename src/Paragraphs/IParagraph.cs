@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -50,6 +51,11 @@ public interface IParagraph
     string FontColor { get; }
 
     /// <summary>
+    ///    Gets or sets paragraph left margin in points.
+    /// </summary>
+    decimal LeftMargin { get; set; }
+
+    /// <summary>
     ///     Finds and replaces text.
     /// </summary>
     void ReplaceText(string oldValue, string newValue);
@@ -73,6 +79,11 @@ public interface IParagraph
     ///     Sets font color.
     /// </summary>
     void SetFontColor(string colorHex);
+
+    /// <summary>
+    ///    Sets paragraph left margin in points.
+    /// </summary>
+    void SetLeftMargin(decimal points);
 }
 
 internal sealed class Paragraph : IParagraph
@@ -196,6 +207,26 @@ internal sealed class Paragraph : IParagraph
         }
     }
 
+    public decimal LeftMargin
+    {
+        get
+        {
+            var leftMargin = this.aParagraph.ParagraphProperties!.LeftMargin;
+            if (leftMargin is null)
+            {
+                return 0;
+            }
+
+            return new Emus(leftMargin.Value).AsPoints();
+        }
+
+        set
+        {
+            var leftMarginEmu = (int)new Points(value).AsEmus();
+            this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
+        }
+    }
+
     public void ReplaceText(string oldValue, string newValue)
     {
         foreach (var portion in this.portions.Where(portion => portion is not ParagraphLineBreak))
@@ -253,6 +284,11 @@ internal sealed class Paragraph : IParagraph
             var solidFill = new A.SolidFill(new A.RgbColorModelHex { Val = colorHex });
             endParaRPr.InsertAt(solidFill, 0);
         }
+    }
+
+    public void SetLeftMargin(decimal points)
+    {
+        this.LeftMargin = points;
     }
 
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);

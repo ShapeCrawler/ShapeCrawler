@@ -524,4 +524,46 @@ public class UserSlideTests : SCTest
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
+
+    [Test]
+    [Platform(Exclude = "Linux", Reason = "Difference is 15%")]
+    public Task SaveImageTo_draws_Text_Shapes()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextShape(ts =>
+                {
+                    ts.Paragraph(para =>
+                    {
+                        para.Text("Key Principles");
+                        para.Font(font =>
+                        {
+                            font.Size(18);
+                            font.Bold();
+                        });
+                    });
+                    ts.Paragraph(para =>
+                    {
+                        para.Text("Scalability first");
+                        para.Font(font => font.Size(14));
+                        para.Indentation(indent =>
+                        {
+                            indent.BeforeText(36);
+                        });
+                    });
+                });
+            });
+        });
+        
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImageTo(stream);
+
+        // Assert
+        var imageBytes = stream.ToArray();
+        return Verify(imageBytes, "png");
+    }
 }

@@ -46,8 +46,8 @@ internal sealed class DrawingTextBox : TextBox
 
         foreach (var line in lines)
         {
-            var horizontalOffset = GetHorizontalOffset(line.HorizontalAlignment, availableWidth, line.Width);
-            var startX = originX + horizontalOffset;
+            var horizontalOffset = GetHorizontalOffset(line.HorizontalAlignment, availableWidth - line.ParaLeftMargin, line.Width);
+            var startX = originX + line.ParaLeftMargin + horizontalOffset;
 
             RenderLine(canvas, line, startX, lineTop);
             lineTop += line.Height;
@@ -272,7 +272,9 @@ internal sealed class DrawingTextBox : TextBox
 
     private void LayoutParagraph(IParagraph paragraph, float availableWidth, bool wrap, ICollection<TextLine> buffer)
     {
-        var line = new LineBuilder(paragraph.HorizontalAlignment);
+        var paraLeftMargin = (float)new Points(paragraph.LeftMargin).AsPixels();
+        var paraAvailableWidth = availableWidth - paraLeftMargin;
+        var line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
         if (paragraph.Bullet.Type == BulletType.Character && paragraph.Bullet.Character != null)
         {
             var font = paragraph.Portions.FirstOrDefault()?.Font;
@@ -292,11 +294,11 @@ internal sealed class DrawingTextBox : TextBox
             if (IsLineBreak(portion))
             {
                 buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
-                line = new LineBuilder(paragraph.HorizontalAlignment);
+                line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
                 continue;
             }
 
-            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, availableWidth, wrap, buffer);
+            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, paraAvailableWidth, wrap, buffer);
         }
 
         buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
@@ -317,6 +319,7 @@ internal sealed class DrawingTextBox : TextBox
         // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
         // PowerPoint treats them as explicit new lines; Skia would otherwise render them as tofu.
         var segments = SplitToLineSegments(portion.Text);
+        var paraLeftMargin = currentLine.ParaLeftMargin;
         for (var i = 0; i < segments.Length; i++)
         {
             foreach (var token in SplitToTokens(segments[i]))
@@ -333,7 +336,7 @@ internal sealed class DrawingTextBox : TextBox
             if (i < segments.Length - 1)
             {
                 paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paraLeftMargin);
             }
         }
 
@@ -394,7 +397,7 @@ internal sealed class DrawingTextBox : TextBox
         }
 
         paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-        return new LineBuilder(paragraphLayout.ParagraphAlignment); // Drop whitespace at wrap boundary.
+        return new LineBuilder(paragraphLayout.ParagraphAlignment, currentLine.ParaLeftMargin); // Drop whitespace at wrap boundary.
     }
 
     private LineBuilder LayoutNonWhitespaceToken(
@@ -415,7 +418,7 @@ internal sealed class DrawingTextBox : TextBox
         if (currentLine.HasRuns)
         {
             paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-            currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
+            currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, currentLine.ParaLeftMargin);
         }
 
         if (tokenWidth <= paragraphLayout.AvailableWidth)
@@ -448,7 +451,7 @@ internal sealed class DrawingTextBox : TextBox
             if (currentLine.HasRuns && currentLine.Width + partWidth > paragraphLayout.AvailableWidth)
             {
                 paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, currentLine.ParaLeftMargin);
             }
 
             currentLine.Add(new PixelTextPortion(part, font, partWidth), skFont.Spacing, baselineOffset);
@@ -485,12 +488,14 @@ internal sealed class DrawingTextBox : TextBox
         internal TextLine(
             PixelTextPortion[] runs,
             TextHorizontalAlignment horizontalAlignment,
+            float paraLeftMargin,
             float width,
             float height,
             float baselineOffset)
         {
             Runs = runs;
             HorizontalAlignment = horizontalAlignment;
+            ParaLeftMargin = paraLeftMargin;
             Width = width;
             Height = height;
             BaselineOffset = baselineOffset;
@@ -500,6 +505,8 @@ internal sealed class DrawingTextBox : TextBox
 
         internal TextHorizontalAlignment HorizontalAlignment { get; }
 
+        internal float ParaLeftMargin { get; }
+
         internal float Width { get; }
 
         internal float Height { get; }
@@ -507,9 +514,11 @@ internal sealed class DrawingTextBox : TextBox
         internal float BaselineOffset { get; }
     }
 
-    private sealed class LineBuilder(TextHorizontalAlignment paragraphAlignment)
+    private sealed class LineBuilder(TextHorizontalAlignment paragraphAlignment, float paraLeftMargin)
     {
         private readonly List<PixelTextPortion> runs = [];
+
+        internal float ParaLeftMargin => paraLeftMargin;
 
         internal float Width { get; private set; }
 
@@ -533,7 +542,7 @@ internal sealed class DrawingTextBox : TextBox
 
             var height = Height <= 0 ? defaultHeight : Height;
             var baselineOffset = BaselineOffset <= 0 ? defaultBaselineOffset : BaselineOffset;
-            return new TextLine([.. runs], paragraphAlignment, Width, height, baselineOffset);
+            return new TextLine([.. runs], paragraphAlignment, paraLeftMargin, Width, height, baselineOffset);
         }
 
         private void TrimTrailingWhitespace()

@@ -1,3 +1,5 @@
+using System;
+
 namespace ShapeCrawler.Presentations;
 
 /// <summary>
@@ -12,11 +14,41 @@ public sealed class DraftParagraph
     internal string BulletCharacter { get; private set; } = "•";
 
     /// <summary>
+    ///    Gets draft font.
+    /// </summary>
+    internal DraftFont? FontDraft { get; private set; }
+
+    /// <summary>
+    ///    Gets draft indentation.
+    /// </summary>
+    internal DraftIndentation? IndentationDraft { get; private set; }
+
+    /// <summary>
     ///     Sets paragraph text.
     /// </summary>
     public DraftParagraph Text(string text)
     {
         this.Content = text;
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures font using a nested builder.
+    /// </summary>
+    public DraftParagraph Font(Action<DraftFont> configure)
+    {
+        this.FontDraft = new DraftFont();
+        configure(this.FontDraft);
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures indentation using a nested builder.
+    /// </summary>
+    public DraftParagraph Indentation(Action<DraftIndentation> configure)
+    {
+        this.IndentationDraft = new DraftIndentation();
+        configure(this.IndentationDraft);
         return this;
     }
 
