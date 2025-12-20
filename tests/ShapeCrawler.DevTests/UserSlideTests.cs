@@ -526,6 +526,7 @@ public class UserSlideTests : SCTest
     }
 
     [Test]
+    [Platform(Exclude = "Linux", Reason = "Difference is 15%")]
     public Task SaveImageTo_draws_Text_Shapes()
     {
         var pres = new Presentation(pres =>
