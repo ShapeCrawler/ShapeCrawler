@@ -288,8 +288,7 @@ internal sealed class Paragraph : IParagraph
 
     public void SetLeftMargin(decimal points)
     {
-        var leftMarginEmu = (int)new ShapeCrawler.Units.Points(points).AsEmus();
-        this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
+        this.LeftMargin = points;
     }
 
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);
