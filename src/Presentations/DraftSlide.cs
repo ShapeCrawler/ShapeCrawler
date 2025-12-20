@@ -464,7 +464,7 @@ public sealed class DraftSlide
             // Each draft paragraph should be independent: do not inherit bold from the previous paragraph.
             font.IsBold = fontDraft?.IsBoldValue ?? false;
 
-            if (fontDraft?.SizeValue.HasValue == true)
+            if (fontDraft?.SizeValue is not null)
             {
                 font.Size = fontDraft.SizeValue.Value;
             }
