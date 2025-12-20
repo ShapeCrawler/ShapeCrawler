@@ -524,4 +524,29 @@ public class UserSlideTests : SCTest
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
+
+    [Test]
+    public void WIP()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextShape(ts =>
+                {
+                    ts.Paragraph(para =>
+                    {
+                        para.Text("Key Principles");
+                        para.Font(font =>
+                        {
+                            font.Size(18);
+                            font.Bold();
+                        });
+                    });
+                });
+            });
+        });
+        
+        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
+    }
 }

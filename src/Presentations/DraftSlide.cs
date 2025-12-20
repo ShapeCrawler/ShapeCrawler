@@ -398,21 +398,7 @@ public sealed class DraftSlide
             return;
         }
 
-        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font;
-        if (font == null)
-        {
-            return;
-        }
-
-        if (fontDraft.SizeValue.HasValue)
-        {
-            font.Size = fontDraft.SizeValue.Value;
-        }
-
-        if (fontDraft.IsBoldValue)
-        {
-            font.IsBold = true;
-        }
+        ApplyDraftFontToParagraph(shape.TextBox!.Paragraphs[0], fontDraft);
     }
 
     private static void ApplyTextHighlightColor(IShape shape, Color? highlightColor)
@@ -452,6 +438,8 @@ public sealed class DraftSlide
             paragraph.Text = draftParagraph.Content!;
         }
 
+        ApplyDraftFontToParagraph(paragraph, draftParagraph.FontDraft);
+
         if (!draftParagraph.IsBulletedList)
         {
             return;
@@ -461,6 +449,33 @@ public sealed class DraftSlide
         paragraph.Bullet.Type = BulletType.Character;
         paragraph.Bullet.Character = draftParagraph.BulletCharacter;
         paragraph.Bullet.ApplyDefaultSpacing();
+    }
+
+    private static void ApplyDraftFontToParagraph(IParagraph paragraph, DraftFont? fontDraft)
+    {
+        if (fontDraft == null)
+        {
+            return;
+        }
+
+        foreach (var portion in paragraph.Portions)
+        {
+            var font = portion.Font;
+            if (font == null)
+            {
+                continue;
+            }
+
+            if (fontDraft.SizeValue.HasValue)
+            {
+                font.Size = fontDraft.SizeValue.Value;
+            }
+
+            if (fontDraft.IsBoldValue)
+            {
+                font.IsBold = true;
+            }
+        }
     }
 
     private static void ApplyTextBoxAutofit(IShape shape, bool isTextBox)
