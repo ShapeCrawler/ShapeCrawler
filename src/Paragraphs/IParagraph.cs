@@ -222,7 +222,7 @@ internal sealed class Paragraph : IParagraph
 
         set
         {
-            var leftMarginEmu = (int)new ShapeCrawler.Units.Points(value).AsEmus();
+            var leftMarginEmu = (int)new Points(value).AsEmus();
             this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
         }
     }
