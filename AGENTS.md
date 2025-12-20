@@ -92,6 +92,7 @@ The project uses strict `.editorconfig` rules. Key settings:
 - **Build**: Release configuration enforces all code style rules
 
 ## Testing Guidelines
+- The folder `.context\` used to store input and output files during manual testing. Prefer using this folder for your temp files.
 
 ### Test Project
 - **Always use**: `tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
