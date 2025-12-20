@@ -454,11 +454,6 @@ public sealed class DraftSlide
 
     private static void ApplyDraftFontToParagraph(IParagraph paragraph, DraftFont? fontDraft)
     {
-        if (fontDraft == null)
-        {
-            return;
-        }
-
         foreach (var portion in paragraph.Portions)
         {
             var font = portion.Font;
@@ -467,14 +462,12 @@ public sealed class DraftSlide
                 continue;
             }
 
-            if (fontDraft.SizeValue.HasValue)
+            // Each draft paragraph should be independent: do not inherit bold from the previous paragraph.
+            font.IsBold = fontDraft?.IsBoldValue ?? false;
+
+            if (fontDraft?.SizeValue.HasValue == true)
             {
                 font.Size = fontDraft.SizeValue.Value;
-            }
-
-            if (fontDraft.IsBoldValue)
-            {
-                font.IsBold = true;
             }
         }
     }
