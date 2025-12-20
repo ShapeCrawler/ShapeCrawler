@@ -12,7 +12,7 @@ public class BulletTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("001.pptx"));
         var shape = pres.Slides[0].Shapes.GetById<IShape>(2);
-        var bullet = shape.ShapeText!.Paragraphs[0].Bullet;
+        var bullet = shape.TextBox!.Paragraphs[0].Bullet;
 
         // Act-Assert
         bullet.Type.Should().Be(BulletType.None);
@@ -26,9 +26,9 @@ public class BulletTests : SCTest
         var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape5 = shapeList.First(x => x.Id == 5);
-        var shape4Pr2Bullet = shape4.ShapeText!.Paragraphs[1].Bullet;
-        var shape5Pr1Bullet = shape5.ShapeText!.Paragraphs[0].Bullet;
-        var shape5Pr2Bullet = shape5.ShapeText.Paragraphs[1].Bullet;
+        var shape4Pr2Bullet = shape4.TextBox!.Paragraphs[1].Bullet;
+        var shape5Pr1Bullet = shape5.TextBox!.Paragraphs[0].Bullet;
+        var shape5Pr2Bullet = shape5.TextBox.Paragraphs[1].Bullet;
 
         // Act
         var shape5Pr1BulletType = shape5Pr1Bullet.Type;
@@ -47,7 +47,7 @@ public class BulletTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
         var shape = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 1");
-        var bullet = shape.ShapeText!.Paragraphs[0].Bullet;
+        var bullet = shape.TextBox!.Paragraphs[0].Bullet;
 
         // Act
         bullet.Type = BulletType.Character;
@@ -61,7 +61,7 @@ public class BulletTests : SCTest
         pres.Save(savedPreStream);
         var newPresentation = new Presentation(savedPreStream);
         shape = newPresentation.Slides[0].Shapes.Shape<IShape>("AutoShape 1");
-        bullet = shape.ShapeText!.Paragraphs[0].Bullet;
+        bullet = shape.TextBox!.Paragraphs[0].Bullet;
         bullet.Type.Should().Be(BulletType.Character);
         bullet.Character.Should().Be("*");
     }
@@ -73,8 +73,8 @@ public class BulletTests : SCTest
         var mStream = new MemoryStream();
         var pres = new Presentation(TestAsset("020.pptx"));
         var shape = pres.Slides[2].Shapes.First(sp => sp.Id == 7);
-        shape.ShapeText!.Paragraphs.Add();
-        var addedParagraph = shape.ShapeText.Paragraphs.Last();
+        shape.TextBox!.Paragraphs.Add();
+        var addedParagraph = shape.TextBox.Paragraphs.Last();
 
         // Act
         addedParagraph.Bullet.Type = BulletType.Numbered;
@@ -90,7 +90,7 @@ public class BulletTests : SCTest
 
         pres = new Presentation(mStream);
         shape = pres.Slides[2].Shapes.First(sp => sp.Id == 7);
-        addedParagraph = shape.ShapeText!.Paragraphs.Last();
+        addedParagraph = shape.TextBox!.Paragraphs.Last();
         addedParagraph.Bullet.Type.Should().Be(BulletType.Numbered);
         addedParagraph.Bullet.Size.Should().Be(100);
         addedParagraph.Bullet.FontName.Should().Be("Tahoma");
@@ -113,7 +113,7 @@ public class BulletTests : SCTest
                 });
             });
         });
-        var paragraph = pres.Slide(1).Shapes.First().ShapeText!.Paragraphs.First();
+        var paragraph = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First();
 
         // Act-Assert
         paragraph.Bullet.Character.Should().Be("•");
@@ -126,8 +126,8 @@ public class BulletTests : SCTest
         var mStream = new MemoryStream();
         var pres = new Presentation(TestAsset("020.pptx"));
         var shape = pres.Slide(3).Shapes.First(sp => sp.Id == 7);
-        shape.ShapeText!.Paragraphs.Add();
-        var addedParagraph = shape.ShapeText.Paragraphs.Last();
+        shape.TextBox!.Paragraphs.Add();
+        var addedParagraph = shape.TextBox.Paragraphs.Last();
 
         // Act
         addedParagraph.Bullet.Type = BulletType.Character;
@@ -145,7 +145,7 @@ public class BulletTests : SCTest
 
         pres = new Presentation(mStream);
         shape = pres.Slides[2].Shapes.First(sp => sp.Id == 7);
-        addedParagraph = shape.ShapeText!.Paragraphs.Last();
+        addedParagraph = shape.TextBox!.Paragraphs.Last();
         addedParagraph.Bullet.Type.Should().Be(BulletType.Character);
         addedParagraph.Bullet.Character.Should().Be("*");
         addedParagraph.Bullet.Size.Should().Be(100);
@@ -158,8 +158,8 @@ public class BulletTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("002.pptx"));
         var shapes = pres.Slides[1].Shapes;
-        var shape3Pr1Bullet = shapes.First(x => x.Id == 3).ShapeText!.Paragraphs[0].Bullet;
-        var shape4Pr2Bullet = shapes.First(x => x.Id == 4).ShapeText!.Paragraphs[1].Bullet;
+        var shape3Pr1Bullet = shapes.First(x => x.Id == 3).TextBox!.Paragraphs[0].Bullet;
+        var shape4Pr2Bullet = shapes.First(x => x.Id == 4).TextBox!.Paragraphs[1].Bullet;
 
         // Act
         var shape3BulletFontName = shape3Pr1Bullet.FontName;
@@ -176,7 +176,7 @@ public class BulletTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("002.pptx"));
         var shape = pres.Slide(2).Shapes.First(x => x.Id == 4);
-        var bullet = shape.ShapeText!.Paragraphs[1].Bullet;
+        var bullet = shape.TextBox!.Paragraphs[1].Bullet;
 
         // Act
         var bulletColor = bullet.ColorHex;

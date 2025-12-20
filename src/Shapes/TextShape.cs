@@ -4,15 +4,15 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal class TextShape(P.Shape pShape, ShapeText shapeText) : DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
+internal class TextShape(P.Shape pShape, TextBox textBox) : DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
 {
-    public override IShapeText ShapeText => shapeText;
+    public override ITextBox TextBox => textBox;
 
-    public override void SetText(string text) => shapeText.SetText(text);
+    public override void SetText(string text) => textBox.SetText(text);
     
     public override void SetFontName(string fontName)
     {
-        foreach (var paragraph in this.ShapeText.Paragraphs)
+        foreach (var paragraph in this.TextBox.Paragraphs)
         {
             paragraph.SetFontName(fontName);
         }
@@ -20,7 +20,7 @@ internal class TextShape(P.Shape pShape, ShapeText shapeText) : DrawingShape(new
 
     public override void SetFontSize(decimal fontSize)
     {
-        foreach (var paragraph in this.ShapeText.Paragraphs)
+        foreach (var paragraph in this.TextBox.Paragraphs)
         {
             paragraph.SetFontSize((int)fontSize);
         }
@@ -28,7 +28,7 @@ internal class TextShape(P.Shape pShape, ShapeText shapeText) : DrawingShape(new
 
     public override void SetFontColor(string colorHex)
     {
-        foreach (var paragraph in this.ShapeText.Paragraphs)
+        foreach (var paragraph in this.TextBox.Paragraphs)
         {
             paragraph.SetFontColor(colorHex);
         }

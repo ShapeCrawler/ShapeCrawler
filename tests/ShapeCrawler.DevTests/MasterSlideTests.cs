@@ -127,7 +127,7 @@ public class MasterSlideTests : SCTest
         IShape autoShape = (IShape)masterSlide.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert
-        autoShape.ShapeText.Text.Should().BeEquivalentTo("id8");
+        autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
     }
 
     [Test]

@@ -256,7 +256,7 @@ public sealed class DraftSlide
                     if (!string.IsNullOrEmpty(draftCell.FontColorHex))
                     {
                         var cell = tableRow.Cells[cellIndex];
-                        cell.ShapeText.Paragraphs[0].SetFontColor(draftCell.FontColorHex!);
+                        cell.TextBox.Paragraphs[0].SetFontColor(draftCell.FontColorHex!);
                     }
                 }
             }
@@ -388,7 +388,7 @@ public sealed class DraftSlide
             return;
         }
 
-        shape.ShapeText!.SetText(content!);
+        shape.TextBox!.SetText(content!);
     }
 
     private static void ApplyDraftFont(IShape shape, DraftFont? fontDraft)
@@ -398,7 +398,7 @@ public sealed class DraftSlide
             return;
         }
 
-        var font = shape.ShapeText!.Paragraphs[0].Portions[0].Font;
+        var font = shape.TextBox!.Paragraphs[0].Portions[0].Font;
         if (font == null)
         {
             return;
@@ -422,7 +422,7 @@ public sealed class DraftSlide
             return;
         }
 
-        shape.ShapeText!.Paragraphs[0].Portions[0].TextHighlightColor = highlightColor.Value;
+        shape.TextBox!.Paragraphs[0].Portions[0].TextHighlightColor = highlightColor.Value;
     }
 
     private static void ApplyDraftParagraphs(IShape shape, IReadOnlyList<DraftParagraph> draftParagraphs)
@@ -432,21 +432,21 @@ public sealed class DraftSlide
             return;
         }
 
-        var textBox = shape.ShapeText!;
+        var textBox = shape.TextBox!;
         for (var i = 0; i < draftParagraphs.Count; i++)
         {
             ApplyDraftParagraph(textBox, i, draftParagraphs[i]);
         }
     }
 
-    private static void ApplyDraftParagraph(IShapeText shapeText, int paragraphIndex, DraftParagraph draftParagraph)
+    private static void ApplyDraftParagraph(ITextBox textBox, int paragraphIndex, DraftParagraph draftParagraph)
     {
         if (paragraphIndex > 0)
         {
-            shapeText.Paragraphs.Add();
+            textBox.Paragraphs.Add();
         }
 
-        var paragraph = shapeText.Paragraphs[paragraphIndex];
+        var paragraph = textBox.Paragraphs[paragraphIndex];
         if (!string.IsNullOrEmpty(draftParagraph.Content))
         {
             paragraph.Text = draftParagraph.Content!;
@@ -470,7 +470,7 @@ public sealed class DraftSlide
             return;
         }
 
-        var scTextBox = (ShapeCrawler.Texts.ShapeText)shape.ShapeText!;
+        var scTextBox = (ShapeCrawler.Texts.TextBox)shape.TextBox!;
         scTextBox.DisableWrapping();
         scTextBox.AutofitType = AutofitType.Resize;
     }

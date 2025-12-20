@@ -13,8 +13,8 @@ public class ParagraphTests : SCTest
         var pres = new Presentation(p => p.Slide());
         pres.Slides[0].Shapes.AddShape(100, 100, 500, 100);
         var addedShape = pres.Slides[0].Shapes.Last();
-        addedShape.ShapeText!.Paragraphs.Add();
-        var paragraph = addedShape.ShapeText.Paragraphs.Last();
+        addedShape.TextBox!.Paragraphs.Add();
+        var paragraph = addedShape.TextBox.Paragraphs.Last();
         paragraph.Text = "Test";
 
         // Act
@@ -31,7 +31,7 @@ public class ParagraphTests : SCTest
         var pres = new Presentation(p => p.Slide());
         pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
         var table = pres.Slide(1).Shapes.Last().Table;
-        var textBox = table.Rows[0].Cells[0].ShapeText!;
+        var textBox = table.Rows[0].Cells[0].TextBox!;
         textBox.SetText("some-text");
         var paragraph = textBox.Paragraphs[0];
 
@@ -50,7 +50,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
         var shape = pres.Slide(1).Shape("AutoShape 4");
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act
         paragraph.Text = "AutoShape 4 some text";
@@ -68,7 +68,7 @@ public class ParagraphTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes.Last();
-        var paragraph = addedShape.ShapeText!.Paragraphs[0];
+        var paragraph = addedShape.TextBox!.Paragraphs[0];
 
         // Act
         paragraph.Text = "test";
@@ -85,7 +85,7 @@ public class ParagraphTests : SCTest
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
         var group = pres.Slide(1).Shape("Group 1");
         var shape = group.GroupedShape("Shape 1");
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act
         paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";
@@ -100,8 +100,8 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(37).ShapeText;
-        var textBox2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table.Rows[0].Cells[0].ShapeText;
+        var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(37).TextBox;
+        var textBox2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table.Rows[0].Cells[0].TextBox;
 
         // Act
         string paragraphTextCase1 = textBox1.Paragraphs[0].Text;
@@ -120,7 +120,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptxStream = TestAsset("autoshape-case003.pptx");
         var pres = new Presentation(pptxStream);
-        var paragraph = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 3").ShapeText!.Paragraphs[0];
+        var paragraph = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 3").TextBox!.Paragraphs[0];
 
         // Act
         paragraph.ReplaceText("Some text", "Some text2");
@@ -134,7 +134,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
     {
         // Arrange
-        var textFrame = new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).ShapeText;
+        var textFrame = new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextBox;
 
         // Act
         var portions = textFrame.Paragraphs[0].Portions;
@@ -149,8 +149,8 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case001.pptx"));
         var shape = pres.MasterSlides[0].Shapes.Shape<IShape>("AutoShape 1");
-        shape.ShapeText!.Paragraphs.Add();
-        var paragraph = shape.ShapeText.Paragraphs.Last();
+        shape.TextBox!.Paragraphs.Add();
+        var paragraph = shape.TextBox.Paragraphs.Last();
         var expectedPortionCount = paragraph.Portions.Count + 1;
 
         // Act
@@ -179,7 +179,7 @@ public class ParagraphTests : SCTest
         TextHorizontalAlignment expectedAlignment)
     {
         // Arrange
-        var paragraph = autoShape.ShapeText.Paragraphs[0];
+        var paragraph = autoShape.TextBox.Paragraphs[0];
 
         // Act-Assert
         paragraph.HorizontalAlignment.Should().Be(expectedAlignment);
@@ -192,7 +192,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presName));
-        var paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).ShapeText.Paragraphs[0];
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox.Paragraphs[0];
         var mStream = new MemoryStream();
 
         // Act
@@ -203,7 +203,7 @@ public class ParagraphTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).ShapeText.Paragraphs[0];
+        paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox.Paragraphs[0];
         paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
     }
 
@@ -218,7 +218,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset(presName));
-        var paragraph = pres.Slide(slideNumber).Shapes.GetById<IShape>(shapeId).ShapeText.Paragraphs[paraNumber - 1];
+        var paragraph = pres.Slide(slideNumber).Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
         var mStream = new MemoryStream();
         paraText = paraText.Replace("{NewLine}", Environment.NewLine);
 
@@ -231,7 +231,7 @@ public class ParagraphTests : SCTest
 
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).ShapeText.Paragraphs[paraNumber - 1];
+        paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
         paragraph.Text.Should().BeEquivalentTo(paraText);
         paragraph.Portions.Count.Should().Be(expectedPortionsCount);
     }
@@ -243,7 +243,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Spacing_LineSpacingLines_returns_line_spacing_in_Lines(IShape shape, double expectedLines)
     {
         // Arrange
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act
         var spacingLines = paragraph.Spacing.LineSpacingLines;
@@ -258,7 +258,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
     {
         // Arrange
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
         var decimalExpectedPoints = (decimal)expectedPoints;
 
         // Act
@@ -274,7 +274,7 @@ public class ParagraphTests : SCTest
     public void Spacing_BeforeSpacingPoints_returns_before_spacing_in_points(IShape shape, double expectedPoints)
     {
         // Arrange
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
         var expectedPointsDecimal = (decimal)expectedPoints;
 
         // Act-Assert
@@ -286,7 +286,7 @@ public class ParagraphTests : SCTest
     public void Spacing_AfterSpacingPoints_returns_after_spacing_in_points(IShape shape, double expectedPoints)
     {
         // Arrange
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act-Assert
         paragraph.Spacing.AfterSpacingPoints.Should().Be((decimal)expectedPoints);
@@ -300,7 +300,7 @@ public class ParagraphTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes[0];
-        var paragraph = addedShape.ShapeText.Paragraphs[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
         paragraph.Text = "test";
 
         // Act
@@ -312,7 +312,7 @@ public class ParagraphTests : SCTest
         using var mStream = new MemoryStream();
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.Slides[0].Shapes.Last().ShapeText.Paragraphs[0];
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
     }
 
@@ -324,7 +324,7 @@ public class ParagraphTests : SCTest
         var slide = pres.Slides[0];
         slide.Shapes.AddShape(10, 10, 10, 10);
         var addedShape = slide.Shapes[0];
-        var paragraph = addedShape.ShapeText.Paragraphs[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
         paragraph.Text = "test";
 
         // Act
@@ -335,7 +335,7 @@ public class ParagraphTests : SCTest
         var mStream = new MemoryStream();
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        paragraph = pres.Slides[0].Shapes.Last().ShapeText.Paragraphs[0];
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
         paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
     }
 
@@ -344,10 +344,10 @@ public class ParagraphTests : SCTest
     public void Replacing_Paragraph_Text_Preserves_Newlines(IShape shape)
     {
         // Act
-        shape.ShapeText!.Paragraphs[0].Text = shape.ShapeText.Paragraphs[0].Text.Replace("World", "Earth");
+        shape.TextBox!.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World", "Earth");
 
         // Assert
-        shape.ShapeText.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
+        shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
     }
 
     [Test]
@@ -355,12 +355,12 @@ public class ParagraphTests : SCTest
     public void ReplaceText_preserves_New_Lines(IShape shape)
     {
         // Arrange
-        var paragraph = shape.ShapeText!.Paragraphs[0];
+        var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act
         paragraph.ReplaceText("World", "Earth");
 
         // Assert
-        shape.ShapeText.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
+        shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
     }
 }

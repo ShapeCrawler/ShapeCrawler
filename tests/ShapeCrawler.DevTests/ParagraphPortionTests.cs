@@ -12,7 +12,7 @@ public class ParagraphPortionTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("009_table"));
         var portion = pres.Slide(3).Shape(3).Table.Rows[0].Cells[0]
-            .ShapeText
+            .TextBox
             .Paragraphs[0].Portions[0];
 
         // Act
@@ -29,7 +29,7 @@ public class ParagraphPortionTests : SCTest
         var pptxStream = TestAsset("autoshape-case001.pptx");
         var pres = new Presentation(pptxStream);
         var autoShape = pres.MasterSlides[0].Shapes.Shape<IShape>("AutoShape 1");
-        var portion = autoShape.ShapeText!.Paragraphs[0].Portions[0];
+        var portion = autoShape.TextBox!.Paragraphs[0].Portions[0];
 
         // Act
         portion.Text = "test";
@@ -48,7 +48,7 @@ public class ParagraphPortionTests : SCTest
         var pptxStream = TestAsset(pptxFile);
         var presentation = new Presentation(pptxStream);
         var autoShape = presentation.Slides[0].Shapes.Shape<IShape>(shapeName);
-        var portion = autoShape.ShapeText.Paragraphs[0].Portions[0];
+        var portion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
         // Act
         portion.Link!.AddFile("https://github.com/ShapeCrawler/ShapeCrawler");
@@ -57,7 +57,7 @@ public class ParagraphPortionTests : SCTest
         presentation.Save();
         presentation = new Presentation(pptxStream);
         autoShape = presentation.Slides[0].Shapes.Shape<IShape>(shapeName);
-        portion = autoShape.ShapeText.Paragraphs[0].Portions[0];
+        portion = autoShape.TextBox.Paragraphs[0].Portions[0];
         portion.Link!.File.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
     
@@ -69,8 +69,8 @@ public class ParagraphPortionTests : SCTest
         var presentation = new Presentation(pptxStream);
         var textBox3 = presentation.Slides[0].Shapes.Shape<IShape>("TextBox 3");
         var textBox4 = presentation.Slides[0].Shapes.Shape<IShape>("TextBox 4");
-        var portion3 = textBox3.ShapeText.Paragraphs[0].Portions[0];
-        var portion4 = textBox4.ShapeText.Paragraphs[0].Portions[0];
+        var portion3 = textBox3.TextBox.Paragraphs[0].Portions[0];
+        var portion4 = textBox4.TextBox.Paragraphs[0].Portions[0];
 
         // Act
         portion3.Link!.AddFile("https://github.com/ShapeCrawler/ShapeCrawler");
@@ -86,7 +86,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case018_rotation.pptx"));
-        var portion = pres.Slide(1).Shape("NoRotationTextBox").ShapeText.Paragraphs[0].Portions[0];
+        var portion = pres.Slide(1).Shape("NoRotationTextBox").TextBox.Paragraphs[0].Portions[0];
         
         // Act
         portion.Link!.AddSlideNumber(2);
@@ -102,7 +102,7 @@ public class ParagraphPortionTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("autoshape-case001.pptx"));
         var shape = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 1");
-        var portion = shape.ShapeText!.Paragraphs[0].Portions[0];
+        var portion = shape.TextBox!.Paragraphs[0].Portions[0];
         
         // Act
         portion.Link!.AddFile("some.pptx");
@@ -117,7 +117,7 @@ public class ParagraphPortionTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("table-case001.pptx"));
         var table = pres.Slides[0].Shape("Table 1").Table;
-        var portion = table.Rows[0].Cells[0].ShapeText.Paragraphs[0].Portions[0];
+        var portion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
         // Act
         portion.Link!.AddFile("https://github.com/ShapeCrawler/ShapeCrawler");
@@ -134,7 +134,7 @@ public class ParagraphPortionTests : SCTest
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var shape = pres.Slides[0].Shapes.Shape<IShape>("TextBox 3");
-        var portion = shape.ShapeText!.Paragraphs[0].Portions[0];
+        var portion = shape.TextBox!.Paragraphs[0].Portions[0];
 
         // Act-Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
@@ -147,7 +147,7 @@ public class ParagraphPortionTests : SCTest
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var shape = pres.Slides[0].Shapes.Shape<IShape>("TextBox 3");
-        var portion = shape.ShapeText!.Paragraphs[0].Portions[0];
+        var portion = shape.TextBox!.Paragraphs[0].Portions[0];
 
         // Act-Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
@@ -160,7 +160,7 @@ public class ParagraphPortionTests : SCTest
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var shape = pres.Slides[0].Shapes.Shape<IShape>("TextBox 4");
-        var portion = shape.ShapeText!.Paragraphs[0].Portions[0];
+        var portion = shape.TextBox!.Paragraphs[0].Portions[0];
 
         // Act
         portion.TextHighlightColor = new Color("FFFF00");
@@ -176,7 +176,7 @@ public class ParagraphPortionTests : SCTest
         var pptx = TestAsset("autoshape-grouping.pptx");
         var pres = new Presentation(pptx);
         var shape = pres.Slides[0].Shapes.Shape<IShape>("TextBox 4");
-        var portion = shape.ShapeText!.Paragraphs[0].Portions[0];
+        var portion = shape.TextBox!.Paragraphs[0].Portions[0];
         var color = new Color("FFFF00");
 
         // Act
@@ -201,7 +201,7 @@ public class ParagraphPortionTests : SCTest
                 });
             });
         });
-        var portion = pres.Slide(1).Shapes.First().ShapeText!.Paragraphs.First().Portions.First();
+        var portion = pres.Slide(1).Shapes.First().TextBox!.Paragraphs.First().Portions.First();
 
         // Act
         portion.TextHighlightColor = Color.NoColor;

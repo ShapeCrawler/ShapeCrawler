@@ -14,7 +14,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
     : Shape(position, shapeSize, shapeId, pShapeTreeElement)
 {
     private const double Epsilon = 1e-6;
-    private static readonly TextDrawing TextDrawing = new();
+    private static readonly DrawingTextBox DrawingTextBox = new();
     private static readonly Dictionary<string, Func<A.ColorScheme, A.Color2Type?>> SchemeColorSelectors =
         new(StringComparer.Ordinal)
         {
@@ -167,14 +167,14 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private void RenderText(SKCanvas canvas)
     {
-        if (this.ShapeText is null)
+        if (this.TextBox is null)
         {
             return;
         }
 
         canvas.Save();
         ApplyRotation(canvas);
-        TextDrawing.Render(canvas, this);
+        DrawingTextBox.Render(canvas, this);
         canvas.Restore();
     }
 
