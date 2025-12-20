@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;

@@ -1,6 +1,5 @@
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Groups;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;

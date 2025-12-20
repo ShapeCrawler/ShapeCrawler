@@ -17,7 +17,8 @@ internal sealed class DrawingTextBox : TextBox
     private readonly float defaultLineHeight;
     private readonly float defaultBaselineOffset;
 
-    internal DrawingTextBox(TextBoxMargins margins, OpenXmlElement textBody) : base(margins, textBody)
+    internal DrawingTextBox(TextBoxMargins margins, OpenXmlElement textBody)
+        : base(margins, textBody)
     {
         using var font = CreateFont(null);
         defaultLineHeight = font.Spacing;
@@ -224,19 +225,7 @@ internal sealed class DrawingTextBox : TextBox
 
         return best == 0 ? 1 : best;
     }
-
-    private float GetAvailableWidth(decimal parentShapeWidth)
-    {
-        var width = ClampToZero(parentShapeWidth - LeftMargin - RightMargin);
-        return (float)new Points(width).AsPixels();
-    }
-
-    private float GetAvailableHeight(decimal parentShapeHeight)
-    {
-        var height = ClampToZero(parentShapeHeight - this.TopMargin - this.BottomMargin);
-        return (float)new Points(height).AsPixels();
-    }
-
+    
     private static void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
     {
         var baselineY = lineTop + line.BaselineOffset;
@@ -255,6 +244,18 @@ internal sealed class DrawingTextBox : TextBox
     private static string[] SplitToLineSegments(string text)
     {
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
+    }
+
+    private float GetAvailableWidth(decimal parentShapeWidth)
+    {
+        var width = ClampToZero(parentShapeWidth - LeftMargin - RightMargin);
+        return (float)new Points(width).AsPixels();
+    }
+
+    private float GetAvailableHeight(decimal parentShapeHeight)
+    {
+        var height = ClampToZero(parentShapeHeight - this.TopMargin - this.BottomMargin);
+        return (float)new Points(height).AsPixels();
     }
 
     private IReadOnlyList<TextLine> LayoutLines(float availableWidth, bool wrap)

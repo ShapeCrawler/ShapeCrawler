@@ -1,7 +1,6 @@
 using System;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Positions;
-using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
