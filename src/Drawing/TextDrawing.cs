@@ -251,6 +251,11 @@ internal sealed class TextDrawing
         }
     }
 
+    private static string[] SplitToLineSegments(string text)
+    {
+        return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
+    }
+
     private IReadOnlyList<TextLine> LayoutLines(IShapeText shapeText, float availableWidth, bool wrap)
     {
         var lines = new List<TextLine>();
@@ -306,16 +311,28 @@ internal sealed class TextDrawing
         using var font = CreateFont(portion.Font);
         var baselineOffset = GetBaselineOffset(font);
         var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, wrap, buffer);
-
-        foreach (var token in SplitToTokens(portion.Text))
+        
+        // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
+        // PowerPoint treats them as explicit new lines; Skia would otherwise render them as tofu.
+        var segments = SplitToLineSegments(portion.Text);
+        for (var i = 0; i < segments.Length; i++)
         {
-            currentLine = this.LayoutToken(
-                token,
-                portion.Font,
-                font,
-                baselineOffset,
-                paragraphLayout,
-                currentLine);
+            foreach (var token in SplitToTokens(segments[i]))
+            {
+                currentLine = this.LayoutToken(
+                    token,
+                    portion.Font,
+                    font,
+                    baselineOffset,
+                    paragraphLayout,
+                    currentLine);
+            }
+            
+            if (i < segments.Length - 1)
+            {
+                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment);
+            }
         }
 
         return currentLine;
