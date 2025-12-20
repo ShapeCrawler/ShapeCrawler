@@ -543,6 +543,15 @@ public class UserSlideTests : SCTest
                             font.Bold();
                         });
                     });
+                    ts.Paragraph(para =>
+                    {
+                        para.Text("Scalability first");
+                        para.Font(font => font.Size(14));
+                        para.Indentation(indent =>
+                        {
+                            indent.BeforeText(36); // points
+                        });
+                    });
                 });
             });
         });

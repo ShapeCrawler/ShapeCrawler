@@ -19,6 +19,11 @@ public sealed class DraftParagraph
     internal DraftFont? FontDraft { get; private set; }
 
     /// <summary>
+    ///    Gets draft indentation.
+    /// </summary>
+    internal DraftIndentation? IndentationDraft { get; private set; }
+
+    /// <summary>
     ///     Sets paragraph text.
     /// </summary>
     public DraftParagraph Text(string text)
@@ -34,6 +39,16 @@ public sealed class DraftParagraph
     {
         this.FontDraft = new DraftFont();
         configure(this.FontDraft);
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures indentation using a nested builder.
+    /// </summary>
+    public DraftParagraph Indentation(Action<DraftIndentation> configure)
+    {
+        this.IndentationDraft = new DraftIndentation();
+        configure(this.IndentationDraft);
         return this;
     }
 

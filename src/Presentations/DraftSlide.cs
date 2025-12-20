@@ -439,6 +439,7 @@ public sealed class DraftSlide
         }
 
         ApplyDraftFontToParagraph(paragraph, draftParagraph.FontDraft);
+        ApplyDraftIndentation(paragraph, draftParagraph.IndentationDraft);
 
         if (!draftParagraph.IsBulletedList)
         {
@@ -475,6 +476,19 @@ public sealed class DraftSlide
             {
                 font.IsBold = true;
             }
+        }
+    }
+
+    private static void ApplyDraftIndentation(IParagraph paragraph, DraftIndentation? indentationDraft)
+    {
+        if (indentationDraft == null)
+        {
+            return;
+        }
+
+        if (indentationDraft.BeforeTextPoints.HasValue)
+        {
+            paragraph.SetLeftMargin(indentationDraft.BeforeTextPoints.Value);
         }
     }
 

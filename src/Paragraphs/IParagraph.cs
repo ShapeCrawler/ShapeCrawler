@@ -73,6 +73,11 @@ public interface IParagraph
     ///     Sets font color.
     /// </summary>
     void SetFontColor(string colorHex);
+
+    /// <summary>
+    ///    Sets paragraph left margin in points.
+    /// </summary>
+    void SetLeftMargin(decimal points);
 }
 
 internal sealed class Paragraph : IParagraph
@@ -253,6 +258,12 @@ internal sealed class Paragraph : IParagraph
             var solidFill = new A.SolidFill(new A.RgbColorModelHex { Val = colorHex });
             endParaRPr.InsertAt(solidFill, 0);
         }
+    }
+
+    public void SetLeftMargin(decimal points)
+    {
+        var leftMarginEmu = (int)new ShapeCrawler.Units.Points(points).AsEmus();
+        this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
     }
 
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);
