@@ -248,7 +248,7 @@ internal sealed class DrawingTextBox : TextBox
 
     private float GetAvailableWidth(decimal parentShapeWidth)
     {
-        var width = ClampToZero(parentShapeWidth - LeftMargin - RightMargin);
+        var width = ClampToZero(parentShapeWidth - this.LeftMargin - this.RightMargin);
         return (float)new Points(width).AsPixels();
     }
 
