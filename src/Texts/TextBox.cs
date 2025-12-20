@@ -16,15 +16,15 @@ internal abstract class TextBox : ITextBox
     private TextVerticalAlignment? vAlignment;
     private TextDirection? textDirection;
 
-    internal TextBox(TextBoxMargins margins, OpenXmlElement textBody)
+    private protected TextBox(TextBoxMargins margins, OpenXmlElement textBody)
     {
         this.margins = margins;
         this.textBody = textBody;
-        var shapeSize1 = new ShapeSize(textBody.Parent!);
+        var shapeSize = new ShapeSize(textBody.Parent!);
         this.autofit = new TextAutofit(
             this.Paragraphs,
             () => this.AutofitType,
-            shapeSize1,
+            shapeSize,
             this.margins,
             () => this.TextWrapped,
             this.textBody);
