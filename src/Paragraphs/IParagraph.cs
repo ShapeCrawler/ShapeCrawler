@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -149,7 +150,7 @@ internal sealed class Paragraph : IParagraph
             }
 
             var textBody = this.aParagraph.Parent!;
-            var textBox = new TextBox(new TextBoxMargins(textBody), textBody);
+            var textBox = new DrawingTextBox(new TextBoxMargins(textBody), textBody);
             textBox.ResizeParentShapeOnDemand();
         }
     }

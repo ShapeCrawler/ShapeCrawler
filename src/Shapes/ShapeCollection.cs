@@ -139,7 +139,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         {
             yield return new TextShape(
                 pShape,
-                new TextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
+                new DrawingTextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
             );
         }
         else

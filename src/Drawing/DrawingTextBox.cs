@@ -506,17 +506,9 @@ internal sealed class DrawingTextBox : TextBox
         internal float BaselineOffset { get; }
     }
 
-    private sealed class LineBuilder
+    private sealed class LineBuilder(TextHorizontalAlignment paragraphAlignment)
     {
-        private readonly List<PixelTextPortion> runs;
-        private readonly TextHorizontalAlignment paragraphAlignment;
-
-
-        internal LineBuilder(TextHorizontalAlignment paragraphAlignment)
-        {
-            paragraphAlignment = paragraphAlignment;
-            runs = [];
-        }
+        private readonly List<PixelTextPortion> runs = [];
 
         internal float Width { get; private set; }
 
