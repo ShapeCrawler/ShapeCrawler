@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -48,6 +49,11 @@ public interface IParagraph
     ///     Gets font color.
     /// </summary>
     string FontColor { get; }
+
+    /// <summary>
+    ///    Gets or sets paragraph left margin in points.
+    /// </summary>
+    decimal LeftMargin { get; set; }
 
     /// <summary>
     ///     Finds and replaces text.
@@ -198,6 +204,26 @@ internal sealed class Paragraph : IParagraph
             }
 
             return this.Portions[0].Font!.Color.Hex;
+        }
+    }
+
+    public decimal LeftMargin
+    {
+        get
+        {
+            var leftMargin = this.aParagraph.ParagraphProperties!.LeftMargin;
+            if (leftMargin is null)
+            {
+                return 0;
+            }
+
+            return new Emus(leftMargin.Value).AsPoints();
+        }
+
+        set
+        {
+            var leftMarginEmu = (int)new ShapeCrawler.Units.Points(value).AsEmus();
+            this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
         }
     }
 

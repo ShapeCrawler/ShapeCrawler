@@ -526,7 +526,7 @@ public class UserSlideTests : SCTest
     }
 
     [Test]
-    public void WIP()
+    public Task SaveImageTo_draws_Text_Shapes()
     {
         var pres = new Presentation(pres =>
         {
@@ -549,13 +549,20 @@ public class UserSlideTests : SCTest
                         para.Font(font => font.Size(14));
                         para.Indentation(indent =>
                         {
-                            indent.BeforeText(36); // points
+                            indent.BeforeText(36);
                         });
                     });
                 });
             });
         });
         
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImageTo(stream);
+
+        // Assert
+        var imageBytes = stream.ToArray();
+        return Verify(imageBytes, "png");
     }
 }
