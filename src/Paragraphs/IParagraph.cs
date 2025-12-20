@@ -222,7 +222,7 @@ internal sealed class Paragraph : IParagraph
 
         set
         {
-            var leftMarginEmu = (int)new ShapeCrawler.Units.Points(value).AsEmus();
+            var leftMarginEmu = (int)new Points(value).AsEmus();
             this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
         }
     }
@@ -288,8 +288,7 @@ internal sealed class Paragraph : IParagraph
 
     public void SetLeftMargin(decimal points)
     {
-        var leftMarginEmu = (int)new ShapeCrawler.Units.Points(points).AsEmus();
-        this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
+        this.LeftMargin = points;
     }
 
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);
