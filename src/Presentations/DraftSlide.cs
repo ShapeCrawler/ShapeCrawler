@@ -454,9 +454,8 @@ public sealed class DraftSlide
 
     private static void ApplyDraftFontToParagraph(IParagraph paragraph, DraftFont? fontDraft)
     {
-        foreach (var portion in paragraph.Portions)
+        foreach (var font in paragraph.Portions.Select(p => p.Font))
         {
-            var font = portion.Font;
             if (font == null)
             {
                 continue;
