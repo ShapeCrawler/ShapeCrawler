@@ -36,11 +36,6 @@ public interface IParagraph
     TextHorizontalAlignment HorizontalAlignment { get; set; }
 
     /// <summary>
-    ///     Gets or sets paragraph indent level.
-    /// </summary>
-    int IndentLevel { get; set; }
-
-    /// <summary>
     ///     Gets spacing.
     /// </summary>
     ISpacing Spacing { get; }
@@ -53,8 +48,13 @@ public interface IParagraph
     /// <summary>
     ///    Gets or sets paragraph left margin in points.
     /// </summary>
-    decimal LeftMargin { get; set; }
+    decimal LeftMargin { get; }
 
+    /// <summary>
+    ///     Gets or sets paragraph indent level.
+    /// </summary>
+    int IndentLevel { get; set; }
+    
     /// <summary>
     ///     Gets or sets paragraph first line indent in points.
     /// </summary>

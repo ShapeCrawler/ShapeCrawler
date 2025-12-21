@@ -244,13 +244,14 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var paragraph = shape.TextBox!.Paragraphs[0];
+        var decimalExpectedLines = (decimal)expectedLines;
 
         // Act
-        var spacingLines = paragraph.Spacing.LineSpacingLines;
+        var spacingLines = paragraph.Spacing.LineSpacing!;
 
         // Assert
-        spacingLines.Should().Be(expectedLines);
-        paragraph.Spacing.LineSpacingPoints.Should().BeNull();
+        spacingLines.Should().Be(decimalExpectedLines);
+        paragraph.Spacing.LineSpacing.Should().BeNull();
     }
 
     [Test]
@@ -262,11 +263,11 @@ public class ParagraphTests : SCTest
         var decimalExpectedPoints = (decimal)expectedPoints;
 
         // Act
-        var spacingPoints = paragraph.Spacing.LineSpacingPoints!.Value;
+        var spacingPoints = paragraph.Spacing.LineSpacing!.Value;
 
         // Assert
         spacingPoints.Should().Be(decimalExpectedPoints);
-        paragraph.Spacing.LineSpacingLines.Should().BeNull();
+        paragraph.Spacing.LineSpacing.Should().BeNull();
     }
 
     [Test]
