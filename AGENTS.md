@@ -36,6 +36,7 @@ tests/
 
 ### Mandatory Rules
 - **What is an Object?** The project follows the principle that the correct object is a representation of a real-world entity or concept. In its constructor, the class encapsulates properties or another object as “coordinates” that the class instance will use to refer to the real-world entity.
+- **Encapsulation of Logic**: A class should encapsulate all logic required to produce its result. It should not rely on pre-calculated data passed from the caller if it can calculate that data itself using its dependencies.
 - **Naming Conventions**:
     - Class names must be **nouns** (e.g., `Slide`, `Slides`, not `SlideManager` or `SlideService`)
     - No `-er`, `-or`, `-service` suffixes
@@ -43,6 +44,7 @@ tests/
   - The maximum allowed method Cognitive Complexity is 15.
   - The maximum allowed method Cyclomatic Complexity is 10.
   - The maximum allowed method Lines of Code is 80.
+  - The maximum allowed method Parameters is 7.
 - **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
 
 - **Instance Members**: Use `this` prefix for all instance members
@@ -73,6 +75,8 @@ tests/
   - Use "Open XML", not "OpenXML".
 
 - **No Public/Internal Static Members**: Classes should not have public or internal static members. Encapsulate behavior in instance methods.
+  - Exception: Extension methods are allowed but should be used sparingly.
+  - Exception: Private static helper methods are allowed within the class if they don't depend on instance state.
 - **File-Scoped Namespaces**: Always use file-scoped namespace declarations
    ```csharp
    namespace ShapeCrawler.Charts;
