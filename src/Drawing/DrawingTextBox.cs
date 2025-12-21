@@ -284,7 +284,8 @@ internal sealed class DrawingTextBox : TextBox
                 using var skFont = CreateFont(font);
                 var bulletChar = paragraph.Bullet.Character;
                 var bulletCharWidth = skFont.MeasureText(bulletChar);
-                var bulletPortionWidth = Math.Max(bulletCharWidth, -firstLineIndent);
+                var hangingIndentWidth = firstLineIndent < 0 ? -firstLineIndent : 0f;
+                var bulletPortionWidth = Math.Max(bulletCharWidth, hangingIndentWidth);
                 var bulletPortion = new PixelTextPortion(bulletChar, font, bulletPortionWidth);
 
                 line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
