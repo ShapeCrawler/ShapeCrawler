@@ -84,10 +84,11 @@ public sealed class DraftChart
     /// </summary>
     public DraftChart Categories(params (string Main, string Sub)[] categories)
     {
-        foreach (var category in categories)
+        foreach (var (main, sub) in categories)
         {
-            this.CategoryNames.Add([category.Main, category.Sub]);
+            this.CategoryNames.Add([main, sub]);
         }
+
         return this;
     }
 

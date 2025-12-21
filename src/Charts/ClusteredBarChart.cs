@@ -65,6 +65,7 @@ internal sealed class ClusteredBarChart(
                     for (int catIndex = 0; catIndex < categories.Count; catIndex++)
                     {
                         var catList = categories[catIndex];
+
                         // Map Leaf (List Index Count-1) to Level 0.
                         int listIndex = (catList.Count - 1) - levelIndex;
                         if (listIndex >= 0)
@@ -75,8 +76,10 @@ internal sealed class ClusteredBarChart(
                             lvl.AppendChild(pt);
                         }
                     }
+
                     multiLevelStringCache.AppendChild(lvl);
                 }
+
                 multiLevelStringReference.AppendChild(multiLevelStringCache);
                 categoryAxisData.AppendChild(multiLevelStringReference);
             }
@@ -89,6 +92,7 @@ internal sealed class ClusteredBarChart(
                     point.AppendChild(new NumericValue(categories[(int)j][0]));
                     stringLiteral.AppendChild(point);
                 }
+
                 categoryAxisData.AppendChild(stringLiteral);
             }
 

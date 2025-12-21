@@ -19,6 +19,35 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
+    private static int ColumnIndex(string column)
+    {
+        int retVal = 0;
+        string col = column.ToUpper();
+        for (int iChar = col.Length - 1; iChar >= 0; iChar--)
+        {
+            char colPiece = col[iChar];
+            int colNum = colPiece - 64;
+            retVal += colNum * (int)Math.Pow(26, col.Length - (iChar + 1));
+        }
+
+        return retVal;
+    }
+
+    private static string ColumnLetter(int columnNumber)
+    {
+        string dividend = string.Empty;
+        int modulo;
+
+        while (columnNumber > 0)
+        {
+            modulo = (columnNumber - 1) % 26;
+            dividend = Convert.ToChar(65 + modulo).ToString() + dividend;
+            columnNumber = (int)((columnNumber - modulo) / 26);
+        }
+
+        return dividend;
+    }
+
     private List<ICategory> MultiCategories(
         IEnumerable<C.Level> levels,
         string? sheetName,
@@ -78,7 +107,10 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
                          address = $"{addressPrefix}{row}";
                     }
 
-                    if (cachedCatName == null) continue;
+                    if (cachedCatName == null)
+                    {
+                        continue;
+                    }
 
                     var category = new Category(chartPart, cachedCatName, sheetName, address);
                     nextIndexToCategory.Add(new KeyValuePair<uint, ICategory>(index, category));
@@ -120,17 +152,18 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
                  startColumnIndex = ColumnIndex(startColumn);
              }
              
-             return MultiCategories(cMultiLvlStringRef.MultiLevelStringCache!.Elements<C.Level>(), sheetName, startRow, startColumnIndex);
+             return this.MultiCategories(cMultiLvlStringRef.MultiLevelStringCache!.Elements<C.Level>(), sheetName, startRow, startColumnIndex);
         }
         
         var cStrLiteral = cCatAxisData.StringLiteral;
         if (cStrLiteral != null)
         {
-             foreach(var pt in cStrLiteral.Elements<C.StringPoint>())
+             foreach (var pt in cStrLiteral.Elements<C.StringPoint>())
              {
                  var category = new Category(chartPart, pt.NumericValue!, null, null);
                  categoryList.Add(category);
              }
+
              return categoryList;
         }
 
@@ -160,33 +193,5 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
         }
 
         return categoryList;
-    }
-
-    private static int ColumnIndex(string column)
-    {
-        int retVal = 0;
-        string col = column.ToUpper();
-        for (int iChar = col.Length - 1; iChar >= 0; iChar--)
-        {
-            char colPiece = col[iChar];
-            int colNum = colPiece - 64;
-            retVal = retVal + colNum * (int)Math.Pow(26, col.Length - (iChar + 1));
-        }
-        return retVal;
-    }
-
-    private static string ColumnLetter(int columnNumber)
-    {
-        string dividend = "";
-        int modulo;
-
-        while (columnNumber > 0)
-        {
-            modulo = (columnNumber - 1) % 26;
-            dividend = Convert.ToChar(65 + modulo).ToString() + dividend;
-            columnNumber = (int)((columnNumber - modulo) / 26);
-        }
-
-        return dividend;
     }
 }
