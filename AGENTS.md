@@ -44,6 +44,7 @@ tests/
   - The maximum allowed method Cognitive Complexity is 15.
   - The maximum allowed method Cyclomatic Complexity is 10.
   - The maximum allowed method Lines of Code is 80.
+  - The maximum allowed method Parameters is 7.
 - **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
 
 - **Instance Members**: Use `this` prefix for all instance members

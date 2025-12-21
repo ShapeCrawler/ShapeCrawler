@@ -9,14 +9,16 @@ namespace ShapeCrawler.Drawing;
 internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availableWidth, bool wrap)
 {
     private const decimal DefaultFontSize = 12m;
+    private float defaultLineHeight;
+    private float defaultBaselineOffset;
 
     internal void Render(SKCanvas canvas, float x, float y, float availableHeight, TextVerticalAlignment verticalAlignment)
     {
         using var font = CreateFont(null);
-        var defaultLineHeight = font.Spacing;
-        var defaultBaselineOffset = GetBaselineOffset(font);
+        this.defaultLineHeight = font.Spacing;
+        this.defaultBaselineOffset = GetBaselineOffset(font);
 
-        var lines = this.LayoutLines(defaultLineHeight, defaultBaselineOffset);
+        var lines = this.LayoutLines();
         var textBlockHeight = lines.Sum(l => l.Height);
         var verticalOffset = GetVerticalOffset(verticalAlignment, availableHeight, textBlockHeight);
         var lineTop = y + verticalOffset;
@@ -207,15 +209,13 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
     }
     
-    private static LineBuilder LayoutToken(
+    private LineBuilder LayoutToken(
         string token,
         ITextPortionFont? font,
         SKFont skFont,
         float baselineOffset,
         ParagraphLayout paragraphLayout,
-        LineBuilder currentLine,
-        float defaultLineHeight,
-        float defaultBaselineOffset)
+        LineBuilder currentLine)
     {
         var tokenWidth = skFont.MeasureText(token);
 
@@ -227,40 +227,34 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
 
         if (IsWhitespace(token))
         {
-            return LayoutWhitespaceToken(
+            return this.LayoutWhitespaceToken(
                 token,
                 font,
                 tokenWidth,
                 skFont.Spacing,
                 baselineOffset,
                 paragraphLayout,
-                currentLine,
-                defaultLineHeight,
-                defaultBaselineOffset);
+                currentLine);
         }
 
-        return LayoutNonWhitespaceToken(
+        return this.LayoutNonWhitespaceToken(
             token,
             font,
             skFont,
             tokenWidth,
             baselineOffset,
             paragraphLayout,
-            currentLine,
-            defaultLineHeight,
-            defaultBaselineOffset);
+            currentLine);
     }
 
-    private static LineBuilder LayoutWhitespaceToken(
+    private LineBuilder LayoutWhitespaceToken(
         string token,
         ITextPortionFont? font,
         float tokenWidth,
         float spacing,
         float baselineOffset,
         ParagraphLayout paragraphLayout,
-        LineBuilder currentLine,
-        float defaultLineHeight,
-        float defaultBaselineOffset)
+        LineBuilder currentLine)
     {
         if (currentLine.ParaLeftMargin + currentLine.Width + tokenWidth <= paragraphLayout.TotalAvailableWidth)
         {
@@ -268,20 +262,18 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
             return currentLine;
         }
 
-        paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+        paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
         return new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin); // Drop whitespace at wrap boundary.
     }
 
-    private static LineBuilder LayoutNonWhitespaceToken(
+    private LineBuilder LayoutNonWhitespaceToken(
         string token,
         ITextPortionFont? font,
         SKFont skFont,
         float tokenWidth,
         float baselineOffset,
         ParagraphLayout paragraphLayout,
-        LineBuilder currentLine,
-        float defaultLineHeight,
-        float defaultBaselineOffset)
+        LineBuilder currentLine)
     {
         if (currentLine.ParaLeftMargin + currentLine.Width + tokenWidth <= paragraphLayout.TotalAvailableWidth)
         {
@@ -291,7 +283,7 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
 
         if (currentLine.HasRuns)
         {
-            paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+            paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
             currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
         }
 
@@ -301,26 +293,22 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
             return currentLine;
         }
 
-        return LayoutSplitToken(
+        return this.LayoutSplitToken(
             token,
             font,
             skFont,
             baselineOffset,
             paragraphLayout,
-            currentLine,
-            defaultLineHeight,
-            defaultBaselineOffset);
+            currentLine);
     }
 
-    private static LineBuilder LayoutSplitToken(
+    private LineBuilder LayoutSplitToken(
         string token,
         ITextPortionFont? font,
         SKFont skFont,
         float baselineOffset,
         ParagraphLayout paragraphLayout,
-        LineBuilder currentLine,
-        float defaultLineHeight,
-        float defaultBaselineOffset)
+        LineBuilder currentLine)
     {
         var remainingToken = token;
         while (remainingToken.Length > 0)
@@ -328,7 +316,7 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
             var availableWidthForLine = paragraphLayout.TotalAvailableWidth - (currentLine.ParaLeftMargin + currentLine.Width);
             if (availableWidthForLine <= 0 && currentLine.HasRuns)
             {
-                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
                 currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
                 availableWidthForLine = paragraphLayout.TotalAvailableWidth - currentLine.ParaLeftMargin;
             }
@@ -351,7 +339,7 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
 
             if (remainingToken.Length > 0)
             {
-                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
                 currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
             }
         }
@@ -359,19 +347,19 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
         return currentLine;
     }
 
-    private List<TextLine> LayoutLines(float defaultLineHeight, float defaultBaselineOffset)
+    private List<TextLine> LayoutLines()
     {
         var lines = new List<TextLine>();
 
         foreach (var paragraph in paragraphs)
         {
-            this.LayoutParagraph(paragraph, lines, defaultLineHeight, defaultBaselineOffset);
+            this.LayoutParagraph(paragraph, lines);
         }
 
         return lines;
     }
 
-    private void LayoutParagraph(IParagraph paragraph, ICollection<TextLine> textLines, float defaultLineHeight, float defaultBaselineOffset)
+    private void LayoutParagraph(IParagraph paragraph, ICollection<TextLine> textLines)
     {
         var paraLeftMargin = (float)new Points(paragraph.LeftMargin).AsPixels();
         var firstLineIndent = (float)new Points(paragraph.FirstLineIndent).AsPixels();
@@ -397,15 +385,15 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
         {
             if (IsLineBreak(portion))
             {
-                textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
+                textLines.Add(line.Build(this.defaultLineHeight, this.defaultBaselineOffset));
                 line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
                 continue;
             }
 
-            line = this.LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, paraLeftMargin, textLines, defaultLineHeight, defaultBaselineOffset);
+            line = this.LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, paraLeftMargin, textLines);
         }
 
-        textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
+        textLines.Add(line.Build(this.defaultLineHeight, this.defaultBaselineOffset));
     }
 
     private LineBuilder LayoutTextPortion(
@@ -413,9 +401,7 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
         LineBuilder currentLine,
         TextHorizontalAlignment paragraphAlignment,
         float baseParaLeftMargin,
-        ICollection<TextLine> buffer,
-        float defaultLineHeight,
-        float defaultBaselineOffset)
+        ICollection<TextLine> buffer)
     {
         using var font = CreateFont(portion.Font);
         var baselineOffset = GetBaselineOffset(font);
@@ -428,20 +414,18 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
         {
             foreach (var token in SplitToTokens(segments[i]))
             {
-                currentLine = LayoutToken(
+                currentLine = this.LayoutToken(
                     token,
                     portion.Font,
                     font,
                     baselineOffset,
                     paragraphLayout,
-                    currentLine,
-                    defaultLineHeight,
-                    defaultBaselineOffset);
+                    currentLine);
             }
 
             if (i < segments.Length - 1)
             {
-                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+                paragraphLayout.Buffer.Add(currentLine.Build(this.defaultLineHeight, this.defaultBaselineOffset));
                 currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, baseParaLeftMargin);
             }
         }
@@ -449,31 +433,22 @@ internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availa
         return currentLine;
     }
 
-    private readonly struct ParagraphLayout
+    private readonly struct ParagraphLayout(
+        TextHorizontalAlignment paragraphAlignment,
+        float totalAvailableWidth,
+        float baseParaLeftMargin,
+        bool wrap,
+        ICollection<TextLine> buffer)
     {
-        internal ParagraphLayout(
-            TextHorizontalAlignment paragraphAlignment,
-            float totalAvailableWidth,
-            float baseParaLeftMargin,
-            bool wrap,
-            ICollection<TextLine> buffer)
-        {
-            ParagraphAlignment = paragraphAlignment;
-            TotalAvailableWidth = totalAvailableWidth;
-            BaseParaLeftMargin = baseParaLeftMargin;
-            Wrap = wrap;
-            Buffer = buffer;
-        }
+        internal TextHorizontalAlignment ParagraphAlignment { get; } = paragraphAlignment;
 
-        internal TextHorizontalAlignment ParagraphAlignment { get; }
+        internal float TotalAvailableWidth { get; } = totalAvailableWidth;
 
-        internal float TotalAvailableWidth { get; }
+        internal float BaseParaLeftMargin { get; } = baseParaLeftMargin;
 
-        internal float BaseParaLeftMargin { get; }
+        internal bool Wrap { get; } = wrap;
 
-        internal bool Wrap { get; }
-
-        internal ICollection<TextLine> Buffer { get; }
+        internal ICollection<TextLine> Buffer { get; } = buffer;
     }
 
     private sealed class LineBuilder(TextHorizontalAlignment paragraphAlignment, float paraLeftMargin)
