@@ -37,17 +37,16 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
 
     private static string ColumnLetter(int columnNumber)
     {
-        string dividend = string.Empty;
-        int modulo;
+        string columnLetter = string.Empty;
 
         while (columnNumber > 0)
         {
-            modulo = (columnNumber - 1) % 26;
-            dividend = Convert.ToChar(65 + modulo).ToString() + dividend;
-            columnNumber = (int)((columnNumber - modulo) / 26);
+            var modulo = (columnNumber - 1) % 26;
+            columnLetter = Convert.ToChar(65 + modulo) + columnLetter;
+            columnNumber = (columnNumber - modulo) / 26;
         }
 
-        return dividend;
+        return columnLetter;
     }
 
     private List<ICategory> MultiCategories(
