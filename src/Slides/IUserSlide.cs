@@ -13,6 +13,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -240,11 +241,12 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                 else
                 {
                     var hasFill =
-                        pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>() is not null
-                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.GradientFill>() is not null
-                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>() is not null
-                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>() is not null
-                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>() is not null;
+                        pBgPr.GetFirstChild<A.BlipFill>() is not null
+                        || pBgPr.GetFirstChild<A.GradientFill>() is not null
+                        || pBgPr.GetFirstChild<A.NoFill>() is not null;
+                    hasFill = hasFill
+                        || pBgPr.GetFirstChild<A.PatternFill>() is not null
+                        || pBgPr.GetFirstChild<A.SolidFill>() is not null;
                     if (!hasFill)
                     {
                         // Keep schema-valid even if p:bgPr was previously created empty.
