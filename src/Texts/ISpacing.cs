@@ -11,9 +11,14 @@ namespace ShapeCrawler;
 public interface ISpacing
 {
     /// <summary>
+    ///     Gets the number of spaces in lines appears between lines of text. Returns <see langword="null"/> if the spaces are not specified in lines.
+    /// </summary>
+    double? LineSpacingLines { get; }
+
+    /// <summary>
     ///     Gets the number of spaces in points appears between lines of text. Returns <see langword="null"/> if the spaces are not specified in points. 
     /// </summary>
-    decimal? LineSpacing { get; }
+    decimal? LineSpacingPoints { get; }
 
     /// <summary>
     ///    Gets or sets the number of spaces in points before the paragraph.
@@ -28,7 +33,9 @@ public interface ISpacing
 
 internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
 {
-    public decimal? LineSpacing
+    public double? LineSpacingLines => this.GetLineSpacingLines();
+
+    public decimal? LineSpacingPoints
     {
         get
         {
