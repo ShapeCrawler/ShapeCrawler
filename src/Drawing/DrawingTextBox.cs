@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
