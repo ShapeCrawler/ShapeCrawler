@@ -9,7 +9,7 @@ using SkiaSharp;
 namespace ShapeCrawler.Drawing;
 
 /// <summary>
-///     Represents text drawing.
+///     Represents drawing text box.
 /// </summary>
 internal sealed class DrawingTextBox : TextBox
 {
@@ -509,37 +509,6 @@ internal sealed class DrawingTextBox : TextBox
         internal bool Wrap { get; }
 
         internal ICollection<TextLine> Buffer { get; }
-    }
-
-    private sealed class TextLine
-    {
-        internal TextLine(
-            PixelTextPortion[] runs,
-            TextHorizontalAlignment horizontalAlignment,
-            float paraLeftMargin,
-            float width,
-            float height,
-            float baselineOffset)
-        {
-            Runs = runs;
-            HorizontalAlignment = horizontalAlignment;
-            ParaLeftMargin = paraLeftMargin;
-            Width = width;
-            Height = height;
-            BaselineOffset = baselineOffset;
-        }
-
-        internal PixelTextPortion[] Runs { get; }
-
-        internal TextHorizontalAlignment HorizontalAlignment { get; }
-
-        internal float ParaLeftMargin { get; }
-
-        internal float Width { get; }
-
-        internal float Height { get; }
-
-        internal float BaselineOffset { get; }
     }
 
     private sealed class LineBuilder(TextHorizontalAlignment paragraphAlignment, float paraLeftMargin)
