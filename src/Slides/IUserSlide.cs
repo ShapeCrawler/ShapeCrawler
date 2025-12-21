@@ -233,7 +233,6 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                 if (pBgPr is null)
                 {
                     pBgPr = new P.BackgroundProperties();
-                    pBgPr.AppendChild(new NoFill());
                     pBg.AppendChild(pBgPr);
                 }
 
