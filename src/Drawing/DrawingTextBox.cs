@@ -25,36 +25,7 @@ internal sealed class DrawingTextBox : TextBox
         defaultBaselineOffset = GetBaselineOffset(font);
     }
 
-    internal void Render(SKCanvas canvas, decimal parentShapeX, decimal parentShapeY, decimal parentShapeWidth, decimal parentShapeHeight)
-    {
-        if (string.IsNullOrWhiteSpace(Text))
-        {
-            return;
-        }
-
-        var originX = (float)new Points(parentShapeX + LeftMargin).AsPixels();
-        var originY = (float)new Points(parentShapeY + TopMargin).AsPixels();
-        var availableWidth = GetAvailableWidth(parentShapeWidth);
-        var availableHeight = GetAvailableHeight(parentShapeHeight);
-
-        var wrap = this.TextWrapped && availableWidth > 0;
-        var lines = LayoutLines(availableWidth, wrap);
-        var textBlockHeight = lines.Sum(l => l.Height);
-
-        var verticalOffset = GetVerticalOffset(VerticalAlignment, availableHeight, textBlockHeight);
-        var lineTop = originY + verticalOffset;
-
-        foreach (var line in lines)
-        {
-            var horizontalOffset = GetHorizontalOffset(line.HorizontalAlignment, availableWidth - line.ParaLeftMargin, line.Width);
-            var startX = originX + line.ParaLeftMargin + horizontalOffset;
-
-            RenderLine(canvas, line, startX, lineTop);
-            lineTop += line.Height;
-        }
-    }
-
-    private static float GetVerticalOffset(TextVerticalAlignment alignment, float availableHeight, float contentHeight)
+    internal static float GetVerticalOffset(TextVerticalAlignment alignment, float availableHeight, float contentHeight)
     {
         if (availableHeight <= 0)
         {
@@ -71,7 +42,7 @@ internal sealed class DrawingTextBox : TextBox
         };
     }
 
-    private static float GetHorizontalOffset(TextHorizontalAlignment alignment, float availableWidth, float lineWidth)
+    internal static float GetHorizontalOffset(TextHorizontalAlignment alignment, float availableWidth, float lineWidth)
     {
         if (availableWidth <= 0)
         {
@@ -86,6 +57,44 @@ internal sealed class DrawingTextBox : TextBox
             TextHorizontalAlignment.Right => freeSpace,
             _ => 0 // Treat Justify and unknown values as Left for MVP.
         };
+    }
+    
+    internal static SKFont CreateFont(ITextPortionFont? font)
+    {
+        var fontStyle = GetFontStyle(font);
+        var family = font?.LatinName;
+
+        var typeface = string.IsNullOrWhiteSpace(family)
+            ? SKTypeface.CreateDefault()
+            : SKTypeface.FromFamilyName(family, fontStyle);
+        var size = new Points(font?.Size ?? DefaultFontSize).AsPixels();
+
+        return new SKFont(typeface) { Size = (float)size };
+    }
+    
+    internal static SKPaint CreatePaint(ITextPortionFont? font)
+    {
+        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
+
+        return paint;
+    }
+    
+    internal void Render(SKCanvas canvas, decimal parentShapeX, decimal parentShapeY, decimal parentShapeWidth, decimal parentShapeHeight)
+    {
+        if (string.IsNullOrWhiteSpace(Text))
+        {
+            return;
+        }
+
+        var originX = (float)new Points(parentShapeX + LeftMargin).AsPixels();
+        var originY = (float)new Points(parentShapeY + TopMargin).AsPixels();
+        var availableWidth = GetAvailableWidth(parentShapeWidth);
+        var availableHeight = GetAvailableHeight(parentShapeHeight);
+
+        var wrap = this.TextWrapped && availableWidth > 0;
+        var lines = LayoutLines(availableWidth, wrap);
+
+        new TextLines(lines).Render(canvas, originX, originY, availableWidth, availableHeight, VerticalAlignment);
     }
 
     private static bool IsWhitespace(string value) => string.IsNullOrEmpty(value) || value.All(char.IsWhiteSpace);
@@ -135,27 +144,7 @@ internal sealed class DrawingTextBox : TextBox
         return SKFontStyle.Normal;
     }
 
-    private static SKFont CreateFont(ITextPortionFont? font)
-    {
-        var fontStyle = GetFontStyle(font);
-        var family = font?.LatinName;
-
-        var typeface = string.IsNullOrWhiteSpace(family)
-            ? SKTypeface.CreateDefault()
-            : SKTypeface.FromFamilyName(family, fontStyle);
-        var size = new Points(font?.Size ?? DefaultFontSize).AsPixels();
-
-        return new SKFont(typeface) { Size = (float)size };
-    }
-
     private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
-
-    private static SKPaint CreatePaint(ITextPortionFont? font)
-    {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
-
-        return paint;
-    }
 
     private static SKColor GetPaintColor(ITextPortionFont? font)
     {
@@ -215,21 +204,6 @@ internal sealed class DrawingTextBox : TextBox
         return best == 0 ? 1 : best;
     }
     
-    private static void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
-    {
-        var baselineY = lineTop + line.BaselineOffset;
-        var currentX = startX;
-
-        foreach (var run in line.Runs)
-        {
-            using var font = CreateFont(run.Font);
-            using var paint = CreatePaint(run.Font);
-
-            canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);
-            currentX += run.Width;
-        }
-    }
-
     private static string[] SplitToLineSegments(string text)
     {
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
