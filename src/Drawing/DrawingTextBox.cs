@@ -177,17 +177,6 @@ internal sealed class DrawingTextBox : TextBox
         return value < 0 ? 0 : value;
     }
 
-    private static IEnumerable<string> SplitToFittingParts(string token, SKFont font, float maxWidth)
-    {
-        var offset = 0;
-        while (offset < token.Length)
-        {
-            var partLength = GetFittingPartLength(token, offset, font, maxWidth);
-            yield return token.Substring(offset, partLength);
-            offset += partLength;
-        }
-    }
-
     private static int GetFittingPartLength(string token, int offset, SKFont font, float maxWidth)
     {
         var remaining = token.Length - offset;
@@ -258,7 +247,7 @@ internal sealed class DrawingTextBox : TextBox
         return (float)new Points(height).AsPixels();
     }
 
-    private IReadOnlyList<TextLine> LayoutLines(float availableWidth, bool wrap)
+    private List<TextLine> LayoutLines(float availableWidth, bool wrap)
     {
         var lines = new List<TextLine>();
 
@@ -270,13 +259,13 @@ internal sealed class DrawingTextBox : TextBox
         return lines;
     }
 
-    private void LayoutParagraph(IParagraph paragraph, float availableWidth, bool wrap, ICollection<TextLine> buffer)
+    private void LayoutParagraph(IParagraph paragraph, float availableWidth, bool wrap, ICollection<TextLine> textLines)
     {
         var paraLeftMargin = (float)new Points(paragraph.LeftMargin).AsPixels();
         var firstLineIndent = (float)new Points(paragraph.FirstLineIndent).AsPixels();
         var firstLineLeftMargin = paraLeftMargin + firstLineIndent;
         var line = new LineBuilder(paragraph.HorizontalAlignment, firstLineLeftMargin);
-        if (paragraph.Bullet.Type == BulletType.Character && paragraph.Bullet.Character != null)
+        if (paragraph.Bullet is { Type: BulletType.Character, Character: not null })
         {
             var font = paragraph.Portions.FirstOrDefault()?.Font;
             if (font != null)
@@ -296,15 +285,15 @@ internal sealed class DrawingTextBox : TextBox
         {
             if (IsLineBreak(portion))
             {
-                buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
+                textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
                 line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
                 continue;
             }
 
-            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, availableWidth, paraLeftMargin, wrap, buffer);
+            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, availableWidth, paraLeftMargin, wrap, textLines);
         }
 
-        buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
+        textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
     }
 
     private LineBuilder LayoutTextPortion(
