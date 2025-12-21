@@ -845,7 +845,7 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    [Platform(Exclude = "Linux,MacOSX")]
+    [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Linux and macOS")]
     public void Content_fits_text_box()
     {
         // Act
