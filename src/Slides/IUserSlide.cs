@@ -232,8 +232,24 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                 var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>();
                 if (pBgPr is null)
                 {
-                    pBgPr = new P.BackgroundProperties();
+                    // PowerPoint always keeps background properties schema-valid.
+                    // If we create an empty p:bgPr, Open XML validation fails because it must contain a fill element.
+                    pBgPr = new P.BackgroundProperties(new NoFill());
                     pBg.AppendChild(pBgPr);
+                }
+                else
+                {
+                    var hasFill =
+                        pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>() is not null
+                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.GradientFill>() is not null
+                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>() is not null
+                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>() is not null
+                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>() is not null;
+                    if (!hasFill)
+                    {
+                        // Keep schema-valid even if p:bgPr was previously created empty.
+                        pBgPr.InsertAt(new NoFill(), 0);
+                    }
                 }
 
                 this.fill = new ShapeFill(pBgPr);
