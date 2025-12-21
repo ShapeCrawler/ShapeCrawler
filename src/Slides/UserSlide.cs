@@ -9,11 +9,10 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using SkiaSharp;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Slides;
 
 internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
 {

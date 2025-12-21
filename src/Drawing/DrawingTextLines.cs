@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class DrawingTextLines(IList<IParagraph> paragraphs, float availableWidth, bool wrap)
+internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availableWidth, bool wrap)
 {
     private const decimal DefaultFontSize = 12m;
 
@@ -165,17 +164,6 @@ internal sealed class DrawingTextLines(IList<IParagraph> paragraphs, float avail
         return ascent >= 0 ? 0 : -ascent;
     }
 
-    private static IEnumerable<string> SplitToFittingParts(string token, SKFont font, float maxWidth)
-    {
-        var offset = 0;
-        while (offset < token.Length)
-        {
-            var partLength = GetFittingPartLength(token, offset, font, maxWidth);
-            yield return token.Substring(offset, partLength);
-            offset += partLength;
-        }
-    }
-
     private static int GetFittingPartLength(string token, int offset, SKFont font, float maxWidth)
     {
         var remaining = token.Length - offset;
@@ -218,97 +206,7 @@ internal sealed class DrawingTextLines(IList<IParagraph> paragraphs, float avail
     {
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
     }
-
-    private List<TextLine> LayoutLines(float defaultLineHeight, float defaultBaselineOffset)
-    {
-        var lines = new List<TextLine>();
-
-        foreach (var paragraph in paragraphs)
-        {
-            this.LayoutParagraph(paragraph, lines, defaultLineHeight, defaultBaselineOffset);
-        }
-
-        return lines;
-    }
-
-    private void LayoutParagraph(IParagraph paragraph, ICollection<TextLine> textLines, float defaultLineHeight, float defaultBaselineOffset)
-    {
-        var paraLeftMargin = (float)new Points(paragraph.LeftMargin).AsPixels();
-        var firstLineIndent = (float)new Points(paragraph.FirstLineIndent).AsPixels();
-        var firstLineLeftMargin = paraLeftMargin + firstLineIndent;
-        var line = new LineBuilder(paragraph.HorizontalAlignment, firstLineLeftMargin);
-        if (paragraph.Bullet is { Type: BulletType.Character, Character: not null })
-        {
-            var font = paragraph.Portions.FirstOrDefault()?.Font;
-            if (font != null)
-            {
-                using var skFont = CreateFont(font);
-                var bulletChar = paragraph.Bullet.Character;
-                var bulletCharWidth = skFont.MeasureText(bulletChar);
-                var hangingIndentWidth = firstLineIndent < 0 ? -firstLineIndent : 0f;
-                var bulletPortionWidth = Math.Max(bulletCharWidth, hangingIndentWidth);
-                var bulletPortion = new PixelTextPortion(bulletChar, font, bulletPortionWidth);
-
-                line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
-            }
-        }
-
-        foreach (var portion in paragraph.Portions)
-        {
-            if (IsLineBreak(portion))
-            {
-                textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
-                line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
-                continue;
-            }
-
-            line = this.LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, paraLeftMargin, textLines, defaultLineHeight, defaultBaselineOffset);
-        }
-
-        textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
-    }
-
-    private LineBuilder LayoutTextPortion(
-        IParagraphPortion portion,
-        LineBuilder currentLine,
-        TextHorizontalAlignment paragraphAlignment,
-        float baseParaLeftMargin,
-        ICollection<TextLine> buffer,
-        float defaultLineHeight,
-        float defaultBaselineOffset)
-    {
-        using var font = CreateFont(portion.Font);
-        var baselineOffset = GetBaselineOffset(font);
-        var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, baseParaLeftMargin, wrap, buffer);
-
-        // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
-        // PowerPoint treats them as explicit new lines; Skia would otherwise render them as tofu.
-        var segments = SplitToLineSegments(portion.Text);
-        for (var i = 0; i < segments.Length; i++)
-        {
-            foreach (var token in SplitToTokens(segments[i]))
-            {
-                currentLine = LayoutToken(
-                    token,
-                    portion.Font,
-                    font,
-                    baselineOffset,
-                    paragraphLayout,
-                    currentLine,
-                    defaultLineHeight,
-                    defaultBaselineOffset);
-            }
-
-            if (i < segments.Length - 1)
-            {
-                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, baseParaLeftMargin);
-            }
-        }
-
-        return currentLine;
-    }
-
+    
     private static LineBuilder LayoutToken(
         string token,
         ITextPortionFont? font,
@@ -455,6 +353,96 @@ internal sealed class DrawingTextLines(IList<IParagraph> paragraphs, float avail
             {
                 paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
                 currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
+            }
+        }
+
+        return currentLine;
+    }
+
+    private List<TextLine> LayoutLines(float defaultLineHeight, float defaultBaselineOffset)
+    {
+        var lines = new List<TextLine>();
+
+        foreach (var paragraph in paragraphs)
+        {
+            this.LayoutParagraph(paragraph, lines, defaultLineHeight, defaultBaselineOffset);
+        }
+
+        return lines;
+    }
+
+    private void LayoutParagraph(IParagraph paragraph, ICollection<TextLine> textLines, float defaultLineHeight, float defaultBaselineOffset)
+    {
+        var paraLeftMargin = (float)new Points(paragraph.LeftMargin).AsPixels();
+        var firstLineIndent = (float)new Points(paragraph.FirstLineIndent).AsPixels();
+        var firstLineLeftMargin = paraLeftMargin + firstLineIndent;
+        var line = new LineBuilder(paragraph.HorizontalAlignment, firstLineLeftMargin);
+        if (paragraph.Bullet is { Type: BulletType.Character, Character: not null })
+        {
+            var font = paragraph.Portions.FirstOrDefault()?.Font;
+            if (font != null)
+            {
+                using var skFont = CreateFont(font);
+                var bulletChar = paragraph.Bullet.Character;
+                var bulletCharWidth = skFont.MeasureText(bulletChar);
+                var hangingIndentWidth = firstLineIndent < 0 ? -firstLineIndent : 0f;
+                var bulletPortionWidth = Math.Max(bulletCharWidth, hangingIndentWidth);
+                var bulletPortion = new PixelTextPortion(bulletChar, font, bulletPortionWidth);
+
+                line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
+            }
+        }
+
+        foreach (var portion in paragraph.Portions)
+        {
+            if (IsLineBreak(portion))
+            {
+                textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
+                line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
+                continue;
+            }
+
+            line = this.LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, paraLeftMargin, textLines, defaultLineHeight, defaultBaselineOffset);
+        }
+
+        textLines.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
+    }
+
+    private LineBuilder LayoutTextPortion(
+        IParagraphPortion portion,
+        LineBuilder currentLine,
+        TextHorizontalAlignment paragraphAlignment,
+        float baseParaLeftMargin,
+        ICollection<TextLine> buffer,
+        float defaultLineHeight,
+        float defaultBaselineOffset)
+    {
+        using var font = CreateFont(portion.Font);
+        var baselineOffset = GetBaselineOffset(font);
+        var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, baseParaLeftMargin, wrap, buffer);
+
+        // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
+        // PowerPoint treats them as explicit new lines; Skia would otherwise render them as tofu.
+        var segments = SplitToLineSegments(portion.Text);
+        for (var i = 0; i < segments.Length; i++)
+        {
+            foreach (var token in SplitToTokens(segments[i]))
+            {
+                currentLine = LayoutToken(
+                    token,
+                    portion.Font,
+                    font,
+                    baselineOffset,
+                    paragraphLayout,
+                    currentLine,
+                    defaultLineHeight,
+                    defaultBaselineOffset);
+            }
+
+            if (i < segments.Length - 1)
+            {
+                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, baseParaLeftMargin);
             }
         }
 

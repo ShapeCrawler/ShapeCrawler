@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
@@ -30,8 +29,11 @@ internal sealed class DrawingTextBox : TextBox
         var availableHeight = GetAvailableHeight(parentShapeHeight);
 
         var wrap = this.TextWrapped && availableWidth > 0;
-        
-        new DrawingTextLines(this.Paragraphs.ToList(), availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
+
+        List<IParagraph> list = [];
+        list.AddRange(this.Paragraphs);
+
+        new DrawingTextLines(list, availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
     }
     
     private static decimal ClampToZero(decimal value)
