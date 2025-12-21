@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -38,16 +39,16 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
     {
         const int alphabetSize = 26;
         const int asciiOffsetForA = 65;
-        string columnLetter = string.Empty;
+        var columnLetter = new StringBuilder();
 
         while (columnNumber > 0)
         {
             var modulo = (columnNumber - 1) % alphabetSize;
-            columnLetter = Convert.ToChar(asciiOffsetForA + modulo) + columnLetter;
+            columnLetter.Insert(0, Convert.ToChar(asciiOffsetForA + modulo));
             columnNumber = (columnNumber - modulo) / alphabetSize;
         }
 
-        return columnLetter;
+        return columnLetter.ToString();
     }
 
     private List<ICategory> MultiCategories(
