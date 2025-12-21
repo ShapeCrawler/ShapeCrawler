@@ -4,42 +4,28 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class MultiCategory : ICategory
+internal sealed class MultiCategory(
+    ChartPart chartPart,
+    ICategory mainCategory,
+    NumericValue cachedValue,
+    string? sheetName,
+    string? cellAddress) : ICategory
 {
-    private readonly NumericValue cachedValue;
-    private readonly ChartPart chartPart;
-    private readonly string? sheetName;
-    private readonly string? cellAddress;
-
-    internal MultiCategory(
-        ChartPart chartPart, 
-        ICategory mainCategory, 
-        NumericValue cachedValue,
-        string? sheetName,
-        string? cellAddress)
-    {
-        this.chartPart = chartPart;
-        this.MainCategory = mainCategory;
-        this.cachedValue = cachedValue;
-        this.sheetName = sheetName;
-        this.cellAddress = cellAddress;
-    }
-
     public bool HasMainCategory => true;
     
-    public ICategory MainCategory { get; }
+    public ICategory MainCategory { get; } = mainCategory;
 
     public string Name
     {
-        get => this.cachedValue.InnerText;
+        get => cachedValue.InnerText;
         set
         {
-            this.cachedValue.Text = value;
-            if (this.sheetName != null && 
-                this.cellAddress != null && 
-                this.chartPart.EmbeddedPackagePart != null)
+            cachedValue.Text = value;
+            if (sheetName != null && 
+                cellAddress != null && 
+                chartPart.EmbeddedPackagePart != null)
             {
-                new Workbook(this.chartPart.EmbeddedPackagePart).Sheet(this.sheetName).UpdateCell(this.cellAddress, value, CellValues.String);
+                new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);
             }
         }
     }

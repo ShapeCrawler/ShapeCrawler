@@ -4,25 +4,12 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Category : ICategory
+internal sealed class Category(
+    ChartPart chartPart,
+    NumericValue cachedValue,
+    string? sheetName,
+    string? cellAddress) : ICategory
 {
-    private readonly NumericValue cachedValue;
-    private readonly ChartPart chartPart;
-    private readonly string? sheetName;
-    private readonly string? cellAddress;
-
-    internal Category(
-        ChartPart chartPart,
-        NumericValue cachedValue,
-        string? sheetName,
-        string? cellAddress)
-    {
-        this.chartPart = chartPart;
-        this.cachedValue = cachedValue;
-        this.sheetName = sheetName;
-        this.cellAddress = cellAddress;
-    }
-
     public bool HasMainCategory => false;
     
     public ICategory MainCategory => throw new SCException($"The main category is not available since the chart doesn't have a multi-category. " +
@@ -30,15 +17,15 @@ internal sealed class Category : ICategory
 
     public string Name
     {
-        get => this.cachedValue.InnerText;
+        get => cachedValue.InnerText;
         set
         {
-            this.cachedValue.Text = value;
-            if (this.sheetName != null && 
-                this.cellAddress != null && 
-                this.chartPart.EmbeddedPackagePart != null)
+            cachedValue.Text = value;
+            if (sheetName != null && 
+                cellAddress != null && 
+                chartPart.EmbeddedPackagePart != null)
             {
-                new Workbook(this.chartPart.EmbeddedPackagePart).Sheet(this.sheetName).UpdateCell(this.cellAddress, value, CellValues.String);
+                new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);
             }
         }
     }
