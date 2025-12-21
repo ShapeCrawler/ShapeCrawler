@@ -28,7 +28,7 @@ internal sealed class DrawingTextBox : TextBox
         var availableHeight = GetAvailableHeight(parentShapeHeight);
 
         var wrap = this.TextWrapped && availableWidth > 0;
-        new DrawingTextLines(this.Paragraphs, availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
+        new TextLayout(this.Paragraphs, availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
     }
     
     private static decimal ClampToZero(decimal value)
