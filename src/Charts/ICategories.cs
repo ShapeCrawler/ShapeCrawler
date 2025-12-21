@@ -21,13 +21,15 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
 
     private static int ColumnIndex(string column)
     {
+        const int asciiOffsetForA = 64;
+        const int alphabetSize = 26;
         int retVal = 0;
         string col = column.ToUpper();
         for (int iChar = col.Length - 1; iChar >= 0; iChar--)
         {
             char colPiece = col[iChar];
-            int colNum = colPiece - 64;
-            retVal += colNum * (int)Math.Pow(26, col.Length - (iChar + 1));
+            int colNum = colPiece - asciiOffsetForA;
+            retVal += colNum * (int)Math.Pow(alphabetSize, col.Length - (iChar + 1));
         }
 
         return retVal;
@@ -183,7 +185,7 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
         }
 
         var normalizedFormulaRef = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-            dividend = Convert.ToChar(65 + modulo) + dividend;
+        var sheetNameRef = Regex.Match(normalizedFormulaRef, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
         var cellsRangeRef = Regex.Match(normalizedFormulaRef, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
         var addresses = new CellsRange(cellsRangeRef).Addresses();
         for (var i = 0; i < addresses.Count; i++)
