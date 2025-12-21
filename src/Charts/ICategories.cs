@@ -44,7 +44,7 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
         while (columnNumber > 0)
         {
             var modulo = (columnNumber - 1) % alphabetSize;
-            columnLetter.Insert(0, Convert.ToChar(asciiOffsetForA + modulo));
+            columnLetter.Insert(0, (char)(asciiOffsetForA + modulo));
             columnNumber = (columnNumber - modulo) / alphabetSize;
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
@@ -54,11 +55,12 @@ internal sealed class ClusteredBarChart(
             if (isMultiLevel)
             {
                 var multiLevelStringReference = new MultiLevelStringReference();
-                multiLevelStringReference.AppendChild(new Formula("Sheet1!$A$1:$B$2"));
+                int maxLevel = categories.Max(c => c.Count);
+                var endColumnLetter = ColumnLetter(maxLevel);
+                multiLevelStringReference.AppendChild(new Formula($"Sheet1!$A$1:${endColumnLetter}${categories.Count}"));
                 var multiLevelStringCache = new MultiLevelStringCache();
                 multiLevelStringCache.AppendChild(new PointCount { Val = categoriesCount });
 
-                int maxLevel = categories.Max(c => c.Count);
                 for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
                 {
                     var level = new Level();
@@ -157,5 +159,21 @@ internal sealed class ClusteredBarChart(
         chartSpace.AppendChild(chart);
 
         chartPart.ChartSpace = chartSpace;
+    }
+
+    private static string ColumnLetter(int columnNumber)
+    {
+        const int alphabetSize = 26;
+        const int asciiOffsetForA = 65;
+        var columnLetter = new StringBuilder();
+
+        while (columnNumber > 0)
+        {
+            var modulo = (columnNumber - 1) % alphabetSize;
+            columnLetter.Insert(0, (char)(asciiOffsetForA + modulo));
+            columnNumber = (columnNumber - modulo) / alphabetSize;
+        }
+
+        return columnLetter.ToString();
     }
 }
