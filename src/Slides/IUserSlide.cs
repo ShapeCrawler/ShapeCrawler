@@ -13,6 +13,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Units;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -232,8 +233,25 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                 var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>();
                 if (pBgPr is null)
                 {
-                    pBgPr = new P.BackgroundProperties();
+                    // PowerPoint always keeps background properties schema-valid.
+                    // If we create an empty p:bgPr, Open XML validation fails because it must contain a fill element.
+                    pBgPr = new P.BackgroundProperties(new NoFill());
                     pBg.AppendChild(pBgPr);
+                }
+                else
+                {
+                    var hasFill =
+                        pBgPr.GetFirstChild<A.BlipFill>() is not null
+                        || pBgPr.GetFirstChild<A.GradientFill>() is not null
+                        || pBgPr.GetFirstChild<A.NoFill>() is not null;
+                    hasFill = hasFill
+                        || pBgPr.GetFirstChild<A.PatternFill>() is not null
+                        || pBgPr.GetFirstChild<A.SolidFill>() is not null;
+                    if (!hasFill)
+                    {
+                        // Keep schema-valid even if p:bgPr was previously created empty.
+                        pBgPr.InsertAt(new NoFill(), 0);
+                    }
                 }
 
                 this.fill = new ShapeFill(pBgPr);
