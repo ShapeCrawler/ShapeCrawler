@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class DrawingTextLines(List<IParagraph> paragraphs, float availableWidth, bool wrap)
+internal sealed class DrawingTextLines(IReadOnlyList<IParagraph> paragraphs, float availableWidth, bool wrap)
 {
     private const decimal DefaultFontSize = 12m;
     private float defaultLineHeight;

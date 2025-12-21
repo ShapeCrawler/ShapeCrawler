@@ -29,11 +29,7 @@ internal sealed class DrawingTextBox : TextBox
         var availableHeight = GetAvailableHeight(parentShapeHeight);
 
         var wrap = this.TextWrapped && availableWidth > 0;
-
-        List<IParagraph> list = [];
-        list.AddRange(this.Paragraphs);
-
-        new DrawingTextLines(list, availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
+        new DrawingTextLines(this.Paragraphs, availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
     }
     
     private static decimal ClampToZero(decimal value)
