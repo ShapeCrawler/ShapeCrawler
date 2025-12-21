@@ -154,8 +154,11 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
                 startColumnIndex = ColumnIndex(startColumn);
             }
 
-            return this.MultiCategories(cMultiLvlStringRef.MultiLevelStringCache!.Elements<C.Level>(), sheetName,
-                startRow, startColumnIndex);
+            return this.MultiCategories(
+                cMultiLvlStringRef.MultiLevelStringCache!.Elements<C.Level>(), 
+                sheetName,
+                startRow, 
+                startColumnIndex);
         }
 
         var cStrLiteral = cCatAxisData.StringLiteral;
@@ -188,7 +191,10 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
         var normalizedFormulaRef = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
         var sheetNameRef = Regex
             .Match(normalizedFormulaRef, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
-        var cellsRangeRef = Regex.Match(normalizedFormulaRef, @"(?<=\!).+", RegexOptions.None,
+        var cellsRangeRef = Regex.Match(
+            normalizedFormulaRef, 
+            @"(?<=\!).+", 
+            RegexOptions.None,
             TimeSpan.FromMilliseconds(1000)).Value;
         var addresses = new CellsRange(cellsRangeRef).Addresses();
         for (var i = 0; i < addresses.Count; i++)
