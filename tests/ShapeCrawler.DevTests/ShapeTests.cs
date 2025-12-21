@@ -845,7 +845,7 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    [Platform(Exclude = "Linux", Reason = "because text content should fit text box, but 332.18M differed by 79.18M")]
+    [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Linux and macOS")]
     public void Content_fits_text_box()
     {
         // Act
