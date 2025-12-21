@@ -273,17 +273,20 @@ internal sealed class DrawingTextBox : TextBox
     private void LayoutParagraph(IParagraph paragraph, float availableWidth, bool wrap, ICollection<TextLine> buffer)
     {
         var paraLeftMargin = (float)new Points(paragraph.LeftMargin).AsPixels();
-        var paraAvailableWidth = availableWidth - paraLeftMargin;
-        var line = new LineBuilder(paragraph.HorizontalAlignment, paraLeftMargin);
+        var firstLineIndent = (float)new Points(paragraph.FirstLineIndent).AsPixels();
+        var firstLineLeftMargin = paraLeftMargin + firstLineIndent;
+        var line = new LineBuilder(paragraph.HorizontalAlignment, firstLineLeftMargin);
         if (paragraph.Bullet.Type == BulletType.Character && paragraph.Bullet.Character != null)
         {
             var font = paragraph.Portions.FirstOrDefault()?.Font;
             if (font != null)
             {
                 using var skFont = CreateFont(font);
-                var bulletText = paragraph.Bullet.Character + " ";
-                var width = skFont.MeasureText(bulletText);
-                var bulletPortion = new PixelTextPortion(bulletText, font, width);
+                var bulletChar = paragraph.Bullet.Character;
+                var bulletCharWidth = skFont.MeasureText(bulletChar);
+                var hangingIndentWidth = firstLineIndent < 0 ? -firstLineIndent : 0f;
+                var bulletPortionWidth = Math.Max(bulletCharWidth, hangingIndentWidth);
+                var bulletPortion = new PixelTextPortion(bulletChar, font, bulletPortionWidth);
 
                 line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
             }
@@ -298,7 +301,7 @@ internal sealed class DrawingTextBox : TextBox
                 continue;
             }
 
-            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, paraAvailableWidth, wrap, buffer);
+            line = LayoutTextPortion(portion, line, paragraph.HorizontalAlignment, availableWidth, paraLeftMargin, wrap, buffer);
         }
 
         buffer.Add(line.Build(defaultLineHeight, defaultBaselineOffset));
@@ -308,18 +311,18 @@ internal sealed class DrawingTextBox : TextBox
         IParagraphPortion portion,
         LineBuilder currentLine,
         TextHorizontalAlignment paragraphAlignment,
-        float availableWidth,
+        float totalAvailableWidth,
+        float baseParaLeftMargin,
         bool wrap,
         ICollection<TextLine> buffer)
     {
         using var font = CreateFont(portion.Font);
         var baselineOffset = GetBaselineOffset(font);
-        var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, wrap, buffer);
+        var paragraphLayout = new ParagraphLayout(paragraphAlignment, totalAvailableWidth, baseParaLeftMargin, wrap, buffer);
         
         // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
         // PowerPoint treats them as explicit new lines; Skia would otherwise render them as tofu.
         var segments = SplitToLineSegments(portion.Text);
-        var paraLeftMargin = currentLine.ParaLeftMargin;
         for (var i = 0; i < segments.Length; i++)
         {
             foreach (var token in SplitToTokens(segments[i]))
@@ -336,7 +339,7 @@ internal sealed class DrawingTextBox : TextBox
             if (i < segments.Length - 1)
             {
                 paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paraLeftMargin);
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, baseParaLeftMargin);
             }
         }
 
@@ -353,7 +356,7 @@ internal sealed class DrawingTextBox : TextBox
     {
         var tokenWidth = skFont.MeasureText(token);
 
-        if (!paragraphLayout.Wrap || paragraphLayout.AvailableWidth <= 0)
+        if (!paragraphLayout.Wrap || paragraphLayout.TotalAvailableWidth <= 0)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
@@ -390,14 +393,14 @@ internal sealed class DrawingTextBox : TextBox
         ParagraphLayout paragraphLayout,
         LineBuilder currentLine)
     {
-        if (currentLine.Width + tokenWidth <= paragraphLayout.AvailableWidth)
+        if (currentLine.ParaLeftMargin + currentLine.Width + tokenWidth <= paragraphLayout.TotalAvailableWidth)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), spacing, baselineOffset);
             return currentLine;
         }
 
         paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-        return new LineBuilder(paragraphLayout.ParagraphAlignment, currentLine.ParaLeftMargin); // Drop whitespace at wrap boundary.
+        return new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin); // Drop whitespace at wrap boundary.
     }
 
     private LineBuilder LayoutNonWhitespaceToken(
@@ -409,7 +412,7 @@ internal sealed class DrawingTextBox : TextBox
         ParagraphLayout paragraphLayout,
         LineBuilder currentLine)
     {
-        if (currentLine.Width + tokenWidth <= paragraphLayout.AvailableWidth)
+        if (currentLine.ParaLeftMargin + currentLine.Width + tokenWidth <= paragraphLayout.TotalAvailableWidth)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
@@ -418,10 +421,10 @@ internal sealed class DrawingTextBox : TextBox
         if (currentLine.HasRuns)
         {
             paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-            currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, currentLine.ParaLeftMargin);
+            currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
         }
 
-        if (tokenWidth <= paragraphLayout.AvailableWidth)
+        if (currentLine.ParaLeftMargin + tokenWidth <= paragraphLayout.TotalAvailableWidth)
         {
             currentLine.Add(new PixelTextPortion(token, font, tokenWidth), skFont.Spacing, baselineOffset);
             return currentLine;
@@ -444,17 +447,38 @@ internal sealed class DrawingTextBox : TextBox
         ParagraphLayout paragraphLayout,
         LineBuilder currentLine)
     {
-        foreach (var part in SplitToFittingParts(token, skFont, paragraphLayout.AvailableWidth))
+        var remainingToken = token;
+        while (remainingToken.Length > 0)
         {
-            var partWidth = skFont.MeasureText(part);
-
-            if (currentLine.HasRuns && currentLine.Width + partWidth > paragraphLayout.AvailableWidth)
+            var availableWidthForLine = paragraphLayout.TotalAvailableWidth - (currentLine.ParaLeftMargin + currentLine.Width);
+            if (availableWidthForLine <= 0 && currentLine.HasRuns)
             {
                 paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
-                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, currentLine.ParaLeftMargin);
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
+                availableWidthForLine = paragraphLayout.TotalAvailableWidth - currentLine.ParaLeftMargin;
             }
 
+            if (availableWidthForLine <= 0)
+            {
+                // No available width even on an empty line: force the remaining token into this line
+                var forcedPart = remainingToken;
+                var forcedPartWidth = skFont.MeasureText(forcedPart);
+                currentLine.Add(new PixelTextPortion(forcedPart, font, forcedPartWidth), skFont.Spacing, baselineOffset);
+                break;
+            }
+
+            var partLength = GetFittingPartLength(remainingToken, 0, skFont, availableWidthForLine);
+            var part = remainingToken[..partLength];
+            var partWidth = skFont.MeasureText(part);
+
             currentLine.Add(new PixelTextPortion(part, font, partWidth), skFont.Spacing, baselineOffset);
+            remainingToken = remainingToken[partLength..];
+            
+            if (remainingToken.Length > 0)
+            {
+                paragraphLayout.Buffer.Add(currentLine.Build(defaultLineHeight, defaultBaselineOffset));
+                currentLine = new LineBuilder(paragraphLayout.ParagraphAlignment, paragraphLayout.BaseParaLeftMargin);
+            }
         }
 
         return currentLine;
@@ -464,19 +488,23 @@ internal sealed class DrawingTextBox : TextBox
     {
         internal ParagraphLayout(
             TextHorizontalAlignment paragraphAlignment,
-            float availableWidth,
+            float totalAvailableWidth,
+            float baseParaLeftMargin,
             bool wrap,
             ICollection<TextLine> buffer)
         {
             ParagraphAlignment = paragraphAlignment;
-            AvailableWidth = availableWidth;
+            TotalAvailableWidth = totalAvailableWidth;
+            BaseParaLeftMargin = baseParaLeftMargin;
             Wrap = wrap;
             Buffer = buffer;
         }
 
         internal TextHorizontalAlignment ParagraphAlignment { get; }
 
-        internal float AvailableWidth { get; }
+        internal float TotalAvailableWidth { get; }
+
+        internal float BaseParaLeftMargin { get; }
 
         internal bool Wrap { get; }
 

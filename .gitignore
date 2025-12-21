@@ -346,3 +346,4 @@ healthchecksdb
 coverage/
 
 .context/
+*.received.png

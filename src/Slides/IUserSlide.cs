@@ -229,8 +229,12 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                 var pBg = pcSld.GetFirstChild<Background>()
                           ?? pcSld.InsertAt<Background>(new(), 0);
 
-                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>()
-                            ?? pBg.AppendChild<BackgroundProperties>(new());
+                var pBgPr = pBg.GetFirstChild<P.BackgroundProperties>();
+                if (pBgPr is null)
+                {
+                    pBgPr = new P.BackgroundProperties();
+                    pBg.AppendChild(pBgPr);
+                }
 
                 this.fill = new ShapeFill(pBgPr);
             }

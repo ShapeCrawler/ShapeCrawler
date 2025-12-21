@@ -1,4 +1,4 @@
-﻿// ReSharper disable CheckNamespace
+// ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -6,7 +6,7 @@ using ShapeCrawler.Texts;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a PowerPoint UI's Text Box property (Format Shape → Shape Options → Size & Properties → Text Box).
+///     Represents a PowerPoint UI's Text Box property (Format Shape → Shape Options → Size &amp; Properties → Text Box).
 /// </summary>
 public interface ITextBox
 {

@@ -36,11 +36,6 @@ public interface IParagraph
     TextHorizontalAlignment HorizontalAlignment { get; set; }
 
     /// <summary>
-    ///     Gets or sets paragraph indent level.
-    /// </summary>
-    int IndentLevel { get; set; }
-
-    /// <summary>
     ///     Gets spacing.
     /// </summary>
     ISpacing Spacing { get; }
@@ -51,9 +46,19 @@ public interface IParagraph
     string FontColor { get; }
 
     /// <summary>
-    ///    Gets or sets paragraph left margin in points.
+    ///    Gets paragraph left margin in points.
     /// </summary>
-    decimal LeftMargin { get; set; }
+    decimal LeftMargin { get; }
+
+    /// <summary>
+    ///     Gets or sets paragraph indent level.
+    /// </summary>
+    int IndentLevel { get; set; }
+    
+    /// <summary>
+    ///     Gets or sets paragraph first line indent in points.
+    /// </summary>
+    decimal FirstLineIndent { get; set; }
 
     /// <summary>
     ///     Finds and replaces text.
@@ -224,6 +229,26 @@ internal sealed class Paragraph : IParagraph
         {
             var leftMarginEmu = (int)new Points(value).AsEmus();
             this.aParagraph.ParagraphProperties!.LeftMargin = new Int32Value(leftMarginEmu);
+        }
+    }
+
+    public decimal FirstLineIndent
+    {
+        get
+        {
+            var indent = this.aParagraph.ParagraphProperties!.Indent;
+            if (indent is null)
+            {
+                return 0;
+            }
+
+            return new Emus(indent.Value).AsPoints();
+        }
+
+        set
+        {
+            var indentEmu = (int)new Points(value).AsEmus();
+            this.aParagraph.ParagraphProperties!.Indent = new Int32Value(indentEmu);
         }
     }
 

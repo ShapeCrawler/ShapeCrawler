@@ -521,6 +521,7 @@ public class UserSlideTests : SCTest
         pres.Slide(1).SaveImageTo(stream);
 
         // Assert
+        ValidatePresentation(pres);
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
