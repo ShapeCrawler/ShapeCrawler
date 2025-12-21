@@ -22,16 +22,16 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
     {
         const int asciiOffsetForA = 64;
         const int alphabetSize = 26;
-        int retVal = 0;
+        int result = 0;
         string col = column.ToUpper();
         for (int iChar = col.Length - 1; iChar >= 0; iChar--)
         {
-            char colPiece = col[iChar];
-            int colNum = colPiece - asciiOffsetForA;
-            retVal += colNum * (int)Math.Pow(alphabetSize, col.Length - (iChar + 1));
+            char columnPiece = col[iChar];
+            int columnNumber = columnPiece - asciiOffsetForA;
+            result += columnNumber * (int)Math.Pow(alphabetSize, col.Length - (iChar + 1));
         }
 
-        return retVal;
+        return result;
     }
 
     private static string ColumnLetter(int columnNumber)
