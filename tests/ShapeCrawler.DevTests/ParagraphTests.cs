@@ -250,7 +250,7 @@ public class ParagraphTests : SCTest
 
         // Assert
         spacingLines.Should().Be(expectedLines);
-        paragraph.Spacing.LineSpacingPoints.Should().BeNull();
+        paragraph.Spacing.LineSpacing.Should().BeNull();
     }
 
     [Test]
@@ -262,7 +262,7 @@ public class ParagraphTests : SCTest
         var decimalExpectedPoints = (decimal)expectedPoints;
 
         // Act
-        var spacingPoints = paragraph.Spacing.LineSpacingPoints!.Value;
+        var spacingPoints = paragraph.Spacing.LineSpacing!.Value;
 
         // Assert
         spacingPoints.Should().Be(decimalExpectedPoints);
@@ -278,7 +278,7 @@ public class ParagraphTests : SCTest
         var expectedPointsDecimal = (decimal)expectedPoints;
 
         // Act-Assert
-        paragraph.Spacing.BeforeSpacingPoints.Should().Be(expectedPointsDecimal);
+        paragraph.Spacing.BeforeSpacing.Should().Be(expectedPointsDecimal);
     }
 
     [Test]
@@ -289,7 +289,7 @@ public class ParagraphTests : SCTest
         var paragraph = shape.TextBox!.Paragraphs[0];
 
         // Act-Assert
-        paragraph.Spacing.AfterSpacingPoints.Should().Be((decimal)expectedPoints);
+        paragraph.Spacing.AfterSpacing.Should().Be((decimal)expectedPoints);
     }
 
     [Test]
@@ -304,16 +304,16 @@ public class ParagraphTests : SCTest
         paragraph.Text = "test";
 
         // Act
-        paragraph.Spacing.BeforeSpacingPoints = 50;
+        paragraph.Spacing.BeforeSpacing = 50;
 
         // Assert
-        paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
+        paragraph.Spacing.BeforeSpacing.Should().Be(50);
 
         using var mStream = new MemoryStream();
         pres.Save(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
-        paragraph.Spacing.BeforeSpacingPoints.Should().Be(50);
+        paragraph.Spacing.BeforeSpacing.Should().Be(50);
     }
 
     [Test]
@@ -328,15 +328,15 @@ public class ParagraphTests : SCTest
         paragraph.Text = "test";
 
         // Act
-        paragraph.Spacing.AfterSpacingPoints = 50;
+        paragraph.Spacing.AfterSpacing = 50;
 
         // Assert
-        paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
+        paragraph.Spacing.AfterSpacing.Should().Be(50);
         var mStream = new MemoryStream();
         pres.Save(mStream);
         pres = new Presentation(mStream);
         paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
-        paragraph.Spacing.AfterSpacingPoints.Should().Be(50);
+        paragraph.Spacing.AfterSpacing.Should().Be(50);
     }
 
     [Test]
