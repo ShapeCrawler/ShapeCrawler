@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
@@ -11,7 +12,7 @@ namespace ShapeCrawler.Charts;
 /// </summary>
 internal sealed class ClusteredBarChart(
     ChartPart chartPart,
-    IList<string> categories,
+    IList<List<string>> categories,
     IList<(string Name, double[] Values)> seriesData)
 {
     /// <summary>
@@ -36,6 +37,7 @@ internal sealed class ClusteredBarChart(
         barChart.AppendChild(new VaryColors { Val = false });
 
         var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
+        bool isMultiLevel = categories.Any(c => c.Count > 1);
 
         for (uint i = 0; i < seriesData.Count; i++)
         {
@@ -48,16 +50,48 @@ internal sealed class ClusteredBarChart(
             series.AppendChild(seriesText);
 
             var categoryAxisData = new CategoryAxisData();
-            var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
 
-            for (uint j = 0; j < categories.Count; j++)
+            if (isMultiLevel)
             {
-                var point = new StringPoint { Index = j };
-                point.AppendChild(new NumericValue(categories[(int)j]));
-                stringLiteral.AppendChild(point);
+                var multiLevelStringReference = new MultiLevelStringReference();
+                multiLevelStringReference.AppendChild(new Formula("Sheet1!$A$1:$B$2"));
+                var multiLevelStringCache = new MultiLevelStringCache();
+                multiLevelStringCache.AppendChild(new PointCount { Val = categoriesCount });
+
+                int maxLevel = categories.Max(c => c.Count);
+                for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
+                {
+                    var lvl = new Level();
+                    for (int catIndex = 0; catIndex < categories.Count; catIndex++)
+                    {
+                        var catList = categories[catIndex];
+                        // Map Leaf (List Index Count-1) to Level 0.
+                        int listIndex = (catList.Count - 1) - levelIndex;
+                        if (listIndex >= 0)
+                        {
+                            var val = catList[listIndex];
+                            var pt = new StringPoint { Index = (uint)catIndex };
+                            pt.AppendChild(new NumericValue(val));
+                            lvl.AppendChild(pt);
+                        }
+                    }
+                    multiLevelStringCache.AppendChild(lvl);
+                }
+                multiLevelStringReference.AppendChild(multiLevelStringCache);
+                categoryAxisData.AppendChild(multiLevelStringReference);
+            }
+            else
+            {
+                var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
+                for (uint j = 0; j < categories.Count; j++)
+                {
+                    var point = new StringPoint { Index = j };
+                    point.AppendChild(new NumericValue(categories[(int)j][0]));
+                    stringLiteral.AppendChild(point);
+                }
+                categoryAxisData.AppendChild(stringLiteral);
             }
 
-            categoryAxisData.AppendChild(stringLiteral);
             series.AppendChild(categoryAxisData);
 
             var values = new Values();

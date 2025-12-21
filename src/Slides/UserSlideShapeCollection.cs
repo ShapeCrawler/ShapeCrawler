@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
@@ -133,6 +134,16 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         int width,
         int height,
         IList<string> categories,
+        IList<Presentations.DraftChart.SeriesData> seriesData,
+        string chartName
+    ) => this.chartShapes.AddClusteredBarChart(x, y, width, height, categories.Select(c => new List<string> { c }).ToList(), seriesData, chartName);
+
+    public void AddClusteredBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IList<List<string>> categories,
         IList<Presentations.DraftChart.SeriesData> seriesData,
         string chartName
     ) => this.chartShapes.AddClusteredBarChart(x, y, width, height, categories, seriesData, chartName);

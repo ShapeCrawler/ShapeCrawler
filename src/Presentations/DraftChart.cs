@@ -17,7 +17,7 @@ public sealed class DraftChart
 
     internal int ChartHeight { get; private set; } = 300;
 
-    internal List<string> CategoryNames { get; } = [];
+    internal List<List<string>> CategoryNames { get; } = [];
 
     internal List<SeriesData> SeriesDataList { get; } = [];
 
@@ -71,7 +71,23 @@ public sealed class DraftChart
     /// </summary>
     public DraftChart Categories(params string[] categories)
     {
-        this.CategoryNames.AddRange(categories);
+        foreach (var category in categories)
+        {
+            this.CategoryNames.Add([category]);
+        }
+        
+        return this;
+    }
+    
+    /// <summary>
+    ///     Adds multi-level categories to the chart.
+    /// </summary>
+    public DraftChart Categories(params (string Main, string Sub)[] categories)
+    {
+        foreach (var category in categories)
+        {
+            this.CategoryNames.Add([category.Main, category.Sub]);
+        }
         return this;
     }
 
