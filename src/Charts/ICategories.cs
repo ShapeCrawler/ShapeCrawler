@@ -36,13 +36,15 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
 
     private static string ColumnLetter(int columnNumber)
     {
+        const int alphabetSize = 26;
+        const int asciiOffsetForA = 65;
         string columnLetter = string.Empty;
 
         while (columnNumber > 0)
         {
-            var modulo = (columnNumber - 1) % 26;
-            columnLetter = Convert.ToChar(65 + modulo) + columnLetter;
-            columnNumber = (columnNumber - modulo) / 26;
+            var modulo = (columnNumber - 1) % alphabetSize;
+            columnLetter = Convert.ToChar(asciiOffsetForA + modulo) + columnLetter;
+            columnNumber = (columnNumber - modulo) / alphabetSize;
         }
 
         return columnLetter;
