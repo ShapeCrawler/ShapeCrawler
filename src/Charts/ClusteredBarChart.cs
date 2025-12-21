@@ -8,7 +8,7 @@ using DocumentFormat.OpenXml.Packaging;
 namespace ShapeCrawler.Charts;
 
 /// <summary>
-///     Represents a clustered bar chart generator.
+///     Represents a clustered bar chart.
 /// </summary>
 internal sealed class ClusteredBarChart(
     ChartPart chartPart,
@@ -18,7 +18,7 @@ internal sealed class ClusteredBarChart(
     /// <summary>
     ///     Generates the clustered bar chart content.
     /// </summary>
-    public void Generate()
+    internal void Generate()
     {
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
         chartSpace.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart");
@@ -61,7 +61,7 @@ internal sealed class ClusteredBarChart(
                 int maxLevel = categories.Max(c => c.Count);
                 for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
                 {
-                    var lvl = new Level();
+                    var level = new Level();
                     for (int catIndex = 0; catIndex < categories.Count; catIndex++)
                     {
                         var catList = categories[catIndex];
@@ -70,14 +70,14 @@ internal sealed class ClusteredBarChart(
                         int listIndex = (catList.Count - 1) - levelIndex;
                         if (listIndex >= 0)
                         {
-                            var val = catList[listIndex];
-                            var pt = new StringPoint { Index = (uint)catIndex };
-                            pt.AppendChild(new NumericValue(val));
-                            lvl.AppendChild(pt);
+                            var value = catList[listIndex];
+                            var point = new StringPoint { Index = (uint)catIndex };
+                            point.AppendChild(new NumericValue(value));
+                            level.AppendChild(point);
                         }
                     }
 
-                    multiLevelStringCache.AppendChild(lvl);
+                    multiLevelStringCache.AppendChild(level);
                 }
 
                 multiLevelStringReference.AppendChild(multiLevelStringCache);
