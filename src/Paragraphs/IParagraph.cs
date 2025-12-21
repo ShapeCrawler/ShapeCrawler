@@ -46,7 +46,7 @@ public interface IParagraph
     string FontColor { get; }
 
     /// <summary>
-    ///    Gets or sets paragraph left margin in points.
+    ///    Gets paragraph left margin in points.
     /// </summary>
     decimal LeftMargin { get; }
 

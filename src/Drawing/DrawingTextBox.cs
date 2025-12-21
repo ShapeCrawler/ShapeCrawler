@@ -464,9 +464,9 @@ internal sealed class DrawingTextBox : TextBox
                 var forcedPart = remainingToken;
                 var forcedPartWidth = skFont.MeasureText(forcedPart);
                 currentLine.Add(new PixelTextPortion(forcedPart, font, forcedPartWidth), skFont.Spacing, baselineOffset);
-                remainingToken = string.Empty;
                 break;
             }
+
             var partLength = GetFittingPartLength(remainingToken, 0, skFont, availableWidthForLine);
             var part = remainingToken[..partLength];
             var partWidth = skFont.MeasureText(part);
