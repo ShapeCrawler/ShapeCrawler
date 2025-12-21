@@ -14,6 +14,9 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Slides;
 
+/// <summary>
+/// Represents a user slide in a presentation and provides access to its layout, shapes, and properties.
+/// </summary>
 internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
 {
     private IShapeFill? fill;

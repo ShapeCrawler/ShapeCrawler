@@ -6,6 +6,12 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
 
+/// <summary>
+/// Represents a layout and rendering helper for text lines within a specified width, with optional text wrapping.
+/// </summary>
+/// <param name="paragraphs">The paragraphs to be laid out into lines.</param>
+/// <param name="availableWidth">The maximum available width for each rendered line.</param>
+/// <param name="wrap">True to wrap text across multiple lines when it exceeds the available width; otherwise, false.</param>
 internal sealed class DrawingTextLines(IReadOnlyList<IParagraph> paragraphs, float availableWidth, bool wrap)
 {
     private const decimal DefaultFontSize = 12m;
