@@ -300,12 +300,12 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
     public virtual void SetFontName(string fontName) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public virtual void SetFontSize(decimal fontSize) =>
-        throw new SCException("The shape doesn't contain text content");
+        throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public virtual void SetFontColor(string colorHex) =>
         throw new SCException("The shape doesn't contain text content");
 
-    public virtual void SetVideo(Stream video) => throw new SCException("The shape doesn't support video content");
+    public virtual void SetVideo(Stream video) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public IShape GroupedShape(string name)
     {
