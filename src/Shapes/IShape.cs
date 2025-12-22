@@ -7,7 +7,7 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a slide element.
+///     Represents a slide shape.
 /// </summary>
 /// <remarks>
 ///     All elements on a slide are shapes and implement this interface.

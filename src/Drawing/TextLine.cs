@@ -33,7 +33,7 @@ internal sealed class TextLine(
         foreach (var run in this.Runs)
         {
             var drawingFont = new DrawingFont(run.Font);
-            using var font = drawingFont.CreateFont();
+            using var font = drawingFont.AsSkFont();
             using var paint = drawingFont.CreatePaint();
 
             canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);

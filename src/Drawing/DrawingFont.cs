@@ -13,7 +13,7 @@ internal sealed class DrawingFont(ITextPortionFont? font)
         return ascent >= 0 ? 0 : -ascent;
     }
     
-    internal SKFont CreateFont()
+    internal SKFont AsSkFont()
     {
         var fontStyle = this.GetFontStyle();
         var family = font?.LatinName;

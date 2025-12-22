@@ -20,7 +20,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
     internal void Render(SKCanvas canvas, float x, float y, float availableHeight, TextVerticalAlignment verticalAlignment)
     {
         var drawingFont = new DrawingFont(null);
-        using var font = drawingFont.CreateFont();
+        using var font = drawingFont.AsSkFont();
         this.defaultLineHeight = font.Spacing;
         this.defaultBaselineOffset = DrawingFont.BaselineOffset(font);
 
@@ -304,7 +304,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
             if (font != null)
             {
                 var drawingFont = new DrawingFont(font);
-                using var skFont = drawingFont.CreateFont();
+                using var skFont = drawingFont.AsSkFont();
                 var bulletChar = paragraph.Bullet.Character;
                 var bulletCharWidth = skFont.MeasureText(bulletChar);
                 var hangingIndentWidth = firstLineIndent < 0 ? -firstLineIndent : 0f;
@@ -338,7 +338,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
         ICollection<TextLine> buffer)
     {
         var drawingFont = new DrawingFont(portion.Font);
-        using var font = drawingFont.CreateFont();
+        using var font = drawingFont.AsSkFont();
         var baselineOffset = DrawingFont.BaselineOffset(font);
         var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, baseParaLeftMargin, wrap, buffer);
 
