@@ -62,68 +62,50 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
 
         for (int i = 0; i < topDownLevels.Count; i++)
         {
-            var cLevel = topDownLevels[i];
-
-            string? addressPrefix = null;
-            if (sheetName != null)
-            {
-                var currentColumnIndex = startColumnIndex + i;
-                var currentColumnLetter = ColumnLetter(currentColumnIndex);
-                addressPrefix = currentColumnLetter;
-            }
-
-            var cStringPoints = cLevel.Elements<C.StringPoint>();
-            var nextIndexToCategory = new List<KeyValuePair<uint, ICategory>>();
-
-            if (indexToCategory.Any())
-            {
-                List<KeyValuePair<uint, ICategory>> descOrderedMains =
-                    [.. indexToCategory.OrderByDescending(kvp => kvp.Key)];
-                foreach (C.StringPoint cStrPoint in cStringPoints)
-                {
-                    var index = cStrPoint.Index!.Value;
-                    var cachedCatName = cStrPoint.NumericValue!;
-                    KeyValuePair<uint, ICategory> parent = descOrderedMains.First(kvp => kvp.Key <= index);
-
-                    string? address = null;
-                    if (addressPrefix != null)
-                    {
-                        var row = startRow + (int)index;
-                        address = $"{addressPrefix}{row}";
-                    }
-
-                    var category = new MultiCategory(chartPart, parent.Value, cachedCatName, sheetName, address);
-                    nextIndexToCategory.Add(new KeyValuePair<uint, ICategory>(index, category));
-                }
-            }
-            else
-            {
-                foreach (C.StringPoint cStrPoint in cStringPoints)
-                {
-                    var index = cStrPoint.Index!.Value;
-                    var cachedCatName = cStrPoint.NumericValue;
-
-                    string? address = null;
-                    if (addressPrefix != null)
-                    {
-                        var row = startRow + (int)index;
-                        address = $"{addressPrefix}{row}";
-                    }
-
-                    if (cachedCatName == null)
-                    {
-                        continue;
-                    }
-
-                    var category = new Category(chartPart, cachedCatName, sheetName, address);
-                    nextIndexToCategory.Add(new KeyValuePair<uint, ICategory>(index, category));
-                }
-            }
-
-            indexToCategory = nextIndexToCategory;
+            indexToCategory = this.ProcessLevel(topDownLevels[i], i, sheetName, startRow, startColumnIndex, indexToCategory);
         }
 
         return [.. indexToCategory.Select(kvp => kvp.Value)];
+    }
+
+    private List<KeyValuePair<uint, ICategory>> ProcessLevel(
+        C.Level cLevel,
+        int levelIndex,
+        string? sheetName,
+        int startRow,
+        int startColumnIndex,
+        List<KeyValuePair<uint, ICategory>> parentCategories)
+    {
+        string? addressPrefix = sheetName != null ? ColumnLetter(startColumnIndex + levelIndex) : null;
+        var cStringPoints = cLevel.Elements<C.StringPoint>();
+        var nextIndexToCategory = new List<KeyValuePair<uint, ICategory>>();
+        var descOrderedMains = parentCategories.OrderByDescending(kvp => kvp.Key).ToList();
+
+        foreach (C.StringPoint cStrPoint in cStringPoints)
+        {
+            var index = cStrPoint.Index!.Value;
+            var cachedCatName = cStrPoint.NumericValue;
+            if (cachedCatName == null)
+            {
+                continue;
+            }
+
+            string? address = addressPrefix != null ? $"{addressPrefix}{startRow + (int)index}" : null;
+            ICategory category;
+            if (descOrderedMains.Count != 0)
+            {
+                var parent = descOrderedMains.First(kvp => kvp.Key <= index).Value;
+                category = new MultiCategory(chartPart, parent, cachedCatName, sheetName, address);
+            }
+            else
+            {
+                category = new Category(chartPart, cachedCatName, sheetName, address);
+            }
+
+            nextIndexToCategory.Add(new KeyValuePair<uint, ICategory>(index, category));
+        }
+
+        return nextIndexToCategory;
     }
 
     private List<ICategory> CategoryList()
@@ -146,10 +128,10 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
             {
                 var formula = cMultiLvlStringRef.Formula.Text;
                 var normalizedFormula = formula.Replace("'", string.Empty).Replace("$", string.Empty);
-                sheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value;
-                var range = Regex.Match(normalizedFormula, @"(?<=\!).+").Value;
+                sheetName = Regex.Match(normalizedFormula, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
+                var range = Regex.Match(normalizedFormula, @"(?<=\!).+", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
                 var rangeStart = range.Split(':')[0];
-                var match = Regex.Match(rangeStart, @"([A-Z]+)(\d+)");
+                var match = Regex.Match(rangeStart, @"([A-Z]+)(\d+)", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
                 var startColumn = match.Groups[1].Value;
                 startRow = int.Parse(match.Groups[2].Value);
                 startColumnIndex = ColumnIndex(startColumn);
