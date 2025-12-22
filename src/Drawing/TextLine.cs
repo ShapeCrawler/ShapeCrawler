@@ -1,4 +1,3 @@
-using ShapeCrawler.Units;
 using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
