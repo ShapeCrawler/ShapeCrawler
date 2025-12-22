@@ -140,57 +140,68 @@ internal sealed class ClusteredBarChart(
 
     private void AddCategories(CategoryAxisData categoryAxisData)
     {
-        var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
         bool isMultiLevel = categories.Any(c => c.Count > 1);
 
         if (isMultiLevel)
         {
-            var multiLevelStringReference = new MultiLevelStringReference();
-            int maxLevel = categories.Max(c => c.Count);
-            var endColumnLetter = ColumnLetter(maxLevel);
-            multiLevelStringReference.AppendChild(new Formula($"Sheet1!$A$1:${endColumnLetter}${categories.Count}"));
-            var multiLevelStringCache = new MultiLevelStringCache();
-            multiLevelStringCache.AppendChild(new PointCount { Val = categoriesCount });
-
-            for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
-            {
-                var level = new Level();
-                for (int catIndex = 0; catIndex < categories.Count; catIndex++)
-                {
-                    var catList = categories[catIndex];
-
-                    // Map the innermost (leaf) category to Level 0 and its parents to higher levels,
-                    // by reversing the list index so OpenXML multi-level categories are leaf-first.
-                    int listIndex = (catList.Count - 1) - levelIndex;
-                    if (listIndex < 0)
-                    {
-                        continue;
-                    }
-
-                    var value = catList[listIndex];
-                    var point = new StringPoint { Index = (uint)catIndex };
-                    point.AppendChild(new NumericValue(value));
-                    level.AppendChild(point);
-                }
-
-                multiLevelStringCache.AppendChild(level);
-            }
-
-            multiLevelStringReference.AppendChild(multiLevelStringCache);
-            categoryAxisData.AppendChild(multiLevelStringReference);
+            this.AddMultiLevelCategories(categoryAxisData);
         }
         else
         {
-            var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
-            for (uint j = 0; j < categories.Count; j++)
+            this.AddSingleLevelCategories(categoryAxisData);
+        }
+    }
+
+    private void AddMultiLevelCategories(CategoryAxisData categoryAxisData)
+    {
+        var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
+        var multiLevelStringReference = new MultiLevelStringReference();
+        int maxLevel = categories.Max(c => c.Count);
+        var endColumnLetter = ColumnLetter(maxLevel);
+        multiLevelStringReference.AppendChild(new Formula($"Sheet1!$A$1:${endColumnLetter}${categories.Count}"));
+        var multiLevelStringCache = new MultiLevelStringCache();
+        multiLevelStringCache.AppendChild(new PointCount { Val = categoriesCount });
+
+        for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
+        {
+            var level = new Level();
+            for (int catIndex = 0; catIndex < categories.Count; catIndex++)
             {
-                var point = new StringPoint { Index = j };
-                point.AppendChild(new NumericValue(categories[(int)j][0]));
-                stringLiteral.AppendChild(point);
+                var catList = categories[catIndex];
+
+                // Map the innermost (leaf) category to Level 0 and its parents to higher levels,
+                // by reversing the list index so OpenXML multi-level categories are leaf-first.
+                int listIndex = (catList.Count - 1) - levelIndex;
+                if (listIndex < 0)
+                {
+                    continue;
+                }
+
+                var value = catList[listIndex];
+                var point = new StringPoint { Index = (uint)catIndex };
+                point.AppendChild(new NumericValue(value));
+                level.AppendChild(point);
             }
 
-            categoryAxisData.AppendChild(stringLiteral);
+            multiLevelStringCache.AppendChild(level);
         }
+
+        multiLevelStringReference.AppendChild(multiLevelStringCache);
+        categoryAxisData.AppendChild(multiLevelStringReference);
+    }
+
+    private void AddSingleLevelCategories(CategoryAxisData categoryAxisData)
+    {
+        var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
+        var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
+        for (uint j = 0; j < categories.Count; j++)
+        {
+            var point = new StringPoint { Index = j };
+            point.AppendChild(new NumericValue(categories[(int)j][0]));
+            stringLiteral.AppendChild(point);
+        }
+
+        categoryAxisData.AppendChild(stringLiteral);
     }
 
     private void AddValues(Values values, uint seriesIndex)
