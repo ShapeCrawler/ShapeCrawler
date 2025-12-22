@@ -34,23 +34,8 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
             var horizontalOffset = GetHorizontalOffset(textLine.HorizontalAlignment, availableWidth - textLine.ParaLeftMargin, textLine.Width);
             var startX = x + textLine.ParaLeftMargin + horizontalOffset;
 
-            RenderLine(canvas, textLine, startX, lineTop);
+            textLine.Draw(canvas, startX, lineTop);
             lineTop += textLine.Height;
-        }
-    }
-
-    private static void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
-    {
-        var baselineY = lineTop + line.BaselineOffset;
-        var currentX = startX;
-
-        foreach (var run in line.Runs)
-        {
-            using var font = CreateFont(run.Font);
-            using var paint = CreatePaint(run.Font);
-
-            canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);
-            currentX += run.Width;
         }
     }
 
@@ -149,22 +134,6 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
     }
 
     private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
-
-    private static SKPaint CreatePaint(ITextPortionFont? font)
-    {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
-
-        return paint;
-    }
-
-    private static SKColor GetPaintColor(ITextPortionFont? font)
-    {
-        var hex = font?.Color.Hex;
-
-        return string.IsNullOrWhiteSpace(hex)
-            ? SKColors.Black
-            : new Color(hex!).AsSkColor();
-    }
 
     private static float GetBaselineOffset(SKFont font)
     {
