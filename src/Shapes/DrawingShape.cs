@@ -89,7 +89,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private decimal GetStyleOutlineWidth()
     {
-        if (this.SDKOpenXmlElement is not P.Shape pShape)
+        if (this.SdkOpenXmlElement is not P.Shape pShape)
         {
             return 0;
         }

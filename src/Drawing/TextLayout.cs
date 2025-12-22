@@ -12,45 +12,30 @@ namespace ShapeCrawler.Drawing;
 /// <param name="paragraphs">The paragraphs to be laid out into lines.</param>
 /// <param name="availableWidth">The maximum available width for each rendered line.</param>
 /// <param name="wrap">True to wrap text across multiple lines when it exceeds the available width; otherwise, false.</param>
-internal sealed class TextLayout(IReadOnlyList<IParagraph> paragraphs, float availableWidth, bool wrap)
+internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float availableWidth, bool wrap)
 {
-    private const decimal DefaultFontSize = 12m;
     private float defaultLineHeight;
     private float defaultBaselineOffset;
 
     internal void Render(SKCanvas canvas, float x, float y, float availableHeight, TextVerticalAlignment verticalAlignment)
     {
-        using var font = CreateFont(null);
+        var drawingFont = new DrawingFont(null);
+        using var font = drawingFont.AsSkFont();
         this.defaultLineHeight = font.Spacing;
-        this.defaultBaselineOffset = GetBaselineOffset(font);
+        this.defaultBaselineOffset = DrawingFont.BaselineOffset(font);
 
-        var lines = this.LayoutLines();
-        var textBlockHeight = lines.Sum(l => l.Height);
+        var textLines = this.LayoutLines();
+        var textBlockHeight = textLines.Sum(l => l.Height);
         var verticalOffset = GetVerticalOffset(verticalAlignment, availableHeight, textBlockHeight);
         var lineTop = y + verticalOffset;
 
-        foreach (var line in lines)
+        foreach (var textLine in textLines)
         {
-            var horizontalOffset = GetHorizontalOffset(line.HorizontalAlignment, availableWidth - line.ParaLeftMargin, line.Width);
-            var startX = x + line.ParaLeftMargin + horizontalOffset;
+            var horizontalOffset = GetHorizontalOffset(textLine.HorizontalAlignment, availableWidth - textLine.ParaLeftMargin, textLine.Width);
+            var startX = x + textLine.ParaLeftMargin + horizontalOffset;
 
-            RenderLine(canvas, line, startX, lineTop);
-            lineTop += line.Height;
-        }
-    }
-
-    private static void RenderLine(SKCanvas canvas, TextLine line, float startX, float lineTop)
-    {
-        var baselineY = lineTop + line.BaselineOffset;
-        var currentX = startX;
-
-        foreach (var run in line.Runs)
-        {
-            using var font = CreateFont(run.Font);
-            using var paint = CreatePaint(run.Font);
-
-            canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);
-            currentX += run.Width;
+            textLine.Render(canvas, startX, lineTop);
+            lineTop += textLine.Height;
         }
     }
 
@@ -112,65 +97,7 @@ internal sealed class TextLayout(IReadOnlyList<IParagraph> paragraphs, float ava
         }
     }
 
-    private static SKFontStyle GetFontStyle(ITextPortionFont? font)
-    {
-        var isBold = font?.IsBold == true;
-        var isItalic = font?.IsItalic == true;
-
-        if (isBold && isItalic)
-        {
-            return SKFontStyle.BoldItalic;
-        }
-
-        if (isBold)
-        {
-            return SKFontStyle.Bold;
-        }
-
-        if (isItalic)
-        {
-            return SKFontStyle.Italic;
-        }
-
-        return SKFontStyle.Normal;
-    }
-
-    private static SKFont CreateFont(ITextPortionFont? font)
-    {
-        var fontStyle = GetFontStyle(font);
-        var family = font?.LatinName;
-
-        var typeface = string.IsNullOrWhiteSpace(family)
-            ? SKTypeface.CreateDefault()
-            : SKTypeface.FromFamilyName(family, fontStyle);
-        var size = new Points(font?.Size ?? DefaultFontSize).AsPixels();
-
-        return new SKFont(typeface) { Size = (float)size };
-    }
-
     private static bool IsLineBreak(IParagraphPortion portion) => portion.Text == Environment.NewLine;
-
-    private static SKPaint CreatePaint(ITextPortionFont? font)
-    {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
-
-        return paint;
-    }
-
-    private static SKColor GetPaintColor(ITextPortionFont? font)
-    {
-        var hex = font?.Color.Hex;
-
-        return string.IsNullOrWhiteSpace(hex)
-            ? SKColors.Black
-            : new Color(hex!).AsSkColor();
-    }
-
-    private static float GetBaselineOffset(SKFont font)
-    {
-        var ascent = font.Metrics.Ascent;
-        return ascent >= 0 ? 0 : -ascent;
-    }
 
     private static int GetFittingPartLength(string token, int offset, SKFont font, float maxWidth)
     {
@@ -376,14 +303,15 @@ internal sealed class TextLayout(IReadOnlyList<IParagraph> paragraphs, float ava
             var font = paragraph.Portions.FirstOrDefault()?.Font;
             if (font != null)
             {
-                using var skFont = CreateFont(font);
+                var drawingFont = new DrawingFont(font);
+                using var skFont = drawingFont.AsSkFont();
                 var bulletChar = paragraph.Bullet.Character;
                 var bulletCharWidth = skFont.MeasureText(bulletChar);
                 var hangingIndentWidth = firstLineIndent < 0 ? -firstLineIndent : 0f;
                 var bulletPortionWidth = Math.Max(bulletCharWidth, hangingIndentWidth);
                 var bulletPortion = new PixelTextPortion(bulletChar, font, bulletPortionWidth);
 
-                line.Add(bulletPortion, skFont.Spacing, GetBaselineOffset(skFont));
+                line.Add(bulletPortion, skFont.Spacing, DrawingFont.BaselineOffset(skFont));
             }
         }
 
@@ -409,8 +337,9 @@ internal sealed class TextLayout(IReadOnlyList<IParagraph> paragraphs, float ava
         float baseParaLeftMargin,
         ICollection<TextLine> buffer)
     {
-        using var font = CreateFont(portion.Font);
-        var baselineOffset = GetBaselineOffset(font);
+        var drawingFont = new DrawingFont(portion.Font);
+        using var font = drawingFont.AsSkFont();
+        var baselineOffset = DrawingFont.BaselineOffset(font);
         var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, baseParaLeftMargin, wrap, buffer);
 
         // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.

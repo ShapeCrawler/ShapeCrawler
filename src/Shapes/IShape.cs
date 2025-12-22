@@ -7,8 +7,11 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a slide element.
+///     Represents a slide shape.
 /// </summary>
+/// <remarks>
+///     All elements on a slide are shapes and implement this interface.
+/// </remarks>
 public interface IShape : IPosition, IShapeGeometry
 {
     /// <summary>
@@ -114,7 +117,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets a copy of the underlying Open XML element.
     /// </summary>
-    OpenXmlElement SDKOpenXmlElement { get; }
+    OpenXmlElement SdkOpenXmlElement { get; }
     
     /// <summary>
     ///     Gets the parent presentation.
