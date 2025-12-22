@@ -22,21 +22,14 @@ tests/
 
 ### Key Design Patterns
 
-1. **Interface-based API**: Public API is exposed through interfaces, for example:
-  - `IPresentation` -> PowerPoint presentation
-  - `IUserSlide`    -> PowerPoint slide
-  - `ILayoutSlide`  -> PowerPoint slide layout
-  - `IMasterSlide`  -> PowerPoint slide master
-  - `IShape`        -> All elements on a slide are shapes and implement this interface.
-2. **Wrapper Pattern**: Internal classes wrap Open XML SDK elements
-3. **Object-Oriented Design**: Emphasis on nouns for class names, no static members in classes
-4. **Encapsulation**: Logic is encapsulated in constructors and internal/public methods
+- **Interface-based API**: Public API is exposed through interfaces.
+- **Object-Oriented Design**:
+  - **What is an Object?** The project follows the principle that the correct object is a representation of a real-world entity or concept. In its constructor, the class encapsulates properties or another object as “coordinates” that the class instance will use to refer to the real-world entity.
+  - **Encapsulation**: A class should encapsulate all logic required to produce its result. It should not rely on pre-calculated data passed from the caller if it can calculate that data itself using its dependencies.
 
 ## Code Style Guidelines
 
 ### Mandatory Rules
-- **What is an Object?** The project follows the principle that the correct object is a representation of a real-world entity or concept. In its constructor, the class encapsulates properties or another object as “coordinates” that the class instance will use to refer to the real-world entity.
-- **Encapsulation of Logic**: A class should encapsulate all logic required to produce its result. It should not rely on pre-calculated data passed from the caller if it can calculate that data itself using its dependencies.
 - **Naming Conventions**:
     - Class names must be **nouns** (e.g., `Slide`, `Slides`, not `SlideManager` or `SlideService`)
     - No `-er`, `-or`, `-service` suffixes

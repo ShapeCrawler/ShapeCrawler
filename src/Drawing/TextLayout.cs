@@ -12,7 +12,7 @@ namespace ShapeCrawler.Drawing;
 /// <param name="paragraphs">The paragraphs to be laid out into lines.</param>
 /// <param name="availableWidth">The maximum available width for each rendered line.</param>
 /// <param name="wrap">True to wrap text across multiple lines when it exceeds the available width; otherwise, false.</param>
-internal sealed class TextLayout(IReadOnlyList<IParagraph> paragraphs, float availableWidth, bool wrap)
+internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float availableWidth, bool wrap)
 {
     private const decimal DefaultFontSize = 12m;
     private float defaultLineHeight;
@@ -24,18 +24,18 @@ internal sealed class TextLayout(IReadOnlyList<IParagraph> paragraphs, float ava
         this.defaultLineHeight = font.Spacing;
         this.defaultBaselineOffset = GetBaselineOffset(font);
 
-        var lines = this.LayoutLines();
-        var textBlockHeight = lines.Sum(l => l.Height);
+        var textLines = this.LayoutLines();
+        var textBlockHeight = textLines.Sum(l => l.Height);
         var verticalOffset = GetVerticalOffset(verticalAlignment, availableHeight, textBlockHeight);
         var lineTop = y + verticalOffset;
 
-        foreach (var line in lines)
+        foreach (var textLine in textLines)
         {
-            var horizontalOffset = GetHorizontalOffset(line.HorizontalAlignment, availableWidth - line.ParaLeftMargin, line.Width);
-            var startX = x + line.ParaLeftMargin + horizontalOffset;
+            var horizontalOffset = GetHorizontalOffset(textLine.HorizontalAlignment, availableWidth - textLine.ParaLeftMargin, textLine.Width);
+            var startX = x + textLine.ParaLeftMargin + horizontalOffset;
 
-            RenderLine(canvas, line, startX, lineTop);
-            lineTop += line.Height;
+            RenderLine(canvas, textLine, startX, lineTop);
+            lineTop += textLine.Height;
         }
     }
 

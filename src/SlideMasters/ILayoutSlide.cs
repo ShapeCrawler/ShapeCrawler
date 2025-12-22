@@ -8,7 +8,7 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a Slide Layout in PowerPoint UI.
+///     Represents a PowerPoint Slide Layout.
 /// </summary>
 public interface ILayoutSlide
 {

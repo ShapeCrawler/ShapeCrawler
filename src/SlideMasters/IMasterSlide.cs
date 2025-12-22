@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a Slide Master in PowerPoint UI.
+///     Represents a PowerPoint Slide Master.
 /// </summary>
 public interface IMasterSlide
 {

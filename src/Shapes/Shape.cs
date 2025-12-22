@@ -14,6 +14,8 @@ namespace ShapeCrawler.Shapes;
 
 internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
+    private const string ShapeIsNotTextHolderErrorMessage = "The shape is not a text holder.";
+    
     public virtual decimal X
     {
         get => position.X;
@@ -275,7 +277,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public string SdkXPath => new XmlPath(pShapeTreeElement).XPath;
 
-    public OpenXmlElement SDKOpenXmlElement => pShapeTreeElement.CloneNode(true);
+    public OpenXmlElement SdkOpenXmlElement => pShapeTreeElement.CloneNode(true);
 
     protected OpenXmlElement PShapeTreeElement => pShapeTreeElement;
 
@@ -289,13 +291,13 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public virtual void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
 
-    public virtual void SetText(string text) => throw new SCException("The shape doesn't contain text content");
+    public virtual void SetText(string text) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
-    public virtual void SetMarkdownText(string text) => throw new SCException("The shape doesn't contain text content");
+    public virtual void SetMarkdownText(string text) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public virtual void SetImage(string imagePath) => throw new SCException();
 
-    public virtual void SetFontName(string fontName) => throw new SCException("The shape doesn't contain text content");
+    public virtual void SetFontName(string fontName) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public virtual void SetFontSize(decimal fontSize) =>
         throw new SCException("The shape doesn't contain text content");
