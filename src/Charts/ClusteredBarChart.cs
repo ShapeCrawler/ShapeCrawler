@@ -21,10 +21,43 @@ internal sealed class ClusteredBarChart(
     /// </summary>
     internal void Generate()
     {
+        var chartSpace = CreateChartSpace();
+        var chart = chartSpace.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.Chart>() !;
+        var plotArea = chart.PlotArea!;
+        var barChart = plotArea.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.BarChart>() !;
+
+        this.AddSeries(barChart);
+        AddAxes(plotArea);
+
+        var legend = new Legend();
+        legend.AppendChild(new LegendPosition { Val = LegendPositionValues.Right });
+        chart.AppendChild(legend);
+
+        chartPart.ChartSpace = chartSpace;
+    }
+
+    private static string ColumnLetter(int columnNumber)
+    {
+        const int alphabetSize = 26;
+        const int asciiOffsetForA = 65;
+        var columnLetter = new StringBuilder();
+
+        while (columnNumber > 0)
+        {
+            var modulo = (columnNumber - 1) % alphabetSize;
+            columnLetter.Insert(0, (char)(asciiOffsetForA + modulo));
+            columnNumber = (columnNumber - modulo) / alphabetSize;
+        }
+
+        return columnLetter.ToString();
+    }
+
+    private static ChartSpace CreateChartSpace()
+    {
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
-        chartSpace.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart");
-        chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-        chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+        chartSpace.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart"); // NOSONAR
+        chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main"); // NOSONAR
+        chartSpace.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships"); // NOSONAR
 
         var chart = new DocumentFormat.OpenXml.Drawing.Charts.Chart();
         chart.AppendChild(new AutoTitleDeleted { Val = false });
@@ -37,91 +70,17 @@ internal sealed class ClusteredBarChart(
         barChart.AppendChild(new BarGrouping { Val = BarGroupingValues.Clustered });
         barChart.AppendChild(new VaryColors { Val = false });
 
-        var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
-        bool isMultiLevel = categories.Any(c => c.Count > 1);
+        plotArea.AppendChild(barChart);
+        chart.AppendChild(plotArea);
+        chartSpace.AppendChild(chart);
 
-        for (uint i = 0; i < seriesData.Count; i++)
-        {
-            var series = new BarChartSeries(
-                new Index { Val = i },
-                new Order { Val = i });
-
-            var seriesText = new SeriesText();
-            seriesText.AppendChild(new NumericValue { Text = seriesData[(int)i].Name });
-            series.AppendChild(seriesText);
-
-            var categoryAxisData = new CategoryAxisData();
-
-            if (isMultiLevel)
-            {
-                var multiLevelStringReference = new MultiLevelStringReference();
-                int maxLevel = categories.Max(c => c.Count);
-                var endColumnLetter = ColumnLetter(maxLevel);
-                multiLevelStringReference.AppendChild(new Formula($"Sheet1!$A$1:${endColumnLetter}${categories.Count}"));
-                var multiLevelStringCache = new MultiLevelStringCache();
-                multiLevelStringCache.AppendChild(new PointCount { Val = categoriesCount });
-
-                for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
-                {
-                    var level = new Level();
-                    for (int catIndex = 0; catIndex < categories.Count; catIndex++)
-                    {
-                        var catList = categories[catIndex];
-
-                        // Map Leaf (List Index Count-1) to Level 0.
-                        int listIndex = (catList.Count - 1) - levelIndex;
-                        if (listIndex >= 0)
-                        {
-                            var value = catList[listIndex];
-                            var point = new StringPoint { Index = (uint)catIndex };
-                            point.AppendChild(new NumericValue(value));
-                            level.AppendChild(point);
-                        }
-                    }
-
-                    multiLevelStringCache.AppendChild(level);
-                }
-
-                multiLevelStringReference.AppendChild(multiLevelStringCache);
-                categoryAxisData.AppendChild(multiLevelStringReference);
-            }
-            else
-            {
-                var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
-                for (uint j = 0; j < categories.Count; j++)
-                {
-                    var point = new StringPoint { Index = j };
-                    point.AppendChild(new NumericValue(categories[(int)j][0]));
-                    stringLiteral.AppendChild(point);
-                }
-
-                categoryAxisData.AppendChild(stringLiteral);
-            }
-
-            series.AppendChild(categoryAxisData);
-
-            var values = new Values();
-            var numberLiteral = new NumberLiteral(new FormatCode("General"), new PointCount { Val = categoriesCount });
-
-            for (uint j = 0; j < seriesData[(int)i].Values.Length; j++)
-            {
-                var point = new NumericPoint { Index = j };
-                point.AppendChild(new NumericValue(seriesData[(int)i].Values[j].ToString(CultureInfo.InvariantCulture)));
-                numberLiteral.AppendChild(point);
-            }
-
-            values.AppendChild(numberLiteral);
-            series.AppendChild(values);
-
-            barChart.AppendChild(series);
-        }
-
+        return chartSpace;
+    }
+    
+    private static void AddAxes(PlotArea plotArea)
+    {
         const uint axisId1 = 1U;
         const uint axisId2 = 2U;
-        barChart.AppendChild(new AxisId { Val = axisId1 });
-        barChart.AppendChild(new AxisId { Val = axisId2 });
-
-        plotArea.AppendChild(barChart);
 
         var categoryAxis = new CategoryAxis();
         categoryAxis.AppendChild(new AxisId { Val = axisId1 });
@@ -148,32 +107,104 @@ internal sealed class ClusteredBarChart(
         valueAxis.AppendChild(new CrossingAxis { Val = axisId1 });
 
         plotArea.AppendChild(valueAxis);
-
-        chart.AppendChild(plotArea);
-
-        var legend = new Legend();
-        legend.AppendChild(new LegendPosition { Val = LegendPositionValues.Right });
-
-        chart.AppendChild(legend);
-
-        chartSpace.AppendChild(chart);
-
-        chartPart.ChartSpace = chartSpace;
     }
 
-    private static string ColumnLetter(int columnNumber)
+    private void AddSeries(DocumentFormat.OpenXml.Drawing.Charts.BarChart barChart)
     {
-        const int alphabetSize = 26;
-        const int asciiOffsetForA = 65;
-        var columnLetter = new StringBuilder();
-
-        while (columnNumber > 0)
+        for (uint i = 0; i < seriesData.Count; i++)
         {
-            var modulo = (columnNumber - 1) % alphabetSize;
-            columnLetter.Insert(0, (char)(asciiOffsetForA + modulo));
-            columnNumber = (columnNumber - modulo) / alphabetSize;
+            var series = new BarChartSeries(
+                new Index { Val = i },
+                new Order { Val = i });
+
+            var seriesText = new SeriesText();
+            seriesText.AppendChild(new NumericValue { Text = seriesData[(int)i].Name });
+            series.AppendChild(seriesText);
+
+            var categoryAxisData = new CategoryAxisData();
+            this.AddCategories(categoryAxisData);
+            series.AppendChild(categoryAxisData);
+
+            var values = new Values();
+            this.AddValues(values, i);
+            series.AppendChild(values);
+
+            barChart.AppendChild(series);
         }
 
-        return columnLetter.ToString();
+        const uint axisId1 = 1U;
+        const uint axisId2 = 2U;
+        barChart.AppendChild(new AxisId { Val = axisId1 });
+        barChart.AppendChild(new AxisId { Val = axisId2 });
+    }
+
+    private void AddCategories(CategoryAxisData categoryAxisData)
+    {
+        var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
+        bool isMultiLevel = categories.Any(c => c.Count > 1);
+
+        if (isMultiLevel)
+        {
+            var multiLevelStringReference = new MultiLevelStringReference();
+            int maxLevel = categories.Max(c => c.Count);
+            var endColumnLetter = ColumnLetter(maxLevel);
+            multiLevelStringReference.AppendChild(new Formula($"Sheet1!$A$1:${endColumnLetter}${categories.Count}"));
+            var multiLevelStringCache = new MultiLevelStringCache();
+            multiLevelStringCache.AppendChild(new PointCount { Val = categoriesCount });
+
+            for (int levelIndex = 0; levelIndex < maxLevel; levelIndex++)
+            {
+                var level = new Level();
+                for (int catIndex = 0; catIndex < categories.Count; catIndex++)
+                {
+                    var catList = categories[catIndex];
+
+                    // Map the innermost (leaf) category to Level 0 and its parents to higher levels,
+                    // by reversing the list index so OpenXML multi-level categories are leaf-first.
+                    int listIndex = (catList.Count - 1) - levelIndex;
+                    if (listIndex < 0)
+                    {
+                        continue;
+                    }
+
+                    var value = catList[listIndex];
+                    var point = new StringPoint { Index = (uint)catIndex };
+                    point.AppendChild(new NumericValue(value));
+                    level.AppendChild(point);
+                }
+
+                multiLevelStringCache.AppendChild(level);
+            }
+
+            multiLevelStringReference.AppendChild(multiLevelStringCache);
+            categoryAxisData.AppendChild(multiLevelStringReference);
+        }
+        else
+        {
+            var stringLiteral = new StringLiteral(new PointCount { Val = categoriesCount });
+            for (uint j = 0; j < categories.Count; j++)
+            {
+                var point = new StringPoint { Index = j };
+                point.AppendChild(new NumericValue(categories[(int)j][0]));
+                stringLiteral.AppendChild(point);
+            }
+
+            categoryAxisData.AppendChild(stringLiteral);
+        }
+    }
+
+    private void AddValues(Values values, uint seriesIndex)
+    {
+        var categoriesCount = UInt32Value.FromUInt32((uint)categories.Count);
+        var numberLiteral = new NumberLiteral(new FormatCode("General"), new PointCount { Val = categoriesCount });
+
+        for (uint j = 0; j < seriesData[(int)seriesIndex].Values.Length; j++)
+        {
+            var point = new NumericPoint { Index = j };
+            point.AppendChild(new NumericValue(seriesData[(int)seriesIndex].Values[j].ToString(CultureInfo.InvariantCulture)));
+            numberLiteral.AppendChild(point);
+        }
+
+        values.AppendChild(numberLiteral);
     }
 }
