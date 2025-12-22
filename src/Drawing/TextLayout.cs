@@ -34,7 +34,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
             var horizontalOffset = GetHorizontalOffset(textLine.HorizontalAlignment, availableWidth - textLine.ParaLeftMargin, textLine.Width);
             var startX = x + textLine.ParaLeftMargin + horizontalOffset;
 
-            textLine.Draw(canvas, startX, lineTop);
+            textLine.Render(canvas, startX, lineTop);
             lineTop += textLine.Height;
         }
     }
