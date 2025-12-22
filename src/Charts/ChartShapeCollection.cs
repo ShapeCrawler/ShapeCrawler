@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
@@ -84,7 +84,7 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
         int y,
         int width,
         int height,
-        IList<string> categories,
+        IList<List<string>> categories,
         IList<DraftChart.SeriesData> seriesData,
         string chartName)
     {

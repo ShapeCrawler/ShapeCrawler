@@ -1,24 +1,32 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class MultiCategory : ICategory
+internal sealed class MultiCategory(
+    ChartPart chartPart,
+    ICategory mainCategory,
+    NumericValue cachedValue,
+    string? sheetName,
+    string? address) : ICategory
 {
-    private readonly NumericValue cachedValue;
-
-    internal MultiCategory(ICategory mainCategory, NumericValue cachedValue)
-    {
-        this.MainCategory = mainCategory;
-        this.cachedValue = cachedValue;
-    }
-
     public bool HasMainCategory => true;
     
-    public ICategory MainCategory { get; }
+    public ICategory MainCategory { get; } = mainCategory;
 
     public string Name
     {
-        get => this.cachedValue.InnerText;
-        set => this.cachedValue.Text = value;
+        get => cachedValue.InnerText;
+        set
+        {
+            cachedValue.Text = value;
+            if (sheetName != null && 
+                address != null && 
+                chartPart.EmbeddedPackagePart != null)
+            {
+                new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(address, value, CellValues.String);
+            }
+        }
     }
 }

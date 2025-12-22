@@ -1,16 +1,15 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Category : ICategory
+internal sealed class Category(
+    ChartPart chartPart,
+    NumericValue cachedValue,
+    string? sheetName,
+    string? cellAddress) : ICategory
 {
-    private readonly NumericValue cachedValue;
-
-    internal Category(NumericValue cachedValue)
-    {
-        this.cachedValue = cachedValue;
-    }
-
     public bool HasMainCategory => false;
     
     public ICategory MainCategory => throw new SCException($"The main category is not available since the chart doesn't have a multi-category. " +
@@ -18,7 +17,16 @@ internal sealed class Category : ICategory
 
     public string Name
     {
-        get => this.cachedValue.InnerText;
-        set => this.cachedValue.Text = value;
+        get => cachedValue.InnerText;
+        set
+        {
+            cachedValue.Text = value;
+            if (sheetName != null && 
+                cellAddress != null && 
+                chartPart.EmbeddedPackagePart != null)
+            {
+                new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);
+            }
+        }
     }
 }

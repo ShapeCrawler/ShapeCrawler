@@ -126,6 +126,18 @@ public interface IUserSlideShapeCollection : IShapeCollection
         IList<string> categories,
         IList<DraftChart.SeriesData> seriesData,
         string chartName);
+        
+    /// <summary>
+    ///     Adds a Clustered Bar Chart with multi-level categories.
+    /// </summary>
+    void AddClusteredBarChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IList<List<string>> categories,
+        IList<DraftChart.SeriesData> seriesData,
+        string chartName);
 
     /// <summary>
     ///     Adds a Stacked Column Chart.

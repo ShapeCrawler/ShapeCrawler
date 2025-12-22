@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ClosedXML.Excel;
 using FluentAssertions;
 using NUnit.Framework;
@@ -201,25 +201,25 @@ public class ChartTests : SCTest
         cellValue.Should().BeEquivalentTo("Category 1_new");
     }
 
-    [Test, Ignore("On Hold")]
+    [Test]
     public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
     {
         // Arrange
         var pptxStream = TestAsset("025_chart.pptx");
         var pres = new Presentation(pptxStream);
-        var barChart = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 4);
+        var barChart = pres.Slide(1).Shapes.First(sp => sp.Id == 4).Chart!;
         const string newCategoryName = "Clothing_new";
 
         // Act
-        barChart.Categories[0].Name = newCategoryName;
+        barChart.Categories![0].Name = newCategoryName;
 
         // Assert
         barChart.Categories[0].Name.Should().Be(newCategoryName);
 
         pres.Save();
         pres = new Presentation(pptxStream);
-        barChart = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 4);
-        barChart.Categories[0].Name.Should().Be(newCategoryName);
+        barChart = pres.Slide(1).Shapes.First(sp => sp.Id == 4).Chart!;
+        barChart.Categories![0].Name.Should().Be(newCategoryName);
     }
 
     [Test]
@@ -553,6 +553,37 @@ public class ChartTests : SCTest
         
         // Assert
         chart.XAxis.Title.Should().Be("Series values");
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Creates_MultiCategory_Chart()
+    {
+        // Act
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.ClusteredBarChart(chart =>
+                {
+                    chart.Categories(
+                        ("Main1", "Sub1"),
+                        ("Main1", "Sub2"),
+                        ("Main2", "Sub3"),
+                        ("Main2", "Sub4")
+                    );
+                    chart.Series("Series1", 10, 20, 30, 40);
+                });
+            });
+        });
+
+        // Assert
+        var chartShape = pres.Slides.Last().Shapes.Last().Chart;
+        var categories = chartShape.Categories;
+
+        categories.Count.Should().Be(4);
+        categories[0].Name.Should().Be("Sub1");
+        categories[0].MainCategory.Name.Should().Be("Main1");
         ValidatePresentation(pres);
     }
 }

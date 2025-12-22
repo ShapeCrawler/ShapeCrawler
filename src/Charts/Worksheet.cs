@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,9 +10,18 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class Worksheet(EmbeddedPackagePart embeddedPackagePart, string sheetName)
 {
-    internal void UpdateCell(string address, string value) => this.UpdateCell(address, value, X.CellValues.Number);
+    internal WorksheetCell Cell(string address) => new(embeddedPackagePart, sheetName, address);
 
-    internal void UpdateCell(string address, string value, X.CellValues type)
+    internal void UpdateCell(string address, string value) => this.Cell(address).UpdateValue(value);
+
+    internal void UpdateCell(string address, string value, X.CellValues type) => this.Cell(address).UpdateValue(value, type);
+}
+
+internal sealed class WorksheetCell(EmbeddedPackagePart embeddedPackagePart, string sheetName, string address)
+{
+    internal void UpdateValue(string value) => this.UpdateValue(value, X.CellValues.Number);
+
+    internal void UpdateValue(string value, X.CellValues type)
     {
         var stream = embeddedPackagePart.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, true);
@@ -42,15 +51,7 @@ internal sealed class Worksheet(EmbeddedPackagePart embeddedPackagePart, string 
             };
 
             // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.
-            X.Cell? refCell = null;
-            foreach (var cell in xRow.Elements<X.Cell>())
-            {
-                if (string.Compare(cell.CellReference!.Value, address, true, CultureInfo.InvariantCulture) > 0)
-                {
-                    refCell = cell;
-                    break;
-                }
-            }
+            X.Cell? refCell = xRow.Elements<X.Cell>().FirstOrDefault(cell => string.Compare(cell.CellReference!.Value, address, true, CultureInfo.InvariantCulture) > 0);
 
             xRow.InsertBefore(newXCell, refCell);
         }
