@@ -303,7 +303,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
         throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public virtual void SetFontColor(string colorHex) =>
-        throw new SCException("The shape doesn't contain text content");
+        throw new SCException(ShapeIsNotTextHolderErrorMessage);
 
     public virtual void SetVideo(Stream video) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 

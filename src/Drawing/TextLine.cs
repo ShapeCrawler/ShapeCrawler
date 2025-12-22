@@ -14,8 +14,6 @@ internal sealed class TextLine(
     float height,
     float baselineOffset)
 {
-    private const decimal DefaultFontSize = 12m;
-    
     internal TextHorizontalAlignment HorizontalAlignment => horizontalAlignment;
 
     internal float ParaLeftMargin => paraLeftMargin;
@@ -35,63 +33,12 @@ internal sealed class TextLine(
 
         foreach (var run in this.Runs)
         {
-            using var font = CreateFont(run.Font);
-            using var paint = CreatePaint(run.Font);
+            var drawingFont = new DrawingFont(run.Font);
+            using var font = drawingFont.CreateFont();
+            using var paint = drawingFont.CreatePaint();
 
             canvas.DrawText(run.Text, currentX, baselineY, SKTextAlign.Left, font, paint);
             currentX += run.Width;
         }
-    }
-
-    private static SKPaint CreatePaint(ITextPortionFont? font)
-    {
-        var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = GetPaintColor(font) };
-
-        return paint;
-    }
-
-    private static SKColor GetPaintColor(ITextPortionFont? font)
-    {
-        var hex = font?.Color.Hex;
-
-        return string.IsNullOrWhiteSpace(hex)
-            ? SKColors.Black
-            : new Color(hex!).AsSkColor();
-    }
-
-    private static SKFont CreateFont(ITextPortionFont? font)
-    {
-        var fontStyle = GetFontStyle(font);
-        var family = font?.LatinName;
-
-        var typeface = string.IsNullOrWhiteSpace(family)
-            ? SKTypeface.CreateDefault()
-            : SKTypeface.FromFamilyName(family, fontStyle);
-        var size = new Points(font?.Size ?? DefaultFontSize).AsPixels();
-
-        return new SKFont(typeface) { Size = (float)size };
-    }
-
-    private static SKFontStyle GetFontStyle(ITextPortionFont? font)
-    {
-        var isBold = font?.IsBold == true;
-        var isItalic = font?.IsItalic == true;
-
-        if (isBold && isItalic)
-        {
-            return SKFontStyle.BoldItalic;
-        }
-
-        if (isBold)
-        {
-            return SKFontStyle.Bold;
-        }
-
-        if (isItalic)
-        {
-            return SKFontStyle.Italic;
-        }
-
-        return SKFontStyle.Normal;
     }
 }
