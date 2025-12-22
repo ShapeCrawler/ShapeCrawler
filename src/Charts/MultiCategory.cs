@@ -9,7 +9,7 @@ internal sealed class MultiCategory(
     ICategory mainCategory,
     NumericValue cachedValue,
     string? sheetName,
-    string? cellAddress) : ICategory
+    string? address) : ICategory
 {
     public bool HasMainCategory => true;
     
@@ -22,10 +22,10 @@ internal sealed class MultiCategory(
         {
             cachedValue.Text = value;
             if (sheetName != null && 
-                cellAddress != null && 
+                address != null && 
                 chartPart.EmbeddedPackagePart != null)
             {
-                new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);
+                new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(address, value, CellValues.String);
             }
         }
     }
