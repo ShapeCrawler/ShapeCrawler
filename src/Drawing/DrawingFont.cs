@@ -7,6 +7,12 @@ internal sealed class DrawingFont(ITextPortionFont? font)
 {
     private const decimal DefaultFontSize = 12m;
 
+    internal static float BaselineOffset(SKFont skFont)
+    {
+        var ascent = skFont.Metrics.Ascent;
+        return ascent >= 0 ? 0 : -ascent;
+    }
+    
     internal SKFont CreateFont()
     {
         var fontStyle = this.GetFontStyle();
@@ -23,12 +29,6 @@ internal sealed class DrawingFont(ITextPortionFont? font)
     internal SKPaint CreatePaint()
     {
         return new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = this.GetPaintColor() };
-    }
-
-    internal float BaselineOffset(SKFont skFont)
-    {
-        var ascent = skFont.Metrics.Ascent;
-        return ascent >= 0 ? 0 : -ascent;
     }
 
     private SKColor GetPaintColor()

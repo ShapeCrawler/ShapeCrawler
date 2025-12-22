@@ -22,7 +22,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
         var drawingFont = new DrawingFont(null);
         using var font = drawingFont.CreateFont();
         this.defaultLineHeight = font.Spacing;
-        this.defaultBaselineOffset = drawingFont.BaselineOffset(font);
+        this.defaultBaselineOffset = DrawingFont.BaselineOffset(font);
 
         var textLines = this.LayoutLines();
         var textBlockHeight = textLines.Sum(l => l.Height);
@@ -311,7 +311,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
                 var bulletPortionWidth = Math.Max(bulletCharWidth, hangingIndentWidth);
                 var bulletPortion = new PixelTextPortion(bulletChar, font, bulletPortionWidth);
 
-                line.Add(bulletPortion, skFont.Spacing, drawingFont.BaselineOffset(skFont));
+                line.Add(bulletPortion, skFont.Spacing, DrawingFont.BaselineOffset(skFont));
             }
         }
 
@@ -339,7 +339,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
     {
         var drawingFont = new DrawingFont(portion.Font);
         using var font = drawingFont.CreateFont();
-        var baselineOffset = drawingFont.BaselineOffset(font);
+        var baselineOffset = DrawingFont.BaselineOffset(font);
         var paragraphLayout = new ParagraphLayout(paragraphAlignment, availableWidth, baseParaLeftMargin, wrap, buffer);
 
         // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
