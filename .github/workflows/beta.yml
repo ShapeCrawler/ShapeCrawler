@@ -43,7 +43,7 @@ jobs:
       - name: Generate version
         id: versioning
         run: echo "PACKAGE_VERSION=${{ vars.VERSION }}-beta.$(Get-Date -Format 'yyyyMMddHHmm')" >> $env:GITHUB_ENV
-      - name: Create and publish package
+      - name: Publish package
         run: |
           dotnet pack src\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
           dotnet nuget push "src\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }}
