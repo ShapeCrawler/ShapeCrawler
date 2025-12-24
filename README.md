@@ -140,6 +140,39 @@ var end = line.EndPoint;     // Point(x, y)
 Console.WriteLine($"Line from {start.X},{start.Y} to {end.X},{end.Y}");
 ```
 
+### Charts
+
+#### Create Bar Chart
+
+```csharp
+var pres = new Presentation(p => p.Slide());
+var shapes = pres.Slide(1).Shapes;
+
+var points = new Dictionary<string, double>
+{
+    { "Q1", 50 },
+    { "Q2", 60 },
+    { "Q3", 40 }
+};
+
+// Add a bar chart
+shapes.AddBarChart(x: 100, y: 100, width: 500, height: 350, points, "Sales");
+
+pres.Save("output.pptx");
+```
+
+#### Update Chart Category
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var chart = pres.Slide(1).Shapes.Shape("Bar Chart 1").Chart;
+
+// Update category name
+chart.Categories[0].Name = "Renamed Category";
+
+pres.Save();
+```
+
 ### More Examples
 
 **[See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**
@@ -167,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.76.3 - 2025-12-10
-🐞Resolved security vulnerabilities
+### Version 0.77.0 - 2025-12-24
+🍀Added support for updating the category name of the multi-category chart [#151](https://github.com/ShapeCrawler/ShapeCrawler/issues/151)
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)

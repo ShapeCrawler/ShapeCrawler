@@ -5,13 +5,13 @@
     <RootNamespace>ShapeCrawler</RootNamespace>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>
-    <Description>ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
+    <Description>ShapeCrawler is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
 This library provides a simplified object model on top of the Open XML SDK for manipulating PowerPoint documents without any COM+ or COM interop layers.</Description>
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <Version>0.76.3</Version>
-    <PackageReleaseNotes>🐞Resolved security vulnerabilities</PackageReleaseNotes>
+    <Version>0.77.0</Version>
+    <PackageReleaseNotes>🍀Added support for updating the category name of the multi-category chart</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>

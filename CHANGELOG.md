@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.77.0 - Unreleased
+## Version 0.77.0 - 2025-12-24
 🍀Added support for updating the category name of the multi-category chart [#151](https://github.com/ShapeCrawler/ShapeCrawler/issues/151)
 
 ## Version 0.76.3 - 2025-12-10
