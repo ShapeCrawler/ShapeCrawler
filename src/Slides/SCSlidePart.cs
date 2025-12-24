@@ -15,6 +15,8 @@ using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using Position = ShapeCrawler.Positions.Position;
 
+#pragma warning disable SA1204 // Static members should appear before non-static members
+
 namespace ShapeCrawler.Slides;
 
 internal readonly ref struct SCSlidePart(SlidePart slidePart)
@@ -60,7 +62,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var nvGraphicFrameProperties = new NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new NonVisualDrawingProperties
         {
-            Id = this.GetNextShapeId(), Name = $"SmartArt {smartArtType}"
+            Id = this.GetNextShapeId(),
+            Name = $"SmartArt {smartArtType}"
         };
         var nonVisualGraphicFrameDrawingProperties = new NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
@@ -117,7 +120,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         using var writer = new StreamWriter(destinationStream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         writer.Write(template);
     }
-    
+
     private DiagramPartIds CreateBasicBlockListDiagramParts()
     {
         var assets = new AssetCollection(Assembly.GetExecutingAssembly());
@@ -149,12 +152,6 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         return new DiagramPartIds(dataRelId, layoutRelId, quickStyleRelId, colorsRelId);
     }
 
-    private readonly record struct DiagramPartIds(
-        string DataId,
-        string LayoutId,
-        string QuickStyleId,
-        string ColorsId);
-
     private static void CopyStream(OpenXmlPart sourcePart, OpenXmlPart targetPart)
     {
         using var sourceStream = sourcePart.GetStream();
@@ -181,7 +178,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
     }
 
     private static void ShareChartPartWithinSamePackage(
-        ChartPart sourceChartPart, 
+        ChartPart sourceChartPart,
         SlidePart targetSlidePart,
         string relationshipId)
     {
@@ -189,7 +186,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
     }
 
     private static void CloneChartPartAcrossPackages(
-        ChartPart sourceChartPart, 
+        ChartPart sourceChartPart,
         SlidePart targetSlidePart,
         string relationshipId)
     {
@@ -422,4 +419,10 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         // Find the maximum ID and add 1, or start with 1 if no shapes exist
         return shapeIds.Count > 0 ? shapeIds.Max() + 1 : 1;
     }
+
+    private readonly record struct DiagramPartIds(
+        string DataId,
+        string LayoutId,
+        string QuickStyleId,
+        string ColorsId);
 }

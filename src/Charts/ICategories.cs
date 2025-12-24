@@ -111,7 +111,7 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
     private List<ICategory> CategoryList()
     {
         var categoryList = new List<ICategory>();
-        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
+        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var firstSeries = cCharts.First().ChildElements
             .First(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
@@ -138,9 +138,9 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
             }
 
             return this.MultiCategories(
-                cMultiLvlStringRef.MultiLevelStringCache!.Elements<C.Level>(), 
+                cMultiLvlStringRef.MultiLevelStringCache!.Elements<C.Level>(),
                 sheetName,
-                startRow, 
+                startRow,
                 startColumnIndex);
         }
 
@@ -175,8 +175,8 @@ internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
         var sheetNameRef = Regex
             .Match(normalizedFormulaRef, @".+(?=\!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value;
         var cellsRangeRef = Regex.Match(
-            normalizedFormulaRef, 
-            @"(?<=\!).+", 
+            normalizedFormulaRef,
+            @"(?<=\!).+",
             RegexOptions.None,
             TimeSpan.FromMilliseconds(1000)).Value;
         var addresses = new CellsRange(cellsRangeRef).Addresses();

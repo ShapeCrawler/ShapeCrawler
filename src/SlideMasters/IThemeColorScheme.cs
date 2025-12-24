@@ -25,47 +25,47 @@ public interface IThemeColorScheme
     ///     Gets or sets Dark 2 color in hexadecimal format.
     /// </summary>
     string Dark2 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Light 2 color in hexadecimal format.
     /// </summary>
     string Light2 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Accent 1 color in hexadecimal format.
     /// </summary>
     string Accent1 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Accent 2 color in hexadecimal format.
     /// </summary>
     string Accent2 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Accent 3 color in hexadecimal format.
     /// </summary>
     string Accent3 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Accent 4 color in hexadecimal format.
     /// </summary>
     string Accent4 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Accent 5 color in hexadecimal format.
     /// </summary>
     string Accent5 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Accent 6 color in hexadecimal format.
     /// </summary>
     string Accent6 { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Hyperlink color in hexadecimal format.
     /// </summary>
     string Hyperlink { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets Followed Hyperlink color in hexadecimal format.
     /// </summary>
@@ -158,7 +158,7 @@ internal sealed class ThemeColorScheme : IThemeColorScheme
         var color = HexParser.GetWithoutScheme(aColor2Type);
         return color!.Value.Item2;
     }
-    
+
     private void SetColor(string name, string hex)
     {
         var color = this.aColorScheme.Elements().First(x => x.LocalName == name);
@@ -166,7 +166,7 @@ internal sealed class ThemeColorScheme : IThemeColorScheme
         {
             child.Remove();
         }
-        
+
         var aSrgbClr = new A.RgbColorModelHex { Val = hex };
         color.Append(aSrgbClr);
     }

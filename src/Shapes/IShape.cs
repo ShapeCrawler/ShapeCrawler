@@ -28,7 +28,7 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets identifier of the shape.
     /// </summary>
     int Id { get; }
-    
+
     /// <summary>
     ///    Gets or sets the name of the shape.
     /// </summary>
@@ -43,7 +43,7 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets a value indicating whether the shape is hidden.
     /// </summary>
     bool Hidden { get; }
-    
+
     /// <summary>
     ///     Gets the placeholder type. Returns <see langword="null"/> if the shape is not a placeholder.
     /// </summary>
@@ -53,72 +53,72 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets or sets custom data string for the shape.
     /// </summary>
     string? CustomData { get; set; }
-    
+
     /// <summary>
     ///     Gets outline of the shape. Returns <see langword="null"/> if the shape cannot be outlined, for example, a picture.
     /// </summary>
     IShapeOutline? Outline { get; }
-    
+
     /// <summary>
     ///     Gets the fill of the shape. Returns <see langword="null"/> if the shape cannot be filled, for example, a line.
     /// </summary>
     IShapeFill? Fill { get; }
-    
+
     /// <summary>
     ///     Gets the shape text. Returns <c>null</c> if the shape is not a text holder.
     /// </summary>
     ITextBox? TextBox { get; }
-    
+
     /// <summary>
     ///     Gets picture. Returns <c>null</c> if the shape doesn't contain image content.
     /// </summary>
     IPicture? Picture { get; }
-    
+
     /// <summary>
     ///     Gets chart. Returns <c>null</c> if the shape doesn't contain image content.
     /// </summary>
     IChart? Chart { get; }
-    
+
     /// <summary>
     ///     Gets table. Returns <c>null</c> if the shape doesn't contain table content.
     /// </summary>
     ITable? Table { get; }
-    
+
     /// <summary>
     ///     Gets OLE object. Returns <c>null</c> if the shape doesn't contain OLE object content.
     /// </summary>
     IOleObject? OleObject { get; }
-    
+
     /// <summary>
     ///     Gets media. Returns <c>null</c> if the shape doesn't contain media content.
     /// </summary>
     IMedia? Media { get; }
-    
+
     /// <summary>
     ///     Gets line. Returns <c>null</c> if the shape is not a line.
     /// </summary>
     ILine? Line { get; }
-    
+
     /// <summary>
     ///     Gets SmartArt. Returns <c>null</c> if the shape doesn't contain SmartArt graphic.
     /// </summary>
     ISmartArt? SmartArt { get; }
-    
+
     /// <summary>
     ///     Gets the rotation of the shape in degrees.
     /// </summary>
     double Rotation { get; }
-    
+
     /// <summary>
     ///     Gets XPath of the underlying Open XML element.
     /// </summary>
     public string SdkXPath { get; }
-    
+
     /// <summary>
     ///     Gets a copy of the underlying Open XML element.
     /// </summary>
     OpenXmlElement SdkOpenXmlElement { get; }
-    
+
     /// <summary>
     ///     Gets the parent presentation.
     /// </summary>
@@ -145,7 +145,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// </summary>
     /// <exception cref="SCException">Thrown when the shape is not a text holder.</exception>
     void SetText(string text);
-    
+
     /// <summary>
     ///     Sets text content. 
     ///     Use property <see cref="TextBox"/> to check whether the shape is a text holder.
@@ -159,17 +159,17 @@ public interface IShape : IPosition, IShapeGeometry
     /// </summary>
     /// <exception cref="SCException">Thrown if the shape doesn't contain image content.</exception>
     void SetImage(string imagePath);
-    
+
     /// <summary>
     ///     Sets the font name.
     /// </summary>
     void SetFontName(string fontName);
-    
+
     /// <summary>
     ///     Sets the font size.
     /// </summary>
     void SetFontSize(decimal fontSize);
-    
+
     /// <summary>
     ///     Sets the font color.
     /// </summary>

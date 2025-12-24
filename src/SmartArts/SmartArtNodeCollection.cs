@@ -29,7 +29,7 @@ internal class SmartArtNodeCollection : ISmartArtNodeCollection
         this.nodes.Add(node);
         return node;
     }
-    
+
     public IEnumerator<ISmartArtNode> GetEnumerator() => this.nodes.Cast<ISmartArtNode>().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();

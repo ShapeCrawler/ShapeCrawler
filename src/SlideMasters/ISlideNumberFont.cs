@@ -46,13 +46,13 @@ internal sealed class SlideNumberFont : ISlideNumberFont
 
         var rgbColorModelHex = new A.RgbColorModelHex { Val = color.ToString() };
         solidFill = new A.SolidFill(rgbColorModelHex);
-        
+
         this.aDefaultRunProperties.Append(solidFill);
     }
 
     private Color ParseColor()
     {
-        var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !.RgbColorModelHex!.Val!.Value!;
+        var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>()!.RgbColorModelHex!.Val!.Value!;
 
         return new Color(hex);
     }

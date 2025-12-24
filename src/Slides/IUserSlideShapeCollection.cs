@@ -41,12 +41,12 @@ public interface IUserSlideShapeCollection : IShapeCollection
     ///     Adds a new shape.
     /// </summary>
     void AddShape(int x, int y, int width, int height);
-    
+
     /// <summary>
     ///     Adds a new shape.
     /// </summary>
     void AddShape(int x, int y, int width, int height, Geometry geometry);
-    
+
     /// <summary>
     ///     Adds a new shape.
     /// </summary>
@@ -93,17 +93,17 @@ public interface IUserSlideShapeCollection : IShapeCollection
     ///     Adds Pie Chart.
     /// </summary>
     void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
-    
+
     /// <summary>
     ///     Adds Pie Chart with specified name.
     /// </summary>
     void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName, string chartName);
-    
+
     /// <summary>
     ///     Adds Bar Chart with specified parameters.
     /// </summary>
     void AddBarChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
-    
+
     /// <summary>
     ///     Adds Scatter Chart.
     /// </summary>
@@ -126,7 +126,7 @@ public interface IUserSlideShapeCollection : IShapeCollection
         IList<string> categories,
         IList<DraftChart.SeriesData> seriesData,
         string chartName);
-        
+
     /// <summary>
     ///     Adds a Clustered Bar Chart with multi-level categories.
     /// </summary>

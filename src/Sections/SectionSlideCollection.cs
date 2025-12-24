@@ -8,7 +8,7 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Sections;
 
-internal sealed class SectionSlideCollection(P14.Section p14Section): IReadOnlyList<IUserSlide>
+internal sealed class SectionSlideCollection(P14.Section p14Section) : IReadOnlyList<IUserSlide>
 {
     public int Count => this.GetSlides().Count;
 

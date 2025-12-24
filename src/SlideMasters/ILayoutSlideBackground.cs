@@ -75,11 +75,11 @@ internal sealed class LayoutSlideBackground(SlideLayoutPart slideLayoutPart) : I
         pBackgroundProperties.GetFirstChild<A.PatternFill>()?.Remove();
         pBackgroundProperties.GetFirstChild<A.NoFill>()?.Remove();
         pBackgroundProperties.GetFirstChild<A.BlipFill>()?.Remove();
-        
+
         var aBlipFill = new A.BlipFill(
             new A.Blip { Embed = rId },
             new A.Stretch(new A.FillRectangle()));
-        
+
         var aOutline = pBackgroundProperties.GetFirstChild<A.Outline>();
         if (aOutline != null)
         {

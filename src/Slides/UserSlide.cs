@@ -170,7 +170,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
         using var fileStream = File.Create(file);
         this.SaveImageTo(fileStream);
     }
-    
+
     public void SaveImageTo(Stream stream)
     {
         var presPart = this.GetSdkPresentationPart();
@@ -336,7 +336,8 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                     new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeProperties(
                         new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
                         {
-                            Id = (UInt32Value)1U, Name = string.Empty
+                            Id = (UInt32Value)1U,
+                            Name = string.Empty
                         },
                         new DocumentFormat.OpenXml.Presentation.NonVisualGroupShapeDrawingProperties(),
                         new ApplicationNonVisualDrawingProperties()),
@@ -345,7 +346,8 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
                         new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties(
                             new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
                             {
-                                Id = (UInt32Value)2U, Name = "Notes Placeholder 2"
+                                Id = (UInt32Value)2U,
+                                Name = "Notes Placeholder 2"
                             },
                             new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(
                                 new ShapeLocks { NoGrouping = true }),

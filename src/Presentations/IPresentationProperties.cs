@@ -106,7 +106,7 @@ public interface IPresentationProperties
     string? Version { get; set; }
 }
 
-internal class PresentationProperties(IPackageProperties packageProperties): IPresentationProperties
+internal class PresentationProperties(IPackageProperties packageProperties) : IPresentationProperties
 {
     public string? Author
     {
@@ -114,73 +114,73 @@ internal class PresentationProperties(IPackageProperties packageProperties): IPr
         set => packageProperties.Creator = value;
     }
 
-    public string? Categories 
+    public string? Categories
     {
         get => packageProperties.Category;
         set => packageProperties.Category = value;
     }
-    
-    public string? ContentType 
+
+    public string? ContentType
     {
         get => packageProperties.ContentType;
         set => packageProperties.ContentType = value;
     }
-    
-    public string? ContentStatus 
+
+    public string? ContentStatus
     {
         get => packageProperties.ContentStatus;
         set => packageProperties.ContentStatus = value;
     }
-    
-    public DateTime? Created 
+
+    public DateTime? Created
     {
         get => packageProperties.Created;
         set => packageProperties.Created = value;
     }
-    
-    public string? Comments 
+
+    public string? Comments
     {
         get => packageProperties.Description;
         set => packageProperties.Description = value;
     }
-    
-    public string? Identifier 
+
+    public string? Identifier
     {
         get => packageProperties.Identifier;
         set => packageProperties.Identifier = value;
     }
-    
-    public string? Tags 
+
+    public string? Tags
     {
         get => packageProperties.Keywords;
         set => packageProperties.Keywords = value;
     }
-    
-    public string? Language 
+
+    public string? Language
     {
         get => packageProperties.Language;
         set => packageProperties.Language = value;
     }
-    
-    public string? LastModifiedBy 
+
+    public string? LastModifiedBy
     {
         get => packageProperties.LastModifiedBy;
         set => packageProperties.LastModifiedBy = value;
     }
-    
-    public DateTime? LastPrinted 
+
+    public DateTime? LastPrinted
     {
         get => packageProperties.LastPrinted;
         set => packageProperties.LastPrinted = value;
     }
-    
-    public DateTime? Modified 
+
+    public DateTime? Modified
     {
         get => packageProperties.Modified;
         set => packageProperties.Modified = value;
     }
-    
-    public int? RevisionNumber 
+
+    public int? RevisionNumber
     {
         get
         {
@@ -196,22 +196,22 @@ internal class PresentationProperties(IPackageProperties packageProperties): IPr
         }
         set => packageProperties.Revision = value?.ToString();
     }
-    
-    public string? Subject 
+
+    public string? Subject
     {
         get => packageProperties.Subject;
         set => packageProperties.Subject = value;
     }
-    
-    public string? Title 
+
+    public string? Title
     {
         get => packageProperties.Title;
         set => packageProperties.Title = value;
     }
-    
-    public string? Version 
+
+    public string? Version
     {
         get => packageProperties.Version;
         set => packageProperties.Version = value;
-    }    
+    }
 }

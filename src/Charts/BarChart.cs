@@ -43,7 +43,7 @@ internal sealed class BarChart(
         uint index = 0;
         foreach (var item in categoryValues)
         {
-            var point = new StringPoint() { Index = index };
+            var point = new StringPoint { Index = index };
             point.AppendChild(new NumericValue(item.Key));
             stringLiteral.AppendChild(point);
             index++;

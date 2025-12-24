@@ -17,12 +17,12 @@ internal sealed class Chart : IChart
     private readonly Categories? categories;
     private readonly XAxis? xAxis;
     private readonly Lazy<ChartTitle> chartTitle;
-    
+
     internal Chart(
-        SeriesCollection seriesCollection, 
-        SlideShapeOutline outline, 
-        ShapeFill fill, 
-        ChartPart chartPart, 
+        SeriesCollection seriesCollection,
+        SlideShapeOutline outline,
+        ShapeFill fill,
+        ChartPart chartPart,
         Categories categories,
         XAxis xAxis)
     {
@@ -34,11 +34,11 @@ internal sealed class Chart : IChart
         this.xAxis = xAxis;
         this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, this.Type, this.SeriesCollection, new ChartTitleAlignment(chartPart)));
     }
-    
+
     internal Chart(
-        SeriesCollection seriesCollection, 
-        SlideShapeOutline outline, 
-        ShapeFill fill, 
+        SeriesCollection seriesCollection,
+        SlideShapeOutline outline,
+        ShapeFill fill,
         ChartPart chartPart,
         XAxis xAxis)
     {
@@ -49,12 +49,12 @@ internal sealed class Chart : IChart
         this.xAxis = xAxis;
         this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, this.Type, this.SeriesCollection, new ChartTitleAlignment(chartPart)));
     }
-    
+
     internal Chart(
-        SeriesCollection seriesCollection, 
-        SlideShapeOutline outline, 
-        ShapeFill fill, 
-        ChartPart chartPart, 
+        SeriesCollection seriesCollection,
+        SlideShapeOutline outline,
+        ShapeFill fill,
+        ChartPart chartPart,
         Categories categories)
     {
         this.seriesCollection = seriesCollection;
@@ -62,14 +62,14 @@ internal sealed class Chart : IChart
         this.fill = fill;
         this.chartPart = chartPart;
         this.categories = categories;
-        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, this.Type, this.SeriesCollection,  new ChartTitleAlignment(chartPart)));
+        this.chartTitle = new Lazy<ChartTitle>(() => new ChartTitle(chartPart, this.Type, this.SeriesCollection, new ChartTitleAlignment(chartPart)));
     }
 
     public ChartType Type
     {
         get
         {
-            var plotArea = this.chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var plotArea = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             if (cXCharts.Count() > 1)
             {

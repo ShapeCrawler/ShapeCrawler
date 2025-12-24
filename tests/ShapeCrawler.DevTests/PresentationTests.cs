@@ -808,7 +808,7 @@ public class PresentationTests : SCTest
 
         // Assert
         var slideIdRelationshipIdList =
-            destPres.GetSDKPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
+            destPres.GetSdkPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
     }

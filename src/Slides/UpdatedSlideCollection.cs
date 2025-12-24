@@ -212,7 +212,8 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         {
             return new P.TextBody(new A.Paragraph(new A.EndParagraphRunProperties()))
             {
-                BodyProperties = new A.BodyProperties(), ListStyle = new A.ListStyle(),
+                BodyProperties = new A.BodyProperties(),
+                ListStyle = new A.ListStyle(),
             };
         }
 
@@ -242,7 +243,8 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var masterId = CreateId(sdkPresDest.SlideMasterIdList!);
         P.SlideMasterId slideMaterId = new()
         {
-            Id = masterId, RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
+            Id = masterId,
+            RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
         };
         sdkPresDocDest.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
         sdkPresDocDest.PresentationPart.Presentation.Save();

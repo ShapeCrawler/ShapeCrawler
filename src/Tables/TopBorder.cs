@@ -5,7 +5,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;
 
-internal class TopBorder(A.TableCellProperties aTableCellProperties): IBorder
+internal class TopBorder(A.TableCellProperties aTableCellProperties) : IBorder
 {
     public decimal Width
     {
@@ -51,7 +51,7 @@ internal class TopBorder(A.TableCellProperties aTableCellProperties): IBorder
             aTableCellProperties.TopBorderLineProperties = new A.TopBorderLineProperties();
             aTableCellProperties.TopBorderLineProperties.AppendChild(aSolidFill);
         }
-        
+
         var emus = new Points(points).AsEmus();
         aTableCellProperties.TopBorderLineProperties.Width = new Int32Value((int)emus);
     }
@@ -64,7 +64,7 @@ internal class TopBorder(A.TableCellProperties aTableCellProperties): IBorder
         }
 
         var emus = aTableCellProperties.TopBorderLineProperties!.Width!.Value;
-        
+
         return new Emus(emus).AsPoints();
     }
 }

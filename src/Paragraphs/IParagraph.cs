@@ -39,7 +39,7 @@ public interface IParagraph
     ///     Gets spacing.
     /// </summary>
     ISpacing Spacing { get; }
-    
+
     /// <summary>
     ///     Gets font color.
     /// </summary>
@@ -54,7 +54,7 @@ public interface IParagraph
     ///     Gets or sets paragraph indent level.
     /// </summary>
     int IndentLevel { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets paragraph first line indent in points.
     /// </summary>
@@ -122,7 +122,7 @@ internal sealed class Paragraph : IParagraph
                 return string.Empty;
             }
 
-            return this.portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
+            return this.portions.Select(portion => portion.Text).Aggregate((result, next) => result + next)!;
         }
 
         set
@@ -149,8 +149,8 @@ internal sealed class Paragraph : IParagraph
 #else
             var textLines = value.Split(Environment.NewLine);
 #endif
-            var mainRun = this.aParagraph.GetFirstChild<A.Run>() !;
-            mainRun.Text!.Text = textLines.First();
+            var mainRun = this.aParagraph.GetFirstChild<A.Run>()!;
+            mainRun.Text!.Text = textLines[0];
 
             foreach (var textLine in textLines.Skip(1))
             {
@@ -198,7 +198,7 @@ internal sealed class Paragraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
-    
+
     public string FontColor
     {
         get

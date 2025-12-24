@@ -101,7 +101,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         }
 
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>() !;
+            .GetFirstChild<P.PlaceholderShape>()!;
         var referencedLayoutPShape =
             new SCPShapeTree(slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(
                 pPlaceholderShape);
@@ -231,7 +231,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
                 {
                     return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.TitleStyle!
                         .Level1ParagraphProperties!
-                        .GetFirstChild<A.DefaultRunProperties>() !
+                        .GetFirstChild<A.DefaultRunProperties>()!
                         .GetFirstChild<A.LatinFont>();
                 }
 
@@ -268,7 +268,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         var pShape = aText.Ancestors<P.Shape>().First();
         var fonts = new IndentFonts(pShape.TextBody!.ListStyle!);
 
-        return fonts.ALatinFontOrNull(indentLevel) !;
+        return fonts.ALatinFontOrNull(indentLevel)!;
     }
 
     private A.LatinFont? NotesSlideALatinFontOrNull(NotesSlidePart notesSlidePart)

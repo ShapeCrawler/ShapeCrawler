@@ -12,7 +12,7 @@ internal sealed class GroupedShape : Shape
 {
     private readonly P.Shape pShape;
 
-    internal GroupedShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.Shape pShape) 
+    internal GroupedShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.Shape pShape)
         : base(position, shapeSize, shapeId, pShape)
     {
         this.pShape = pShape;

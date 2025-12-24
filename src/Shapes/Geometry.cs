@@ -148,802 +148,802 @@ public enum Geometry
     TopCornersRoundedRectangle,
 
     /// <summary>
-    ///     Round2DiagonalRectangle
+    ///     Round2DiagonalRectangle.
     /// </summary>
     DiagonalCornersRoundedRectangle,
 
     /// <summary>
-    ///     SnipRoundRectangle
+    ///     SnipRoundRectangle.
     /// </summary>
     SnipRoundRectangle,
 
     /// <summary>
-    ///     Snip1Rectangle
+    ///     Snip1Rectangle.
     /// </summary>
     Snip1Rectangle,
 
     /// <summary>
-    ///     Snip2SameRectangle
+    ///     Snip2SameRectangle.
     /// </summary>
     Snip2SameRectangle,
 
     /// <summary>
-    ///     Snip2DiagonalRectangle
+    ///     Snip2DiagonalRectangle.
     /// </summary>
     Snip2DiagonalRectangle,
 
     /// <summary>
-    ///     Plaque
+    ///     Plaque.
     /// </summary>
     Plaque,
 
     /// <summary>
-    ///     Ellipse
+    ///     Ellipse.
     /// </summary>
     Ellipse,
 
     /// <summary>
-    ///     Teardrop
+    ///     Teardrop.
     /// </summary>
     Teardrop,
 
     /// <summary>
-    ///     HomePlate
+    ///     HomePlate.
     /// </summary>
     HomePlate,
 
     /// <summary>
-    ///     Chevron
+    ///     Chevron.
     /// </summary>
     Chevron,
 
     /// <summary>
-    ///     PieWedge
+    ///     PieWedge.
     /// </summary>
     PieWedge,
 
     /// <summary>
-    ///     Pie
+    ///     Pie.
     /// </summary>
     Pie,
 
     /// <summary>
-    ///     BlockArc
+    ///     BlockArc.
     /// </summary>
     BlockArc,
 
     /// <summary>
-    ///     Donut
+    ///     Donut.
     /// </summary>
     Donut,
 
     /// <summary>
-    ///     NoSmoking
+    ///     NoSmoking.
     /// </summary>
     NoSmoking,
 
     /// <summary>
-    ///     RightArrow
+    ///     RightArrow.
     /// </summary>
     RightArrow,
 
     /// <summary>
-    ///     LeftArrow
+    ///     LeftArrow.
     /// </summary>
     LeftArrow,
 
     /// <summary>
-    ///     UpArrow
+    ///     UpArrow.
     /// </summary>
     UpArrow,
 
     /// <summary>
-    ///     DownArrow
+    ///     DownArrow.
     /// </summary>
     DownArrow,
 
     /// <summary>
-    ///     StripedRightArrow
+    ///     StripedRightArrow.
     /// </summary>
     StripedRightArrow,
 
     /// <summary>
-    ///     NotchedRightArrow
+    ///     NotchedRightArrow.
     /// </summary>
     NotchedRightArrow,
 
     /// <summary>
-    ///     BentUpArrow
+    ///     BentUpArrow.
     /// </summary>
     BentUpArrow,
 
     /// <summary>
-    ///     LeftRightArrow
+    ///     LeftRightArrow.
     /// </summary>
     LeftRightArrow,
 
     /// <summary>
-    ///     UpDownArrow
+    ///     UpDownArrow.
     /// </summary>
     UpDownArrow,
 
     /// <summary>
-    ///     LeftUpArrow
+    ///     LeftUpArrow.
     /// </summary>
     LeftUpArrow,
 
     /// <summary>
-    ///     LeftRightUpArrow
+    ///     LeftRightUpArrow.
     /// </summary>
     LeftRightUpArrow,
 
     /// <summary>
-    ///     QuadArrow
+    ///     QuadArrow.
     /// </summary>
     QuadArrow,
 
     /// <summary>
-    ///     LeftArrowCallout
+    ///     LeftArrowCallout.
     /// </summary>
     LeftArrowCallout,
 
     /// <summary>
-    ///     RightArrowCallout
+    ///     RightArrowCallout.
     /// </summary>
     RightArrowCallout,
 
     /// <summary>
-    ///     UpArrowCallout
+    ///     UpArrowCallout.
     /// </summary>
     UpArrowCallout,
 
     /// <summary>
-    ///     DownArrowCallout
+    ///     DownArrowCallout.
     /// </summary>
     DownArrowCallout,
 
     /// <summary>
-    ///     LeftRightArrowCallout
+    ///     LeftRightArrowCallout.
     /// </summary>
     LeftRightArrowCallout,
 
     /// <summary>
-    ///     UpDownArrowCallout
+    ///     UpDownArrowCallout.
     /// </summary>
     UpDownArrowCallout,
 
     /// <summary>
-    ///     QuadArrowCallout
+    ///     QuadArrowCallout.
     /// </summary>
     QuadArrowCallout,
 
     /// <summary>
-    ///     BentArrow
+    ///     BentArrow.
     /// </summary>
     BentArrow,
 
     /// <summary>
-    ///     UTurnArrow
+    ///     UTurnArrow.
     /// </summary>
     UTurnArrow,
 
     /// <summary>
-    ///     CircularArrow
+    ///     CircularArrow.
     /// </summary>
     CircularArrow,
 
     /// <summary>
-    ///     LeftCircularArrow
+    ///     LeftCircularArrow.
     /// </summary>
     LeftCircularArrow,
 
     /// <summary>
-    ///     LeftRightCircularArrow
+    ///     LeftRightCircularArrow.
     /// </summary>
     LeftRightCircularArrow,
 
     /// <summary>
-    ///     CurvedRightArrow
+    ///     CurvedRightArrow.
     /// </summary>
     CurvedRightArrow,
 
     /// <summary>
-    ///     CurvedLeftArrow
+    ///     CurvedLeftArrow.
     /// </summary>
     CurvedLeftArrow,
 
     /// <summary>
-    ///     CurvedUpArrow
+    ///     CurvedUpArrow.
     /// </summary>
     CurvedUpArrow,
 
     /// <summary>
-    ///     CurvedDownArrow
+    ///     CurvedDownArrow.
     /// </summary>
     CurvedDownArrow,
 
     /// <summary>
-    ///     SwooshArrow
+    ///     SwooshArrow.
     /// </summary>
     SwooshArrow,
 
     /// <summary>
-    ///     Cube
+    ///     Cube.
     /// </summary>
     Cube,
 
     /// <summary>
-    ///     Can
+    ///     Can.
     /// </summary>
     Can,
 
     /// <summary>
-    ///     LightningBolt
+    ///     LightningBolt.
     /// </summary>
     LightningBolt,
 
     /// <summary>
-    ///     Heart
+    ///     Heart.
     /// </summary>
     Heart,
 
     /// <summary>
-    ///     Sun
+    ///     Sun.
     /// </summary>
     Sun,
 
     /// <summary>
-    ///     Moon
+    ///     Moon.
     /// </summary>
     Moon,
 
     /// <summary>
-    ///     SmileyFace
+    ///     SmileyFace.
     /// </summary>
     SmileyFace,
 
     /// <summary>
-    ///     IrregularSeal1
+    ///     IrregularSeal1.
     /// </summary>
     IrregularSeal1,
 
     /// <summary>
-    ///     IrregularSeal2
+    ///     IrregularSeal2.
     /// </summary>
     IrregularSeal2,
 
     /// <summary>
-    ///     FoldedCorner
+    ///     FoldedCorner.
     /// </summary>
     FoldedCorner,
 
     /// <summary>
-    ///     Bevel
+    ///     Bevel.
     /// </summary>
     Bevel,
 
     /// <summary>
-    ///     Frame
+    ///     Frame.
     /// </summary>
     Frame,
 
     /// <summary>
-    ///     HalfFrame
+    ///     HalfFrame.
     /// </summary>
     HalfFrame,
 
     /// <summary>
-    ///     Corner
+    ///     Corner.
     /// </summary>
     Corner,
 
     /// <summary>
-    ///     DiagonalStripe
+    ///     DiagonalStripe.
     /// </summary>
     DiagonalStripe,
 
     /// <summary>
-    ///     Chord
+    ///     Chord.
     /// </summary>
     Chord,
 
     /// <summary>
-    ///     Arc
+    ///     Arc.
     /// </summary>
     Arc,
 
     /// <summary>
-    ///     LeftBracket
+    ///     LeftBracket.
     /// </summary>
     LeftBracket,
 
     /// <summary>
-    ///     RightBracket
+    ///     RightBracket.
     /// </summary>
     RightBracket,
 
     /// <summary>
-    ///     LeftBrace
+    ///     LeftBrace.
     /// </summary>
     LeftBrace,
 
     /// <summary>
-    ///     RightBrace
+    ///     RightBrace.
     /// </summary>
     RightBrace,
 
     /// <summary>
-    ///     BracketPair
+    ///     BracketPair.
     /// </summary>
     BracketPair,
 
     /// <summary>
-    ///     BracePair
+    ///     BracePair.
     /// </summary>
     BracePair,
 
     /// <summary>
-    ///     StraightConnector1
+    ///     StraightConnector1.
     /// </summary>
     StraightConnector1,
 
     /// <summary>
-    ///     BentConnector2
+    ///     BentConnector2.
     /// </summary>
     BentConnector2,
 
     /// <summary>
-    ///     BentConnector3
+    ///     BentConnector3.
     /// </summary>
     BentConnector3,
 
     /// <summary>
-    ///     BentConnector4
+    ///     BentConnector4.
     /// </summary>
     BentConnector4,
 
     /// <summary>
-    ///     BentConnector5
+    ///     BentConnector5.
     /// </summary>
     BentConnector5,
 
     /// <summary>
-    ///     CurvedConnector2
+    ///     CurvedConnector2.
     /// </summary>
     CurvedConnector2,
 
     /// <summary>
-    ///     CurvedConnector3
+    ///     CurvedConnector3.
     /// </summary>
     CurvedConnector3,
 
     /// <summary>
-    ///     CurvedConnector4
+    ///     CurvedConnector4.
     /// </summary>
     CurvedConnector4,
 
     /// <summary>
-    ///     CurvedConnector5
+    ///     CurvedConnector5.
     /// </summary>
     CurvedConnector5,
 
     /// <summary>
-    ///     Callout1
+    ///     Callout1.
     /// </summary>
     Callout1,
 
     /// <summary>
-    ///     Callout2
+    ///     Callout2.
     /// </summary>
     Callout2,
 
     /// <summary>
-    ///     Callout3
+    ///     Callout3.
     /// </summary>
     Callout3,
 
     /// <summary>
-    ///     AccentCallout1
+    ///     AccentCallout1.
     /// </summary>
     AccentCallout1,
 
     /// <summary>
-    ///     AccentCallout2
+    ///     AccentCallout2.
     /// </summary>
     AccentCallout2,
 
     /// <summary>
-    ///     AccentCallout3
+    ///     AccentCallout3.
     /// </summary>
     AccentCallout3,
 
     /// <summary>
-    ///     BorderCallout1
+    ///     BorderCallout1.
     /// </summary>
     BorderCallout1,
 
     /// <summary>
-    ///     BorderCallout2
+    ///     BorderCallout2.
     /// </summary>
     BorderCallout2,
 
     /// <summary>
-    ///     BorderCallout3
+    ///     BorderCallout3.
     /// </summary>
     BorderCallout3,
 
     /// <summary>
-    ///     AccentBorderCallout1
+    ///     AccentBorderCallout1.
     /// </summary>
     AccentBorderCallout1,
 
     /// <summary>
-    ///     AccentBorderCallout2
+    ///     AccentBorderCallout2.
     /// </summary>
     AccentBorderCallout2,
 
     /// <summary>
-    ///     AccentBorderCallout3
+    ///     AccentBorderCallout3.
     /// </summary>
     AccentBorderCallout3,
 
     /// <summary>
-    ///     WedgeRectangleCallout
+    ///     WedgeRectangleCallout.
     /// </summary>
     WedgeRectangleCallout,
 
     /// <summary>
-    ///     WedgeRoundRectangleCallout
+    ///     WedgeRoundRectangleCallout.
     /// </summary>
     WedgeRoundRectangleCallout,
 
     /// <summary>
-    ///     WedgeEllipseCallout
+    ///     WedgeEllipseCallout.
     /// </summary>
     WedgeEllipseCallout,
 
     /// <summary>
-    ///     CloudCallout
+    ///     CloudCallout.
     /// </summary>
     CloudCallout,
 
     /// <summary>
-    ///     Cloud
+    ///     Cloud.
     /// </summary>
     Cloud,
 
     /// <summary>
-    ///     Ribbon
+    ///     Ribbon.
     /// </summary>
     Ribbon,
 
     /// <summary>
-    ///     Ribbon2
+    ///     Ribbon2.
     /// </summary>
     Ribbon2,
 
     /// <summary>
-    ///     EllipseRibbon
+    ///     EllipseRibbon.
     /// </summary>
     EllipseRibbon,
 
     /// <summary>
-    ///     EllipseRibbon2
+    ///     EllipseRibbon2.
     /// </summary>
     EllipseRibbon2,
 
     /// <summary>
-    ///     LeftRightRibbon
+    ///     LeftRightRibbon.
     /// </summary>
     LeftRightRibbon,
 
     /// <summary>
-    ///     VerticalScroll
+    ///     VerticalScroll.
     /// </summary>
     VerticalScroll,
 
     /// <summary>
-    ///     HorizontalScroll
+    ///     HorizontalScroll.
     /// </summary>
     HorizontalScroll,
 
     /// <summary>
-    ///     Wave
+    ///     Wave.
     /// </summary>
     Wave,
 
     /// <summary>
-    ///     DoubleWave
+    ///     DoubleWave.
     /// </summary>
     DoubleWave,
 
     /// <summary>
-    ///     Plus
+    ///     Plus.
     /// </summary>
     Plus,
 
     /// <summary>
-    ///     FlowChartProcess
+    ///     FlowChartProcess.
     /// </summary>
     FlowChartProcess,
 
     /// <summary>
-    ///     FlowChartDecision
+    ///     FlowChartDecision.
     /// </summary>
     FlowChartDecision,
 
     /// <summary>
-    ///     FlowChartInputOutput
+    ///     FlowChartInputOutput.
     /// </summary>
     FlowChartInputOutput,
 
     /// <summary>
-    ///     FlowChartPredefinedProcess
+    ///     FlowChartPredefinedProcess.
     /// </summary>
     FlowChartPredefinedProcess,
 
     /// <summary>
-    ///     FlowChartInternalStorage
+    ///     FlowChartInternalStorage.
     /// </summary>
     FlowChartInternalStorage,
 
     /// <summary>
-    ///     FlowChartDocument
+    ///     FlowChartDocument.
     /// </summary>
     FlowChartDocument,
 
     /// <summary>
-    ///     FlowChartMultidocument
+    ///     FlowChartMultidocument.
     /// </summary>
     FlowChartMultidocument,
 
     /// <summary>
-    ///     FlowChartTerminator
+    ///     FlowChartTerminator.
     /// </summary>
     FlowChartTerminator,
 
     /// <summary>
-    ///     FlowChartPreparation
+    ///     FlowChartPreparation.
     /// </summary>
     FlowChartPreparation,
 
     /// <summary>
-    ///     FlowChartManualInput
+    ///     FlowChartManualInput.
     /// </summary>
     FlowChartManualInput,
 
     /// <summary>
-    ///     FlowChartManualOperation
+    ///     FlowChartManualOperation.
     /// </summary>
     FlowChartManualOperation,
 
     /// <summary>
-    ///     FlowChartConnector
+    ///     FlowChartConnector.
     /// </summary>
     FlowChartConnector,
 
     /// <summary>
-    ///     FlowChartPunchedCard
+    ///     FlowChartPunchedCard.
     /// </summary>
     FlowChartPunchedCard,
 
     /// <summary>
-    ///     FlowChartPunchedTape
+    ///     FlowChartPunchedTape.
     /// </summary>
     FlowChartPunchedTape,
 
     /// <summary>
-    ///     FlowChartSummingJunction
+    ///     FlowChartSummingJunction.
     /// </summary>
     FlowChartSummingJunction,
 
     /// <summary>
-    ///     FlowChartOr
+    ///     FlowChartOr.
     /// </summary>
     FlowChartOr,
 
     /// <summary>
-    ///     FlowChartCollate
+    ///     FlowChartCollate.
     /// </summary>
     FlowChartCollate,
 
     /// <summary>
-    ///     FlowChartSort
+    ///     FlowChartSort.
     /// </summary>
     FlowChartSort,
 
     /// <summary>
-    ///     FlowChartExtract
+    ///     FlowChartExtract.
     /// </summary>
     FlowChartExtract,
 
     /// <summary>
-    ///     FlowChartMerge
+    ///     FlowChartMerge.
     /// </summary>
     FlowChartMerge,
 
     /// <summary>
-    ///     FlowChartOfflineStorage
+    ///     FlowChartOfflineStorage.
     /// </summary>
     FlowChartOfflineStorage,
 
     /// <summary>
-    ///     FlowChartOnlineStorage
+    ///     FlowChartOnlineStorage.
     /// </summary>
     FlowChartOnlineStorage,
 
     /// <summary>
-    ///     FlowChartMagneticTape
+    ///     FlowChartMagneticTape.
     /// </summary>
     FlowChartMagneticTape,
 
     /// <summary>
-    ///     FlowChartMagneticDisk
+    ///     FlowChartMagneticDisk.
     /// </summary>
     FlowChartMagneticDisk,
 
     /// <summary>
-    ///     FlowChartMagneticDrum
+    ///     FlowChartMagneticDrum.
     /// </summary>
     FlowChartMagneticDrum,
 
     /// <summary>
-    ///     FlowChartDisplay
+    ///     FlowChartDisplay.
     /// </summary>
     FlowChartDisplay,
 
     /// <summary>
-    ///     FlowChartDelay
+    ///     FlowChartDelay.
     /// </summary>
     FlowChartDelay,
 
     /// <summary>
-    ///     FlowChartAlternateProcess
+    ///     FlowChartAlternateProcess.
     /// </summary>
     FlowChartAlternateProcess,
 
     /// <summary>
-    ///     FlowChartOffpageConnector
+    ///     FlowChartOffpageConnector.
     /// </summary>
     FlowChartOffpageConnector,
 
     /// <summary>
-    ///     ActionButtonBlank
+    ///     ActionButtonBlank.
     /// </summary>
     ActionButtonBlank,
 
     /// <summary>
-    ///     ActionButtonHome
+    ///     ActionButtonHome.
     /// </summary>
     ActionButtonHome,
 
     /// <summary>
-    ///     ActionButtonHelp
+    ///     ActionButtonHelp.
     /// </summary>
     ActionButtonHelp,
 
     /// <summary>
-    ///     ActionButtonInformation
+    ///     ActionButtonInformation.
     /// </summary>
     ActionButtonInformation,
 
     /// <summary>
-    ///     ActionButtonForwardNext
+    ///     ActionButtonForwardNext.
     /// </summary>
     ActionButtonForwardNext,
 
     /// <summary>
-    ///     ActionButtonBackPrevious
+    ///     ActionButtonBackPrevious.
     /// </summary>
     ActionButtonBackPrevious,
 
     /// <summary>
-    ///     ActionButtonEnd
+    ///     ActionButtonEnd.
     /// </summary>
     ActionButtonEnd,
 
     /// <summary>
-    ///     ActionButtonBeginning
+    ///     ActionButtonBeginning.
     /// </summary>
     ActionButtonBeginning,
 
     /// <summary>
-    ///     ActionButtonReturn
+    ///     ActionButtonReturn.
     /// </summary>
     ActionButtonReturn,
 
     /// <summary>
-    ///     ActionButtonDocument
+    ///     ActionButtonDocument.
     /// </summary>
     ActionButtonDocument,
 
     /// <summary>
-    ///     ActionButtonSound
+    ///     ActionButtonSound.
     /// </summary>
     ActionButtonSound,
 
     /// <summary>
-    ///     ActionButtonMovie
+    ///     ActionButtonMovie.
     /// </summary>
     ActionButtonMovie,
 
     /// <summary>
-    ///     Gear6
+    ///     Gear6.
     /// </summary>
     Gear6,
 
     /// <summary>
-    ///     Gear9
+    ///     Gear9.
     /// </summary>
     Gear9,
 
     /// <summary>
-    ///     Funnel
+    ///     Funnel.
     /// </summary>
     Funnel,
 
     /// <summary>
-    ///     MathPlus
+    ///     MathPlus.
     /// </summary>
     MathPlus,
 
     /// <summary>
-    ///     MathMinus
+    ///     MathMinus.
     /// </summary>
     MathMinus,
 
     /// <summary>
-    ///     MathMultiply
+    ///     MathMultiply.
     /// </summary>
     MathMultiply,
 
     /// <summary>
-    ///     MathDivide
+    ///     MathDivide.
     /// </summary>
     MathDivide,
 
     /// <summary>
-    ///     MathEqual
+    ///     MathEqual.
     /// </summary>
     MathEqual,
 
     /// <summary>
-    ///     MathNotEqual
+    ///     MathNotEqual.
     /// </summary>
     MathNotEqual,
 
     /// <summary>
-    ///     CornerTabs
+    ///     CornerTabs.
     /// </summary>
     CornerTabs,
 
     /// <summary>
-    ///     SquareTabs
+    ///     SquareTabs.
     /// </summary>
     SquareTabs,
 
     /// <summary>
-    ///     PlaqueTabs
+    ///     PlaqueTabs.
     /// </summary>
     PlaqueTabs,
 
     /// <summary>
-    ///     ChartX
+    ///     ChartX.
     /// </summary>
     ChartX,
 
     /// <summary>
-    ///     ChartStar
+    ///     ChartStar.
     /// </summary>
     ChartStar,
 
     /// <summary>
-    ///     ChartPlus
+    ///     ChartPlus.
     /// </summary>
     ChartPlus,
 
     /// <summary>
-    ///     Custom
+    ///     Custom.
     /// </summary>
     Custom
 }

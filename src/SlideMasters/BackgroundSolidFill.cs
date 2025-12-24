@@ -15,7 +15,7 @@ internal sealed class BackgroundSolidFill(SlideLayoutPart slideLayoutPart) : ISo
             var aSolidFill = pBackgroundProperties?.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
 
             var aRgbColorModelHex = aSolidFill?.RgbColorModelHex;
-            
+
             return aRgbColorModelHex != null ? aRgbColorModelHex.Val!.ToString()! : string.Empty;
         }
     }

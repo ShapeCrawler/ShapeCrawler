@@ -72,7 +72,7 @@ internal sealed class TextContent(
             paragraphs.Add();
             return paragraphs.First();
         }
-        
+
         foreach (var paragraph in paragraphsList.Skip(1))
         {
             paragraph.Remove();

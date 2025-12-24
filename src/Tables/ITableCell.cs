@@ -1,5 +1,5 @@
 ﻿using ShapeCrawler.Drawing;
-using ShapeCrawler.Tables; 
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
 #pragma warning disable IDE0130
@@ -30,17 +30,17 @@ public interface ITableCell
     ///     Gets the Top Border.
     /// </summary>
     IBorder TopBorder { get; }
-    
+
     /// <summary>
     ///     Gets the Bottom Border.
     /// </summary>
     IBorder BottomBorder { get; }
-    
+
     /// <summary>
     ///     Gets the Left Border.
     /// </summary>
     IBorder LeftBorder { get; }
-    
+
     /// <summary>
     ///     Gets the Right Border.
     /// </summary>
@@ -71,7 +71,7 @@ internal sealed class TableCell : ITableCell
     public IShapeFill Fill { get; }
 
     public IBorder TopBorder { get; }
-    
+
     public IBorder BottomBorder { get; }
 
     public IBorder LeftBorder { get; }

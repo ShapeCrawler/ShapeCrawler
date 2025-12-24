@@ -7,6 +7,6 @@ internal readonly ref struct Pixels(decimal pixels)
     private const int EmusPerInch = 914400;
 
     internal long AsHorizontalEmus() => (long)(pixels * EmusPerInch / HorizontalResolutionDpi);
-   
+
     internal long AsVerticalEmus() => (long)(pixels * EmusPerInch / VerticalResolutionDpi);
 }

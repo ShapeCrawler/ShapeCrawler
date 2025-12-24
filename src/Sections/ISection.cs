@@ -37,11 +37,11 @@ internal sealed class Section : ISection, IRemovable
     }
 
     public string Name => this.GetName();
-    
+
     public IReadOnlyList<IUserSlide> Slides { get; }
-    
+
     private P14.Section P14Section { get; }
-    
+
     public void Remove() => this.P14Section.Remove();
 
     private string GetName() => this.P14Section.Name!;

@@ -46,7 +46,7 @@ internal readonly ref struct SCPShapeTree(P.ShapeTree pShapeTree)
     internal P.Shape? ReferencedPShapeOrNull(P.PlaceholderShape pPlaceholderShape)
     {
         var pShapes = GetShapesWithPlaceholder(pShapeTree);
-        
+
         // First try to find shape by matching both type and index
         var matchByTypeAndIndex = FindShapeByTypeAndIndex(pShapes, pPlaceholderShape);
         if (matchByTypeAndIndex != null)
@@ -84,8 +84,8 @@ internal readonly ref struct SCPShapeTree(P.ShapeTree pShapeTree)
         {
             return null;
         }
-        
-        return shapes.FirstOrDefault(shape => 
+
+        return shapes.FirstOrDefault(shape =>
             GetPlaceholderFromShape(shape)?.Type?.Value == targetPlaceholder.Type.Value);
     }
 
@@ -101,7 +101,7 @@ internal readonly ref struct SCPShapeTree(P.ShapeTree pShapeTree)
         {
             return false;
         }
-        
+
         return placeholder1.Type?.Value == placeholder2.Type?.Value &&
                placeholder1.Index?.Value == placeholder2.Index?.Value;
     }

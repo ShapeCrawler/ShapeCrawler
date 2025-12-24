@@ -17,7 +17,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
     internal ChartPoints(ChartPart chartPart, OpenXmlElement cSerXmlElement)
     {
         this.chartPart = chartPart;
-        
+
         var numberReference = GetNumberReference(cSerXmlElement);
         if (numberReference?.Formula != null)
         {
@@ -33,15 +33,15 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
             this.chartPoints = [];
         }
     }
-    
+
     public int Count => this.chartPoints.Count;
 
     public IChartPoint this[int index] => this.chartPoints[index];
 
     public IEnumerator<IChartPoint> GetEnumerator() => this.chartPoints.GetEnumerator();
-    
+
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-    
+
     private static NumberReference? GetNumberReference(OpenXmlElement cSerXmlElement)
     {
         var cVal = cSerXmlElement.GetFirstChild<Values>();
@@ -49,7 +49,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         {
             return cVal.NumberReference;
         }
-        
+
         var cYVal = cSerXmlElement.GetFirstChild<YValues>();
         return cYVal?.NumberReference;
     }
@@ -59,27 +59,27 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         var normalizedFormula = formula.Text.Replace("$", string.Empty).Replace("'", string.Empty);
         var sheetName = ExtractSheetName(normalizedFormula);
         var addresses = ExtractAddresses(normalizedFormula);
-        
+
         return (sheetName, addresses);
     }
 
     private static string ExtractSheetName(string normalizedFormula)
     {
         return Regex.Match(
-            normalizedFormula, 
-            @"(?<=\(*)[\p{L} 0-9]+?(?=!)", 
-            RegexOptions.None, 
+            normalizedFormula,
+            @"(?<=\(*)[\p{L} 0-9]+?(?=!)",
+            RegexOptions.None,
             TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
     }
 
     private static List<string> ExtractAddresses(string normalizedFormula)
     {
         var addressMatches = Regex.Matches(
-            normalizedFormula, 
-            @"[A-Z]\d+(:[A-Z]\d+)*", 
-            RegexOptions.None, 
+            normalizedFormula,
+            @"[A-Z]\d+(:[A-Z]\d+)*",
+            RegexOptions.None,
             TimeSpan.FromMilliseconds(1000)); // eg: Sheet1!A2:A5 -> A2:A5
-        
+
         var addresses = new List<string>();
         foreach (Match match in addressMatches)
         {
@@ -93,7 +93,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
                 addresses.Add(match.Value);
             }
         }
-        
+
         return addresses;
     }
 
@@ -103,7 +103,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         {
             return [.. numberReference.NumberingCache.Descendants<C.NumericValue>()];
         }
-        
+
         return null;
     }
 

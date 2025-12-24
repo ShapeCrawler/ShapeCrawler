@@ -62,7 +62,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         }
 
         // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
-        var hex = aSrgbClr.Val.ToString() !;
+        var hex = aSrgbClr.Val.ToString()!;
 
         var color = new Color(hex);
 

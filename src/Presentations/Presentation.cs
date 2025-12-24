@@ -33,7 +33,7 @@ public sealed class Presentation : IPresentation
         this.inputPresStream = stream;
         this.inputPresStream.Position = 0;
         this.inputPresStream.CopyTo(this.presStream);
-        
+
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
@@ -57,7 +57,7 @@ public sealed class Presentation : IPresentation
         this.inputPresFile = file;
         using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
         fileStream.CopyTo(this.presStream);
-        
+
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
@@ -79,7 +79,7 @@ public sealed class Presentation : IPresentation
     public Presentation()
     {
         this.presStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx");
-        
+
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
@@ -135,7 +135,7 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public IPresentationProperties Properties { get; }
-    
+
     /// <summary>
     ///     Starts a fluent creation of a new presentation.
     /// </summary>
@@ -153,7 +153,7 @@ public sealed class Presentation : IPresentation
         {
             throw new SCException($"Specified slide number is must {number} be more than zero.");
         }
-        
+
         return number > this.Slides.Count ? throw new SCException($"Specified slide number {number} exceeds the number of slides {this.Slides.Count} in the presentation.") : this.Slides[number - 1];
     }
 
@@ -250,13 +250,13 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
-    public PresentationDocument GetSDKPresentationDocument() => this.PresDocument.Clone();
+    public PresentationDocument GetSdkPresentationDocument() => this.PresDocument.Clone();
 
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>
     public void Dispose() => this.PresDocument.Dispose();
-    
+
     private void EnsureInitialSlideId()
     {
         var presentationPart = this.PresDocument.PresentationPart!;

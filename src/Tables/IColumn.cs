@@ -16,14 +16,14 @@ public interface IColumn
     ///     Gets or sets width in pixels.
     /// </summary>
     decimal Width { get; set; }
-    
+
     /// <summary>
     ///     Creates a duplicate of the current column at the end of the table.
     /// </summary>
     void Duplicate();
 }
 
-internal sealed class Column(A.GridColumn aGridColumn, int index): IColumn
+internal sealed class Column(A.GridColumn aGridColumn, int index) : IColumn
 {
     public decimal Width
     {
@@ -36,21 +36,21 @@ internal sealed class Column(A.GridColumn aGridColumn, int index): IColumn
     public void Duplicate()
     {
         var tableGrid = this.AGridColumn.Parent as A.TableGrid;
-        
+
         var newGridColumn = CreateNewColumn(tableGrid!, this.AGridColumn.Width!.Value);
-        
+
         tableGrid!.Append(newGridColumn);
-        
+
         var table = tableGrid.Parent as A.Table;
-        
-        foreach(A.TableRow tr in table!.Elements<A.TableRow>())
+
+        foreach (A.TableRow tr in table!.Elements<A.TableRow>())
         {
             var cells = tr.Elements<A.TableCell>().ToList();
             var cloneCell = cells[index].Clone();
             tr.InsertAfter((A.TableCell)cloneCell, cells[^1]);
         }
     }
-    
+
     internal static A.GridColumn CreateNewColumn(A.TableGrid tableGrid, long width)
     {
         var totalWidth = tableGrid.Elements<A.GridColumn>().Sum(col => col.Width!.Value);

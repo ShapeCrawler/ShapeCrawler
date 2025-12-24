@@ -58,7 +58,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : DrawingShape(
         {
             return;
         }
-        
+
         var imageBytes = picture.Image.AsByteArray();
         using var bitmap = SKBitmap.Decode(imageBytes);
         var x = new Points(this.X).AsPixels();
@@ -112,7 +112,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : DrawingShape(
 
         return (long)decimal.Round(parentDiff / scaleFactor, 0, MidpointRounding.AwayFromZero);
     }
-    
+
     private void ApplyRotation(SKCanvas canvas)
     {
         const double epsilon = 1e-6;

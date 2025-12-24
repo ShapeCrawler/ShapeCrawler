@@ -2,6 +2,7 @@
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
+
 using ShapeCrawler.Texts;
 #pragma warning restore IDE0130
 
@@ -69,7 +70,7 @@ public interface ITextBox
     ///     Sets text.
     /// </summary>
     public void SetText(string text);
-    
+
     /// <summary>
     ///     Sets Markdown text.
     /// </summary>

@@ -36,7 +36,7 @@ internal sealed class PieChart(
         stringCache.Append(new StringPoint(new NumericValue(seriesName)) { Index = 0 });
         stringReference.Append(stringCache);
         seriesText.Append(stringReference);
-        
+
         var series = new PieChartSeries(
             new Index { Val = 0 },
             new Order { Val = 0 },
@@ -50,7 +50,8 @@ internal sealed class PieChart(
         {
             stringLiteral.Append(new StringPoint
             {
-                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Key)
+                Index = catIndex,
+                NumericValue = new NumericValue(categoryToValue.Key)
             });
             catIndex++;
         }
@@ -61,14 +62,16 @@ internal sealed class PieChart(
         // --- Values ---
         var numberLiteral = new NumberLiteral
         {
-            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = categoriesCount }
+            FormatCode = new FormatCode("General"),
+            PointCount = new PointCount { Val = categoriesCount }
         };
         catIndex = 0;
         foreach (var categoryToValue in categoryValues)
         {
             numberLiteral.Append(new NumericPoint
             {
-                Index = catIndex, NumericValue = new NumericValue(categoryToValue.Value.ToString())
+                Index = catIndex,
+                NumericValue = new NumericValue(categoryToValue.Value.ToString())
             });
             catIndex++;
         }

@@ -16,7 +16,7 @@ internal sealed class ShapeFillImage : IImage
         this.aBlip = aBlip;
         this.imagePart = imagePart;
     }
-    
+
     public string Mime => this.imagePart.ContentType;
 
     public string Name => Path.GetFileName(this.imagePart.Uri.ToString());
@@ -26,7 +26,7 @@ internal sealed class ShapeFillImage : IImage
         var openXmlPart = this.aBlip.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var isSharedImagePart = openXmlPart.GetPartsOfType<ImagePart>().Count(imagePart => imagePart == this.imagePart) > 1;
         if (isSharedImagePart)
-        {            
+        {
             var rId = RelationshipId.New();
             this.imagePart = openXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
@@ -36,5 +36,5 @@ internal sealed class ShapeFillImage : IImage
         this.imagePart.FeedData(stream);
     }
 
-    public byte[] AsByteArray() => new SCImagePart(this.imagePart).AsBytes(); 
+    public byte[] AsByteArray() => new SCImagePart(this.imagePart).AsBytes();
 }

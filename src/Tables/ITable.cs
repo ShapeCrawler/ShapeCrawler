@@ -77,7 +77,7 @@ internal sealed class Table(
 
     public ITableStyleOptions StyleOptions => styleOptions;
 
-    private A.Table ATable => pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
+    private A.Table ATable => pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
 
     public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
@@ -134,7 +134,7 @@ internal sealed class Table(
 
     private static bool IsParagraphEmpty(A.Paragraph aParagraph) =>
         aParagraph.Descendants<A.Text>().All(t => string.IsNullOrEmpty(t.Text));
-    
+
     private static void DeleteTableCells(int colIdx, int deleteColumnCount, List<A.TableRow> aTableRows)
     {
         foreach (var aTblRow in aTableRows)
@@ -149,7 +149,7 @@ internal sealed class Table(
 
     private void SetTableStyle(ITableStyle style)
     {
-        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text = ((TableStyle)style).Guid;
+        this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>()!.Text = ((TableStyle)style).Guid;
         this.tableStyle = style;
     }
 
@@ -157,8 +157,8 @@ internal sealed class Table(
     {
         if (this.tableStyle is null)
         {
-            var aTableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>() !.Text;
-            var style = CommonTableStyles.GetTableStyleByGuid(aTableStyleId) !;
+            var aTableStyleId = this.ATable.TableProperties!.GetFirstChild<A.TableStyleId>()!.Text;
+            var style = CommonTableStyles.GetTableStyleByGuid(aTableStyleId)!;
             this.tableStyle = style;
         }
 

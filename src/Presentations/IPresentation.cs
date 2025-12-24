@@ -30,12 +30,12 @@ public interface IPresentation : IDisposable
     ///     Gets the collection of the slide masters.
     /// </summary>
     IMasterSlideCollection MasterSlides { get; }
-    
+
     /// <summary>
     ///     Gets the collection of sections.
     /// </summary>
     ISectionCollection Sections { get; }
-    
+
     /// <summary>
     ///     Gets footer.
     /// </summary>
@@ -45,7 +45,7 @@ public interface IPresentation : IDisposable
     ///     Gets presentation properties.
     /// </summary>
     IPresentationProperties Properties { get; }
-    
+
     /// <summary>
     ///     Gets slide by number.
     /// </summary>
@@ -65,17 +65,17 @@ public interface IPresentation : IDisposable
     ///     Saves presentation and copies in the specified file.
     /// </summary>
     public void Save(string file);
-    
+
     /// <summary>
     ///     Returns the presentation as a string in Markdown format.
     /// </summary>
     public string AsMarkdown();
-    
+
     /// <summary>
     ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    PresentationDocument GetSDKPresentationDocument();
+    PresentationDocument GetSdkPresentationDocument();
 
     /// <summary>
     ///     Returns the presentation as a base64 string.

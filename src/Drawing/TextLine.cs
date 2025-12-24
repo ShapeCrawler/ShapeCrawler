@@ -22,7 +22,7 @@ internal sealed class TextLine(
     internal float Height => height;
 
     private float BaselineOffset => baselineOffset;
-    
+
     private PixelTextPortion[] Runs => runs;
 
     internal void Render(SKCanvas canvas, float x, float y)

@@ -32,7 +32,7 @@ internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentL
     {
         get
         {
-            var aTransform2D = pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
+            var aTransform2D = pConnectionShape.GetFirstChild<P.ShapeProperties>()!.Transform2D!;
             var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
             var flipH = horizontalFlip != null && horizontalFlip.Value;
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
@@ -56,7 +56,7 @@ internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentL
     {
         get
         {
-            var aTransform2D = pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
+            var aTransform2D = pConnectionShape.GetFirstChild<P.ShapeProperties>()!.Transform2D!;
             var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
             var flipH = horizontalFlip != null && horizontalFlip.Value;
             var verticalFlip = aTransform2D.VerticalFlip?.Value;

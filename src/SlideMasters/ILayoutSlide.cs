@@ -48,7 +48,7 @@ internal sealed class LayoutSlide : ILayoutSlide
         this.Shapes = new ShapeCollection(slideLayoutPart);
         this.background = new LayoutSlideBackground(slideLayoutPart);
     }
-    
+
     public string Name => this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
 
     public IShapeCollection Shapes { get; }
@@ -65,6 +65,6 @@ internal sealed class LayoutSlide : ILayoutSlide
     }
 
     public ILayoutSlideBackground Background => this.background;
-    
+
     internal SlideLayoutPart SlideLayoutPart { get; }
 }

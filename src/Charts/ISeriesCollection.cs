@@ -30,17 +30,17 @@ internal sealed class SeriesCollection : ISeriesCollection
         this.chartPart = chartPart;
         this.cXCharts = cXCharts;
     }
-    
+
     public int Count => this.SeriesListCore().Count;
-    
+
     public ISeries this[int index] => this.SeriesListCore()[index];
-    
+
     public void RemoveAt(int index) => this.CSerList()[index].Remove();
 
     public IEnumerator<ISeries> GetEnumerator() => this.SeriesListCore().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-    
+
     private List<ISeries> SeriesListCore()
     {
         var seriesList = new List<ISeries>();

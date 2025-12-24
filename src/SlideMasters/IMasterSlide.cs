@@ -18,7 +18,7 @@ public interface IMasterSlide
     ///     Gets slide master order number.
     /// </summary>
     int Number { get; }
-    
+
     /// <summary>
     ///     Gets background image if slide master has background, otherwise <see langword="null"/>.
     /// </summary>
@@ -91,9 +91,9 @@ internal sealed class MasterSlide : IMasterSlide
         get
         {
             var match = Regex.Match(this.slideMasterPart.Uri.ToString(), @"\d+", RegexOptions.None, TimeSpan.FromSeconds(1));
-            return int.Parse(match.Value);      
+            return int.Parse(match.Value);
         }
-    } 
+    }
 
     public IShape Shape(string shape) => this.Shapes.Shape(shape);
 

@@ -25,7 +25,7 @@ internal readonly ref struct ShapeColor(PresentationColor presColor, P.Shape pSh
         if (aFontReference.PresetColor != null)
         {
             var colorName = aFontReference.PresetColor.Val!.Value.ToString();
-            
+
             return ColorTranslator.HexFromName(colorName);
         }
 
@@ -38,23 +38,23 @@ internal readonly ref struct ShapeColor(PresentationColor presColor, P.Shape pSh
         {
             return null;
         }
-        
+
         var aFontReference = pShape.ShapeStyle.FontReference!;
         if (aFontReference.RgbColorModelHex != null)
         {
             return ColorType.RGB;
         }
-        
+
         if (aFontReference.SchemeColor != null)
         {
             return ColorType.Theme;
         }
-        
+
         if (aFontReference.PresetColor != null)
         {
             return ColorType.Preset;
         }
-        
+
         return null;
     }
 }

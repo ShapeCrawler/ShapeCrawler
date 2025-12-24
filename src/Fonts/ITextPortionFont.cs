@@ -12,7 +12,7 @@ public interface ITextPortionFont : IFont
     ///     Gets or sets a font for the Latin characters. Returns <c>null</c> if the Latin font is not present.
     /// </summary>
     string? LatinName { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets a font for the East Asian characters.
     /// </summary>

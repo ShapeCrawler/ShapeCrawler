@@ -141,7 +141,7 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
     {
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
     }
-    
+
     private LineBuilder LayoutToken(
         string token,
         ITextPortionFont? font,

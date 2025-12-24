@@ -96,7 +96,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         var aSolidFill = aRunProperties.GetFirstChild<A.SolidFill>();
         aSolidFill?.Remove();
         hex = hex.StartsWith("#", System.StringComparison.Ordinal) ? hex[1..] : hex; // to skip '#'
-        if (hex.Length == 8) 
+        if (hex.Length == 8)
         {
             // ARGB or RGBA, trim to RGB
             hex = hex[..6];

@@ -7,12 +7,7 @@ namespace ShapeCrawler.Colors;
 
 internal static class ColorTranslator
 {
-    private static readonly FieldInfo[] FieldInfoList;
-
-    static ColorTranslator()
-    {
-        FieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
-    }
+    private static readonly FieldInfo[] FieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
 
     internal static string HexFromName(string colorName)
     {
@@ -22,7 +17,7 @@ internal static class ColorTranslator
         }
 
         var fieldInfo = FieldInfoList.First(fieldInfo => string.Equals(fieldInfo.Name, colorName, StringComparison.CurrentCultureIgnoreCase));
-        var color = (SKColor)fieldInfo.GetValue(null) !;
+        var color = (SKColor)fieldInfo.GetValue(null)!;
 
         return color.ToString();
     }

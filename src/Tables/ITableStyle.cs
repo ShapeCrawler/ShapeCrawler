@@ -14,7 +14,7 @@ public interface ITableStyle
     public string Name { get; }
 }
 
-internal class TableStyle(string name): ITableStyle
+internal class TableStyle(string name) : ITableStyle
 {
     public string Name { get; } = name;
 

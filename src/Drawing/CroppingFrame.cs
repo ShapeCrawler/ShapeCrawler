@@ -20,7 +20,12 @@ public readonly record struct CroppingFrame(decimal Left, decimal Right, decimal
     /// <param name="crop">Crop values, eg. "10,10,50,50".</param>
     /// <returns>A cropping frame.</returns>
     public static CroppingFrame Parse(string crop)
-    {        
+    {
+        if (crop is null)
+        {
+            throw new SCException($"{nameof(crop)} cannot be null.");
+        }
+
         var split = crop.Split(',');
         if (split.Length != 4)
         {

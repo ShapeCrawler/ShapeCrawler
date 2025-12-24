@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables;
 
-internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
+internal sealed class TableCellTextBox(A.TableCell aTableCell) : ITextBox
 {
     private TextVerticalAlignment? vAlignment;
     private TextDirection? textDirection;
@@ -132,8 +132,8 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
     public string SdkXPath => new XmlPath(aTableCell.TextBody!).XPath;
 
-    public TextDirection TextDirection 
-    { 
+    public TextDirection TextDirection
+    {
         get
         {
             if (this.textDirection.HasValue)
@@ -163,7 +163,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
             return this.textDirection.Value;
         }
 
-        set => this.SetTextDirection(value); 
+        set => this.SetTextDirection(value);
     }
 
     public void SetMarkdownText(string text)
@@ -199,7 +199,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
         var graphicFrame = aTableRow.Ancestors<P.GraphicFrame>().FirstOrDefault();
         return graphicFrame?.GetFirstChild<A.Graphic>()?.GraphicData?.GetFirstChild<A.Table>();
     }
-    
+
     private static void ClearParagraphPortions(IParagraph paragraph)
     {
         foreach (var portion in paragraph.Portions.ToList())
@@ -207,7 +207,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
             portion.Remove();
         }
     }
-    
+
     private IParagraph EnsureFirstParagraph()
     {
         var existingParagraphs = this.Paragraphs.ToList();
@@ -279,7 +279,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
         var scRow = new ShapeCrawler.TableRow(aTableRow, rowIndex);
         scRow.SetHeight(requiredHeight);
     }
-    
+
     private int GetColumnIndex(A.TableRow aTableRow)
     {
         var cellsInRow = aTableRow.Elements<A.TableCell>().ToList();
@@ -329,7 +329,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell): ITextBox
 
         return textHeight;
     }
-    
+
     private void SetTextDirection(TextDirection value)
     {
         aTableCell.TableCellProperties!.Vertical = value switch

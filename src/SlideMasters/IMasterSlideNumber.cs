@@ -30,7 +30,7 @@ internal sealed class MasterSlideNumber : IMasterSlideNumber
     {
         this.position = position;
         var aDefaultRunProperties =
-            pShape.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
+            pShape.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>()!;
         this.Font = new SlideNumberFont(aDefaultRunProperties);
     }
 

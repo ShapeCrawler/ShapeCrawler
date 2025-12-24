@@ -50,7 +50,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         return this.GetEnumerator();
     }
-    
+
     internal IEnumerable<DrawingShape> GetInternalShapes()
     {
         var pShapeTree = openXmlPart switch
@@ -90,7 +90,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         if (pShapeTreeChild is P.GraphicFrame)
         {
-            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!;
             if (aGraphicData.Uri!.Value!.Equals(
                     "http://schemas.openxmlformats.org/drawingml/2006/chart",
                     StringComparison.Ordinal))
@@ -106,7 +106,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         if (pShapeTreeChild is P.GraphicFrame)
         {
-            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!;
             if (aGraphicData.Uri!.Value!.Equals(
                     "http://schemas.openxmlformats.org/drawingml/2006/diagram",
                     StringComparison.Ordinal))
@@ -196,7 +196,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
     private IEnumerable<DrawingShape> CreateGraphicFrameShapes(P.GraphicFrame pGraphicFrame)
     {
-        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
+        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
         if (aGraphicData == null)
         {
             yield break;
@@ -257,17 +257,17 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
 
     private DrawingShape CreateChart(P.GraphicFrame pGraphicFrame)
     {
-        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
+        var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!;
+        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>()!;
         var chartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
-        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
+        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         // Combination chart has multiple chart types
         if (cCharts.Count() > 1)
         {
-            var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var cShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
 
@@ -289,8 +289,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         // With axis and categories
         if (chartTypeName is "lineChart" or "barChart")
         {
-            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new ChartShape(
                 new Chart(
@@ -308,8 +308,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         // With categories
         if (chartTypeName is "pieChart")
         {
-            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new ChartShape(
                 new Chart(
@@ -326,8 +326,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         // With axis
         if (chartTypeName is "scatterChart" or "bubbleChart")
         {
-            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+            var cShapeProperties = chartPart!.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+            var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             return new ChartShape(
                 new Chart(
@@ -342,8 +342,8 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         }
 
         // Other
-        var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
-        var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        var otherChartCShapeProperties = chartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+        var otherChartPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
         var otherChartCxCharts = otherChartPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         return new ChartShape(

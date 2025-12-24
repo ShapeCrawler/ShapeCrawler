@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ShapeCrawler.Presentations;
@@ -71,14 +72,19 @@ public sealed class DraftChart
     /// </summary>
     public DraftChart Categories(params string[] categories)
     {
+        if (categories is null)
+        {
+            throw new SCException($"{nameof(categories)} cannot be null.");
+        }
+        
         foreach (var category in categories)
         {
             this.CategoryNames.Add([category]);
         }
-        
+
         return this;
     }
-    
+
     /// <summary>
     ///     Adds multi-level categories to the chart.
     /// </summary>

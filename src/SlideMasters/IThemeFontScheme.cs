@@ -104,7 +104,7 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
 
         throw new SCException("Could not find font scheme for notes slide part");
     }
-    
+
     private string GetHeadLatinFont() => this.aFontScheme.MajorFont!.LatinFont!.Typeface!.Value!;
 
     private string GetHeadEastAsianFont() => this.aFontScheme.MajorFont!.EastAsianFont!.Typeface!.Value!;

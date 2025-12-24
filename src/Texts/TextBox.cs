@@ -71,7 +71,7 @@ internal abstract class TextBox : ITextBox
 
             return AutofitType.None;
         }
-        
+
         set
         {
             var currentType = this.AutofitType;
@@ -80,7 +80,7 @@ internal abstract class TextBox : ITextBox
                 return;
             }
 
-            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>()!;
 
             RemoveExistingAutofitElements(aBodyPr);
 
@@ -133,7 +133,7 @@ internal abstract class TextBox : ITextBox
     {
         get
         {
-            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
+            var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>()!;
             var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
 
             if (wrap.Value == "none")
@@ -177,7 +177,7 @@ internal abstract class TextBox : ITextBox
         set => this.SetVerticalAlignment(value);
     }
 
-    public TextDirection TextDirection 
+    public TextDirection TextDirection
     {
         get
         {
@@ -206,7 +206,7 @@ internal abstract class TextBox : ITextBox
             return this.textDirection.Value;
         }
 
-        set => this.SetTextDirection(value); 
+        set => this.SetTextDirection(value);
     }
 
     public void SetMarkdownText(string text)
@@ -272,7 +272,7 @@ internal abstract class TextBox : ITextBox
     private void SetTextDirection(TextDirection direction)
     {
         var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>()!;
-         
+
         aBodyPr.Vertical = direction switch
         {
             TextDirection.Rotate90 => A.TextVerticalValues.Vertical,

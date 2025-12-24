@@ -30,14 +30,14 @@ public interface ISectionCollection : IReadOnlyCollection<ISection>
     ISection GetByName(string sectionName);
 }
 
-internal sealed class SectionCollection(PresentationDocument presDocument): ISectionCollection
+internal sealed class SectionCollection(PresentationDocument presDocument) : ISectionCollection
 {
     public int Count => this.SectionList().Count;
-    
+
     public ISection this[int index] => this.SectionList()[index];
-    
+
     public IEnumerator<ISection> GetEnumerator() => this.SectionList().GetEnumerator();
-    
+
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public void Remove(ISection removingSection)
@@ -59,7 +59,7 @@ internal sealed class SectionCollection(PresentationDocument presDocument): ISec
     }
 
     public ISection GetByName(string sectionName) => this.SectionList().First(section => section.Name == sectionName);
-    
+
     private List<Section> SectionList()
     {
         var p14SectionList = presDocument.PresentationPart!.Presentation.PresentationExtensionList

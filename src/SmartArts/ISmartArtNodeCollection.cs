@@ -13,7 +13,7 @@ public interface ISmartArtNodeCollection : IEnumerable<ISmartArtNode>
     ///     Gets the number of nodes in the collection.
     /// </summary>
     int Count { get; }
-    
+
     /// <summary>
     ///     Adds a new node to the SmartArt graphic with the specified text.
     /// </summary>

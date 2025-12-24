@@ -11,7 +11,7 @@ internal sealed class Category(
     string? cellAddress) : ICategory
 {
     public bool HasMainCategory => false;
-    
+
     public ICategory MainCategory => throw new SCException($"The main category is not available since the chart doesn't have a multi-category. " +
                                                            $"Use {nameof(ICategory.HasMainCategory)} property to check if the main category is available.");
 
@@ -21,8 +21,8 @@ internal sealed class Category(
         set
         {
             cachedValue.Text = value;
-            if (sheetName != null && 
-                cellAddress != null && 
+            if (sheetName != null &&
+                cellAddress != null &&
                 chartPart.EmbeddedPackagePart != null)
             {
                 new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(cellAddress, value, CellValues.String);

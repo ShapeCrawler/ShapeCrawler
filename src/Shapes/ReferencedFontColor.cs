@@ -128,7 +128,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
     }
 
     private string? GetColorFromLayoutPlaceholderType(
-        P.PlaceholderShape pPlaceholderShape, 
+        P.PlaceholderShape pPlaceholderShape,
         OpenXmlPart openXmlPart,
         int indentLevel)
     {
@@ -220,7 +220,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
     }
 
     private string? GetColorFromPlaceholderType(
-        P.PlaceholderShape pPlaceholderShape, 
+        P.PlaceholderShape pPlaceholderShape,
         OpenXmlPart openXmlPart,
         int indentLevel)
     {
@@ -290,7 +290,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
         }
 
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>() !;
+            .GetFirstChild<P.PlaceholderShape>()!;
         var referencedLayoutPShape =
             new SCPShapeTree(slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(
                 pPlaceholderShape);
