@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Paragraphs;
 using ShapeCrawler.Texts;
@@ -217,12 +218,12 @@ internal sealed class Paragraph : IParagraph
         get
         {
             var leftMargin = this.aParagraph.ParagraphProperties!.LeftMargin;
-            if (leftMargin is null)
+            if (leftMargin is not null)
             {
-                return 0;
+                return new Emus(leftMargin.Value).AsPoints();
             }
 
-            return new Emus(leftMargin.Value).AsPoints();
+            return this.IndentationFromStylesOrDefault("marL");
         }
 
         set
@@ -237,12 +238,12 @@ internal sealed class Paragraph : IParagraph
         get
         {
             var indent = this.aParagraph.ParagraphProperties!.Indent;
-            if (indent is null)
+            if (indent is not null)
             {
-                return 0;
+                return new Emus(indent.Value).AsPoints();
             }
 
-            return new Emus(indent.Value).AsPoints();
+            return this.IndentationFromStylesOrDefault("indent");
         }
 
         set
@@ -314,6 +315,85 @@ internal sealed class Paragraph : IParagraph
     public void SetLeftMargin(decimal points)
     {
         this.LeftMargin = points;
+    }
+
+    private static long? EmusAttributeFromIndentStylesOrNull(
+        OpenXmlCompositeElement? openXmlCompositeElement,
+        int indentLevel,
+        string attributeLocalName)
+    {
+        if (openXmlCompositeElement is null)
+        {
+            return null;
+        }
+
+        foreach (var levelProperties in openXmlCompositeElement.Elements()
+                     .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal)))
+        {
+            var level = ExtractLevelNumberOrZero(levelProperties.LocalName);
+            if (level != indentLevel)
+            {
+                continue;
+            }
+
+            var attributeValue = levelProperties
+                .GetAttributes()
+                .Where(a => a.LocalName == attributeLocalName)
+                .Select(a => a.Value)
+                .FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(attributeValue))
+            {
+                return null;
+            }
+
+            return long.TryParse(attributeValue, out var emus) ? emus : null;
+        }
+
+        return null;
+    }
+
+    private static int ExtractLevelNumberOrZero(string localName)
+    {
+        if (localName.Length < 4)
+        {
+            return 0;
+        }
+
+        var levelChar = localName[3];
+        return levelChar >= '0' && levelChar <= '9' ? levelChar - '0' : 0;
+    }
+
+    private decimal IndentationFromStylesOrDefault(string attributeLocalName)
+    {
+        var indentLevel = this.IndentLevel;
+
+        var listStyle = this.aParagraph.Parent?.GetFirstChild<A.ListStyle>();
+        var listStyleEmus = EmusAttributeFromIndentStylesOrNull(listStyle, indentLevel, attributeLocalName);
+        if (listStyleEmus.HasValue)
+        {
+            return new Emus(listStyleEmus.Value).AsPoints();
+        }
+
+        var defaultTextStyle = this.DefaultTextStyleOrNull();
+        var defaultTextStyleEmus = EmusAttributeFromIndentStylesOrNull(defaultTextStyle, indentLevel, attributeLocalName);
+        if (defaultTextStyleEmus.HasValue)
+        {
+            return new Emus(defaultTextStyleEmus.Value).AsPoints();
+        }
+
+        return 0;
+    }
+
+    private OpenXmlCompositeElement? DefaultTextStyleOrNull()
+    {
+        var openXmlPartOrNull = this.aParagraph.Ancestors<OpenXmlPartRootElement>().FirstOrDefault()?.OpenXmlPart;
+        if (openXmlPartOrNull?.OpenXmlPackage is not PresentationDocument presDocument)
+        {
+            return null;
+        }
+
+        return presDocument.PresentationPart?.Presentation.DefaultTextStyle;
     }
 
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);
