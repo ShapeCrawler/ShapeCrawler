@@ -567,4 +567,31 @@ public class UserSlideTests : SCTest
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
+    
+    
+    [Test, Explicit]
+    public void WIP()
+    {
+        var pres = new Presentation(@"c:\Repo\ShapeCrawler\.context\input.pptx");
+        
+        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
+    }
+
+    [Test, Explicit]
+    public void WIP_2()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TextShape(ts =>
+                {
+                    ts.ShapeText("Legal, Risk & Forward‑Looking Statements");
+                });
+            });
+        });
+        
+        pres.Save(@"c:\Repo\ShapeCrawler\.context\input.pptx");
+        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
+    }
 }
