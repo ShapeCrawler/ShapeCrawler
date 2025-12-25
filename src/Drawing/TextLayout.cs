@@ -142,6 +142,15 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
         return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.None);
     }
 
+    private static string NormalizeTextForRendering(string text)
+    {
+        // PowerPoint can contain U+2011 (non-breaking hyphen) which many fonts don't expose as a glyph.
+        // PowerPoint renders it like a regular hyphen, so do the same to avoid tofu in Skia output.
+        return text.IndexOf('\u2011') >= 0
+            ? text.Replace('\u2011', '-')
+            : text;
+    }
+
     private LineBuilder LayoutToken(
         string token,
         ITextPortionFont? font,
@@ -344,7 +353,8 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
 
         // Open XML text runs can contain hard line breaks as '\r'/'\n' inside <a:t>.
         // PowerPoint treats them as explicit new lines; Skia would otherwise render them as tofu.
-        var segments = SplitToLineSegments(portion.Text);
+        var normalizedText = NormalizeTextForRendering(portion.Text);
+        var segments = SplitToLineSegments(normalizedText);
         for (var i = 0; i < segments.Length; i++)
         {
             foreach (var token in SplitToTokens(segments[i]))

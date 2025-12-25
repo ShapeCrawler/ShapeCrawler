@@ -457,7 +457,7 @@ public class UserSlideTests : SCTest
                     textBox.Y(50);
                     textBox.Width(100);
                     textBox.Height(50);
-                    textBox.ShapeText("Hello, World!");
+                    textBox.TextBox("Hello, World!");
                 });
             });
         });
@@ -554,6 +554,12 @@ public class UserSlideTests : SCTest
                             indent.BeforeText(36);
                         });
                     });
+                });
+                
+                slide.TextShape(ts =>
+                {
+                    ts.Y(50);
+                    ts.TextBox("Legal, Risk & Forward‑Looking Statements");
                 });
             });
         });

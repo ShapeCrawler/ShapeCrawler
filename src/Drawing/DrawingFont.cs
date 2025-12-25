@@ -16,11 +16,8 @@ internal sealed class DrawingFont(ITextPortionFont? font)
     internal SKFont AsSkFont()
     {
         var fontStyle = this.GetFontStyle();
-        var family = font?.LatinName;
-
-        var typeface = string.IsNullOrWhiteSpace(family)
-            ? SKTypeface.CreateDefault()
-            : SKTypeface.FromFamilyName(family, fontStyle);
+        var family = this.GetFontFamily();
+        var typeface = SKTypeface.FromFamilyName(family, fontStyle) ?? SKTypeface.CreateDefault();
         var size = new Points(font?.Size ?? DefaultFontSize).AsPixels();
 
         return new SKFont(typeface) { Size = (float)size };
@@ -29,6 +26,25 @@ internal sealed class DrawingFont(ITextPortionFont? font)
     internal SKPaint CreatePaint()
     {
         return new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill, Color = this.GetPaintColor() };
+    }
+
+    private string GetFontFamily()
+    {
+        var latinName = font?.LatinName;
+        if (string.IsNullOrWhiteSpace(latinName))
+        {
+            // PowerPoint uses Calibri as a common default; using OS default leads to inconsistent glyph coverage.
+            return "Calibri";
+        }
+
+        var nonEmptyLatinName = latinName!;
+        if (nonEmptyLatinName == "Calibri Light")
+        {
+            // For unknown reasons, SkiaSharp resolves "Calibri Light" to "Segoe UI" on some machines.
+            return "Calibri";
+        }
+
+        return nonEmptyLatinName;
     }
 
     private SKColor GetPaintColor()

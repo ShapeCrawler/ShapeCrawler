@@ -58,7 +58,7 @@ public sealed class DraftTextBox
     /// <summary>
     ///     Sets text content.
     /// </summary>
-    public DraftTextBox ShapeText(string text)
+    public DraftTextBox TextBox(string text)
     {
         this.Content = text;
         return this;
@@ -67,7 +67,7 @@ public sealed class DraftTextBox
     /// <summary>
     ///     Configures shape text using a nested builder.
     /// </summary>
-    public DraftTextBox ShapeText(Action<DraftShapeText> configure)
+    public DraftTextBox TextBox(Action<DraftShapeText> configure)
     {
         var draftShapeText = new DraftShapeText();
         configure(draftShapeText);
