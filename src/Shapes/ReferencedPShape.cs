@@ -32,13 +32,13 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         {
             var targetPPlaceholderShape = pShape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
                 .GetFirstChild<P.PlaceholderShape>();
-            
+
             if (targetPPlaceholderShape == null)
             {
                 continue;
             }
 
-            if (IsIndexMatch(sourcePPlaceholderShape, targetPPlaceholderShape) || 
+            if (IsIndexMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
                 IsTypeMatch(sourcePPlaceholderShape, targetPPlaceholderShape) ||
                 IsGeneralTypeMatch(sourcePPlaceholderShape, targetPPlaceholderShape))
             {
@@ -48,11 +48,11 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
 
         return FindShapeByType(pShapes, sourcePPlaceholderShape);
     }
-    
+
     private static bool IsIndexMatch(P.PlaceholderShape source, P.PlaceholderShape target)
     {
-        return source.Index is not null && 
-               target.Index is not null && 
+        return source.Index is not null &&
+               target.Index is not null &&
                source.Index == target.Index;
     }
 
@@ -67,27 +67,27 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
     private static bool IsBodyWithIndexMatch(P.PlaceholderShape source, P.PlaceholderShape target)
     {
         return source.Type?.Value == P.PlaceholderValues.Body &&
-               source.Index is not null && 
+               source.Index is not null &&
                target.Index is not null &&
                source.Index == target.Index;
     }
 
     private static bool IsTitleMatch(P.PlaceholderShape source, P.PlaceholderShape target)
     {
-        return source.Type?.Value == P.PlaceholderValues.Title && 
+        return source.Type?.Value == P.PlaceholderValues.Title &&
                target.Type! == P.PlaceholderValues.Title;
     }
 
     private static bool IsCenteredTitleMatch(P.PlaceholderShape source, P.PlaceholderShape target)
     {
-        return source.Type?.Value == P.PlaceholderValues.CenteredTitle && 
+        return source.Type?.Value == P.PlaceholderValues.CenteredTitle &&
                target.Type! == P.PlaceholderValues.CenteredTitle;
     }
 
     private static bool IsGeneralTypeMatch(P.PlaceholderShape source, P.PlaceholderShape target)
     {
-        return source.Type != null && 
-               target.Type != null && 
+        return source.Type != null &&
+               target.Type != null &&
                source.Type.Equals(target.Type);
     }
 
@@ -128,7 +128,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
     private static P.Shape MasterPShapeOf(P.Shape pShape)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>() !;
+            .GetFirstChild<P.PlaceholderShape>()!;
         var openXmlPart = pShape.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var masterPShapes = openXmlPart switch
         {
@@ -148,7 +148,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         if (pPlaceholderShape.Index?.Value == 4294967295)
         {
             return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1) !;
+                .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1)!;
         }
 
         throw new SCException("An error occurred while getting referenced master shape.");

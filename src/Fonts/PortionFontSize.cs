@@ -20,7 +20,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
             var runPropertiesFontSize = this.GetRunPropertiesFontSizeOrNull();
             if (runPropertiesFontSize.HasValue)
             {
-                return this.ApplyNormAutofitScaling(runPropertiesFontSize.Value);   
+                return this.ApplyNormAutofitScaling(runPropertiesFontSize.Value);
             }
 
             // Try getting font size from referenced indent level
@@ -86,7 +86,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         var indentFont = indentFonts.FontOrNull(indentLevel);
         return indentFont?.Size != null ? indentFont.Value.Size!.Value / 100m : null;
     }
-    
+
     private static decimal? GetFontSizeFromPlaceholder(Shape shape, SlideMasterPart slideMasterPart, int indentLevel)
     {
         if (shape.PlaceholderType == null)
@@ -99,7 +99,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         {
             var titleFontSizeHundredPoints = slideMasterPart.SlideMaster.TextStyles!
                 .TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
+                .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
 
             return titleFontSizeHundredPoints / 100m;
         }
@@ -163,7 +163,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         var listStyleFont = listStyleFonts.FontOrNull(indentLevel);
         return listStyleFont?.Size != null ? listStyleFont.Value.Size!.Value / 100m : null;
     }
-    
+
     private decimal? GetRunPropertiesFontSizeOrNull()
     {
         var hundredsPoints = aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
@@ -190,7 +190,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
 
         return new DrawingShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape);
     }
-    
+
     private decimal ApplyNormAutofitScaling(decimal size)
     {
         var bodyPr = aText.Ancestors<A.Paragraph>().First().Ancestors<P.TextBody>().FirstOrDefault()

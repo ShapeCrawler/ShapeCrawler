@@ -13,7 +13,7 @@ public interface IAxis
     ///     Gets or sets axis minimum value.
     /// </summary>
     double Minimum { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets axis maximum value.
     /// </summary>
@@ -45,14 +45,14 @@ internal sealed record Axis : IAxis
     private double GetMinimum()
     {
         var cMin = this.cScaling.MinAxisValue;
-        
+
         return cMin == null ? 0 : cMin.Val!;
     }
-    
+
     private double GetMaximum()
     {
         var cMax = this.cScaling.MaxAxisValue;
-        
+
         return cMax == null ? DefaultMax : cMax.Val!;
     }
 }

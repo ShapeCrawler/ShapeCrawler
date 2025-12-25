@@ -33,7 +33,7 @@ public interface IShapeFill
     ///     Gets the Luminance Modulation of fill color in percentages.
     /// </summary>
     public double LuminanceModulation { get; }
-    
+
     /// <summary>
     ///     Gets the Luminance Offset of fill color in percentages.
     /// </summary>

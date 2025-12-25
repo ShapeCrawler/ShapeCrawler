@@ -12,7 +12,7 @@ internal sealed class TableShape : DrawingShape
         : base(position, shapeSize, shapeId, pGraphicFrame)
     {
         var aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!
-            .GetFirstChild<A.Table>() !;
+            .GetFirstChild<A.Table>()!;
         this.Table = new Table(
             new TableRowCollection(pGraphicFrame),
             new TableColumnCollection(pGraphicFrame),

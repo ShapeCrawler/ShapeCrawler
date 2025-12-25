@@ -2,6 +2,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 
 namespace ShapeCrawler.Texts;
+
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once InconsistentNaming
@@ -21,7 +22,7 @@ internal readonly ref struct SCAText(A.Text aText)
 
             return aEastAsianFont.Typeface!;
         }
-        
+
         return new ThemeFontScheme(openXmlPart).MinorEastAsianFont();
     }
 
@@ -34,7 +35,7 @@ internal readonly ref struct SCAText(A.Text aText)
             aEastAsianFont.Typeface = eastAsianFont;
             return;
         }
-        
+
         new ThemeFontScheme(openXmlPart).UpdateMinorEastAsianFont(eastAsianFont);
     }
 }

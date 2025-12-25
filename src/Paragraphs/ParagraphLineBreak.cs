@@ -3,7 +3,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Paragraphs;
 
-internal sealed class ParagraphLineBreak(A.Break aBreak): IParagraphPortion
+internal sealed class ParagraphLineBreak(A.Break aBreak) : IParagraphPortion
 {
     public string Text
     {

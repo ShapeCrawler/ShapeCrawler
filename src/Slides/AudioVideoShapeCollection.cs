@@ -220,7 +220,8 @@ internal sealed class AudioVideoShapeCollection(SlidePart slidePart, Presentatio
         var shapeId = (uint)this.GetNextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = shapeId, Name = $"{shapeName} {shapeId}"
+            Id = shapeId,
+            Name = $"{shapeName} {shapeId}"
         };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();

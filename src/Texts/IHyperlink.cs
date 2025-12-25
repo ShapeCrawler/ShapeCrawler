@@ -37,12 +37,12 @@ public interface IHyperlink
     void AddSlideNumber(int slide);
 }
 
-internal class Hyperlink(RunProperties aRunProperties): IHyperlink
+internal class Hyperlink(RunProperties aRunProperties) : IHyperlink
 {
     public int? SlideNumber => this.GetSlideNumberOrNull();
 
     public string? File => this.GetFileOrNull();
-    
+
     public void AddSlideNumber(int slide)
     {
         var hyperlink = aRunProperties.GetFirstChild<A.HyperlinkOnClick>();
@@ -56,7 +56,7 @@ internal class Hyperlink(RunProperties aRunProperties): IHyperlink
         var presentation = ((PresentationDocument)parentOpenXmlPart.OpenXmlPackage).PresentationPart!;
         var slideId = presentation.Presentation.SlideIdList!.ChildElements
             .OfType<P.SlideId>()
-            .ElementAtOrDefault(slide - 1) !;
+            .ElementAtOrDefault(slide - 1)!;
 
         // Get the target slide part
         var targetSlidePart = (SlidePart)presentation.GetPartById(slideId.RelationshipId!);

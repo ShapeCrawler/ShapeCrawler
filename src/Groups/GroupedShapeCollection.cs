@@ -47,7 +47,7 @@ internal sealed class GroupedShapeCollection(IEnumerable<OpenXmlCompositeElement
 
                 case P.Shape { TextBody: not null } pShape:
                     shape = new GroupedTextShape(
-                        pShape, 
+                        pShape,
                         new DrawingTextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody),
                         new GroupedShape(new Position(pShape), new ShapeSize(pShape), new ShapeId(pShape), pShape)
                         );

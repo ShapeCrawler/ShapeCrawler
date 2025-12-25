@@ -57,9 +57,9 @@ public interface IFooter
     void RemoveTextOnSlide(int slideNumber);
 }
 
-internal sealed class Footer(UpdatedSlideCollection slides): IFooter
+internal sealed class Footer(UpdatedSlideCollection slides) : IFooter
 {
-    public bool SlideNumberAdded() 
+    public bool SlideNumberAdded()
     {
         return slides.Any(slide =>
             slide.Shapes.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
@@ -115,7 +115,7 @@ internal sealed class Footer(UpdatedSlideCollection slides): IFooter
             this.RemoveTextOnSlide(i);
         }
     }
-        
+
     public void AddTextOnSlide(int slideNumber, string text)
     {
         if (slideNumber < 1 || slideNumber > slides.Count + 1)

@@ -22,9 +22,9 @@ internal sealed class ClusteredBarChart(
     internal void Generate()
     {
         var chartSpace = CreateChartSpace();
-        var chart = chartSpace.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.Chart>() !;
+        var chart = chartSpace.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.Chart>()!;
         var plotArea = chart.PlotArea!;
-        var barChart = plotArea.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.BarChart>() !;
+        var barChart = plotArea.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.BarChart>()!;
 
         this.AddSeries(barChart);
         AddAxes(plotArea);
@@ -76,7 +76,7 @@ internal sealed class ClusteredBarChart(
 
         return chartSpace;
     }
-    
+
     private static void AddAxes(PlotArea plotArea)
     {
         const uint axisId1 = 1U;

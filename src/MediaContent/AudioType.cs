@@ -12,7 +12,7 @@ public enum AudioType
     /// </summary>
     // ReSharper disable once InconsistentNaming
     MP3,
-    
+
     /// <summary>
     ///     WAVE audio.
     /// </summary>

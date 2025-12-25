@@ -11,7 +11,7 @@ public interface ICategory
     ///     Gets a value indicating whether the category has a main category.
     /// </summary>
     public bool HasMainCategory { get; }
- 
+
     /// <summary>
     ///     Gets main category.
     /// </summary>

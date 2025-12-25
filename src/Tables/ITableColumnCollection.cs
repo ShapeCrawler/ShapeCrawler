@@ -15,27 +15,27 @@ public interface ITableColumnCollection : IEnumerable<IColumn>
     ///     Gets number of columns.
     /// </summary>
     int Count { get; }
-    
+
     /// <summary>
     ///     Gets column at the specified index.
     /// </summary>
     IColumn this[int index] { get; }
-    
+
     /// <summary>
     ///     Removes specified column from collection.
     /// </summary>
     void Remove(IColumn removing);
-    
+
     /// <summary>
     ///     Removes column by index.
     /// </summary>
     void RemoveAt(int index);
-    
+
     /// <summary>
     ///     Adds a new column at the end of table.
     /// </summary>
     void Add();
-    
+
     /// <summary>
     ///     Inserts a new column after the specified column.
     /// </summary>
@@ -49,9 +49,9 @@ internal sealed class TableColumnCollection : ITableColumnCollection
 
     internal TableColumnCollection(DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame)
     {
-        this.aTable = pGraphicFrame.GetFirstChild<DocumentFormat.OpenXml.Drawing.Graphic>() !.GraphicData!.GetFirstChild<DocumentFormat.OpenXml.Drawing.Table>() !;
+        this.aTable = pGraphicFrame.GetFirstChild<DocumentFormat.OpenXml.Drawing.Graphic>()!.GraphicData!.GetFirstChild<DocumentFormat.OpenXml.Drawing.Table>()!;
     }
-    
+
     public int Count => this.Columns().Count;
 
     public IColumn this[int index] => this.Columns()[index];
@@ -69,13 +69,13 @@ internal sealed class TableColumnCollection : ITableColumnCollection
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
-        
+
         var internalCol = cols[index];
         this.Remove(internalCol);
     }
 
     public void Add() => this.InsertAfter(this.Columns().Count);
-    
+
     public void InsertAfter(int columnNumber)
     {
         var columnIndex = columnNumber - 1;
@@ -91,7 +91,7 @@ internal sealed class TableColumnCollection : ITableColumnCollection
             new SCATableRow(aTableRow).InsertNewCellAfter(columnNumber);
         }
     }
-    
+
     IEnumerator<IColumn> IEnumerable<IColumn>.GetEnumerator() => this.Columns().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.Columns().GetEnumerator();

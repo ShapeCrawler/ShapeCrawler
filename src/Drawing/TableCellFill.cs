@@ -26,11 +26,11 @@ internal class TableCellFill : IShapeFill
     }
 
     public string? Color => this.GetHexSolidColor();
-    
+
     public double Alpha { get; }
-    
+
     public double LuminanceModulation { get; }
-    
+
     public double LuminanceOffset { get; }
 
     public IImage? Picture => this.GetPicture();
@@ -82,7 +82,7 @@ internal class TableCellFill : IShapeFill
         }
 
         this.aTableCellProperties.AddSolidFill(hex);
-        
+
         this.isDirty = true;
     }
 
@@ -103,7 +103,7 @@ internal class TableCellFill : IShapeFill
     {
         this.fillType = FillType.NoFill;
     }
-    
+
     private FillType GetFillType()
     {
         if (this.isDirty)

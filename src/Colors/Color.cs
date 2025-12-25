@@ -41,6 +41,11 @@ public struct Color
     /// <param name="hex">Hexadecimal code.</param>
     public Color(string hex)
     {
+        if (hex is null)
+        {
+            throw new SCException($"{nameof(hex)} cannot be null");
+        }
+
         var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex;
         (int r, int g, int b, float a) = ParseHexValue(value);
 
@@ -80,12 +85,12 @@ public struct Color
     ///     Gets a value indicating whether the color is transparent.
     /// </summary>
     public readonly bool IsTransparent => Math.Abs(this.Alpha) < 0.01;
-    
+
     /// <summary>
     ///     Gets a value indicating whether the color is solid.
     /// </summary>
     internal readonly bool IsSolid => Math.Abs(this.Alpha - 255) < 0.01;
-    
+
     /// <summary>
     ///     Creates color hexadecimal code.
     /// </summary>

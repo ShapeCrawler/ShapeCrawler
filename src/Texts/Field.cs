@@ -68,8 +68,7 @@ internal sealed class Field : IParagraphPortion
         }
 
         // Gets node value.
-        // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
-        var hex = aSrgbClr.Val.ToString() !;
+        var hex = aSrgbClr.Val.ToString()!;
 
         // Check if color value is valid, we are expecting values as "000000".
         var color = new Color(hex);

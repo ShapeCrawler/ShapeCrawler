@@ -109,7 +109,7 @@ public abstract class SCTest
 
     protected static void ValidatePresentation(Presentation pres)
     {
-        var presDocument = pres.GetSDKPresentationDocument();
+        var presDocument = pres!.GetSdkPresentationDocument();
         var nonCriticalErrors = new List<string>
         {
             "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",

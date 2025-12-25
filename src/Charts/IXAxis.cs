@@ -7,8 +7,8 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts;
 
-using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 /// <summary>
 ///     Represents a chart X-axis.
@@ -69,7 +69,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
     {
         get
         {
-            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!.GetFirstChild<C.ValueAxis>()!
                 .Scaling!;
             var cMin = cScaling.MinAxisValue;
 
@@ -78,7 +78,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
 
         set
         {
-            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!.GetFirstChild<C.ValueAxis>()!
                 .Scaling!;
             cScaling.MinAxisValue = new C.MinAxisValue { Val = value };
         }
@@ -88,7 +88,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
     {
         get
         {
-            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!.GetFirstChild<C.ValueAxis>()!
                 .Scaling!;
             var cMax = cScaling.MaxAxisValue;
             const double defaultMax = 6;
@@ -98,7 +98,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
 
         set
         {
-            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!.GetFirstChild<C.ValueAxis>()!
+            var cScaling = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!.GetFirstChild<C.ValueAxis>()!
                 .Scaling!;
             cScaling.MaxAxisValue = new C.MaxAxisValue { Val = value };
         }
@@ -215,7 +215,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
 
     private OpenXmlElement FirstSeries()
     {
-        var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
         var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         return cXCharts.First().ChildElements
@@ -224,7 +224,7 @@ internal class XAxis(ChartPart chartPart) : IXAxis
 
     private OpenXmlCompositeElement? GetXAxisElement()
     {
-        var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        var plotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
         var categoryAxis = plotArea.Elements<C.CategoryAxis>()
                                .FirstOrDefault(a => a.AxisPosition?.Val?.Value == C.AxisPositionValues.Bottom)
                            ?? plotArea.Elements<C.CategoryAxis>().FirstOrDefault();

@@ -29,7 +29,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             { "hlink", scheme => scheme.Hyperlink },
             { "folHlink", scheme => scheme.FollowedHyperlinkColor }
         };
-    
+
 
     /// <summary>
     ///     Renders the current shape onto the provided canvas.

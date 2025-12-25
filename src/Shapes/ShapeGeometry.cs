@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeGeometry(P.ShapeProperties pShapeProperties): IShapeGeometry
+internal sealed class ShapeGeometry(P.ShapeProperties pShapeProperties) : IShapeGeometry
 {
     /// <summary>
     ///     Corner size on new rounded rectangles, before adjustments are applied.
@@ -77,7 +77,7 @@ internal sealed class ShapeGeometry(P.ShapeProperties pShapeProperties): IShapeG
 
             if (!ShapeTypeValuesToGeometryMap.TryGetValue(preset, out var geometryType))
             {
-                var presetString = preset.ToString() !;
+                var presetString = preset.ToString()!;
                 var name = presetString.ToLowerInvariant().Replace("rect", "rectangle").Replace("diag", "diagonal");
                 return (Geometry)Enum.Parse(typeof(Geometry), name, true);
             }

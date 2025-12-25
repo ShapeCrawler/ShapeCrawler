@@ -41,7 +41,7 @@ internal sealed class FooterPlaceholderShapeCollection(IUserSlideShapeCollection
 
         return addedShape;
     }
-    
+
     /// <summary>
     ///     Adds a date and time placeholder.
     /// </summary>

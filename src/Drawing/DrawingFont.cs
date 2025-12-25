@@ -12,7 +12,7 @@ internal sealed class DrawingFont(ITextPortionFont? font)
         var ascent = skFont.Metrics.Ascent;
         return ascent >= 0 ? 0 : -ascent;
     }
-    
+
     internal SKFont AsSkFont()
     {
         var fontStyle = this.GetFontStyle();

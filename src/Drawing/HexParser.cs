@@ -16,8 +16,8 @@ internal static class HexParser
             return ((ColorType, string))colorHexVariant;
         }
 
-        var aSchemeColor = aSolidFill.GetFirstChild<A.SchemeColor>() !;
-        var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!, pSlideMaster); 
+        var aSchemeColor = aSolidFill.GetFirstChild<A.SchemeColor>()!;
+        var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!, pSlideMaster);
         return (ColorType.Theme, fromScheme);
     }
 
@@ -28,9 +28,7 @@ internal static class HexParser
         if (aSrgbClr != null)
         {
             colorHexVariant = aSrgbClr.Val!;
-            {
-                return (ColorType.RGB, colorHexVariant);
-            }
+            return (ColorType.RGB, colorHexVariant);
         }
 
         var aSysClr = typedElement.GetFirstChild<A.SystemColor>();
@@ -45,7 +43,7 @@ internal static class HexParser
         var aPresetColor = typedElement.GetFirstChild<A.PresetColor>();
         if (aPresetColor != null)
         {
-            var coloName = aPresetColor.Val!.ToString() !;
+            var coloName = aPresetColor.Val!.ToString()!;
             {
                 return (ColorType.Preset, ColorTranslator.HexFromName(coloName));
             }
@@ -65,7 +63,7 @@ internal static class HexParser
     {
         var slideMasterPColorMap = pSlideMaster.ColorMap;
         var targetSchemeColor = slideMasterPColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == fontSchemeColor);
-        return GetThemeColorByString(targetSchemeColor?.Value !, pSlideMaster);
+        return GetThemeColorByString(targetSchemeColor?.Value!, pSlideMaster);
     }
 
     private static string? GetThemeColorByString(string schemeColor, P.SlideMaster pSlideMaster)

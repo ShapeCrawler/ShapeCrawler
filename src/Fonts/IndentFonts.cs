@@ -26,7 +26,7 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
         // Fallback for level 1
         return indentLevel == 1 ? this.FindFontFromTextBody() : null;
     }
-    
+
     internal bool? BoldFlagOrNull(int indentLevel)
     {
         var indentFont = this.FontOrNull(indentLevel);
@@ -109,8 +109,8 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
 
         var aGradientStop = aDefRPr.GetFirstChild<A.GradientFill>()?.GradientStopList?
             .GetFirstChild<A.GradientStop>();
-            
-        return (aGradientStop?.RgbColorModelHex, aGradientStop?.SchemeColor, 
+
+        return (aGradientStop?.RgbColorModelHex, aGradientStop?.SchemeColor,
                 aGradientStop?.SystemColor, aGradientStop?.PresetColor);
     }
 
@@ -123,7 +123,7 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
 
         var endParaRunPrFs = pTextBody.GetFirstChild<A.Paragraph>()?
             .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-            
+
         if (endParaRunPrFs is null)
         {
             return null;

@@ -129,20 +129,20 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
         };
         if (themeColor == A.SchemeColorValues.Text1)
         {
-            return this.GetThemeColorByString(pColorMap.Text1!.ToString() !);
+            return this.GetThemeColorByString(pColorMap.Text1!.ToString()!);
         }
 
         if (themeColor == A.SchemeColorValues.Text2)
         {
-            return this.GetThemeColorByString(pColorMap.Text2!.ToString() !);
+            return this.GetThemeColorByString(pColorMap.Text2!.ToString()!);
         }
 
         if (themeColor == A.SchemeColorValues.Background1)
         {
-            return this.GetThemeColorByString(pColorMap.Background1!.ToString() !);
+            return this.GetThemeColorByString(pColorMap.Background1!.ToString()!);
         }
 
-        return this.GetThemeColorByString(pColorMap.Background2!.ToString() !);
+        return this.GetThemeColorByString(pColorMap.Background2!.ToString()!);
     }
 
     private string GetThemeColorByString(string fontSchemeColor)

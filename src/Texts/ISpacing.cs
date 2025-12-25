@@ -31,7 +31,7 @@ public interface ISpacing
     decimal AfterSpacing { get; set; }
 }
 
-internal sealed class Spacing(A.Paragraph aParagraph): ISpacing
+internal sealed class Spacing(A.Paragraph aParagraph) : ISpacing
 {
     public double? LineSpacingLines => this.GetLineSpacingLines();
 

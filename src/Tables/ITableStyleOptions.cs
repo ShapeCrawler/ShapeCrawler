@@ -11,27 +11,27 @@ public interface ITableStyleOptions
     ///     Gets or sets a value indicating whether the table has header row.
     /// </summary>
     public bool HasHeaderRow { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets a value indicating whether the table has total row.
     /// </summary>
     public bool HasTotalRow { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets a value indicating whether the table has banded rows.
     /// </summary>
     public bool HasBandedRows { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets a value indicating whether the table has first column.
     /// </summary>
     public bool HasFirstColumn { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets a value indicating whether the table has last column.
     /// </summary>
     public bool HasLastColumn { get; set; }
-    
+
     /// <summary>
     ///     Gets or sets a value indicating whether the table has banded columns.
     /// </summary>

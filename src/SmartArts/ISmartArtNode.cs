@@ -29,7 +29,7 @@ internal class SmartArtNode : ISmartArtNode
         this.textValue = text;
         this.nodeCollection = nodeCollection;
     }
-    
+
     /// <summary>
     ///     Gets or sets the text of the SmartArt node.
     /// </summary>
@@ -45,9 +45,9 @@ internal class SmartArtNode : ISmartArtNode
             }
         }
     }
-    
+
     internal string ModelId { get; }
-    
+
     internal void UpdateText(string text)
     {
         this.textValue = text;

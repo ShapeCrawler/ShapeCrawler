@@ -39,7 +39,7 @@ public interface ITableRowCollection : IEnumerable<ITableRow>
     ///     Adds a new row at the end of the table.
     /// </summary>
     void Add();
-    
+
     /// <summary>
     ///     Adds a new row at the specified index.
     /// </summary>
@@ -59,7 +59,7 @@ internal sealed class TableRowCollection : ITableRowCollection
 
     internal TableRowCollection(P.GraphicFrame pGraphicFrame)
     {
-        this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
+        this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
     }
 
     public int Count => this.Rows().Count;
@@ -92,7 +92,7 @@ internal sealed class TableRowCollection : ITableRowCollection
         {
             new SCATableRow(aTableRow).AddNewCell();
         }
-        
+
         aTable.Append(aTableRow);
     }
 
@@ -115,7 +115,7 @@ internal sealed class TableRowCollection : ITableRowCollection
         {
             new SCATableRow(aTableRow).AddNewCell();
         }
-        
+
         // Get the element before which we want to insert the new row
         var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
@@ -133,7 +133,7 @@ internal sealed class TableRowCollection : ITableRowCollection
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
-    
+
     public void Add(int index, int templateRowIndex)
     {
         var rows = this.Rows();
@@ -153,25 +153,25 @@ internal sealed class TableRowCollection : ITableRowCollection
 
         // Create a new row with the same height as the template
         var newARow = new A.TableRow { Height = templateARow.Height };
-        
+
         var templateACells = templateARow.Elements<A.TableCell>().ToList();
-        
+
         // Build each cell of the new row based on the template cell formatting
-        foreach (var (templateACell, columnIndex) in templateACells.Select((c, i) => (c, i)))
+        foreach (var (templateACell, _) in templateACells.Select((c, i) => (c, i)))
         {
             var newACell = CreateCellFromTemplate(templateACell);
             newARow.Append(newACell);
         }
-        
+
         // Get the element before which we want to insert the new row
         var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
-        {   
+        {
             // Add at the end
             this.aTable.Append(newARow);
         }
         else
-        {   
+        {
             // Insert before the row at the specified index
             this.aTable.InsertBefore(newARow, aTableRows[index]);
         }
@@ -186,12 +186,12 @@ internal sealed class TableRowCollection : ITableRowCollection
             new A.BodyProperties(),
             new A.ListStyle(),
             new A.Paragraph(endParaRPr));
-        
+
         // Copy font color if present (check Run properties first, then EndParagraphRunProperties)
         var templatePara = templateACell.TextBody!.GetFirstChild<A.Paragraph>()!;
         var templateSolidFill = templatePara.GetFirstChild<A.Run>()?.RunProperties?.GetFirstChild<A.SolidFill>()
             ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()?.GetFirstChild<A.SolidFill>();
-        
+
         if (templateSolidFill != null)
         {
             var newRunProperties = new A.RunProperties { Language = "en-US", Dirty = false };
@@ -202,9 +202,9 @@ internal sealed class TableRowCollection : ITableRowCollection
             // Also set on EndParagraphRunProperties so newly typed text inherits the color
             endParaRPr.InsertAt((A.SolidFill)templateSolidFill.CloneNode(true), 0);
         }
-        
+
         newACell.Append(textBody);
-        
+
         A.TableCellProperties newTcPr;
         if (templateACell.TableCellProperties is not null)
         {
@@ -215,9 +215,9 @@ internal sealed class TableRowCollection : ITableRowCollection
         {
             newTcPr = new A.TableCellProperties();
         }
-        
+
         newACell.Append(newTcPr);
-        
+
         return newACell;
     }
 

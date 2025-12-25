@@ -27,7 +27,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     private readonly AudioVideoShapeCollection audioVideoShapes;
     private readonly ChartShapeCollection chartShapes;
     private readonly FooterPlaceholderShapeCollection footerPlaceholderShapeCollection;
-    
+
     private readonly NewShapeProperties newShapeProperties;
     private readonly SlidePart slidePart;
 
@@ -248,7 +248,8 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)this.newShapeProperties.Id(), Name = shapeName
+            Id = (uint)this.newShapeProperties.Id(),
+            Name = shapeName
         };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();

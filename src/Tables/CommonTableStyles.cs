@@ -83,10 +83,10 @@ public static class CommonTableStyles
         { "Dark Style 1 - Accent 6", DarkStyle1Accent6 },
         { "Dark Style 2", DarkStyle2 },
         { "Dark Style 2 - Accent 1, Accent 2", DarkStyle2Accent1Accent2 },
-        { "Dark Style 2 - Accent 3, Accent 4", DarkStyle2Accent3Accent4 }, 
+        { "Dark Style 2 - Accent 3, Accent 4", DarkStyle2Accent3Accent4 },
         { "Dark Style 2 - Accent 5, Accent 6", DarkStyle2Accent5Accent6 }
     };
-    
+
 #pragma warning disable SA1600 // Elements should be documented
 #pragma warning disable CS1591
     public static ITableStyle NoStyleNoGrid => new TableStyle("No Style, No Grid") { Guid = "{2D5ABB26-0587-4C30-8999-92F81FD0307C}" };

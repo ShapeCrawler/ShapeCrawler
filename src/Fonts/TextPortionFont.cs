@@ -189,7 +189,7 @@ internal sealed class TextPortionFont(
             return true;
         }
 
-        IndentFont phIndentFont = new();
+        IndentFont phIndentFont = default;
         if (phIndentFont.IsItalic is not null)
         {
             return phIndentFont.IsItalic.Value;
@@ -207,7 +207,7 @@ internal sealed class TextPortionFont(
         }
         else
         {
-            IndentFont phIndentFont = new();
+            IndentFont phIndentFont = default;
             if (phIndentFont.IsBold is not null)
             {
                 phIndentFont.IsBold = new BooleanValue(value);

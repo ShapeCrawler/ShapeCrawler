@@ -9,14 +9,14 @@ internal sealed class TextBoxMargins(OpenXmlElement textBody)
 {
     internal decimal Left
     {
-        get 
+        get
         {
-            return new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>() !.LeftInset).Value;
+            return new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>()!.LeftInset).Value;
         }
 
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>()!;
             var emu = new Points(value).AsEmus();
             bodyProperties.LeftInset = new Int32Value((int)emu);
         }
@@ -24,10 +24,10 @@ internal sealed class TextBoxMargins(OpenXmlElement textBody)
 
     internal decimal Right
     {
-        get => new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>() !.RightInset).Value;
+        get => new LeftRightMargin(textBody.GetFirstChild<A.BodyProperties>()!.RightInset).Value;
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>()!;
             var emu = new Points(value).AsEmus();
             bodyProperties.RightInset = new Int32Value((int)emu);
         }
@@ -35,10 +35,10 @@ internal sealed class TextBoxMargins(OpenXmlElement textBody)
 
     internal decimal Top
     {
-        get => new TopBottomMargin(textBody.GetFirstChild<A.BodyProperties>() !.TopInset).Value;
+        get => new TopBottomMargin(textBody.GetFirstChild<A.BodyProperties>()!.TopInset).Value;
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>()!;
             var emu = new Points(value).AsEmus();
             bodyProperties.TopInset = new Int32Value((int)emu);
         }
@@ -46,10 +46,10 @@ internal sealed class TextBoxMargins(OpenXmlElement textBody)
 
     internal decimal Bottom
     {
-        get => new TopBottomMargin(textBody.GetFirstChild<A.BodyProperties>() !.BottomInset).Value;
+        get => new TopBottomMargin(textBody.GetFirstChild<A.BodyProperties>()!.BottomInset).Value;
         set
         {
-            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>() !;
+            var bodyProperties = textBody.GetFirstChild<A.BodyProperties>()!;
             var emu = new Points(value).AsEmus();
             bodyProperties.BottomInset = new Int32Value((int)emu);
         }

@@ -31,7 +31,7 @@ public interface ITableRow
     void Duplicate();
 }
 
-internal sealed class TableRow(A.TableRow aTableRow, int index): ITableRow
+internal sealed class TableRow(A.TableRow aTableRow, int index) : ITableRow
 {
     public IReadOnlyList<ITableCell> Cells
     {

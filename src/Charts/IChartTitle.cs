@@ -156,44 +156,41 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
     {
         var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
-        
+
         if (cTitle == null)
         {
-            // Check if title was explicitly deleted
             var autoTitleDeleted = cChart.PlotArea?.GetFirstChild<C.AutoTitleDeleted>();
             if (autoTitleDeleted?.Val?.Value == true)
             {
                 return null;
             }
-            
-            // PieChart uses only one series for view when no title is set
-            if (chartType == ChartType.PieChart)
-            {
-                return seriesCollection.FirstOrDefault()?.Name;
-            }
-            
-            return null;
+
+            return this.GetPieChartSeriesName();
         }
 
+        return this.GetTextFromExistingTitle(cTitle);
+    }
+
+    private string? GetTextFromExistingTitle(C.Title cTitle)
+    {
         var cChartText = cTitle.ChartText;
 
-        // Try static title
         if (TryGetStaticTitle(cChartText!, chartType, out var staticTitle))
         {
             return staticTitle;
         }
 
-        // Dynamic title
-        if (cChartText != null)
+        var stringPoint = cChartText?.Descendants<C.StringPoint>().FirstOrDefault();
+        if (stringPoint != null)
         {
-            var stringPoint = cChartText.Descendants<C.StringPoint>().FirstOrDefault();
-            if (stringPoint != null)
-            {
-                return stringPoint.InnerText;
-            }
+            return stringPoint.InnerText;
         }
 
-        // PieChart uses only one series for view
+        return this.GetPieChartSeriesName();
+    }
+
+    private string? GetPieChartSeriesName()
+    {
         if (chartType == ChartType.PieChart)
         {
             return seriesCollection.FirstOrDefault()?.Name;

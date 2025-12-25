@@ -15,7 +15,7 @@ namespace ShapeCrawler.Shapes;
 internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId shapeId, OpenXmlElement pShapeTreeElement) : IShape
 {
     private const string ShapeIsNotTextHolderErrorMessage = "The shape is not a text holder.";
-    
+
     public virtual decimal X
     {
         get => position.X;
@@ -249,7 +249,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
     {
         get
         {
-            var pSpPr = pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var pSpPr = pShapeTreeElement.GetFirstChild<P.ShapeProperties>()!;
             var aTransform2D = pSpPr.Transform2D;
             if (aTransform2D == null)
             {

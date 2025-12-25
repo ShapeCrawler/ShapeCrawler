@@ -16,7 +16,7 @@ public interface ISlideCollection : IReadOnlyList<IUserSlide>
     ///     Adds a new slide using specified layout.
     /// </summary>
     void Add(int layoutNumber);
-    
+
     /// <summary>
     ///     Adds a new slide using specified layout at the specified position.
     /// </summary>

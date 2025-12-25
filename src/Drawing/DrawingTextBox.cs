@@ -30,7 +30,7 @@ internal sealed class DrawingTextBox : TextBox
         var wrap = this.TextWrapped && availableWidth > 0;
         new TextLayout(this.Paragraphs, availableWidth, wrap).Render(canvas, originX, originY, availableHeight, VerticalAlignment);
     }
-    
+
     private static decimal ClampToZero(decimal value)
     {
         return value < 0 ? 0 : value;

@@ -53,7 +53,7 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
     public bool HasOutline => true;
 
     public bool HasFill => true;
-    
+
     public bool HasText => false;
 
     public CroppingFrame Crop
@@ -88,7 +88,7 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
         get
         {
             var aAlphaModFix = aBlip.GetFirstChild<A.AlphaModulationFixed>();
-            var amount = aAlphaModFix?.Amount?.Value ?? 100000m;
+            var amount = aAlphaModFix?.Amount?.Value ?? 100_000m;
 
             return 100m - (amount / 1000m); // value is stored in Open XML as thousandths of a percent
         }
@@ -107,7 +107,7 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
     {
         var parentPShapeTree = pPicture.Parent!;
         parentPShapeTree.RemoveChild(pPicture);
-        var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>() !;
+        var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>()!;
         pGrpSpPr.InsertAfterSelf(pPicture);
     }
 

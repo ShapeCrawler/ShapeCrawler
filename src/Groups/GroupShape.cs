@@ -10,6 +10,7 @@ using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Groups;
+
 using P = DocumentFormat.OpenXml.Presentation;
 
 internal sealed class GroupShape : DrawingShape
@@ -23,7 +24,7 @@ internal sealed class GroupShape : DrawingShape
         this.GroupedShapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
     }
 
-    internal GroupShape(P.GroupShape pGroupShape, IShape[] groupingShapes, NewShapeProperties idGenerator, SlidePart slidePart) 
+    internal GroupShape(P.GroupShape pGroupShape, IShape[] groupingShapes, NewShapeProperties idGenerator, SlidePart slidePart)
         : base(new Position(pGroupShape), new ShapeSize(pGroupShape), new ShapeId(pGroupShape), pGroupShape)
     {
         var nonVisualGroupShapeProperties = new P.NonVisualGroupShapeProperties();
@@ -31,7 +32,8 @@ internal sealed class GroupShape : DrawingShape
         var name = $"Shape {id}";
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = (uint)id, Name = name
+            Id = (uint)id,
+            Name = name
         };
         var nonVisualGroupShapeDrawingProperties = new P.NonVisualGroupShapeDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
@@ -78,7 +80,7 @@ internal sealed class GroupShape : DrawingShape
             {
                 openXmlElement.Remove();
             }
-            
+
             pGroupShape.Append(openXmlElement);
         }
 
@@ -88,15 +90,15 @@ internal sealed class GroupShape : DrawingShape
         {
             grouping.Remove();
         }
-        
+
         this.pGroupShape = pGroupShape;
         this.GroupedShapes = new GroupedShapeCollection(pGroupShape.Elements<OpenXmlCompositeElement>());
     }
 
     public override Geometry GeometryType => Geometry.Rectangle;
-    
+
     public override IShapeCollection GroupedShapes { get; }
-    
+
     public override double Rotation
     {
         get
@@ -110,7 +112,7 @@ internal sealed class GroupShape : DrawingShape
     public bool HasOutline => true;
 
     public bool HasFill => true;
-    
+
     public IShape Shape(string groupedShapeName) => this.GroupedShapes.Shape(groupedShapeName);
 
     public T Shape<T>(string groupedShapeName) =>

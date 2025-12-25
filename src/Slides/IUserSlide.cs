@@ -4,7 +4,6 @@ using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 
 #if DEBUG
-using System.Threading.Tasks;
 #endif
 
 #pragma warning disable IDE0130
@@ -87,7 +86,7 @@ public interface IUserSlide
     ///     Removes the slide.
     /// </summary>
     void Remove();
-    
+
     /// <summary>
     ///     Saves the slide image to the specified stream.
     /// </summary>
@@ -97,7 +96,7 @@ public interface IUserSlide
     [Experimental("EXP001")]
 #endif
     void SaveImageTo(Stream stream);
-    
+
     /// <summary>
     ///     Saves the slide image to the specified file.
     /// </summary>

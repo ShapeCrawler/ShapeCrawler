@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable UseObjectOrCollectionInitializer
 namespace ShapeCrawler.Slides;
 
-internal sealed class PictureShapeCollection(SlidePart slidePart, PresentationImageFiles imageFiles) 
+internal sealed class PictureShapeCollection(SlidePart slidePart, PresentationImageFiles imageFiles)
 {
     internal void AddPicture(Stream imageStream)
     {
@@ -91,11 +91,11 @@ internal sealed class PictureShapeCollection(SlidePart slidePart, PresentationIm
             // Image already exists in the presentation so far.
             // Do we have a reference to it on this slide?
             var found = slidePart.ImageParts.Where(x => x.Uri == imagePart.Uri);
-            
+
             // Yes, we already have a relationship with this part on this slide
             // So use that relationship ID
             imgPartRId = found.Any() ? slidePart.GetIdOfPart(imagePart) :
-            
+
                 // No, so let's create a relationship to it
                 slidePart.CreateRelationshipToPart(imagePart);
 
@@ -104,7 +104,7 @@ internal sealed class PictureShapeCollection(SlidePart slidePart, PresentationIm
 
         // Sorry, you'll need to create a new image part
         imgPartRId = string.Empty;
-        
+
         return false;
     }
 }

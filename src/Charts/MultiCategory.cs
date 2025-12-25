@@ -12,7 +12,7 @@ internal sealed class MultiCategory(
     string? address) : ICategory
 {
     public bool HasMainCategory => true;
-    
+
     public ICategory MainCategory { get; } = mainCategory;
 
     public string Name
@@ -21,8 +21,8 @@ internal sealed class MultiCategory(
         set
         {
             cachedValue.Text = value;
-            if (sheetName != null && 
-                address != null && 
+            if (sheetName != null &&
+                address != null &&
                 chartPart.EmbeddedPackagePart != null)
             {
                 new Workbook(chartPart.EmbeddedPackagePart).Sheet(sheetName).UpdateCell(address, value, CellValues.String);

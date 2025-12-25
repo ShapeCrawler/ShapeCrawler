@@ -9,8 +9,8 @@ internal sealed class FieldPortionText(A.Field aField)
         get
         {
             var aText = aField.GetFirstChild<A.Text>();
-        
-            return aText == null ? string.Empty : aText.Text;    
+
+            return aText == null ? string.Empty : aText.Text;
         }
     }
 

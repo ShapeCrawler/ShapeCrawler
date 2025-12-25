@@ -31,7 +31,8 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = shapeId, Name = $"{shapeName} {shapeId}"
+            Id = shapeId,
+            Name = $"{shapeName} {shapeId}"
         };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
@@ -73,7 +74,8 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
         {
-            Id = shapeId, Name = $"{shapeName} {shapeId}"
+            Id = shapeId,
+            Name = $"{shapeName} {shapeId}"
         };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();

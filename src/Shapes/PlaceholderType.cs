@@ -54,7 +54,7 @@ public enum PlaceholderType
     ///     Title.
     /// </summary>
     Title,
-    
+
     /// <summary>
     ///     Sub Title.
     /// </summary>
