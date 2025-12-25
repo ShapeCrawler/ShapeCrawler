@@ -7,7 +7,7 @@ using ShapeCrawler.Texts;
 #pragma warning restore IDE0130
 
 /// <summary>
-///     Represents a PowerPoint UI's Text Box property (Format Shape → Shape Options → Size &amp; Properties → Text Box).
+///     Represents a PowerPoint Text Box property (Format Shape → Shape Options → Size &amp; Properties → Text Box).
 /// </summary>
 public interface ITextBox
 {
