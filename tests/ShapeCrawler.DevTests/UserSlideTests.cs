@@ -570,7 +570,6 @@ public class UserSlideTests : SCTest
         pres.Slide(1).SaveImageTo(stream);
 
         // Assert
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
