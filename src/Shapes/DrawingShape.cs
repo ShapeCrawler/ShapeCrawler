@@ -92,7 +92,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
     {
         var shapeOutline = this.Outline;
 
-        if (shapeOutline is not null && shapeOutline.Weight > 0)
+        if (shapeOutline.Weight > 0)
         {
             return new Points(shapeOutline.Weight).AsPixels();
         }
@@ -195,13 +195,11 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         var endX = new Points(line.EndPoint.X).AsPixels();
         var endY = new Points(line.EndPoint.Y).AsPixels();
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = outlineColor.Value,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = (float)strokeWidth,
-            IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = outlineColor.Value;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = (float)strokeWidth;
+        outlinePaint.IsAntialias = true;
 
         canvas.Save();
         this.ApplyRotation(canvas);
@@ -242,13 +240,11 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return;
         }
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = outlineColor.Value,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = (float)strokeWidth,
-            IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = outlineColor.Value;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = (float)strokeWidth;
+        outlinePaint.IsAntialias = true;
 
         if (cornerRadius > 0)
         {
@@ -304,16 +300,13 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return new Color(shapeFill.Color).AsSkColor();
         }
 
-        if (shapeFill is null || shapeFill.Type == FillType.NoFill)
+        if (shapeFill.Type != FillType.NoFill)
         {
-            var styleColor = this.GetStyleFillColor();
-            if (styleColor is not null)
-            {
-                return styleColor;
-            }
+            return null;
         }
 
-        return null;
+        var styleColor = this.GetStyleFillColor();
+        return styleColor;
     }
 
     private SKColor? GetShapeOutlineColor()
