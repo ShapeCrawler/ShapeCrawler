@@ -24,53 +24,8 @@ internal struct TextLayout(IReadOnlyList<IParagraph> paragraphs, float available
         this.defaultLineHeight = font.Spacing;
         this.defaultBaselineOffset = DrawingFont.BaselineOffset(font);
 
-        var textLines = this.LayoutLines();
-        var textBlockHeight = textLines.Sum(l => l.Height);
-        var verticalOffset = GetVerticalOffset(verticalAlignment, availableHeight, textBlockHeight);
-        var lineTop = y + verticalOffset;
-
-        foreach (var textLine in textLines)
-        {
-            var horizontalOffset = GetHorizontalOffset(textLine.HorizontalAlignment, availableWidth - textLine.ParaLeftMargin, textLine.Width);
-            var startX = x + textLine.ParaLeftMargin + horizontalOffset;
-
-            textLine.Render(canvas, startX, lineTop);
-            lineTop += textLine.Height;
-        }
-    }
-
-    private static float GetVerticalOffset(TextVerticalAlignment alignment, float availableHeight, float contentHeight)
-    {
-        if (availableHeight <= 0)
-        {
-            return 0;
-        }
-
-        var freeSpace = availableHeight - contentHeight;
-        return alignment switch
-        {
-            TextVerticalAlignment.Top => 0,
-            TextVerticalAlignment.Middle => freeSpace / 2,
-            TextVerticalAlignment.Bottom => freeSpace,
-            _ => 0
-        };
-    }
-
-    private static float GetHorizontalOffset(TextHorizontalAlignment alignment, float availableWidth, float lineWidth)
-    {
-        if (availableWidth <= 0)
-        {
-            return 0;
-        }
-
-        var freeSpace = availableWidth - lineWidth;
-        return alignment switch
-        {
-            TextHorizontalAlignment.Left => 0,
-            TextHorizontalAlignment.Center => freeSpace / 2,
-            TextHorizontalAlignment.Right => freeSpace,
-            _ => 0 // Treat Justify and unknown values as Left for MVP.
-        };
+        var lines = this.LayoutLines();
+        new TextLines(lines, availableWidth).Render(canvas, x, y, availableHeight, verticalAlignment);
     }
 
     private static bool IsWhitespace(string value) => string.IsNullOrEmpty(value) || value.All(char.IsWhiteSpace);
