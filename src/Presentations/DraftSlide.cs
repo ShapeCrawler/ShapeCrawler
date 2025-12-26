@@ -170,13 +170,40 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a line shape.
     /// </summary>
-    public DraftSlide Line(string name, int startPointX, int startPointY, int endPointX, int endPointY)
+    public DraftSlide LineShape(string name, int startPointX, int startPointY, int endPointX, int endPointY)
     {
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
             var line = slide.Shapes.Last();
             line.Name = name;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a line shape using a nested builder.
+    /// </summary>
+    public DraftSlide LineShape(Action<DraftLine> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var draftLine = new DraftLine();
+            configure(draftLine);
+
+            var startX = draftLine.DraftX;
+            var startY = draftLine.DraftY;
+            var endX = startX + draftLine.DraftWidth;
+            var endY = startY + draftLine.DraftHeight;
+            slide.Shapes.AddLine(startX, startY, endX, endY);
+            var line = slide.Shapes.Last();
+            line.Name = draftLine.DraftName;
+
+            if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints)
+            {
+                line.Outline?.Weight = strokeWidthPoints;
+            }
         });
 
         return this;

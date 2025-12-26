@@ -39,6 +39,10 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
     {
         switch (this.GeometryType)
         {
+            case Geometry.Line:
+            case Geometry.LineInverse:
+                this.RenderLine(canvas);
+                break;
             case Geometry.Rectangle:
             case Geometry.RoundedRectangle:
                 this.RenderRectangle(canvas);
@@ -89,13 +93,19 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private decimal GetStyleOutlineWidth()
     {
-        if (this.SdkOpenXmlElement is not P.Shape pShape)
+        var lineRef = this.PShapeTreeElement switch
+        {
+            P.Shape pShape => pShape.ShapeStyle?.LineReference,
+            P.ConnectionShape pConnectionShape => pConnectionShape.ShapeStyle?.LineReference,
+            _ => null
+        };
+
+        if (lineRef is null)
         {
             return 0;
         }
 
-        var lineRef = pShape.ShapeStyle?.LineReference;
-        if (lineRef?.Index is null || lineRef.Index.Value == 0)
+        if (lineRef.Index is null || lineRef.Index.Value == 0)
         {
             return 0;
         }
@@ -157,6 +167,35 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         this.RenderEllipseFill(canvas, rect);
         this.RenderEllipseOutline(canvas, rect);
 
+        canvas.Restore();
+    }
+
+    private void RenderLine(SKCanvas canvas)
+    {
+        var outlineColor = this.GetShapeOutlineColor();
+        var strokeWidth = this.GetShapeOutlineWidth();
+        var line = this.Line;
+        if (outlineColor is null || strokeWidth <= 0 || line is null)
+        {
+            return;
+        }
+
+        var startX = new Points(line.StartPoint.X).AsPixels();
+        var startY = new Points(line.StartPoint.Y).AsPixels();
+        var endX = new Points(line.EndPoint.X).AsPixels();
+        var endY = new Points(line.EndPoint.Y).AsPixels();
+
+        using var outlinePaint = new SKPaint
+        {
+            Color = outlineColor.Value,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = (float)strokeWidth,
+            IsAntialias = true
+        };
+
+        canvas.Save();
+        this.ApplyRotation(canvas);
+        canvas.DrawLine((float)startX, (float)startY, (float)endX, (float)endY, outlinePaint);
         canvas.Restore();
     }
 
@@ -287,7 +326,14 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private SKColor? GetStyleOutlineColor()
     {
-        if (this.PShapeTreeElement is not P.Shape { ShapeStyle.LineReference: { } lineRef })
+        var lineRef = this.PShapeTreeElement switch
+        {
+            P.Shape pShape => pShape.ShapeStyle?.LineReference,
+            P.ConnectionShape pConnectionShape => pConnectionShape.ShapeStyle?.LineReference,
+            _ => null
+        };
+
+        if (lineRef is null)
         {
             return null;
         }
