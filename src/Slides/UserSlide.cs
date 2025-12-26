@@ -11,6 +11,7 @@ using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Slides;
 
@@ -123,7 +124,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
             else
             {
                 var hasFill =
-                    pBgPr.GetFirstChild<BlipFill>() is not null
+                    pBgPr.GetFirstChild<A.BlipFill>() is not null
                     || pBgPr.GetFirstChild<GradientFill>() is not null
                     || pBgPr.GetFirstChild<NoFill>() is not null;
                 hasFill = hasFill
