@@ -11,14 +11,13 @@ using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Slides;
 
 /// <inheritdoc/>
 internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shapes, SlidePart slidePart) : IUserSlide
 {
-    private IShapeFill? fill;
-
     public ILayoutSlide LayoutSlide => layoutSlide;
 
     public IUserSlideShapeCollection Shapes => shapes;
@@ -101,44 +100,46 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
     {
         get
         {
-            if (this.fill is null)
+            if (field is not null)
             {
-                var pcSld = slidePart.Slide.CommonSlideData
-                            ?? slidePart.Slide.AppendChild<CommonSlideData>(
-                                new());
-
-                // Background element needs to be first, else it gets ignored.
-                var pBg = pcSld.GetFirstChild<Background>()
-                          ?? pcSld.InsertAt<Background>(new(), 0);
-
-                var pBgPr = pBg.GetFirstChild<DocumentFormat.OpenXml.Presentation.BackgroundProperties>();
-                if (pBgPr is null)
-                {
-                    // PowerPoint always keeps background properties schema-valid.
-                    // If we create an empty p:bgPr, Open XML validation fails because it must contain a fill element.
-                    pBgPr = new DocumentFormat.OpenXml.Presentation.BackgroundProperties(new NoFill());
-                    pBg.AppendChild(pBgPr);
-                }
-                else
-                {
-                    var hasFill =
-                        pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>() is not null
-                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.GradientFill>() is not null
-                        || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>() is not null;
-                    hasFill = hasFill
-                              || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>() is not null
-                              || pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>() is not null;
-                    if (!hasFill)
-                    {
-                        // Keep schema-valid even if p:bgPr was previously created empty.
-                        pBgPr.InsertAt(new NoFill(), 0);
-                    }
-                }
-
-                this.fill = new ShapeFill(pBgPr);
+                return field!;
             }
 
-            return this.fill!;
+            var pcSld = slidePart.Slide.CommonSlideData
+                        ?? slidePart.Slide.AppendChild(
+                            new CommonSlideData());
+
+            // Background element needs to be first, else it gets ignored.
+            var pBg = pcSld.GetFirstChild<Background>()
+                      ?? pcSld.InsertAt<Background>(new(), 0);
+
+            var pBgPr = pBg.GetFirstChild<BackgroundProperties>();
+            if (pBgPr is null)
+            {
+                // PowerPoint always keeps background properties schema-valid.
+                // If we create an empty p:bgPr, Open XML validation fails because it must contain a fill element.
+                pBgPr = new BackgroundProperties(new NoFill());
+                pBg.AppendChild(pBgPr);
+            }
+            else
+            {
+                var hasFill =
+                    pBgPr.GetFirstChild<A.BlipFill>() is not null
+                    || pBgPr.GetFirstChild<GradientFill>() is not null
+                    || pBgPr.GetFirstChild<NoFill>() is not null;
+                hasFill = hasFill
+                          || pBgPr.GetFirstChild<PatternFill>() is not null
+                          || pBgPr.GetFirstChild<SolidFill>() is not null;
+                if (!hasFill)
+                {
+                    // Keep schema-valid even if p:bgPr was previously created empty.
+                    pBgPr.InsertAt(new NoFill(), 0);
+                }
+            }
+
+            field = new ShapeFill(pBgPr);
+
+            return field!;
         }
     }
 
