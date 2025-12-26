@@ -11,9 +11,6 @@ namespace ShapeCrawler.Drawing;
 /// <param name="availableWidth">The maximum available width for each rendered line.</param>
 internal sealed class TextLines(IReadOnlyList<TextLine> lines, float availableWidth)
 {
-    private readonly IReadOnlyList<TextLine> textLines = lines;
-    private readonly float availableWidth = availableWidth;
-
     /// <summary>
     ///     Renders the text lines.
     /// </summary>
@@ -24,15 +21,15 @@ internal sealed class TextLines(IReadOnlyList<TextLine> lines, float availableWi
     /// <param name="verticalAlignment">The vertical alignment.</param>
     internal void Render(SKCanvas canvas, float x, float y, float availableHeight, TextVerticalAlignment verticalAlignment)
     {
-        var textBlockHeight = this.textLines.Sum(l => l.Height);
+        var textBlockHeight = lines.Sum(l => l.Height);
         var verticalOffset = GetVerticalOffset(verticalAlignment, availableHeight, textBlockHeight);
         var lineTop = y + verticalOffset;
 
-        foreach (var textLine in this.textLines)
+        foreach (var textLine in lines)
         {
             var horizontalOffset = GetHorizontalOffset(
                 textLine.HorizontalAlignment,
-                this.availableWidth - textLine.ParaLeftMargin,
+                availableWidth - textLine.ParaLeftMargin,
                 textLine.Width);
             var startX = x + textLine.ParaLeftMargin + horizontalOffset;
 
