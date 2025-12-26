@@ -326,13 +326,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
     private SKColor? GetStyleOutlineColor()
     {
-        var lineRef = this.PShapeTreeElement switch
-        {
-            P.Shape pShape => pShape.ShapeStyle?.LineReference,
-            P.ConnectionShape pConnectionShape => pConnectionShape.ShapeStyle?.LineReference,
-            _ => null
-        };
-
+        var lineRef = this.GetLineReference();
         if (lineRef is null)
         {
             return null;
@@ -350,6 +344,21 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return null;
         }
 
+        return this.ApplyShadeIfNeeded(schemeColor, hexColor);
+    }
+
+    private A.LineReference? GetLineReference()
+    {
+        return this.PShapeTreeElement switch
+        {
+            P.Shape pShape => pShape.ShapeStyle?.LineReference,
+            P.ConnectionShape pConnectionShape => pConnectionShape.ShapeStyle?.LineReference,
+            _ => null
+        };
+    }
+
+    private SKColor ApplyShadeIfNeeded(A.SchemeColor schemeColor, string hexColor)
+    {
         var baseColor = new Color(hexColor).AsSkColor();
         var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
 

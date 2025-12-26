@@ -62,7 +62,7 @@ public sealed class DraftSlide
             var b = new DraftPicture();
             configure(b);
             slide.Shapes.AddPicture(b.ImageStream);
-            var pic = slide.Shapes.Last();
+            var pic = slide.Shapes[slide.Shapes.Count - 1];
             pic.Name = b.DraftName;
             pic.X = b.DraftX;
             pic.Y = b.DraftY;
@@ -138,7 +138,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddTextBox(x, y, width, height, content);
-            var addedShape = slide.Shapes.Last<IShape>();
+            var addedShape = slide.Shapes[slide.Shapes.Count - 1];
             addedShape.Name = name;
         });
 
@@ -175,7 +175,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
-            var line = slide.Shapes.Last();
+            var line = slide.Shapes[slide.Shapes.Count - 1];
             line.Name = name;
         });
 
@@ -197,7 +197,7 @@ public sealed class DraftSlide
             var endX = startX + draftLine.DraftWidth;
             var endY = startY + draftLine.DraftHeight;
             slide.Shapes.AddLine(startX, startY, endX, endY);
-            var line = slide.Shapes.Last();
+            var line = slide.Shapes[slide.Shapes.Count - 1];
             line.Name = draftLine.DraftName;
 
             if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints)
@@ -223,7 +223,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddVideo(x, y, content);
-            var media = slide.Shapes.Last();
+            var media = slide.Shapes[^1];
             media.Name = name;
             media.X = x;
             media.Y = y;
@@ -242,7 +242,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddTable(x, y, columnsCount, rowsCount);
-            var table = slide.Shapes.Last<IShape>();
+            var table = slide.Shapes[slide.Shapes.Count - 1];
             table.Name = name;
         });
 
@@ -261,7 +261,7 @@ public sealed class DraftSlide
 
             var rowsCount = builder.Rows.Count;
             slide.Shapes.AddTable(builder.TableX, builder.TableY, builder.ColumnsCount, rowsCount);
-            var tableShape = slide.Shapes.Last<IShape>();
+            var tableShape = slide.Shapes[slide.Shapes.Count - 1];
             var table = tableShape.Table!;
 
             // Apply cell configurations
@@ -399,11 +399,11 @@ public sealed class DraftSlide
                 builder.BoxWidth,
                 builder.BoxHeight,
                 builder.Content ?? string.Empty);
-            return slide.Shapes.Last<IShape>();
+            return slide.Shapes[slide.Shapes.Count - 1];
         }
 
         slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
-        var addedShape = slide.Shapes.Last<IShape>();
+        var addedShape = slide.Shapes[slide.Shapes.Count - 1];
         SetTextIfProvided(addedShape, builder.Content);
         return addedShape;
     }
