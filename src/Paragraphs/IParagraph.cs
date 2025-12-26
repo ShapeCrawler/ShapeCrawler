@@ -151,8 +151,10 @@ internal sealed class Paragraph : IParagraph
             var textLines = value.Split(Environment.NewLine);
 #endif
             var mainRun = this.aParagraph.GetFirstChild<A.Run>()!;
-            mainRun.Text!.Text = textLines[0];
-
+            if (mainRun != null)
+            {
+                mainRun.Text!.Text = textLines[0];
+            }
             foreach (var textLine in textLines.Skip(1))
             {
                 if (!string.IsNullOrEmpty(textLine))
