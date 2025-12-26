@@ -344,7 +344,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return null;
         }
 
-        return this.ApplyShadeIfNeeded(schemeColor, hexColor);
+        return ApplyShadeIfNeeded(schemeColor, hexColor);
     }
 
     private A.LineReference? GetLineReference()
@@ -357,7 +357,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         };
     }
 
-    private SKColor ApplyShadeIfNeeded(A.SchemeColor schemeColor, string hexColor)
+    private static SKColor ApplyShadeIfNeeded(A.SchemeColor schemeColor, string hexColor)
     {
         var baseColor = new Color(hexColor).AsSkColor();
         var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
