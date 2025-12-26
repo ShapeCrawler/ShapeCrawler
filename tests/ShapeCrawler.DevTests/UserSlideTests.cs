@@ -20,7 +20,7 @@ public class UserSlideTests : SCTest
         // Arrange
         var pptx = TestAsset("001.pptx");
         var pre = new Presentation(pptx);
-        var slide = pre.Slides.First();
+        var slide = pre.Slides[0];
 
         // Act
         slide.Hide();
@@ -139,7 +139,7 @@ public class UserSlideTests : SCTest
         // Arrange
         const string customDataString = "Test custom data";
         var originPre = new Presentation(TestAsset("001.pptx"));
-        var slide = originPre.Slides.First();
+        var slide = originPre.Slides[0];
 
         // Act
         slide.CustomData = customDataString;
@@ -147,7 +147,7 @@ public class UserSlideTests : SCTest
         var savedPreStream = new MemoryStream();
         originPre.Save(savedPreStream);
         var savedPre = new Presentation(savedPreStream);
-        var customData = savedPre.Slides.First().CustomData;
+        var customData = savedPre.Slides[0].CustomData;
 
         // Assert
         customData.Should().Be(customDataString);
@@ -157,7 +157,7 @@ public class UserSlideTests : SCTest
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = new Presentation(TestAsset("001.pptx")).Slides.First();
+        var slide = new Presentation(TestAsset("001.pptx")).Slides[0];
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -194,7 +194,7 @@ public class UserSlideTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("039.pptx"));
-        var slide = pres.Slides.First();
+        var slide = pres.Slides[0];
 
         // Act-Assert
         slide.GetShapeTexts().Count.Should().Be(11);
@@ -257,11 +257,11 @@ public class UserSlideTests : SCTest
         var expected = string.Join(Environment.NewLine, "1", "2", "3");
 
         // Act
-        notes.Paragraphs.Last().Text = "1";
+        notes.Paragraphs[notes.Paragraphs.Count - 1].Text = "1";
         notes.Paragraphs.Add();
-        notes.Paragraphs.Last().Text = "2";
+        notes.Paragraphs[notes.Paragraphs.Count - 1].Text = "2";
         notes.Paragraphs.Add();
-        notes.Paragraphs.Last().Text = "3";
+        notes.Paragraphs[notes.Paragraphs.Count - 1].Text = "3";
 
         // Assert
         notes.Paragraphs.Should().HaveCount(3);
@@ -400,7 +400,13 @@ public class UserSlideTests : SCTest
     public void SaveImageTo_saves_slide_image_with_solid_background()
     {
         // Arrange
-        var pres = new Presentation(p => { p.Slide(s => { s.SolidBackground("FF0000"); }); });
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.SolidBackground("FF0000");
+            });
+        });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -424,7 +430,13 @@ public class UserSlideTests : SCTest
     {
         // Arrange
         var image = TestImage();
-        var pres = new Presentation(p => { p.Slide(s => { s.ImageBackground(image); }); });
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.ImageBackground(image);
+            });
+        });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -572,5 +584,13 @@ public class UserSlideTests : SCTest
         // Assert
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
+    }
+
+    [Test, Explicit("Used for developer debugging")]
+    public void Debug()
+    {
+        var pres = new Presentation(@"c:\Repo\ShapeCrawler\.context\input.pptx");
+        
+        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
     }
 }
