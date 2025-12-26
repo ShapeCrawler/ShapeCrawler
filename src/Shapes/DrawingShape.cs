@@ -215,7 +215,17 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         }
 
         using var fillPaint = new SKPaint();
-        fillPaint.Color = fillColor.Value;
+        // Adjust alpha for transparency only if Fill is possible and alpha < 100% (fully opaque/solid)
+        if (this.Fill != null && this.Fill is { Alpha: < 100.0 })
+        {
+            // Alpha in PowerPoint: 20% transparency means Alpha value is 80
+            var alpha = (byte)(255 * (this.Fill.Alpha / 100.0));
+            fillPaint.Color = new SKColor(fillColor.Value.Red, fillColor.Value.Green, fillColor.Value.Blue, alpha);
+        }
+        else
+        {
+            fillPaint.Color = fillColor.Value;
+        }            
         fillPaint.Style = SKPaintStyle.Fill;
         fillPaint.IsAntialias = true;
 
