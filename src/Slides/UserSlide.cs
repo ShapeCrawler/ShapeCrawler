@@ -123,7 +123,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
             else
             {
                 var hasFill =
-                    pBgPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>() is not null
+                    pBgPr.GetFirstChild<BlipFill>() is not null
                     || pBgPr.GetFirstChild<GradientFill>() is not null
                     || pBgPr.GetFirstChild<NoFill>() is not null;
                 hasFill = hasFill
