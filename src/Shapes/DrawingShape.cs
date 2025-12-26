@@ -77,6 +77,16 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             (byte)(color.Blue * shadeFactor),
             color.Alpha);
     }
+    
+    private static SKColor ApplyShadeIfNeeded(A.SchemeColor schemeColor, string hexColor)
+    {
+        var baseColor = new Color(hexColor).AsSkColor();
+        var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
+
+        return shadeValue is null
+            ? baseColor
+            : ApplyShade(baseColor, shadeValue.Value);
+    }
 
     private decimal GetShapeOutlineWidth()
     {
@@ -355,16 +365,6 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             P.ConnectionShape pConnectionShape => pConnectionShape.ShapeStyle?.LineReference,
             _ => null
         };
-    }
-
-    private static SKColor ApplyShadeIfNeeded(A.SchemeColor schemeColor, string hexColor)
-    {
-        var baseColor = new Color(hexColor).AsSkColor();
-        var shadeValue = schemeColor.GetFirstChild<A.Shade>()?.Val?.Value;
-
-        return shadeValue is null
-            ? baseColor
-            : ApplyShade(baseColor, shadeValue.Value);
     }
 
     private SKColor? GetStyleFillColor()

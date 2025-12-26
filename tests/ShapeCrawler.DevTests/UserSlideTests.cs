@@ -586,8 +586,8 @@ public class UserSlideTests : SCTest
         return Verify(imageBytes, "png");
     }
 
-    [Test, Explicit]
-    public void Manual_testing()
+    [Test, Explicit("Used for developer debugging")]
+    public void Debug()
     {
         var pres = new Presentation(@"c:\Repo\ShapeCrawler\.context\input.pptx");
         
