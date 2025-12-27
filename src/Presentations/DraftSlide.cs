@@ -251,9 +251,10 @@ public sealed class DraftSlide
             var lineShape = (ShapeCrawler.Shapes.LineShape)slide.Shapes[slide.Shapes.Count - 1];
             lineShape.Name = draftLine.DraftName;
 
-            if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints)
+            if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints &&
+                lineShape.Outline is { } outline)
             {
-                lineShape.Outline.Weight = strokeWidthPoints;
+                outline.Weight = strokeWidthPoints;
             }
 
             // Apply arrow settings
