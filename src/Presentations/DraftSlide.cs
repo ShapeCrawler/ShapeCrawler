@@ -450,7 +450,7 @@ public sealed class DraftSlide
         }
     }
 
-    private static void SetSolidFillTransparency(OpenXmlElement pShapeTreeElement, int transparencyPercent)
+    private static void SetSolidFillTransparency(OpenXmlElement pShapeTreeElement, decimal transparencyPercent)
     {
         if (transparencyPercent < 0)
         {
@@ -476,7 +476,7 @@ public sealed class DraftSlide
         if (aRgb != null)
         {
             var aAlpha = aRgb.GetFirstChild<A.Alpha>() ?? aRgb.AppendChild(new A.Alpha());
-            aAlpha.Val = alphaVal;
+            aAlpha.Val = (int)alphaVal;
             return;
         }
 
@@ -484,7 +484,7 @@ public sealed class DraftSlide
         if (aScheme != null)
         {
             var aAlpha = aScheme.GetFirstChild<A.Alpha>() ?? aScheme.AppendChild(new A.Alpha());
-            aAlpha.Val = alphaVal;
+            aAlpha.Val = (int)alphaVal;
         }
     }
 
