@@ -47,7 +47,7 @@ public interface IUserSlide
     /// <summary>
     ///     Gets all text content from shapes on the slide.
     /// </summary>
-    public IList<ITextBox> GetShapeTexts();
+    public IList<ITextBox> GetTexts();
 
     /// <summary>
     ///     Hides slide.

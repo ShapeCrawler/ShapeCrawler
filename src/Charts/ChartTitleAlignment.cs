@@ -283,7 +283,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
         EnsureLeftValue(cManualLayout, value.Value);
     }
 
-    private (C.Layout cLayout, C.ManualLayout? cManualLayout) EnsureLayoutStructure()
+    private (C.Layout CLayout, C.ManualLayout? CManualLayout) EnsureLayoutStructure()
     {
         var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;

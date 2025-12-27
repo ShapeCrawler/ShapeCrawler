@@ -90,8 +90,8 @@ internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlComposite
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
             _ => ((SlideMasterPart)openXmlPart).SlideMaster
         };
-        var typeAndHex = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
+        var (_, hex) = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
 
-        return typeAndHex.Item2;
+        return hex;
     }
 }

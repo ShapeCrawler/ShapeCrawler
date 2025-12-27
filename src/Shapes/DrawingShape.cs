@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Units;
 using SkiaSharp;
@@ -77,6 +78,50 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             color.Alpha);
     }
     
+    private static void RenderArrowHead(SKCanvas canvas, SKPoint tail, SKPoint tip, A.LineEndValues type, SKPaint linePaint)
+    {
+        var angle = Math.Atan2(tip.Y - tail.Y, tip.X - tail.X);
+        var arrowSize = linePaint.StrokeWidth * 3;
+
+        using var paint = new SKPaint();
+        paint.Color = linePaint.Color;
+        paint.IsAntialias = true;
+
+        using var path = new SKPath();
+        if (type == A.LineEndValues.Stealth)
+        {
+            paint.Style = SKPaintStyle.Fill;
+            path.MoveTo(0, 0);
+            path.LineTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(-arrowSize * 0.6f, 0);
+            path.LineTo(-arrowSize, arrowSize / 2);
+            path.Close();
+        }
+        else if (type == A.LineEndValues.Arrow)
+        {
+            paint.Style = SKPaintStyle.Stroke;
+            paint.StrokeWidth = linePaint.StrokeWidth;
+            path.MoveTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(0, 0);
+            path.LineTo(-arrowSize, arrowSize / 2);
+        }
+        else
+        {
+            // Default to Triangle for other types (Oval, Diamond, etc.) or when explicitly Triangle
+            paint.Style = SKPaintStyle.Fill;
+            path.MoveTo(0, 0);
+            path.LineTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(-arrowSize, arrowSize / 2);
+            path.Close();
+        }
+
+        canvas.Save();
+        canvas.Translate(tip.X, tip.Y);
+        canvas.RotateDegrees((float)(angle * 180 / Math.PI));
+        canvas.DrawPath(path, paint);
+        canvas.Restore();
+    }
+    
     private static SKColor ApplyShadeIfNeeded(A.SchemeColor schemeColor, string hexColor)
     {
         var baseColor = new Color(hexColor).AsSkColor();
@@ -85,6 +130,14 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         return shadeValue is null
             ? baseColor
             : ApplyShade(baseColor, shadeValue.Value);
+    }
+    
+    private static void RenderArrowEnd(SKCanvas canvas, SKPoint tail, SKPoint tip, EnumValue<A.LineEndValues>? type, SKPaint paint)
+    {
+        if (type?.Value is not null && type.Value != A.LineEndValues.None)
+        {
+            RenderArrowHead(canvas, tail, tip, type.Value, paint);
+        }
     }
 
     private decimal GetShapeOutlineWidth()
@@ -189,21 +242,44 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return;
         }
 
-        var startX = new Points(line.StartPoint.X).AsPixels();
-        var startY = new Points(line.StartPoint.Y).AsPixels();
-        var endX = new Points(line.EndPoint.X).AsPixels();
-        var endY = new Points(line.EndPoint.Y).AsPixels();
+        var startPoint = new SKPoint(
+            (float)new Points(line.StartPoint.X).AsPixels(),
+            (float)new Points(line.StartPoint.Y).AsPixels());
+        var endPoint = new SKPoint(
+            (float)new Points(line.EndPoint.X).AsPixels(),
+            (float)new Points(line.EndPoint.Y).AsPixels());
 
-        using var outlinePaint = new SKPaint();
-        outlinePaint.Color = outlineColor.Value;
-        outlinePaint.Style = SKPaintStyle.Stroke;
-        outlinePaint.StrokeWidth = (float)strokeWidth;
-        outlinePaint.IsAntialias = true;
+        using var outlinePaint = new SKPaint
+        {
+            Color = outlineColor.Value,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = (float)strokeWidth,
+            IsAntialias = true
+        };
 
         canvas.Save();
         this.ApplyRotation(canvas);
-        canvas.DrawLine((float)startX, (float)startY, (float)endX, (float)endY, outlinePaint);
+        canvas.DrawLine(startPoint, endPoint, outlinePaint);
+
+        this.RenderArrows(canvas, startPoint, endPoint, outlinePaint);
+
         canvas.Restore();
+    }
+
+    private void RenderArrows(SKCanvas canvas, SKPoint startPoint, SKPoint endPoint, SKPaint outlinePaint)
+    {
+        var pShapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().FirstOrDefault();
+        var aOutline = pShapeProperties?.GetFirstChild<A.Outline>();
+        if (aOutline == null)
+        {
+            return;
+        }
+
+        var headEnd = aOutline.GetFirstChild<A.HeadEnd>();
+        RenderArrowEnd(canvas, endPoint, startPoint, headEnd?.Type, outlinePaint);
+
+        var tailEnd = aOutline.GetFirstChild<A.TailEnd>();
+        RenderArrowEnd(canvas, startPoint, endPoint, tailEnd?.Type, outlinePaint);
     }
 
     private void RenderFill(SKCanvas canvas, SKRect rect, decimal cornerRadius)

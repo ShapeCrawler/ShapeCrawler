@@ -99,7 +99,7 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
         };
     }
 
-    private static (A.RgbColorModelHex?, A.SchemeColor?, A.SystemColor?, A.PresetColor?) ExtractColorProperties(A.DefaultRunProperties aDefRPr)
+    private static (A.RgbColorModelHex? ARgbColorModelHex, A.SchemeColor? ASchemeColor, A.SystemColor? ASystemColor, A.PresetColor? APresetColor) ExtractColorProperties(A.DefaultRunProperties aDefRPr)
     {
         var aSolidFill = aDefRPr.GetFirstChild<A.SolidFill>();
         if (aSolidFill != null)
