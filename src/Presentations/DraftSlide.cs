@@ -449,6 +449,7 @@ public sealed class DraftSlide
             {
                 return;
             }
+
             SetSolidFillTransparency(scShape.OpenXmlElement, transparencyPercent);
         }
     }
@@ -462,6 +463,7 @@ public sealed class DraftSlide
                 transparencyPercent,
                 "Transparency percent must be between 0 and 100.");
         }
+
         var alphaPercent = 100 - transparencyPercent;
         var alphaVal = alphaPercent * 1000;
 
