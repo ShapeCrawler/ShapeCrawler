@@ -18,6 +18,10 @@ public sealed class DraftLine
     internal int DraftHeight { get; private set; }
 
     internal DraftStroke? DraftStroke { get; private set; }
+    
+    internal DocumentFormat.OpenXml.Drawing.LineEndValues? DraftHeadEndType { get; private set; }
+
+    internal DocumentFormat.OpenXml.Drawing.LineEndValues? DraftTailEndType { get; private set; }
 
     /// <summary>
     ///     Sets name.
@@ -73,10 +77,6 @@ public sealed class DraftLine
         configure(this.DraftStroke);
         return this;
     }
-
-    internal DocumentFormat.OpenXml.Drawing.LineEndValues? DraftHeadEndType { get; private set; }
-
-    internal DocumentFormat.OpenXml.Drawing.LineEndValues? DraftTailEndType { get; private set; }
 
     /// <summary>
     ///     Sets the arrow head type for the end of the line.
