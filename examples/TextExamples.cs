@@ -38,7 +38,7 @@ public class TextExamples
     public void Replace_text()
     {
         using var pres = new Presentation("pres.pptx");
-        var textBoxes = pres.Slides[0].GetTextBoxes();
+        var textBoxes = pres.Slides[0].GetShapeTexts();
 
         foreach (var textFrame in textBoxes)
         {

@@ -103,7 +103,7 @@ public struct Color
     /// </summary>
     /// <param name="hex">Hex value.</param>
     /// <returns>An RGBA color.</returns>
-    private static (int, int, int, float) ParseHexValue(string hex)
+    private static (int Red, int Green, int Blue, float Alpha) ParseHexValue(string hex)
     {
         if (string.IsNullOrEmpty(hex))
         {
@@ -126,7 +126,7 @@ public struct Color
         }
 
         // Parses 3-digit hex color (F00) -> (r,g,b,a)
-        static (int, int, int, float) ParseThreeDigitHex(string hex)
+        static (int Red, int Green, int Blue, float Alpha) ParseThreeDigitHex(string hex)
         {
             int r = 17 * HexValue(hex[0]);
             int g = 17 * HexValue(hex[1]);
@@ -135,15 +135,15 @@ public struct Color
         }
 
         // Parses 4-digit hex color (FFFF) -> (r,g,b,a)
-        static (int, int, int, float) ParseFourDigitHex(string hex)
+        static (int Red, int Green, int Blue, float Alpha) ParseFourDigitHex(string hex)
         {
             var rgbTuple = ParseThreeDigitHex(hex);
             int a = 17 * HexValue(hex[3]);
-            return (rgbTuple.Item1, rgbTuple.Item2, rgbTuple.Item3, a);
+            return (rgbTuple.Red, rgbTuple.Green, rgbTuple.Blue, a);
         }
 
         // Parses 6-digit hex color (FF0000) -> (r,g,b,a)
-        static (int, int, int, float) ParseSixDigitHex(string hex)
+        static (int Red, int Green, int Blue, float Alpha) ParseSixDigitHex(string hex)
         {
             int r = (16 * HexValue(hex[0])) + HexValue(hex[1]);
             int g = (16 * HexValue(hex[2])) + HexValue(hex[3]);
@@ -152,11 +152,11 @@ public struct Color
         }
 
         // Parses 8-digit hex color (FFFFFF00) -> (r,g,b,a) 
-        static (int, int, int, float) ParseEightDigitHex(string hex)
+        static (int Red, int Green, int Blue, float Alpha) ParseEightDigitHex(string hex)
         {
             var rgbTuple = ParseSixDigitHex(hex);
             int a = (16 * HexValue(hex[6])) + HexValue(hex[7]);
-            return (rgbTuple.Item1, rgbTuple.Item2, rgbTuple.Item3, a);
+            return (rgbTuple.Red, rgbTuple.Green, rgbTuple.Blue, a);
         }
     }
 }

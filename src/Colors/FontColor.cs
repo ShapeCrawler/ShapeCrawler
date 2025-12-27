@@ -120,7 +120,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
             _ => ((SlideMasterPart)openXmlPart).SlideMaster
         };
         var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
-        return typeAndColor.Item1;
+        return typeAndColor.Type;
     }
 
     private static P.SlideMaster GetSlideMaster(OpenXmlPart openXmlPart)
@@ -142,7 +142,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         if (aSolidFill != null)
         {
             var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
-            return typeAndColor.Item2!;
+            return typeAndColor.Hex!;
         }
 
         return null;

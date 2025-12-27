@@ -156,7 +156,7 @@ internal sealed class ThemeColorScheme : IThemeColorScheme
     private static string GetColor(A.Color2Type aColor2Type)
     {
         var color = HexParser.GetWithoutScheme(aColor2Type);
-        return color!.Value.Item2;
+        return color!.Value.Hex;
     }
 
     private void SetColor(string name, string hex)
