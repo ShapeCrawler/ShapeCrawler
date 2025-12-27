@@ -34,7 +34,7 @@ public interface IPicture
     CroppingFrame Crop { get; set; }
 
     /// <summary>
-    ///     Gets or sets the transparency for this image. Range is 0 (fully opaque, default) to 100 (fully transparent).
+    ///     Gets or sets transparency in percentages. 0 (default) is fully opaque, 100 is fully transparent.
     /// </summary>
     decimal Transparency { get; set; }
 
