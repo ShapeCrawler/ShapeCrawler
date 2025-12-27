@@ -593,24 +593,4 @@ public class UserSlideTests : SCTest
         
         pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
     }
-
-    [Test, Explicit]
-    public void WIP()
-    {
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.ArrowLineShape(lineShape =>
-                {
-                    lineShape.Line(line =>
-                    {
-                        line.Width(1);
-                    });
-                });
-            });
-        });
-        
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
-    }
 }

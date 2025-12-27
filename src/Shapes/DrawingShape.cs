@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Units;
 using SkiaSharp;
@@ -203,6 +204,75 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         canvas.Save();
         this.ApplyRotation(canvas);
         canvas.DrawLine((float)startX, (float)startY, (float)endX, (float)endY, outlinePaint);
+
+        var pShapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().FirstOrDefault();
+        var aOutline = pShapeProperties?.GetFirstChild<A.Outline>();
+        var headEnd = aOutline?.GetFirstChild<A.HeadEnd>();
+        var tailEnd = aOutline?.GetFirstChild<A.TailEnd>();
+
+        if (headEnd?.Type?.Value is not null && headEnd.Type.Value != A.LineEndValues.None)
+        {
+            this.RenderArrowHead(canvas, new SKPoint((float)endX, (float)endY), new SKPoint((float)startX, (float)startY), headEnd.Type.Value, outlinePaint);
+        }
+
+        if (tailEnd?.Type?.Value is not null && tailEnd.Type.Value != A.LineEndValues.None)
+        {
+            this.RenderArrowHead(canvas, new SKPoint((float)startX, (float)startY), new SKPoint((float)endX, (float)endY), tailEnd.Type.Value, outlinePaint);
+        }
+
+        canvas.Restore();
+    }
+
+    private void RenderArrowHead(SKCanvas canvas, SKPoint tail, SKPoint tip, A.LineEndValues type, SKPaint linePaint)
+    {
+        var angle = Math.Atan2(tip.Y - tail.Y, tip.X - tail.X);
+        var arrowSize = linePaint.StrokeWidth * 3;
+
+        using var paint = new SKPaint();
+        paint.Color = linePaint.Color;
+        paint.IsAntialias = true;
+
+        var path = new SKPath();
+
+        if (type == A.LineEndValues.Triangle)
+        {
+            paint.Style = SKPaintStyle.Fill;
+            path.MoveTo(0, 0);
+            path.LineTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(-arrowSize, arrowSize / 2);
+            path.Close();
+        }
+        else if (type == A.LineEndValues.Stealth)
+        {
+            paint.Style = SKPaintStyle.Fill;
+            path.MoveTo(0, 0);
+            path.LineTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(-arrowSize * 0.6f, 0);
+            path.LineTo(-arrowSize, arrowSize / 2);
+            path.Close();
+        }
+        else if (type == A.LineEndValues.Arrow)
+        {
+            paint.Style = SKPaintStyle.Stroke;
+            paint.StrokeWidth = linePaint.StrokeWidth;
+            path.MoveTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(0, 0);
+            path.LineTo(-arrowSize, arrowSize / 2);
+        }
+        else
+        {
+            // Default to Triangle for other types for now
+            paint.Style = SKPaintStyle.Fill;
+            path.MoveTo(0, 0);
+            path.LineTo(-arrowSize, -arrowSize / 2);
+            path.LineTo(-arrowSize, arrowSize / 2);
+            path.Close();
+        }
+
+        canvas.Save();
+        canvas.Translate(tip.X, tip.Y);
+        canvas.RotateDegrees((float)(angle * 180 / Math.PI));
+        canvas.DrawPath(path, paint);
         canvas.Restore();
     }
 
