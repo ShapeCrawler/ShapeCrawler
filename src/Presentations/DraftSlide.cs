@@ -215,24 +215,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide LineShape(Action<DraftLine> configure)
     {
-        this.actions.Add((slide, _) =>
-        {
-            var draftLine = new DraftLine();
-            configure(draftLine);
-
-            var startX = draftLine.DraftX;
-            var startY = draftLine.DraftY;
-            var endX = startX + draftLine.DraftWidth;
-            var endY = startY + draftLine.DraftHeight;
-            slide.Shapes.AddLine(startX, startY, endX, endY);
-            var line = slide.Shapes[^1];
-            line.Name = draftLine.DraftName;
-
-            if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints)
-            {
-                line.Outline?.Weight = strokeWidthPoints;
-            }
-        });
+        this.actions.Add((slide, _) => CreateLine(slide, configure));
 
         return this;
     }
@@ -448,14 +431,21 @@ public sealed class DraftSlide
 
     private static void AddArrowLineShape(IUserSlide slide, Action<DraftLine> configure)
     {
-        var draftLine = new DraftLine();
-        configure(draftLine);
+        var (lineShape, draftLine) = CreateLine(slide, configure);
 
         // Apply default arrow only if the user did not configure any arrow ends
         if (!draftLine.DraftTailEndType.HasValue && !draftLine.DraftHeadEndType.HasValue)
         {
             draftLine.EndArrow(A.LineEndValues.Triangle);
         }
+
+        ApplyArrowEnds(lineShape, draftLine);
+    }
+
+    private static (LineShape, DraftLine) CreateLine(IUserSlide slide, Action<DraftLine> configure)
+    {
+        var draftLine = new DraftLine();
+        configure(draftLine);
 
         var startX = draftLine.DraftX;
         var startY = draftLine.DraftY;
@@ -471,7 +461,7 @@ public sealed class DraftSlide
             outline.Weight = strokeWidthPoints;
         }
 
-        ApplyArrowEnds(lineShape, draftLine);
+        return (lineShape, draftLine);
     }
 
     private static void ApplyArrowEnds(LineShape lineShape, DraftLine draftLine)
