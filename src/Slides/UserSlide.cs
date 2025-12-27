@@ -204,7 +204,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
 
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
-    public IList<ITextBox> GetShapeTexts()
+    public IList<ITextBox> GetTexts()
     {
         var collectedTextBoxes = new List<ITextBox>();
 

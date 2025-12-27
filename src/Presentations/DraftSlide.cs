@@ -442,7 +442,7 @@ public sealed class DraftSlide
         ApplyArrowEnds(lineShape, draftLine);
     }
 
-    private static (LineShape lineType, DraftLine draftLine) CreateLine(IUserSlide slide, Action<DraftLine> configure)
+    private static (LineShape LineType, DraftLine DraftLine) CreateLine(IUserSlide slide, Action<DraftLine> configure)
     {
         var draftLine = new DraftLine();
         configure(draftLine);

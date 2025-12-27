@@ -197,7 +197,7 @@ public class UserSlideTests : SCTest
         var slide = pres.Slides[0];
 
         // Act-Assert
-        slide.GetShapeTexts().Count.Should().Be(11);
+        slide.GetTexts().Count.Should().Be(11);
     }
 
     [Test]
@@ -208,7 +208,7 @@ public class UserSlideTests : SCTest
         var slide = pres.Slide(1);
 
         // Act & Assert
-        slide.GetShapeTexts().Count.Should().Be(4);
+        slide.GetTexts().Count.Should().Be(4);
     }
 
     [Test]

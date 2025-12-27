@@ -168,7 +168,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
 
         if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
         {
-            return textBodyColor.colorHex!;
+            return textBodyColor.ColorHex!;
         }
 
         return null;
@@ -208,7 +208,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         var masterIndentFont = pSlideMasterWrap.BodyStyleFontOrNull(indentLevel);
         if (this.TryFromIndentFont(masterIndentFont, out var masterColor))
         {
-            return masterColor.colorHex!;
+            return masterColor.ColorHex!;
         }
 
         // Presentation level
@@ -245,18 +245,18 @@ internal sealed class FontColor(A.Text aText) : IFontColor
 
         if (textBodyStyleFont.HasValue && this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
         {
-            return textBodyColor.colorType;
+            return textBodyColor.ColorType;
         }
 
         return null;
     }
 
-    private bool TryFromIndentFont(IndentFont? indentFont, out (ColorType colorType, string? colorHex) response)
+    private bool TryFromIndentFont(IndentFont? indentFont, out (ColorType ColorType, string? ColorHex) response)
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         if (!indentFont.HasValue)
         {
-            response = (ColorType.NotDefined, null);
+            response = (ColorType: ColorType.NotDefined, null);
             return false;
         }
 
@@ -290,7 +290,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
             return true;
         }
 
-        response = (ColorType.NotDefined, null);
+        response = (ColorType: ColorType.NotDefined, null);
 
         return false;
     }
