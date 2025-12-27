@@ -190,37 +190,52 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
             return;
         }
 
-        var startX = new Points(line.StartPoint.X).AsPixels();
-        var startY = new Points(line.StartPoint.Y).AsPixels();
-        var endX = new Points(line.EndPoint.X).AsPixels();
-        var endY = new Points(line.EndPoint.Y).AsPixels();
+        var startPoint = new SKPoint(
+            (float)new Points(line.StartPoint.X).AsPixels(),
+            (float)new Points(line.StartPoint.Y).AsPixels());
+        var endPoint = new SKPoint(
+            (float)new Points(line.EndPoint.X).AsPixels(),
+            (float)new Points(line.EndPoint.Y).AsPixels());
 
-        using var outlinePaint = new SKPaint();
-        outlinePaint.Color = outlineColor.Value;
-        outlinePaint.Style = SKPaintStyle.Stroke;
-        outlinePaint.StrokeWidth = (float)strokeWidth;
-        outlinePaint.IsAntialias = true;
+        using var outlinePaint = new SKPaint
+        {
+            Color = outlineColor.Value,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = (float)strokeWidth,
+            IsAntialias = true
+        };
 
         canvas.Save();
         this.ApplyRotation(canvas);
-        canvas.DrawLine((float)startX, (float)startY, (float)endX, (float)endY, outlinePaint);
+        canvas.DrawLine(startPoint, endPoint, outlinePaint);
 
-        var pShapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().FirstOrDefault();
-        var aOutline = pShapeProperties?.GetFirstChild<A.Outline>();
-        var headEnd = aOutline?.GetFirstChild<A.HeadEnd>();
-        var tailEnd = aOutline?.GetFirstChild<A.TailEnd>();
-
-        if (headEnd?.Type?.Value is not null && headEnd.Type.Value != A.LineEndValues.None)
-        {
-            this.RenderArrowHead(canvas, new SKPoint((float)endX, (float)endY), new SKPoint((float)startX, (float)startY), headEnd.Type.Value, outlinePaint);
-        }
-
-        if (tailEnd?.Type?.Value is not null && tailEnd.Type.Value != A.LineEndValues.None)
-        {
-            this.RenderArrowHead(canvas, new SKPoint((float)startX, (float)startY), new SKPoint((float)endX, (float)endY), tailEnd.Type.Value, outlinePaint);
-        }
+        this.RenderArrows(canvas, startPoint, endPoint, outlinePaint);
 
         canvas.Restore();
+    }
+
+    private void RenderArrows(SKCanvas canvas, SKPoint startPoint, SKPoint endPoint, SKPaint outlinePaint)
+    {
+        var pShapeProperties = this.PShapeTreeElement.Descendants<P.ShapeProperties>().FirstOrDefault();
+        var aOutline = pShapeProperties?.GetFirstChild<A.Outline>();
+        if (aOutline == null)
+        {
+            return;
+        }
+
+        var headEnd = aOutline.GetFirstChild<A.HeadEnd>();
+        this.RenderArrowEnd(canvas, endPoint, startPoint, headEnd?.Type, outlinePaint);
+
+        var tailEnd = aOutline.GetFirstChild<A.TailEnd>();
+        this.RenderArrowEnd(canvas, startPoint, endPoint, tailEnd?.Type, outlinePaint);
+    }
+
+    private void RenderArrowEnd(SKCanvas canvas, SKPoint tail, SKPoint tip, EnumValue<A.LineEndValues>? type, SKPaint paint)
+    {
+        if (type?.Value is not null && type.Value != A.LineEndValues.None)
+        {
+            this.RenderArrowHead(canvas, tail, tip, type.Value, paint);
+        }
     }
 
     private void RenderArrowHead(SKCanvas canvas, SKPoint tail, SKPoint tip, A.LineEndValues type, SKPaint linePaint)
