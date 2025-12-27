@@ -233,6 +233,50 @@ public sealed class DraftSlide
     }
 
     /// <summary>
+    ///     Configures a line shape with an arrow using a nested builder.
+    /// </summary>
+    public DraftSlide ArrowLineShape(Action<DraftLine> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var draftLine = new DraftLine();
+            draftLine.EndArrow(A.LineEndValues.Triangle); // Default arrow
+            configure(draftLine);
+
+            var startX = draftLine.DraftX;
+            var startY = draftLine.DraftY;
+            var endX = startX + draftLine.DraftWidth;
+            var endY = startY + draftLine.DraftHeight;
+            slide.Shapes.AddLine(startX, startY, endX, endY);
+            var lineShape = (ShapeCrawler.Shapes.LineShape)slide.Shapes[slide.Shapes.Count - 1];
+            lineShape.Name = draftLine.DraftName;
+
+            if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints)
+            {
+                lineShape.Outline.Weight = strokeWidthPoints;
+            }
+
+            // Apply arrow settings
+            var pConnectionShape = (DocumentFormat.OpenXml.Presentation.ConnectionShape)lineShape.OpenXmlElement;
+            var aOutline = pConnectionShape.ShapeProperties!.GetFirstChild<A.Outline>()!;
+            
+            if (draftLine.DraftTailEndType.HasValue)
+            {
+                var aTailEnd = aOutline.GetFirstChild<A.TailEnd>() ?? aOutline.AppendChild(new A.TailEnd());
+                aTailEnd.Type = draftLine.DraftTailEndType.Value;
+            }
+
+            if (draftLine.DraftHeadEndType.HasValue)
+            {
+                var aHeadEnd = aOutline.GetFirstChild<A.HeadEnd>() ?? aOutline.AppendChild(new A.HeadEnd());
+                aHeadEnd.Type = draftLine.DraftHeadEndType.Value;
+            }
+        });
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a video shape and sets its properties.
     /// </summary>
     /// <param name="name">Requested shape name (ignored to keep a stable "Video" name as used by tests/examples).</param>

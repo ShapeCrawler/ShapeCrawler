@@ -73,4 +73,26 @@ public sealed class DraftLine
         configure(this.DraftStroke);
         return this;
     }
+
+    internal DocumentFormat.OpenXml.Drawing.LineEndValues? DraftHeadEndType { get; private set; }
+
+    internal DocumentFormat.OpenXml.Drawing.LineEndValues? DraftTailEndType { get; private set; }
+
+    /// <summary>
+    ///     Sets the arrow head type for the end of the line.
+    /// </summary>
+    public DraftLine EndArrow(DocumentFormat.OpenXml.Drawing.LineEndValues type)
+    {
+        this.DraftTailEndType = type;
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the arrow head type for the start of the line.
+    /// </summary>
+    public DraftLine StartArrow(DocumentFormat.OpenXml.Drawing.LineEndValues type)
+    {
+        this.DraftHeadEndType = type;
+        return this;
+    }
 }
