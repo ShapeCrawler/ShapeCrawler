@@ -442,7 +442,7 @@ public sealed class DraftSlide
         ApplyArrowEnds(lineShape, draftLine);
     }
 
-    private static (LineShape, DraftLine) CreateLine(IUserSlide slide, Action<DraftLine> configure)
+    private static (LineShape lineType, DraftLine draftLine) CreateLine(IUserSlide slide, Action<DraftLine> configure)
     {
         var draftLine = new DraftLine();
         configure(draftLine);
@@ -552,7 +552,7 @@ public sealed class DraftSlide
             return;
         }
 
-        shape.TextBox!.SetText(content);
+        shape.TextBox!.SetText(content!);
     }
 
     private static void ApplyDraftFont(IShape shape, DraftFont? fontDraft)
