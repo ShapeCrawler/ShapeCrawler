@@ -110,7 +110,7 @@ public sealed class DraftSlide
     /// <param name="height">Height in points.</param>
     public DraftSlide TextShape(string content, int x, int y, int width, int height)
     {
-        return this.TextShape(content, (int?)x, (int?)y, width, height);
+        return this.TextShape(content, x, (int?)y, width, height);
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddTextBox(x, y, width, height, content);
-            var addedShape = slide.Shapes[slide.Shapes.Count - 1];
+            var addedShape = slide.Shapes[^1];
             addedShape.Name = name;
         });
 
@@ -180,8 +180,13 @@ public sealed class DraftSlide
             var builder = new DraftRectangle();
             configure(builder);
 
-            slide.Shapes.AddShape(builder.DraftX, builder.DraftY, builder.DraftWidth, builder.DraftHeight, Geometry.Rectangle);
-            var rectangle = slide.Shapes[slide.Shapes.Count - 1];
+            slide.Shapes.AddShape(
+                builder.DraftX, 
+                builder.DraftY, 
+                builder.DraftWidth, 
+                builder.DraftHeight,
+                Geometry.Rectangle);
+            var rectangle = slide.Shapes[^1];
             rectangle.Name = builder.DraftName;
 
             ApplySolidFill(rectangle, builder.SolidFillDraft);
@@ -198,7 +203,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
-            var line = slide.Shapes[slide.Shapes.Count - 1];
+            var line = slide.Shapes[^1];
             line.Name = name;
         });
 
@@ -220,7 +225,7 @@ public sealed class DraftSlide
             var endX = startX + draftLine.DraftWidth;
             var endY = startY + draftLine.DraftHeight;
             slide.Shapes.AddLine(startX, startY, endX, endY);
-            var line = slide.Shapes[slide.Shapes.Count - 1];
+            var line = slide.Shapes[^1];
             line.Name = draftLine.DraftName;
 
             if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints)
@@ -237,52 +242,7 @@ public sealed class DraftSlide
     /// </summary>
     public DraftSlide ArrowLineShape(Action<DraftLine> configure)
     {
-        this.actions.Add((slide, _) =>
-        {
-            var draftLine = new DraftLine();
-            configure(draftLine);
-
-            // Apply default arrow only if the user did not configure any arrow ends
-            if (!draftLine.DraftTailEndType.HasValue && !draftLine.DraftHeadEndType.HasValue)
-            {
-                draftLine.EndArrow(A.LineEndValues.Triangle);
-            }
-            var startX = draftLine.DraftX;
-            var startY = draftLine.DraftY;
-            var endX = startX + draftLine.DraftWidth;
-            var endY = startY + draftLine.DraftHeight;
-            slide.Shapes.AddLine(startX, startY, endX, endY);
-            var lineShape = (ShapeCrawler.Shapes.LineShape)slide.Shapes[slide.Shapes.Count - 1];
-            lineShape.Name = draftLine.DraftName;
-
-            if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints &&
-                lineShape.Outline is { } outline)
-            {
-                outline.Weight = strokeWidthPoints;
-            }
-
-            // Apply arrow settings
-            var pConnectionShape = (DocumentFormat.OpenXml.Presentation.ConnectionShape)lineShape.OpenXmlElement;
-            var shapeProperties = pConnectionShape.ShapeProperties;
-            if (shapeProperties is null)
-            {
-                shapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
-                pConnectionShape.ShapeProperties = shapeProperties;
-            }
-
-            var aOutline = shapeProperties.GetFirstChild<A.Outline>() ?? shapeProperties.AppendChild(new A.Outline());
-            if (draftLine.DraftTailEndType.HasValue)
-            {
-                var aTailEnd = aOutline.GetFirstChild<A.TailEnd>() ?? aOutline.AppendChild(new A.TailEnd());
-                aTailEnd.Type = draftLine.DraftTailEndType.Value;
-            }
-
-            if (draftLine.DraftHeadEndType.HasValue)
-            {
-                var aHeadEnd = aOutline.GetFirstChild<A.HeadEnd>() ?? aOutline.AppendChild(new A.HeadEnd());
-                aHeadEnd.Type = draftLine.DraftHeadEndType.Value;
-            }
-        });
+        this.actions.Add((slide, _) => AddArrowLineShape(slide, configure));
 
         return this;
     }
@@ -320,7 +280,7 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             slide.Shapes.AddTable(x, y, columnsCount, rowsCount);
-            var table = slide.Shapes[slide.Shapes.Count - 1];
+            var table = slide.Shapes[^1];
             table.Name = name;
         });
 
@@ -339,7 +299,7 @@ public sealed class DraftSlide
 
             var rowsCount = builder.Rows.Count;
             slide.Shapes.AddTable(builder.TableX, builder.TableY, builder.ColumnsCount, rowsCount);
-            var tableShape = slide.Shapes[slide.Shapes.Count - 1];
+            var tableShape = slide.Shapes[^1];
             var table = tableShape.Table!;
 
             // Apply cell configurations
@@ -446,7 +406,7 @@ public sealed class DraftSlide
         presentation.Slides.Add(blankLayout.Number);
 
         // Target the newly added slide
-        var slide = presentation.Slides[presentation.Slides.Count - 1];
+        var slide = presentation.Slides[^1];
         foreach (var action in this.actions)
         {
             action(slide, presentation);
@@ -466,7 +426,7 @@ public sealed class DraftSlide
         ApplyDraftParagraphs(addedShape, builder.Paragraphs);
         ApplyTextBoxAutofit(addedShape, builder.IsTextBox);
     }
-    
+
     private static IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
     {
         if (builder.IsTextBox)
@@ -477,13 +437,62 @@ public sealed class DraftSlide
                 builder.BoxWidth,
                 builder.BoxHeight,
                 builder.Content ?? string.Empty);
-            return slide.Shapes[slide.Shapes.Count - 1];
+            return slide.Shapes[^1];
         }
 
         slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
-        var addedShape = slide.Shapes[slide.Shapes.Count - 1];
+        var addedShape = slide.Shapes[^1];
         SetTextIfProvided(addedShape, builder.Content);
         return addedShape;
+    }
+
+    private static void AddArrowLineShape(IUserSlide slide, Action<DraftLine> configure)
+    {
+        var draftLine = new DraftLine();
+        configure(draftLine);
+
+        // Apply default arrow only if the user did not configure any arrow ends
+        if (!draftLine.DraftTailEndType.HasValue && !draftLine.DraftHeadEndType.HasValue)
+        {
+            draftLine.EndArrow(A.LineEndValues.Triangle);
+        }
+
+        var startX = draftLine.DraftX;
+        var startY = draftLine.DraftY;
+        var endX = startX + draftLine.DraftWidth;
+        var endY = startY + draftLine.DraftHeight;
+        slide.Shapes.AddLine(startX, startY, endX, endY);
+        var lineShape = (LineShape)slide.Shapes[^1];
+        lineShape.Name = draftLine.DraftName;
+
+        if (draftLine.DraftStroke?.DraftWidthPoints is { } strokeWidthPoints &&
+            lineShape.Outline is { } outline)
+        {
+            outline.Weight = strokeWidthPoints;
+        }
+
+        ApplyArrowEnds(lineShape, draftLine);
+    }
+
+    private static void ApplyArrowEnds(LineShape lineShape, DraftLine draftLine)
+    {
+        var pConnectionShape = (DocumentFormat.OpenXml.Presentation.ConnectionShape)lineShape.OpenXmlElement;
+        pConnectionShape.ShapeProperties ??= new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+
+        var aOutline = pConnectionShape.ShapeProperties.GetFirstChild<A.Outline>() ??
+                       pConnectionShape.ShapeProperties.AppendChild(new A.Outline());
+
+        if (draftLine.DraftTailEndType.HasValue)
+        {
+            var aTailEnd = aOutline.GetFirstChild<A.TailEnd>() ?? aOutline.AppendChild(new A.TailEnd());
+            aTailEnd.Type = draftLine.DraftTailEndType.Value;
+        }
+
+        if (draftLine.DraftHeadEndType.HasValue)
+        {
+            var aHeadEnd = aOutline.GetFirstChild<A.HeadEnd>() ?? aOutline.AppendChild(new A.HeadEnd());
+            aHeadEnd.Type = draftLine.DraftHeadEndType.Value;
+        }
     }
 
     private static void ApplySolidFill(IShape shape, DraftSolidFill? draftSolidFill)
@@ -522,7 +531,8 @@ public sealed class DraftSlide
         var alphaPercent = 100 - transparencyPercent;
         var alphaVal = alphaPercent * 1000;
 
-        var pShapeProperties = pShapeTreeElement.Descendants<DocumentFormat.OpenXml.Presentation.ShapeProperties>().FirstOrDefault();
+        var pShapeProperties = pShapeTreeElement.Descendants<DocumentFormat.OpenXml.Presentation.ShapeProperties>()
+            .FirstOrDefault();
         var aSolidFill = pShapeProperties?.GetFirstChild<A.SolidFill>();
         if (aSolidFill == null)
         {
@@ -552,7 +562,7 @@ public sealed class DraftSlide
             return;
         }
 
-        shape.TextBox!.SetText(content!);
+        shape.TextBox!.SetText(content);
     }
 
     private static void ApplyDraftFont(IShape shape, DraftFont? fontDraft)
@@ -650,7 +660,7 @@ public sealed class DraftSlide
             return;
         }
 
-        var scTextBox = (ShapeCrawler.Texts.TextBox)shape.TextBox!;
+        var scTextBox = (Texts.TextBox)shape.TextBox!;
         scTextBox.DisableWrapping();
         scTextBox.AutofitType = AutofitType.Resize;
     }
