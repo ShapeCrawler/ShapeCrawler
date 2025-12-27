@@ -452,16 +452,13 @@ public sealed class DraftSlide
 
     private static void SetSolidFillTransparency(OpenXmlElement pShapeTreeElement, decimal transparencyPercent)
     {
-        if (transparencyPercent < 0)
+        if (transparencyPercent is < 0 or > 100)
         {
-            transparencyPercent = 0;
+            throw new ArgumentOutOfRangeException(
+                nameof(transparencyPercent),
+                transparencyPercent,
+                "Transparency percent must be between 0 and 100.");
         }
-
-        if (transparencyPercent > 100)
-        {
-            transparencyPercent = 100;
-        }
-
         var alphaPercent = 100 - transparencyPercent;
         var alphaVal = alphaPercent * 1000;
 
