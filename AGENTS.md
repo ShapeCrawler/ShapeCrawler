@@ -29,6 +29,7 @@ tests/
 
 ## Code Review
 - Do not review test coverage.
+- Do not review validating method parameters.
 
 ## Code Style Guidelines
 
