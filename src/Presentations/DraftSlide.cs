@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Shapes;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Presentations;
 
@@ -163,6 +166,26 @@ public sealed class DraftSlide
     public DraftSlide Shape(Action<DraftTextBox> configure)
     {
         this.actions.Add((slide, _) => AddRectangleShape(slide, configure));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a rectangle shape using a nested builder.
+    /// </summary>
+    public DraftSlide RectangleShape(Action<DraftRectangle> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var builder = new DraftRectangle();
+            configure(builder);
+
+            slide.Shapes.AddShape(builder.DraftX, builder.DraftY, builder.DraftWidth, builder.DraftHeight, Geometry.Rectangle);
+            var rectangle = slide.Shapes[slide.Shapes.Count - 1];
+            rectangle.Name = builder.DraftName;
+
+            ApplySolidFill(rectangle, builder.SolidFillDraft);
+        });
 
         return this;
     }
@@ -388,7 +411,7 @@ public sealed class DraftSlide
         ApplyDraftParagraphs(addedShape, builder.Paragraphs);
         ApplyTextBoxAutofit(addedShape, builder.IsTextBox);
     }
-
+    
     private static IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
     {
         if (builder.IsTextBox)
@@ -406,6 +429,65 @@ public sealed class DraftSlide
         var addedShape = slide.Shapes[slide.Shapes.Count - 1];
         SetTextIfProvided(addedShape, builder.Content);
         return addedShape;
+    }
+
+    private static void ApplySolidFill(IShape shape, DraftSolidFill? draftSolidFill)
+    {
+        if (draftSolidFill == null)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(draftSolidFill.HexColor))
+        {
+            shape.Fill!.SetColor(draftSolidFill.HexColor!);
+        }
+
+        if (draftSolidFill.TransparencyPercent is { } transparencyPercent)
+        {
+            if (shape is not Shape scShape)
+            {
+                return;
+            }
+
+            SetSolidFillTransparency(scShape.OpenXmlElement, transparencyPercent);
+        }
+    }
+
+    private static void SetSolidFillTransparency(OpenXmlElement pShapeTreeElement, decimal transparencyPercent)
+    {
+        if (transparencyPercent is < 0 or > 100)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(transparencyPercent),
+                transparencyPercent,
+                "Transparency percent must be between 0 and 100.");
+        }
+
+        var alphaPercent = 100 - transparencyPercent;
+        var alphaVal = alphaPercent * 1000;
+
+        var pShapeProperties = pShapeTreeElement.Descendants<DocumentFormat.OpenXml.Presentation.ShapeProperties>().FirstOrDefault();
+        var aSolidFill = pShapeProperties?.GetFirstChild<A.SolidFill>();
+        if (aSolidFill == null)
+        {
+            return;
+        }
+
+        var aRgb = aSolidFill.GetFirstChild<A.RgbColorModelHex>();
+        if (aRgb != null)
+        {
+            var aAlpha = aRgb.GetFirstChild<A.Alpha>() ?? aRgb.AppendChild(new A.Alpha());
+            aAlpha.Val = (int)alphaVal;
+            return;
+        }
+
+        var aScheme = aSolidFill.GetFirstChild<A.SchemeColor>();
+        if (aScheme != null)
+        {
+            var aAlpha = aScheme.GetFirstChild<A.Alpha>() ?? aScheme.AppendChild(new A.Alpha());
+            aAlpha.Val = (int)alphaVal;
+        }
     }
 
     private static void SetTextIfProvided(IShape shape, string? content)
