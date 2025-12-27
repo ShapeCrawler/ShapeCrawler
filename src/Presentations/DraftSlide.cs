@@ -240,9 +240,13 @@ public sealed class DraftSlide
         this.actions.Add((slide, _) =>
         {
             var draftLine = new DraftLine();
-            draftLine.EndArrow(A.LineEndValues.Triangle); // Default arrow
             configure(draftLine);
 
+            // Apply default arrow only if the user did not configure any arrow ends
+            if (!draftLine.DraftTailEndType.HasValue && !draftLine.DraftHeadEndType.HasValue)
+            {
+                draftLine.EndArrow(A.LineEndValues.Triangle);
+            }
             var startX = draftLine.DraftX;
             var startY = draftLine.DraftY;
             var endX = startX + draftLine.DraftWidth;
