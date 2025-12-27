@@ -259,8 +259,14 @@ public sealed class DraftSlide
 
             // Apply arrow settings
             var pConnectionShape = (DocumentFormat.OpenXml.Presentation.ConnectionShape)lineShape.OpenXmlElement;
-            var aOutline = pConnectionShape.ShapeProperties!.GetFirstChild<A.Outline>()!;
-            
+            var shapeProperties = pConnectionShape.ShapeProperties;
+            if (shapeProperties is null)
+            {
+                shapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+                pConnectionShape.ShapeProperties = shapeProperties;
+            }
+
+            var aOutline = shapeProperties.GetFirstChild<A.Outline>() ?? shapeProperties.AppendChild(new A.Outline());
             if (draftLine.DraftTailEndType.HasValue)
             {
                 var aTailEnd = aOutline.GetFirstChild<A.TailEnd>() ?? aOutline.AppendChild(new A.TailEnd());
