@@ -87,7 +87,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         paint.Color = linePaint.Color;
         paint.IsAntialias = true;
 
-        var path = new SKPath();
+        using var path = new SKPath();
         if (type == A.LineEndValues.Stealth)
         {
             paint.Style = SKPaintStyle.Fill;
