@@ -445,7 +445,10 @@ public sealed class DraftSlide
 
         if (draftSolidFill.TransparencyPercent is { } transparencyPercent)
         {
-            var scShape = (Shape)shape;
+            if (shape is not Shape scShape)
+            {
+                return;
+            }
             SetSolidFillTransparency(scShape.OpenXmlElement, transparencyPercent);
         }
     }
