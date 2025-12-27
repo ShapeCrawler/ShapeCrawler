@@ -155,6 +155,7 @@ internal sealed class Paragraph : IParagraph
             {
                 mainRun.Text!.Text = textLines[0];
             }
+            
             foreach (var textLine in textLines.Skip(1))
             {
                 if (!string.IsNullOrEmpty(textLine))

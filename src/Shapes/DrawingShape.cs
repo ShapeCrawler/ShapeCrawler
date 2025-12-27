@@ -215,6 +215,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         }
 
         using var fillPaint = new SKPaint();
+        
         // Adjust alpha for transparency only if Fill is possible and alpha < 100% (fully opaque/solid)
         if (this.Fill != null && this.Fill is { Alpha: < 100.0 })
         {
@@ -225,7 +226,8 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         else
         {
             fillPaint.Color = fillColor.Value;
-        }            
+        }    
+
         fillPaint.Style = SKPaintStyle.Fill;
         fillPaint.IsAntialias = true;
 
