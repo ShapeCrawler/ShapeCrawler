@@ -411,6 +411,25 @@ public sealed class DraftSlide
         ApplyDraftParagraphs(addedShape, builder.Paragraphs);
         ApplyTextBoxAutofit(addedShape, builder.IsTextBox);
     }
+    
+    private static IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
+    {
+        if (builder.IsTextBox)
+        {
+            slide.Shapes.AddTextBox(
+                builder.PosX,
+                builder.PosY,
+                builder.BoxWidth,
+                builder.BoxHeight,
+                builder.Content ?? string.Empty);
+            return slide.Shapes[slide.Shapes.Count - 1];
+        }
+
+        slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
+        var addedShape = slide.Shapes[slide.Shapes.Count - 1];
+        SetTextIfProvided(addedShape, builder.Content);
+        return addedShape;
+    }
 
     private static void ApplySolidFill(IShape shape, DraftSolidFill? draftSolidFill)
     {
@@ -467,25 +486,6 @@ public sealed class DraftSlide
             var aAlpha = aScheme.GetFirstChild<A.Alpha>() ?? aScheme.AppendChild(new A.Alpha());
             aAlpha.Val = alphaVal;
         }
-    }
-
-    private static IShape AddRectangleShape(IUserSlide slide, DraftTextBox builder)
-    {
-        if (builder.IsTextBox)
-        {
-            slide.Shapes.AddTextBox(
-                builder.PosX,
-                builder.PosY,
-                builder.BoxWidth,
-                builder.BoxHeight,
-                builder.Content ?? string.Empty);
-            return slide.Shapes[slide.Shapes.Count - 1];
-        }
-
-        slide.Shapes.AddShape(builder.PosX, builder.PosY, builder.BoxWidth, builder.BoxHeight, builder.ShapeGeometry);
-        var addedShape = slide.Shapes[slide.Shapes.Count - 1];
-        SetTextIfProvided(addedShape, builder.Content);
-        return addedShape;
     }
 
     private static void SetTextIfProvided(IShape shape, string? content)
