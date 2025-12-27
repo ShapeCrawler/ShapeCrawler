@@ -27,6 +27,9 @@ tests/
   - **What is an Object?** The project follows the principle that the correct object is a representation of a real-world entity or concept. In its constructor, the class encapsulates properties or another object as “coordinates” that the class instance will use to refer to the real-world entity.
   - **Encapsulation**: A class should encapsulate all logic required to produce its result. It should not rely on pre-calculated data passed from the caller if it can calculate that data itself using its dependencies.
 
+## Code Review
+- Do not review test coverage.
+
 ## Code Style Guidelines
 
 ### Mandatory Rules

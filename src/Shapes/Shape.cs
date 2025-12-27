@@ -279,6 +279,11 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public OpenXmlElement SdkOpenXmlElement => pShapeTreeElement.CloneNode(true);
 
+    /// <summary>
+    ///     Gets the underlying Open XML element.
+    /// </summary>
+    internal OpenXmlElement OpenXmlElement => pShapeTreeElement;
+
     protected OpenXmlElement PShapeTreeElement => pShapeTreeElement;
 
     public void Duplicate()

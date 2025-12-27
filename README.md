@@ -12,13 +12,13 @@
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?color=orange)](https://makeapullrequest.com)
 ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange)
-[![GitHub repo Good Issues for newbies](https://img.shields.io/github/issues/ShapeCrawler/ShapeCrawler/good%20first%20issue?style=flat&logo=github&logoColor=green&label=Good%20First%20issues)](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+
 [![GitHub Help Wanted issues](https://img.shields.io/github/issues/ShapeCrawler/ShapeCrawler/help%20wanted?style=flat&logo=github&logoColor=b545d1&label=%22Help%20Wanted%22%20issues)](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 
 </h3>
 
 <p align="center">
-  <strong>A .NET library for manipulating PowerPoint presentations without Microsoft Office</strong>
+  <strong>PowerPoint (PPTX) manipulation library for .NET / C# developers</strong>
 </p>
 
 ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making it easy to read, create, and modify `.pptx` files programmatically.
@@ -53,6 +53,7 @@ pres.Save();
 
 - **No Office Required** – Process presentations on any platform without Microsoft Office installation
 - **Clean API** – Intuitive object model that hides the complexity of Open XML
+- **Open Source** — Open Source and actively maintained
 
 ## 💡 Common Use Cases
 
