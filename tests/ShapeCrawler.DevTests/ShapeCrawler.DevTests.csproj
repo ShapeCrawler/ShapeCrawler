@@ -48,8 +48,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\085 fill transparency when saving image.pptx" />
     <None Remove="Assets\audio\audio-case001.pptx" />
     <EmbeddedResource Include="Assets\062_text_spacing.pptx" />
+    <EmbeddedResource Include="Assets\085 fill transparency when saving image.pptx" />
     <EmbeddedResource Include="Assets\audio\audio-case001.pptx" />
     <None Remove="Assets\autoshapes\001.pptx" />
     <EmbeddedResource Include="Assets\autoshapes\001.pptx" />
