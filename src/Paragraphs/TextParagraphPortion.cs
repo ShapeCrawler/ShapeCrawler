@@ -67,7 +67,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         var color = new Color(hex);
 
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
-        color.Alpha = Color.Opacity / (100000 / aAlphaValue);
+        color.Alpha = Color.Opacity * (double)aAlphaValue / 100000d;
 
         return color;
     }
