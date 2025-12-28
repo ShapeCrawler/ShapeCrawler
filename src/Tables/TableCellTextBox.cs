@@ -324,7 +324,7 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell) : ITextBox
                 intRequiredRowsCount = 1;
             }
 
-            textHeight += intRequiredRowsCount * (int)scFont.Size;
+            textHeight += intRequiredRowsCount * scFont.Size;
         }
 
         return textHeight;

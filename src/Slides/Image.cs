@@ -180,10 +180,26 @@ internal sealed class Image
     {
         if (height > 500 || width > 500)
         {
-            height = height > 500 ? 500 : height;
-            width = width > 500 ? 500 : width;
-            width = height == 500 ? (uint)(height * image.Width / (decimal)image.Height) : width;
-            height = width == 500 ? (uint)(width * image.Height / (decimal)image.Width) : height;
+            if (height > 500)
+            {
+                height = 500;
+            }
+
+            if (width > 500)
+            {
+                width = 500;
+            }
+
+            if (height == 500)
+            {
+                width = (uint)(height * (decimal)image.Width / image.Height);
+            }
+
+            if (width == 500)
+            {
+                height = (uint)(width * (decimal)image.Height / image.Width);
+            }
+
             image.Resize(width, height);
         }
     }

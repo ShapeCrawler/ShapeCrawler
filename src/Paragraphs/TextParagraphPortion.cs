@@ -61,13 +61,12 @@ internal sealed class TextParagraphPortion : IParagraphPortion
             return Color.NoColor;
         }
 
-        // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
         var hex = aSrgbClr.Val.ToString()!;
 
         var color = new Color(hex);
 
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
-        color.Alpha = Color.Opacity / (100000 / aAlphaValue);
+        color.Alpha = Color.Opacity * aAlphaValue / 100_000f;
 
         return color;
     }
