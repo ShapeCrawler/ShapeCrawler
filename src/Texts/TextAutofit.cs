@@ -67,7 +67,7 @@ internal sealed class TextAutofit(
         {
             this.UpdateWidth();
         }
-    }
+    } // TODO: refactor: the design doesn't look correct.
 
     /// <summary>
     ///     Shrinks font size to fit the text in the shape.
