@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
@@ -112,7 +113,7 @@ internal sealed class TableShape : DrawingShape
         var aTextBody = cell.ATableCell.TextBody!;
         
         // Temporarily apply style font color if needed
-        var modifiedRunProperties = new System.Collections.Generic.List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)>();
+        var modifiedRunProperties = new List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)>();
         
         if (styleFontColorHex != null)
         {
