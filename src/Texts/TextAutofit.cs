@@ -120,8 +120,7 @@ internal sealed class TextAutofit(
     {
         var parentShape = textBody.Parent!;
         var requiredHeight = textHeight + margins.Top + margins.Bottom;
-        var newHeight = requiredHeight + margins.Top + margins.Bottom + margins.Top +
-                        margins.Bottom;
+        var newHeight = requiredHeight;
         shapeSize.Height = newHeight;
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
