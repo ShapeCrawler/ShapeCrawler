@@ -232,8 +232,9 @@ internal sealed class TableShape : DrawingShape
                  {
                      var color = new Color(hex).AsSkColor();
 
-                     // Approx 20% opacity for simple visual match with the user's expectation
-                     return new SKColor(color.Red, color.Green, color.Blue, 51); 
+                     // Approx 20% opacity (20% of 255) for simple visual match with the user's expectation
+                     var twentyPercentAlpha = (byte)(255 * 0.20f);
+                     return new SKColor(color.Red, color.Green, color.Blue, twentyPercentAlpha);
                  }
             }
         }
