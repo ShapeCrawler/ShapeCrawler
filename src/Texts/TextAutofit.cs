@@ -62,7 +62,7 @@ internal sealed class TextAutofit(
                 }
             }
 
-            textHeight += intRequiredRowsCount * (int)paragraphTextHeight;
+            textHeight += intRequiredRowsCount * paragraphTextHeight;
         }
 
         this.UpdateHeight(textHeight, shapeHeightCapacity);
@@ -77,7 +77,7 @@ internal sealed class TextAutofit(
     /// </summary>
     internal void ShrinkFont(string newText)
     {
-        var firstParagraph = paragraphs.First();
+        var firstParagraph = paragraphs[0];
         var popularFont = firstParagraph.Portions.GroupBy(paraPortion => paraPortion.Font!.Size)
             .OrderByDescending(x => x.Count())
             .First().First().Font!;
@@ -93,7 +93,7 @@ internal sealed class TextAutofit(
             .OrderByDescending(x => x.Length)
             .First().Text;
 
-        var baseParagraph = paragraphs.First();
+        var baseParagraph = paragraphs[0];
         var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
             .OrderByDescending(x => x.Count())
             .First().First();

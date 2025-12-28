@@ -25,7 +25,6 @@ internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentL
     public Geometry GeometryType
     {
         get => Geometry.Line;
-        set => throw new SCException("Unable to set geometry type for line shape.");
     }
 
     public Point StartPoint
