@@ -18,6 +18,8 @@ internal sealed class TextAutofit(
     Func<bool> getTextWrapped,
     OpenXmlElement textBody)
 {
+    private const decimal DpiConversionFactor = 96m / 72m; // SkiaSharp uses 72 DPI, ShapeCrawler uses 96 DPI. 96/72 ≈ 1.4
+    
     /// <summary>
     ///     Applies to autofit by resizing the parent shape on demand.
     /// </summary>
@@ -80,8 +82,6 @@ internal sealed class TextAutofit(
         text.Fit(shapeSize.Width, shapeSize.Height);
         firstParagraph.SetFontSize((int)text.FontSize);
     }
-
-    private const decimal DpiConversionFactor = 96m / 72m; // SkiaSharp uses 72 DPI, ShapeCrawler uses 96 DPI. 96/72 ≈ 1.4
 
     private void UpdateWidth()
     {
