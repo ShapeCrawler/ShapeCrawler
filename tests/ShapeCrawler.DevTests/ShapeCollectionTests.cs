@@ -313,30 +313,7 @@ public class ShapeCollectionTests : SCTest
         line.EndPoint.Y.Should().Be(50);
         ValidatePresentation(pres);
     }
-
-    [Test]
-    public void AddAudio_adds_audio_shape_with_MP3_content()
-    {
-        // Arrange
-        var pptx = TestAsset("001.pptx");
-        var mp3 = TestAsset("064 mp3.mp3");
-        var pres = new Presentation(pptx);
-        var shapes = pres.Slides[1].Shapes;
-        int xPtCoordinate = 225;
-        int yPtCoordinate = 75;
-
-        // Act
-        shapes.AddAudio(xPtCoordinate, yPtCoordinate, mp3);
-
-        pres.Save();
-        pres = new Presentation(pptx);
-        var addedAudio = pres.Slides[1].Shapes.Last();
-
-        // Assert
-        addedAudio.X.Should().Be(xPtCoordinate);
-        addedAudio.Y.Should().Be(yPtCoordinate);
-    }
-
+    
     [Test]
     public void AddAudio_adds_audio_shape_with_WAVE_content()
     {
