@@ -85,14 +85,27 @@ internal sealed class TableShape : DrawingShape
                     int gridSpan = cell.ATableCell.GridSpan?.Value ?? 1;
                     int rowSpan = cell.ATableCell.RowSpan?.Value ?? 1;
 
+                    // Clamp spans to avoid going out of table bounds
+                    var effectiveGridSpan = gridSpan;
+                    if (colIdx + effectiveGridSpan > columns.Count)
+                    {
+                        effectiveGridSpan = columns.Count - colIdx;
+                    }
+
+                    var effectiveRowSpan = rowSpan;
+                    if (rowIdx + effectiveRowSpan > rows.Count)
+                    {
+                        effectiveRowSpan = rows.Count - rowIdx;
+                    }
+
                     decimal cellTotalWidth = 0;
-                    for (int k = 0; k < gridSpan; k++)
+                    for (int k = 0; k < effectiveGridSpan; k++)
                     {
                         cellTotalWidth += columns[colIdx + k].Width;
                     }
 
                     decimal cellTotalHeight = 0;
-                    for (int k = 0; k < rowSpan; k++)
+                    for (int k = 0; k < effectiveRowSpan; k++)
                     {
                         cellTotalHeight += rows[rowIdx + k].Height;
                     }
