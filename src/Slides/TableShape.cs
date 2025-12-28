@@ -262,9 +262,6 @@ internal sealed class TableShape : DrawingShape
         var table = (Table)this.Table!;
         var style = (TableStyle)table.TableStyle;
         
-        // Explicit borders (ignoring for now as WIP doesn't use them, but should be here)
-        // ...
-
         // Style borders (Medium Style 2 - Accent 1 implies white borders)
         if (style.Guid == "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
         {
