@@ -598,24 +598,21 @@ public class UserSlideTests : SCTest
     public void SaveImageTo_saves_slide_image_with_transparent_shape()
     {
         // Arrange
-        var pptx = TestAsset("085 fill transparency when saving image.pptx");
-        //var image = TestAsset("10 png image.png");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(TestAsset("085 fill transparency when saving image.pptx"));
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
         // Act
         slide.SaveImageTo(stream);
-        //File.WriteAllBytes("debug_output.png", stream.ToArray());
 
         // Assert
-        SkiaSharp.SKColor centerPixel = new SkiaSharp.SKColor();
+        var centerPixel = new SkiaSharp.SKColor();
         using (var skImage = SkiaSharp.SKImage.FromEncodedData(stream))
         {
             using (var skBitmap = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(skImage.Width, skImage.Height, SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Premul)))
             {
                 skImage.ReadPixels(skBitmap.Info, skBitmap.GetPixels(), skBitmap.RowBytes);
-                centerPixel = skBitmap.GetPixel((int)(skBitmap.Width / 2), (int)(skBitmap.Height / 2));
+                centerPixel = skBitmap.GetPixel((skBitmap.Width / 2), (skBitmap.Height / 2));
             }
         }
         // Unsure how to test transparency properly. Was expecting Alpha to be 204 or something other than 255 (opaque) because shape is 50% transparent over white background.
@@ -623,5 +620,38 @@ public class UserSlideTests : SCTest
         //centerPixel.Alpha.Should().BeInRange(50, 60, "Alpha component should indicate 50% transparency");
         // For now, ensuring test placeholder does not fail the suite.
         centerPixel.Alpha.Should().Be(255, "Alpha component is 255 because background is white");
+    }
+
+    [Test]
+    public void WIP()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TableShape(shape =>
+                {
+                    shape.X(50); // points
+                    shape.Y(50); // points
+                    shape.Table(table =>
+                    {
+                        table.Columns(2);
+                        table.Row(row =>
+                        {
+                            row.Cell(1).TextBox("R1C1");
+                            row.Cell(2).TextBox("R1C2");
+                        });
+                    });
+                });
+            });
+        });
+
+        var tableShape = pres.Slide(1).Shapes[0];
+        var table = tableShape.Table!;
+
+        table.Rows[0].Cells[0].TextBox.Text.Should().Be("R1C1");
+        table.Rows[0].Cells[1].TextBox.Text.Should().Be("R1C2");
+        tableShape.X.Should().Be(50);
+        tableShape.Y.Should().Be(50);
     }
 }
