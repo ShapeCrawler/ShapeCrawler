@@ -163,28 +163,8 @@ internal sealed class TableShape : DrawingShape
             }
         }
     }
-
-    private void RenderRow(SKCanvas canvas, Table table, int rowIdx, ref decimal colLeftPoints, decimal rowTopPoints)
-    {
-        var row = table.Rows[rowIdx];
-        var columns = table.Columns;
-
-        for (var colIdx = 0; colIdx < columns.Count; colIdx++)
-        {
-            var cell = (TableCell)row.Cells[colIdx];
-
-            // Render only if it's the top-left cell of a merge (or single cell)
-            if (cell.RowIndex == rowIdx && cell.ColumnIndex == colIdx)
-            {
-                var cellDimensions = this.CalculateCellDimensions(table, cell, rowIdx, colIdx);
-                this.RenderCell(canvas, cell, colLeftPoints, rowTopPoints, cellDimensions.Width, cellDimensions.Height);
-            }
-
-            colLeftPoints += columns[colIdx].Width;
-        }
-    }
-
-    private (decimal Width, decimal Height) CalculateCellDimensions(Table table, TableCell cell, int rowIdx, int colIdx)
+    
+    private static (decimal Width, decimal Height) CalculateCellDimensions(Table table, TableCell cell, int rowIdx, int colIdx)
     {
         int gridSpan = cell.ATableCell.GridSpan?.Value ?? 1;
         int rowSpan = cell.ATableCell.RowSpan?.Value ?? 1;
@@ -204,6 +184,26 @@ internal sealed class TableShape : DrawingShape
         return (cellTotalWidth, cellTotalHeight);
     }
 
+    private void RenderRow(SKCanvas canvas, Table table, int rowIdx, ref decimal colLeftPoints, decimal rowTopPoints)
+    {
+        var row = table.Rows[rowIdx];
+        var columns = table.Columns;
+
+        for (var colIdx = 0; colIdx < columns.Count; colIdx++)
+        {
+            var cell = (TableCell)row.Cells[colIdx];
+
+            // Render only if it's the top-left cell of a merge (or single cell)
+            if (cell.RowIndex == rowIdx && cell.ColumnIndex == colIdx)
+            {
+                var cellDimensions = CalculateCellDimensions(table, cell, rowIdx, colIdx);
+                this.RenderCell(canvas, cell, colLeftPoints, rowTopPoints, cellDimensions.Width, cellDimensions.Height);
+            }
+
+            colLeftPoints += columns[colIdx].Width;
+        }
+    }
+
     private void RenderCell(SKCanvas canvas, TableCell cell, decimal x, decimal y, decimal w, decimal h)
     {
         // 1. Resolve Fill
@@ -214,12 +214,10 @@ internal sealed class TableShape : DrawingShape
         {
             var rect = CreateRectFromPoints(x, y, w, h);
 
-            using var paint = new SKPaint
-            {
-                Color = fillColor.Value,
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
+            using var paint = new SKPaint();
+            paint.Color = fillColor.Value;
+            paint.Style = SKPaintStyle.Fill;
+            paint.IsAntialias = true;
             canvas.DrawRect(rect, paint);
         }
 
@@ -227,11 +225,13 @@ internal sealed class TableShape : DrawingShape
         this.RenderBorders(canvas, x, y, w, h);
 
         // 4. Render Text with style font color
-        if (cell.ATableCell.TextBody != null)
+        if (cell.ATableCell.TextBody == null)
         {
-            var styleFontColorHex = this.GetStyleFontColorHex(cell);
-            RenderCellText(canvas, cell, x, y, w, h, styleFontColorHex);
+            return;
         }
+
+        var styleFontColorHex = this.GetStyleFontColorHex(cell);
+        RenderCellText(canvas, cell, x, y, w, h, styleFontColorHex);
     }
 
     private SKColor? GetCellFillColor(TableCell cell)
