@@ -639,7 +639,7 @@ public class UserSlideTests : SCTest
         slide.SaveImageTo(stream);
 
         // Assert
-        var centerPixel = new SkiaSharp.SKColor();
+        SkiaSharp.SKColor centerPixel;
         using (var skImage = SkiaSharp.SKImage.FromEncodedData(stream))
         {
             using (var skBitmap = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(skImage.Width, skImage.Height, SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Premul)))
