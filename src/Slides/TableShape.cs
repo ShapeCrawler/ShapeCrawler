@@ -1,4 +1,3 @@
-﻿using System;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
@@ -103,22 +102,72 @@ internal sealed class TableShape : DrawingShape
 
                 colLeftPoints += colWidthPoints;
             }
+
             rowTopPoints += rowHeightPoints;
         }
     }
 
+    private static void RenderCellText(SKCanvas canvas, TableCell cell, decimal x, decimal y, decimal w, decimal h, string? styleFontColorHex)
+    {
+        var aTextBody = cell.ATableCell.TextBody!;
+        
+        // Temporarily apply style font color if needed
+        var modifiedRunProperties = new System.Collections.Generic.List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)>();
+        
+        if (styleFontColorHex != null)
+        {
+            foreach (var aParagraph in aTextBody.Elements<A.Paragraph>())
+            {
+                foreach (var aRun in aParagraph.Elements<A.Run>())
+                {
+                    var aRunPr = aRun.GetFirstChild<A.RunProperties>();
+                    if (aRunPr == null)
+                    {
+                        aRunPr = new A.RunProperties();
+                        aRun.InsertAt(aRunPr, 0);
+                    }
+                    
+                    var originalFill = aRunPr.GetFirstChild<A.SolidFill>();
+                    modifiedRunProperties.Add((aRunPr, originalFill));
+
+                    // Remove existing fill and add style color
+                    originalFill?.Remove();
+                    var newFill = new A.SolidFill();
+                    newFill.Append(new A.RgbColorModelHex { Val = styleFontColorHex });
+                    aRunPr.InsertAt(newFill, 0);
+                }
+            }
+        }
+        
+        try
+        {
+            var textBoxMargins = new TextBoxMargins(aTextBody);
+            var drawingTextBox = new DrawingTextBox(textBoxMargins, aTextBody);
+            drawingTextBox.Render(canvas, x, y, w, h);
+        }
+        finally
+        {
+            // Restore original state
+            if (styleFontColorHex != null)
+            {
+                foreach (var (runProp, originalFill) in modifiedRunProperties)
+                {
+                    var tempFill = runProp.GetFirstChild<A.SolidFill>();
+                    tempFill?.Remove();
+                    
+                    if (originalFill != null)
+                    {
+                        runProp.InsertAt(originalFill, 0);
+                    }
+                }
+            }
+        }
+    }
+    
     private void RenderCell(SKCanvas canvas, TableCell cell, decimal x, decimal y, decimal w, decimal h)
     {
         // 1. Resolve Fill
-        SKColor? fillColor = null;
-        if (cell.Fill is { Type: FillType.Solid, Color: not null })
-        {
-            fillColor = new Color(cell.Fill.Color).AsSkColor();
-        }
-        else
-        {
-             fillColor = this.GetStyleFill(cell);
-        }
+        var fillColor = this.GetCellFillColor(cell);
         
         // 2. Render Fill
         if (fillColor != null)
@@ -141,20 +190,29 @@ internal sealed class TableShape : DrawingShape
         // 3. Render Borders
         this.RenderBorders(canvas, x, y, w, h);
 
-        // 4. Render Text
+        // 4. Render Text with style font color
         if (cell.ATableCell.TextBody != null)
         {
-            var textBoxMargins = new TextBoxMargins(cell.ATableCell.TextBody);
-            var drawingTextBox = new DrawingTextBox(textBoxMargins, cell.ATableCell.TextBody);
-
-            drawingTextBox.Render(canvas, x, y, w, h);
+            var styleFontColorHex = this.GetStyleFontColorHex(cell);
+            RenderCellText(canvas, cell, x, y, w, h, styleFontColorHex);
         }
+    }
+
+    private SKColor? GetCellFillColor(TableCell cell)
+    {
+        if (cell.Fill is { Type: FillType.Solid, Color: not null })
+        {
+            return new Color(cell.Fill.Color).AsSkColor();
+        }
+
+        return this.GetStyleFill(cell);
     }
 
     private SKColor? GetStyleFill(TableCell cell)
     {
         var table = (Table)this.Table!;
         var style = (TableStyle)table.TableStyle;
+
         // Medium Style 2 - Accent 1
         if (style.Guid == "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
         {
@@ -173,10 +231,26 @@ internal sealed class TableShape : DrawingShape
                  if (hex != null)
                  {
                      var color = new Color(hex).AsSkColor();
+
                      // Approx 20% opacity for simple visual match with the user's expectation
                      return new SKColor(color.Red, color.Green, color.Blue, 51); 
                  }
             }
+        }
+        
+        return null;
+    }
+
+    private string? GetStyleFontColorHex(TableCell cell)
+    {
+        var table = (Table)this.Table!;
+        var style = (TableStyle)table.TableStyle;
+        
+        // Medium Style 2 - Accent 1
+        if (style.Guid == "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
+        {
+            // Header Row uses white text
+            return table.StyleOptions.HasHeaderRow && cell.RowIndex == 0 ? "FFFFFF" : null;
         }
         
         return null;
@@ -201,7 +275,7 @@ internal sealed class TableShape : DrawingShape
                  IsAntialias = true
              };
              
-             var rect = new SKRect((float)new Points(x).AsPixels(), (float)new Points(y).AsPixels(), (float)new Points(x+w).AsPixels(), (float)new Points(y+h).AsPixels());
+             var rect = new SKRect((float)new Points(x).AsPixels(), (float)new Points(y).AsPixels(), (float)new Points(x + w).AsPixels(), (float)new Points(y + h).AsPixels());
              canvas.DrawRect(rect, paint);
         }
     }

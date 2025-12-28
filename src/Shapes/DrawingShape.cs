@@ -55,6 +55,25 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         }
     }
 
+    protected string? ResolveSchemeColor(string schemeColorName)
+    {
+        var shapeColorScheme = new ShapeColorScheme(this.PShapeTreeElement);
+        var colorScheme = shapeColorScheme.GetColorScheme();
+        if (colorScheme is null)
+        {
+            return null;
+        }
+
+        if (!SchemeColorSelectors.TryGetValue(schemeColorName, out var selector))
+        {
+            return null;
+        }
+
+        var colorElement = selector(colorScheme);
+
+        return colorElement is null ? null : GetHexFromColorElement(colorElement);
+    }
+
     private static string? GetHexFromColorElement(A.Color2Type colorElement)
     {
         var rgbColor = colorElement.RgbColorModelHex;
@@ -469,24 +488,5 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         var hexColor = this.ResolveSchemeColor(schemeColorValue);
 
         return hexColor is not null ? new Color(hexColor).AsSkColor() : null;
-    }
-
-    internal string? ResolveSchemeColor(string schemeColorName)
-    {
-        var shapeColorScheme = new ShapeColorScheme(this.PShapeTreeElement);
-        var colorScheme = shapeColorScheme.GetColorScheme();
-        if (colorScheme is null)
-        {
-            return null;
-        }
-
-        if (!SchemeColorSelectors.TryGetValue(schemeColorName, out var selector))
-        {
-            return null;
-        }
-
-        var colorElement = selector(colorScheme);
-
-        return colorElement is null ? null : GetHexFromColorElement(colorElement);
     }
 }

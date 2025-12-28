@@ -585,6 +585,39 @@ public class UserSlideTests : SCTest
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
+    
+    [Test]
+    public Task SaveImageTo_draws_Table_Shapes()
+    {
+        // Arrange
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.TableShape(shape =>
+                {
+                    shape.X(50);
+                    shape.Y(50);
+                    shape.Table(table =>
+                    {
+                        table.Columns(2);
+                        table.Row(row =>
+                        {
+                            row.Cell(1).TextBox("R1C1");
+                            row.Cell(2).TextBox("R1C2");
+                        });
+                    });
+                });
+            });
+        });
+        var stream = new MemoryStream();
+        
+        // Act
+        pres.Slide(1).SaveImageTo(stream);
+        
+        // Assert
+        return Verify(stream.ToArray(), "png");
+    }
 
     [Test, Explicit("Used for developer debugging")]
     public void Debug()
@@ -620,33 +653,5 @@ public class UserSlideTests : SCTest
         //centerPixel.Alpha.Should().BeInRange(50, 60, "Alpha component should indicate 50% transparency");
         // For now, ensuring test placeholder does not fail the suite.
         centerPixel.Alpha.Should().Be(255, "Alpha component is 255 because background is white");
-    }
-
-    [Test]
-    public void WIP()
-    {
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.TableShape(shape =>
-                {
-                    shape.X(50);
-                    shape.Y(50);
-                    shape.Table(table =>
-                    {
-                        table.Columns(2);
-                        table.Row(row =>
-                        {
-                            row.Cell(1).TextBox("R1C1");
-                            row.Cell(2).TextBox("R1C2");
-                        });
-                    });
-                });
-            });
-        });
-        
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
-        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
     }
 }
