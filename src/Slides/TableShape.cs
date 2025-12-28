@@ -298,18 +298,18 @@ internal sealed class TableShape : DrawingShape
         var style = (TableStyle)table.TableStyle;
         
         // Style borders (Medium Style 2 - Accent 1 implies white borders)
-        if (style.Guid == "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
+        if (style.Guid != "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
         {
-             using var paint = new SKPaint
-             {
-                 Color = SKColors.White,
-                 Style = SKPaintStyle.Stroke,
-                 StrokeWidth = 1, 
-                 IsAntialias = true
-             };
-             
-             var rect = CreateRectFromPoints(x, y, w, h);
-             canvas.DrawRect(rect, paint);
+            return;
         }
+
+        using var paint = new SKPaint();
+        paint.Color = SKColors.White;
+        paint.Style = SKPaintStyle.Stroke;
+        paint.StrokeWidth = 1;
+        paint.IsAntialias = true;
+
+        var rect = CreateRectFromPoints(x, y, w, h);
+        canvas.DrawRect(rect, paint);
     }
 }
