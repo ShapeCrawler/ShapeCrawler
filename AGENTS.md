@@ -30,6 +30,7 @@ tests/
 ## Code Review
 - Do not review test coverage.
 - Do not review validating method parameters.
+- Do not review using `using` in tests for disposable objects.
 
 ## Code Style Guidelines
 
