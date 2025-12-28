@@ -6,7 +6,7 @@ namespace ShapeCrawler.CITests;
 public class SmartArtTests : SCTest
 {
     [Test]
-    public void Nodes_AddNode()
+    public void Nodes_AddNode_AddsTextToSmartArt()
     {
         // Arrange
         var pres = new Presentation(p=>p.Slide());
