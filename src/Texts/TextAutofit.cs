@@ -18,6 +18,7 @@ internal sealed class TextAutofit(
     Func<bool> getTextWrapped,
     OpenXmlElement textBody)
 {
+    // TODO: check whether it is possible to define correct DPI in runtime
     private const decimal DpiConversionFactor = 96m / 72m; // SkiaSharp uses 72 DPI, ShapeCrawler uses 96 DPI. 96/72 = 4/3 ≈ 1.33
     
     /// <summary>
