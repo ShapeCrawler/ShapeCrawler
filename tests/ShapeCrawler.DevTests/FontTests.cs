@@ -328,7 +328,7 @@ public class FontTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.Table("Table 1", x: 40, y: 40, columnsCount: 6, rowsCount: 5);
+                slide.TableShape("Table 1", x: 40, y: 40, columnsCount: 6, rowsCount: 5);
             });
         });
         var slide = pres.Slide(1);

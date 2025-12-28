@@ -18,7 +18,7 @@ public class TableShapeTests : SCTest
         {
             p.Slide(s =>
             {
-                s.Table(shapeName,fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int());
+                s.TableShape(shapeName,fixtures.Int(), fixtures.Int(), fixtures.Int(), fixtures.Int());
             });
         });
         var tableShape = pres.Slide(1).Shape(shapeName);

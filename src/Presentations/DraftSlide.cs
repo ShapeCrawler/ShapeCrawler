@@ -258,7 +258,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a table with specified size.
     /// </summary>
-    public DraftSlide Table(string name, int x, int y, int columnsCount, int rowsCount)
+    public DraftSlide TableShape(string name, int x, int y, int columnsCount, int rowsCount)
     {
         this.actions.Add((slide, _) =>
         {
@@ -273,7 +273,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a table using a nested builder.
     /// </summary>
-    public DraftSlide Table(Action<DraftTable> configure)
+    public DraftSlide TableShape(Action<DraftTable> configure)
     {
         this.actions.Add((slide, _) =>
         {
@@ -283,31 +283,32 @@ public sealed class DraftSlide
             var rowsCount = builder.Rows.Count;
             slide.Shapes.AddTable(builder.TableX, builder.TableY, builder.ColumnsCount, rowsCount);
             var tableShape = slide.Shapes[^1];
-            var table = tableShape.Table!;
+            ApplyTableCellConfigurations(tableShape.Table!, builder);
+        });
 
-            // Apply cell configurations
-            for (var rowIndex = 0; rowIndex < builder.Rows.Count && rowIndex < table.Rows.Count; rowIndex++)
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a table shape using a nested builder.
+    /// </summary>
+    public DraftSlide TableShape(Action<DraftTableShape> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var shapeBuilder = new DraftTableShape();
+            configure(shapeBuilder);
+
+            var tableBuilder = shapeBuilder.DraftTableBuilder;
+            if (tableBuilder == null)
             {
-                var draftRow = builder.Rows[rowIndex];
-                var tableRow = table.Rows[rowIndex];
-
-                for (var cellIndex = 0;
-                     cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count;
-                     cellIndex++)
-                {
-                    var draftCell = draftRow.Cells[cellIndex];
-                    if (!string.IsNullOrEmpty(draftCell.SolidColorHex))
-                    {
-                        tableRow.Cells[cellIndex].Fill.SetColor(draftCell.SolidColorHex!);
-                    }
-
-                    if (!string.IsNullOrEmpty(draftCell.FontColorHex))
-                    {
-                        var cell = tableRow.Cells[cellIndex];
-                        cell.TextBox.Paragraphs[0].SetFontColor(draftCell.FontColorHex!);
-                    }
-                }
+                return;
             }
+
+            var rowsCount = tableBuilder.Rows.Count;
+            slide.Shapes.AddTable(shapeBuilder.ShapeX, shapeBuilder.ShapeY, tableBuilder.ColumnsCount, rowsCount);
+            var tableShape = slide.Shapes[^1];
+            ApplyTableCellConfigurations(tableShape.Table!, tableBuilder);
         });
 
         return this;
@@ -653,5 +654,48 @@ public sealed class DraftSlide
         var scTextBox = (Texts.TextBox)shape.TextBox!;
         scTextBox.DisableWrapping();
         scTextBox.AutofitType = AutofitType.Resize;
+    }
+
+    private static void ApplyTableCellConfigurations(ITable table, DraftTable draftTable)
+    {
+        for (var rowIndex = 0; rowIndex < draftTable.Rows.Count && rowIndex < table.Rows.Count; rowIndex++)
+        {
+            var draftRow = draftTable.Rows[rowIndex];
+            var tableRow = table.Rows[rowIndex];
+
+            for (var cellIndex = 0; cellIndex < draftRow.Cells.Count && cellIndex < tableRow.Cells.Count; cellIndex++)
+            {
+                var draftCell = draftRow.Cells[cellIndex];
+                var tableCell = tableRow.Cells[cellIndex];
+
+                ApplyCellSolidColor(draftCell, tableCell);
+                ApplyCellTextContent(draftCell, tableCell);
+                ApplyCellFontColor(draftCell, tableCell);
+            }
+        }
+    }
+
+    private static void ApplyCellSolidColor(DraftCell draftCell, ITableCell tableCell)
+    {
+        if (!string.IsNullOrEmpty(draftCell.SolidColorHex))
+        {
+            tableCell.Fill.SetColor(draftCell.SolidColorHex!);
+        }
+    }
+
+    private static void ApplyCellFontColor(DraftCell draftCell, ITableCell tableCell)
+    {
+        if (!string.IsNullOrEmpty(draftCell.FontColorHex))
+        {
+            tableCell.TextBox.Paragraphs[0].SetFontColor(draftCell.FontColorHex!);
+        }
+    }
+
+    private static void ApplyCellTextContent(DraftCell draftCell, ITableCell tableCell)
+    {
+        if (!string.IsNullOrEmpty(draftCell.TextContent))
+        {
+            tableCell.TextBox.SetText(draftCell.TextContent!);
+        }
     }
 }

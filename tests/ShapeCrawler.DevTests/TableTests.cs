@@ -293,7 +293,7 @@ public class TableTests : SCTest
         // Arrange
         var pres = new Presentation(p =>
         {
-            p.Slide(s => { s.Table(Fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1); });
+            p.Slide(s => { s.TableShape(Fixtures.String(), fixtures.Int(), fixtures.Int(), 1, 1); });
         });
         var row = pres.Slide(1).Shapes.First().Table.Rows.First();
         var text = fixtures.String(s => s.Length(75));
@@ -315,7 +315,7 @@ public class TableTests : SCTest
         var shapeName = Fixtures.String();
         var pres = new Presentation(p =>
         {
-            p.Slide(s => { s.Table(shapeName, fixtures.Int(), fixtures.Int(), 1, 1); });
+            p.Slide(s => { s.TableShape(shapeName, fixtures.Int(), fixtures.Int(), 1, 1); });
         });
         var row = pres.Slide(1).Shape(shapeName).Table!.Rows.First();
         var text = fixtures.String(s => s.Length(75));
@@ -1021,7 +1021,7 @@ public class TableTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.Table(table =>
+                slide.TableShape(table =>
                 {
                     table.Columns(2);
                     table.Row(row =>
@@ -1050,7 +1050,7 @@ public class TableTests : SCTest
         {
             pres.Slide(slide =>
             {
-                slide.Table(table =>
+                slide.TableShape(table =>
                 {
                     table.Columns(2);
                     table.Row(row =>
