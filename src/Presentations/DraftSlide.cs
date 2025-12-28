@@ -669,8 +669,8 @@ public sealed class DraftSlide
                 var tableCell = tableRow.Cells[cellIndex];
 
                 ApplyCellSolidColor(draftCell, tableCell);
-                ApplyCellFontColor(draftCell, tableCell);
                 ApplyCellTextContent(draftCell, tableCell);
+                ApplyCellFontColor(draftCell, tableCell);
             }
         }
     }

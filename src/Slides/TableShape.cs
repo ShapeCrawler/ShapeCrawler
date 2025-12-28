@@ -13,6 +13,8 @@ namespace ShapeCrawler.Slides;
 
 internal sealed class TableShape : DrawingShape
 {
+    private const string MediumStyle2Accent1Guid = "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
+
     internal TableShape(Position position, ShapeSize shapeSize, ShapeId shapeId, P.GraphicFrame pGraphicFrame)
         : base(position, shapeSize, shapeId, pGraphicFrame)
     {
@@ -60,111 +62,148 @@ internal sealed class TableShape : DrawingShape
 
     internal override void Render(SKCanvas canvas)
     {
-        var xPoints = this.X;
-        var yPoints = this.Y;
-        
         var table = (Table)this.Table!;
-        var rowTopPoints = yPoints;
-        var rows = table.Rows;
-        var columns = table.Columns;
+        var rowTopPoints = this.Y;
 
-        for (var rowIdx = 0; rowIdx < rows.Count; rowIdx++)
+        for (var rowIdx = 0; rowIdx < table.Rows.Count; rowIdx++)
         {
-            var row = rows[rowIdx];
-            var rowHeightPoints = row.Height;
-            var colLeftPoints = xPoints;
-
-            for (var colIdx = 0; colIdx < columns.Count; colIdx++)
-            {
-                var column = columns[colIdx];
-                var colWidthPoints = column.Width;
-                var cell = (TableCell)row.Cells[colIdx];
-
-                // Render only if it's the top-left cell of a merge (or single cell)
-                if (cell.RowIndex == rowIdx && cell.ColumnIndex == colIdx)
-                {
-                    int gridSpan = cell.ATableCell.GridSpan?.Value ?? 1;
-                    int rowSpan = cell.ATableCell.RowSpan?.Value ?? 1;
-
-                    decimal cellTotalWidth = 0;
-                    for (int k = 0; k < gridSpan; k++)
-                    {
-                        cellTotalWidth += columns[colIdx + k].Width;
-                    }
-
-                    decimal cellTotalHeight = 0;
-                    for (int k = 0; k < rowSpan; k++)
-                    {
-                        cellTotalHeight += rows[rowIdx + k].Height;
-                    }
-                    
-                    this.RenderCell(canvas, cell, colLeftPoints, rowTopPoints, cellTotalWidth, cellTotalHeight);
-                }
-
-                colLeftPoints += colWidthPoints;
-            }
-
-            rowTopPoints += rowHeightPoints;
+            var colLeftPoints = this.X;
+            this.RenderRow(canvas, table, rowIdx, ref colLeftPoints, rowTopPoints);
+            rowTopPoints += table.Rows[rowIdx].Height;
         }
+    }
+
+    private static SKRect CreateRectFromPoints(decimal x, decimal y, decimal width, decimal height)
+    {
+        return new SKRect(
+            (float)new Points(x).AsPixels(),
+            (float)new Points(y).AsPixels(),
+            (float)new Points(x + width).AsPixels(),
+            (float)new Points(y + height).AsPixels());
     }
 
     private static void RenderCellText(SKCanvas canvas, TableCell cell, decimal x, decimal y, decimal w, decimal h, string? styleFontColorHex)
     {
         var aTextBody = cell.ATableCell.TextBody!;
         
-        // Temporarily apply style font color if needed
-        var modifiedRunProperties = new List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)>();
-        
-        if (styleFontColorHex != null)
+        if (styleFontColorHex == null)
         {
-            foreach (var aParagraph in aTextBody.Elements<A.Paragraph>())
-            {
-                foreach (var aRun in aParagraph.Elements<A.Run>())
-                {
-                    var aRunPr = aRun.GetFirstChild<A.RunProperties>();
-                    if (aRunPr == null)
-                    {
-                        aRunPr = new A.RunProperties();
-                        aRun.InsertAt(aRunPr, 0);
-                    }
-                    
-                    var originalFill = aRunPr.GetFirstChild<A.SolidFill>();
-                    modifiedRunProperties.Add((aRunPr, originalFill));
-
-                    // Remove existing fill and add style color
-                    originalFill?.Remove();
-                    var newFill = new A.SolidFill();
-                    newFill.Append(new A.RgbColorModelHex { Val = styleFontColorHex });
-                    aRunPr.InsertAt(newFill, 0);
-                }
-            }
+            RenderTextWithoutStyleColor(canvas, aTextBody, x, y, w, h);
+            return;
         }
+
+        var modifiedRunProperties = ApplyStyleFontColor(aTextBody, styleFontColorHex);
         
         try
         {
-            var textBoxMargins = new TextBoxMargins(aTextBody);
-            var drawingTextBox = new DrawingTextBox(textBoxMargins, aTextBody);
-            drawingTextBox.Render(canvas, x, y, w, h);
+            RenderTextWithoutStyleColor(canvas, aTextBody, x, y, w, h);
         }
         finally
         {
-            // Restore original state
-            if (styleFontColorHex != null)
+            RestoreOriginalFontColors(modifiedRunProperties);
+        }
+    }
+
+    private static void RenderTextWithoutStyleColor(SKCanvas canvas, A.TextBody aTextBody, decimal x, decimal y, decimal w, decimal h)
+    {
+        var textBoxMargins = new TextBoxMargins(aTextBody);
+        var drawingTextBox = new DrawingTextBox(textBoxMargins, aTextBody);
+        drawingTextBox.Render(canvas, x, y, w, h);
+    }
+
+    private static List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)> ApplyStyleFontColor(A.TextBody aTextBody, string styleFontColorHex)
+    {
+        var modifiedRunProperties = new List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)>();
+
+        foreach (var aParagraph in aTextBody.Elements<A.Paragraph>())
+        {
+            foreach (var aRun in aParagraph.Elements<A.Run>())
             {
-                foreach (var (runProp, originalFill) in modifiedRunProperties)
-                {
-                    var tempFill = runProp.GetFirstChild<A.SolidFill>();
-                    tempFill?.Remove();
-                    
-                    if (originalFill != null)
-                    {
-                        runProp.InsertAt(originalFill, 0);
-                    }
-                }
+                var aRunPr = EnsureRunProperties(aRun);
+                var originalFill = aRunPr.GetFirstChild<A.SolidFill>();
+                modifiedRunProperties.Add((aRunPr, originalFill));
+
+                ApplyColorToRun(aRunPr, originalFill, styleFontColorHex);
+            }
+        }
+
+        return modifiedRunProperties;
+    }
+
+    private static A.RunProperties EnsureRunProperties(A.Run aRun)
+    {
+        var aRunPr = aRun.GetFirstChild<A.RunProperties>();
+        if (aRunPr == null)
+        {
+            aRunPr = new A.RunProperties();
+            aRun.InsertAt(aRunPr, 0);
+        }
+
+        return aRunPr;
+    }
+
+    private static void ApplyColorToRun(A.RunProperties aRunPr, A.SolidFill? originalFill, string colorHex)
+    {
+        originalFill?.Remove();
+        var newFill = new A.SolidFill();
+        newFill.Append(new A.RgbColorModelHex { Val = colorHex });
+        aRunPr.InsertAt(newFill, 0);
+    }
+
+    private static void RestoreOriginalFontColors(List<(A.RunProperties RunProp, A.SolidFill? OriginalFill)> modifiedRunProperties)
+    {
+        foreach (var (runProp, originalFill) in modifiedRunProperties)
+        {
+            var tempFill = runProp.GetFirstChild<A.SolidFill>();
+            tempFill?.Remove();
+            
+            if (originalFill != null)
+            {
+                runProp.InsertAt(originalFill, 0);
             }
         }
     }
-    
+
+    private void RenderRow(SKCanvas canvas, Table table, int rowIdx, ref decimal colLeftPoints, decimal rowTopPoints)
+    {
+        var row = table.Rows[rowIdx];
+        var columns = table.Columns;
+
+        for (var colIdx = 0; colIdx < columns.Count; colIdx++)
+        {
+            var cell = (TableCell)row.Cells[colIdx];
+
+            // Render only if it's the top-left cell of a merge (or single cell)
+            if (cell.RowIndex == rowIdx && cell.ColumnIndex == colIdx)
+            {
+                var cellDimensions = this.CalculateCellDimensions(table, cell, rowIdx, colIdx);
+                this.RenderCell(canvas, cell, colLeftPoints, rowTopPoints, cellDimensions.Width, cellDimensions.Height);
+            }
+
+            colLeftPoints += columns[colIdx].Width;
+        }
+    }
+
+    private (decimal Width, decimal Height) CalculateCellDimensions(Table table, TableCell cell, int rowIdx, int colIdx)
+    {
+        int gridSpan = cell.ATableCell.GridSpan?.Value ?? 1;
+        int rowSpan = cell.ATableCell.RowSpan?.Value ?? 1;
+
+        decimal cellTotalWidth = 0;
+        for (int k = 0; k < gridSpan; k++)
+        {
+            cellTotalWidth += table.Columns[colIdx + k].Width;
+        }
+
+        decimal cellTotalHeight = 0;
+        for (int k = 0; k < rowSpan; k++)
+        {
+            cellTotalHeight += table.Rows[rowIdx + k].Height;
+        }
+
+        return (cellTotalWidth, cellTotalHeight);
+    }
+
     private void RenderCell(SKCanvas canvas, TableCell cell, decimal x, decimal y, decimal w, decimal h)
     {
         // 1. Resolve Fill
@@ -173,11 +212,7 @@ internal sealed class TableShape : DrawingShape
         // 2. Render Fill
         if (fillColor != null)
         {
-            var rect = new SKRect(
-                (float)new Points(x).AsPixels(),
-                (float)new Points(y).AsPixels(),
-                (float)new Points(x + w).AsPixels(),
-                (float)new Points(y + h).AsPixels());
+            var rect = CreateRectFromPoints(x, y, w, h);
 
             using var paint = new SKPaint
             {
@@ -215,7 +250,7 @@ internal sealed class TableShape : DrawingShape
         var style = (TableStyle)table.TableStyle;
 
         // Medium Style 2 - Accent 1
-        if (style.Guid == "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
+        if (style.Guid == MediumStyle2Accent1Guid)
         {
             // Header Row
             if (table.StyleOptions.HasHeaderRow && cell.RowIndex == 0)
@@ -248,7 +283,7 @@ internal sealed class TableShape : DrawingShape
         var style = (TableStyle)table.TableStyle;
         
         // Medium Style 2 - Accent 1
-        if (style.Guid == "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}")
+        if (style.Guid == MediumStyle2Accent1Guid)
         {
             // Header Row uses white text
             return table.StyleOptions.HasHeaderRow && cell.RowIndex == 0 ? "FFFFFF" : null;
@@ -273,7 +308,7 @@ internal sealed class TableShape : DrawingShape
                  IsAntialias = true
              };
              
-             var rect = new SKRect((float)new Points(x).AsPixels(), (float)new Points(y).AsPixels(), (float)new Points(x + w).AsPixels(), (float)new Points(y + h).AsPixels());
+             var rect = CreateRectFromPoints(x, y, w, h);
              canvas.DrawRect(rect, paint);
         }
     }
