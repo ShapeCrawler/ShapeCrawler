@@ -292,6 +292,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a table shape using a nested builder.
     /// </summary>
+    /// <returns>The <see cref="DraftSlide"/> instance for method chaining.</returns>
     public DraftSlide TableShape(Action<DraftTableShape> configure)
     {
         this.actions.Add((slide, _) =>
