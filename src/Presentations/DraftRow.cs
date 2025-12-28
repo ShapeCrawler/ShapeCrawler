@@ -35,19 +35,19 @@ public sealed class DraftRow
     /// <summary>
     ///     Gets or creates a cell at the specified index (1-based).
     /// </summary>
-    public DraftCell Cell(int index)
+    public DraftCell Cell(int cellNumber)
     {
-        if (index < 1)
+        if (cellNumber < 1)
         {
-            throw new ArgumentException("Cell index must be 1-based and greater than 0.", nameof(index));
+            throw new ArgumentException("Cell index must be 1-based and greater than 0.", nameof(cellNumber));
         }
 
         // Ensure we have enough cells
-        while (this.cells.Count < index)
+        while (this.cells.Count < cellNumber)
         {
             this.cells.Add(new DraftCell());
         }
 
-        return this.cells[index - 1];
+        return this.cells[cellNumber - 1];
     }
 }
