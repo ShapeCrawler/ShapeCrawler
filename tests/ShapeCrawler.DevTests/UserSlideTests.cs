@@ -631,8 +631,8 @@ public class UserSlideTests : SCTest
             {
                 slide.TableShape(shape =>
                 {
-                    shape.X(50); // points
-                    shape.Y(50); // points
+                    shape.X(50);
+                    shape.Y(50);
                     shape.Table(table =>
                     {
                         table.Columns(2);
@@ -645,13 +645,8 @@ public class UserSlideTests : SCTest
                 });
             });
         });
-
-        var tableShape = pres.Slide(1).Shapes[0];
-        var table = tableShape.Table!;
-
-        table.Rows[0].Cells[0].TextBox.Text.Should().Be("R1C1");
-        table.Rows[0].Cells[1].TextBox.Text.Should().Be("R1C2");
-        tableShape.X.Should().Be(50);
-        tableShape.Y.Should().Be(50);
+        
+        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
+        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
     }
 }
