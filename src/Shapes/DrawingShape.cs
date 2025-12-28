@@ -471,7 +471,7 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         return hexColor is not null ? new Color(hexColor).AsSkColor() : null;
     }
 
-    private string? ResolveSchemeColor(string schemeColorName)
+    internal string? ResolveSchemeColor(string schemeColorName)
     {
         var shapeColorScheme = new ShapeColorScheme(this.PShapeTreeElement);
         var colorScheme = shapeColorScheme.GetColorScheme();
