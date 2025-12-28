@@ -54,12 +54,7 @@ internal sealed class TextAutofit(
             if (isTextWrapped)
             {
                 var requiredRowsCount = paragraphTextWidth / shapeWidthCapacity;
-                intRequiredRowsCount = (int)requiredRowsCount;
-                var fractionalPart = requiredRowsCount - intRequiredRowsCount;
-                if (fractionalPart > 0)
-                {
-                    intRequiredRowsCount++;
-                }
+                intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
             }
 
             textHeight += intRequiredRowsCount * paragraphTextHeight;
