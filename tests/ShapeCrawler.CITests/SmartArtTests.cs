@@ -31,7 +31,7 @@ public class SmartArtTests : SCTest
     }
     
     [Test]
-    public void Node_Text_Setter()
+    public void Node_Text_Setter_UpdatesNodeText()
     {
         // Arrange
         var pres = new Presentation(p=>p.Slide());
