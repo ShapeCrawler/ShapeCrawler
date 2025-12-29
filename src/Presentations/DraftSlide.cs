@@ -317,7 +317,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a pie chart with specified name.
     /// </summary>
-    public DraftSlide PieChart(string name)
+    public DraftSlide PieChartShape(string name)
     {
         this.actions.Add((slide, _) =>
         {
@@ -326,6 +326,45 @@ public sealed class DraftSlide
                 { "Category 1", 40 }, { "Category 2", 30 }, { "Category 3", 30 }
             };
             slide.Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Series 1", name);
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a pie chart shape using a nested builder.
+    /// </summary>
+    public DraftSlide PieChartShape(Action<DraftPieChartShape> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var shapeBuilder = new DraftPieChartShape();
+            configure(shapeBuilder);
+
+            var chartBuilder = shapeBuilder.DraftPieChartBuilder;
+            if (chartBuilder == null)
+            {
+                return;
+            }
+
+            // Build category values dictionary from categories and series values
+            var categoryValues = new Dictionary<string, double>();
+            var categories = chartBuilder.CategoryNames;
+            var values = chartBuilder.SeriesValues;
+
+            var count = Math.Min(categories.Length, values.Length);
+            for (var i = 0; i < count; i++)
+            {
+                categoryValues[categories[i]] = values[i];
+            }
+
+            // Use shape position/size if chart doesn't override them
+            var x = chartBuilder.ChartX == 100 ? shapeBuilder.ShapeX : chartBuilder.ChartX;
+            var y = chartBuilder.ChartY == 100 ? shapeBuilder.ShapeY : chartBuilder.ChartY;
+            var width = chartBuilder.ChartWidth == 400 ? shapeBuilder.ShapeWidth : chartBuilder.ChartWidth;
+            var height = chartBuilder.ChartHeight == 300 ? shapeBuilder.ShapeHeight : chartBuilder.ChartHeight;
+
+            slide.Shapes.AddPieChart(x, y, width, height, categoryValues, chartBuilder.SeriesName, chartBuilder.ChartName);
         });
 
         return this;

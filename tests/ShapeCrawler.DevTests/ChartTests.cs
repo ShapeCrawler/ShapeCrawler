@@ -367,7 +367,7 @@ public class ChartTests : SCTest
     public void Title_FontColor_Setter_update_chart_title_color()
     {
         // Arrange
-        var pres = new Presentation(p => { p.Slide(s => { s.PieChart("Pie Chart 1"); }); });
+        var pres = new Presentation(p => { p.Slide(s => { s.PieChartShape("Pie Chart 1"); }); });
         const string green = "00ff00";
         var chart = pres.Slide(1).Shape("Pie Chart 1").Chart!;
         chart.Title!.Text = "Sales Chart";
@@ -384,7 +384,7 @@ public class ChartTests : SCTest
     public void Title_FontSize_Setter_update_chart_title_font_size()
     {
         // Arrange
-        var pres = new Presentation(p => { p.Slide(s => { s.PieChart("Pie Chart 1"); }); });
+        var pres = new Presentation(p => { p.Slide(s => { s.PieChartShape("Pie Chart 1"); }); });
         var title = pres.Slide(1).Shape("Pie Chart 1").Chart!.Title!;
 
         // Act
@@ -398,7 +398,7 @@ public class ChartTests : SCTest
     public void Title_Text_Getter_returns_default_pie_chart_title()
     {
         // Arrange
-        var pres = new Presentation(p => { p.Slide(s => { s.PieChart("Pie Chart 1"); }); });
+        var pres = new Presentation(p => { p.Slide(s => { s.PieChartShape("Pie Chart 1"); }); });
 
         // Act-Assert
         pres.Slide(1).Shape("Pie Chart 1").Chart!.Title!.Text.Should().Be("Series 1");
@@ -412,7 +412,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.PieChart("Pie Chart");
+                s.PieChartShape("Pie Chart");
             });
         });
         var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
@@ -433,7 +433,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.PieChart("Pie Chart");
+                s.PieChartShape("Pie Chart");
             });
         });
         var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
@@ -454,7 +454,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.PieChart("Pie Chart");
+                s.PieChartShape("Pie Chart");
             });
         });
         var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
@@ -475,7 +475,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.PieChart("Pie Chart");
+                s.PieChartShape("Pie Chart");
             });
         });
         var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
@@ -493,7 +493,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.PieChart("Pie Chart");
+                s.PieChartShape("Pie Chart");
             });
         });
         var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
@@ -516,7 +516,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.PieChart("Pie Chart");
+                s.PieChartShape("Pie Chart");
             });
         });
         var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
