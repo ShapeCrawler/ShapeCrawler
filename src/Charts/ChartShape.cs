@@ -219,14 +219,9 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         }
 
         var title = chart?.Title;
-        if (title != null)
-        {
-            data.Title = GetTitleFromChartTitle(title);
-        }
-        else
-        {
-            data.Title = GetTitleFromSeriesName(pieChartSeries);
-        }
+        data.Title = title != null
+            ? GetTitleFromChartTitle(title)
+            : GetTitleFromSeriesName(pieChartSeries);
     }
 
     private static string GetTitleFromChartTitle(Title title)
