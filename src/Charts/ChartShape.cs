@@ -247,11 +247,15 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
             var result = string.Empty;
             var paragraphs = richText.Descendants<DocumentFormat.OpenXml.Drawing.Paragraph>();
 
-            return paragraphs.Aggregate(result,
-                (current1,
+            return paragraphs.Aggregate(
+                result,
+                (
+                    current1,
                     paragraph) => paragraph.Descendants<DocumentFormat.OpenXml.Drawing.Run>()
-                    .Aggregate(current1,
-                        (current,
+                    .Aggregate(
+                        current1,
+                        (
+                            current,
                             run) => current + (run.Text?.Text ?? string.Empty)));
         }
 

@@ -389,6 +389,7 @@ public sealed class DraftSlide
                 width = chartBuilder.ChartWidth == defaultWidth ? shapeBuilder.ShapeWidth : chartBuilder.ChartWidth;
                 height = chartBuilder.ChartHeight == defaultHeight ? shapeBuilder.ShapeHeight : chartBuilder.ChartHeight;
             }
+
             slide.Shapes.AddPieChart(x, y, width, height, categoryValues, chartBuilder.SeriesName, chartBuilder.ChartName);
         });
 
