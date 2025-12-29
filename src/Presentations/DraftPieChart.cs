@@ -24,6 +24,7 @@ public sealed class DraftPieChart
     /// <summary>
     ///     Sets chart name.
     /// </summary>
+    /// <param name="name">The name (title or identifier) to assign to the pie chart.</param>
     public DraftPieChart Name(string name)
     {
         this.ChartName = name;
