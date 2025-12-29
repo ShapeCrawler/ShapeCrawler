@@ -83,19 +83,19 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     public void AddPicture(Stream imageStream) => this.pictureShapes.AddPicture(imageStream);
 
     public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
+        double x,
+        double y,
+        double width,
+        double height,
         Dictionary<string, double> categoryValues,
         string seriesName
     ) => this.chartShapes.AddPieChart(x, y, width, height, categoryValues, seriesName);
 
     public void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
+        double x,
+        double y,
+        double width,
+        double height,
         Dictionary<string, double> categoryValues,
         string seriesName,
         string chartName

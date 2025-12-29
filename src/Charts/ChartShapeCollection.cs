@@ -12,10 +12,10 @@ namespace ShapeCrawler.Charts;
 internal sealed class ChartShapeCollection(SlidePart slidePart)
 {
     internal void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
+        double x,
+        double y,
+        double width,
+        double height,
         Dictionary<string, double> categoryValues,
         string seriesName)
     {
@@ -23,10 +23,10 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
     }
 
     internal void AddPieChart(
-        int x,
-        int y,
-        int width,
-        int height,
+        double x,
+        double y,
+        double width,
+        double height,
         Dictionary<string, double> categoryValues,
         string seriesName,
         string chartName)
@@ -95,7 +95,7 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
 
-    private void InsertChartGraphicFrame(ChartPart chartPart, int x, int y, int width, int height, string chartName)
+    private void InsertChartGraphicFrame(ChartPart chartPart, double x, double y, double width, double height, string chartName)
     {
         var graphicFrame = new GraphicFrame
         {
@@ -105,8 +105,8 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
                 new ApplicationNonVisualDrawingProperties()
             ),
             Transform = new Transform(
-                new A.Offset { X = new Points(x).AsEmus(), Y = new Points(y).AsEmus() },
-                new A.Extents { Cx = new Points(width).AsEmus(), Cy = new Points(height).AsEmus() }
+                new A.Offset { X = new Points((decimal)x).AsEmus(), Y = new Points((decimal)y).AsEmus() },
+                new A.Extents { Cx = new Points((decimal)width).AsEmus(), Cy = new Points((decimal)height).AsEmus() }
             ),
             Graphic = new A.Graphic(
                 new A.GraphicData(

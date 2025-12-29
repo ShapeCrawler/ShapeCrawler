@@ -92,12 +92,12 @@ public interface IUserSlideShapeCollection : IShapeCollection
     /// <summary>
     ///     Adds Pie Chart.
     /// </summary>
-    void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName);
+    void AddPieChart(double x, double y, double width, double height, Dictionary<string, double> categoryValues, string seriesName);
 
     /// <summary>
-    ///     Adds Pie Chart with specified name.
+    ///     Adds Pie Chart with the specified name.
     /// </summary>
-    void AddPieChart(int x, int y, int width, int height, Dictionary<string, double> categoryValues, string seriesName, string chartName);
+    void AddPieChart(double x, double y, double width, double height, Dictionary<string, double> categoryValues, string seriesName, string chartName);
 
     /// <summary>
     ///     Adds Bar Chart with specified parameters.
