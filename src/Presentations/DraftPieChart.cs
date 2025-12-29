@@ -70,6 +70,9 @@ public sealed class DraftPieChart
     /// <summary>
     ///     Sets categories for the pie chart.
     /// </summary>
+    /// <param name="categories">
+    ///     Category labels for the pie chart slices, in the same order as the corresponding series values.
+    /// </param>
     public DraftPieChart Categories(params string[] categories)
     {
         this.CategoryNames = categories ?? throw new SCException($"{nameof(categories)} cannot be null.");
