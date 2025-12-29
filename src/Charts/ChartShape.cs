@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
@@ -63,7 +64,7 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         var centerY = bounds.Y + titleHeight + (availableHeight / 2);
         var radius = pieSize / 2;
 
-        return new ChartLayout(centerX, centerY, radius, availableWidth, titleHeight);
+        return new ChartLayout(centerX, centerY, radius, availableWidth);
     }
 
     private static void DrawTitle(SKCanvas canvas, string title, ChartBounds bounds)
@@ -74,7 +75,9 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         }
 
         using var titleFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold), 18);
-        using var titlePaint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
+        using var titlePaint = new SKPaint();
+        titlePaint.Color = SKColors.Black;
+        titlePaint.IsAntialias = true;
         var titleWidth = titleFont.MeasureText(title);
         canvas.DrawText(
             title,
@@ -93,7 +96,7 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         SKColor[] colors)
     {
         var startAngle = -90f;
-        var sliceAngles = new System.Collections.Generic.List<SliceAngle>();
+        var sliceAngles = new List<SliceAngle>();
 
         for (var i = 0; i < chartData.Values.Count; i++)
         {
@@ -113,7 +116,10 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         float sweepAngle,
         SKColor color)
     {
-        using var paint = new SKPaint { Color = color, Style = SKPaintStyle.Fill, IsAntialias = true };
+        using var paint = new SKPaint();
+        paint.Color = color;
+        paint.Style = SKPaintStyle.Fill;
+        paint.IsAntialias = true;
 
         var rect = new SKRect(
             layout.CenterX - layout.Radius,
@@ -128,10 +134,11 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
 
         canvas.DrawPath(path, paint);
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = SKColors.White, Style = SKPaintStyle.Stroke, StrokeWidth = 2, IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = SKColors.White;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = 2;
+        outlinePaint.IsAntialias = true;
         canvas.DrawPath(path, outlinePaint);
     }
 
@@ -146,8 +153,10 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
             return;
         }
 
-        using var labelFont = new SKFont(SKTypeface.FromFamilyName("Arial"), 12);
-        using var labelPaint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
+        using var labelFont = new SKFont(SKTypeface.FromFamilyName("Arial"));
+        using var labelPaint = new SKPaint();
+        labelPaint.Color = SKColors.Black;
+        labelPaint.IsAntialias = true;
 
         foreach (var slice in sliceAngles)
         {
@@ -157,7 +166,7 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
             var labelX = layout.CenterX + (labelRadius * (float)Math.Cos(angleRad));
             var labelY = layout.CenterY + (labelRadius * (float)Math.Sin(angleRad));
 
-            var labelText = chartData.Values[slice.Index].ToString();
+            var labelText = chartData.Values[slice.Index].ToString(CultureInfo.InvariantCulture);
             var textWidth = labelFont.MeasureText(labelText);
             canvas.DrawText(labelText, labelX - (textWidth / 2), labelY + 4, SKTextAlign.Left, labelFont, labelPaint);
         }
@@ -176,7 +185,9 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         var legendY = layout.CenterY - (totalLegendHeight / 2);
 
         using var legendFont = new SKFont(SKTypeface.FromFamilyName("Arial"), 11);
-        using var legendTextPaint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
+        using var legendTextPaint = new SKPaint();
+        legendTextPaint.Color = SKColors.Black;
+        legendTextPaint.IsAntialias = true;
 
         for (var i = 0; i < chartData.Categories.Count; i++)
         {
@@ -201,7 +212,10 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         SKFont font,
         SKPaint textPaint)
     {
-        using var boxPaint = new SKPaint { Color = color, Style = SKPaintStyle.Fill, IsAntialias = true };
+        using var boxPaint = new SKPaint();
+        boxPaint.Color = color;
+        boxPaint.Style = SKPaintStyle.Fill;
+        boxPaint.IsAntialias = true;
         var boxRect = new SKRect(legendX, itemY, legendX + 12, itemY + 12);
         canvas.DrawRect(boxRect, boxPaint);
         canvas.DrawText(category, legendX + 18, itemY + 10, SKTextAlign.Left, font, textPaint);
@@ -219,14 +233,7 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         }
 
         var title = chart?.Title;
-        if (title != null)
-        {
-            data.Title = GetTitleFromChartTitle(title);
-        }
-        else
-        {
-            data.Title = GetTitleFromSeriesName(pieChartSeries);
-        }
+        data.Title = title != null ? GetTitleFromChartTitle(title) : GetTitleFromSeriesName(pieChartSeries);
     }
 
     private static string GetTitleFromChartTitle(Title title)
@@ -237,26 +244,25 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         {
             var result = string.Empty;
             var paragraphs = richText.Descendants<DocumentFormat.OpenXml.Drawing.Paragraph>();
-            foreach (var para in paragraphs)
-            {
-                foreach (var run in para.Descendants<DocumentFormat.OpenXml.Drawing.Run>())
-                {
-                    result += run.Text?.Text ?? string.Empty;
-                }
-            }
 
-            return result;
+            return paragraphs.Aggregate(result,
+                (current1,
+                    paragraph) => paragraph.Descendants<DocumentFormat.OpenXml.Drawing.Run>()
+                    .Aggregate(current1,
+                        (current,
+                            run) => current + (run.Text?.Text ?? string.Empty)));
         }
 
         var strRef = chartText?.StringReference;
         var strCache = strRef?.StringCache;
-        if (strCache != null)
+        if (strCache == null)
         {
-            var firstPoint = strCache.Elements<StringPoint>().FirstOrDefault();
-            return firstPoint?.NumericValue?.Text ?? string.Empty;
+            return string.Empty;
         }
 
-        return string.Empty;
+        var firstPoint = strCache.Elements<StringPoint>().FirstOrDefault();
+        return firstPoint?.NumericValue?.Text ?? string.Empty;
+
     }
 
     private static string GetTitleFromSeriesName(PieChartSeries pieChartSeries)
@@ -394,10 +400,6 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         }
 
         var chartSpace = chartPart.ChartSpace;
-        if (chartSpace == null)
-        {
-            return null;
-        }
 
         var pieChartSeries = chartSpace.Descendants<PieChartSeries>().FirstOrDefault();
         if (pieChartSeries == null)
@@ -447,8 +449,7 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         float CenterX,
         float CenterY,
         float Radius,
-        float AvailableWidth,
-        float TitleHeight);
+        float AvailableWidth);
 
     private readonly record struct SliceAngle(float Start, float Sweep, int Index);
 
