@@ -644,9 +644,8 @@ public class UserSlideTests : SCTest
         
         // Act
         pres.Slide(1).SaveImageTo(stream);
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
         
-        // Arrange
+        // Assert
         return Verify(stream.ToArray(), "png");
     }
 
