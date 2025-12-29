@@ -459,9 +459,9 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
 
     private sealed class PieChartData
     {
-        public System.Collections.Generic.List<double> Values { get; } = [];
+        public List<double> Values { get; } = [];
 
-        public System.Collections.Generic.List<string> Categories { get; } = [];
+        public List<string> Categories { get; } = [];
 
         public string Title { get; set; } = string.Empty;
 
