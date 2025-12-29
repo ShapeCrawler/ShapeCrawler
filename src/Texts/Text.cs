@@ -6,7 +6,38 @@ namespace ShapeCrawler.Texts;
 
 internal readonly ref struct Text(string content, ITextPortionFont font)
 {
+    private const string DefaultFontFamily = "Calibri";
+
     internal decimal FontSize => font.Size;
+
+    internal decimal LineHeight
+    {
+        get
+        {
+            string? fontFamily;
+            if (string.IsNullOrEmpty(font.LatinName))
+            {
+                fontFamily = DefaultFontFamily;
+            }
+            else if (font.LatinName == "Calibri Light")
+            {
+                fontFamily = DefaultFontFamily;
+            }
+            else
+            {
+                fontFamily = font.LatinName;
+            }
+
+            var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
+            var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+            using var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
+            using var skFont = new SKFont();
+            skFont.Size = (float)font.Size;
+            skFont.Typeface = SKTypeface.FromFamilyName(fontFamily, style);
+
+            return (decimal)skFont.Spacing;
+        }
+    }
 
     internal decimal Width
     {
@@ -47,7 +78,7 @@ internal readonly ref struct Text(string content, ITextPortionFont font)
 
         using var skFont = new SKFont();
         skFont.Size = (float)font.Size;
-        var fontFamily = string.IsNullOrEmpty(font.LatinName) ? "Calibri" : font.LatinName;
+        var fontFamily = string.IsNullOrEmpty(font.LatinName) ? DefaultFontFamily : font.LatinName;
         var weight = font.IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal;
         var slant = font.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
         using var style = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);

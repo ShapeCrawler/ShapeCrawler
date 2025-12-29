@@ -149,7 +149,7 @@ public class ShapeTests : SCTest
 
     [TestCase(2, Geometry.Rectangle)]
     [TestCase(3, Geometry.Ellipse)]
-    public void GeometryType_returns_shape_geometry_type(int shapeId, Geometry expectedGeometryType)
+    public void GeometryType_returns_shape_geometry_type_2(int shapeId, Geometry expectedGeometryType) // TODO: I cannot run this test in Rider
     {
         // Arrange
         var presentation = new Presentation(TestAsset("021.pptx"));
