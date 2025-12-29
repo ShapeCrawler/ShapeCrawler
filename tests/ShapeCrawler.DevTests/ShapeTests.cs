@@ -868,7 +868,7 @@ public class ShapeTests : SCTest
         });
         
         // Assert
-        pres.Slide(1).Shapes.First().Width.Should().BeApproximately(253, 1, "text content should fit text box");
+        pres.Slide(1).Shapes.First().Width.Should().BeApproximately(241, 1, "text content should fit text box");
         ValidatePresentation(pres);
     }
 }

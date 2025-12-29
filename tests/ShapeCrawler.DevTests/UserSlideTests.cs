@@ -540,7 +540,7 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Linux and macOS")]
-    public Task SaveImageTo_draws_Text_Shapes()
+    public Task SaveImageTo_draws_Text_shapes()
     {
         var pres = new Presentation(pres =>
         {
@@ -643,6 +643,7 @@ public class UserSlideTests : SCTest
         
         // Act
         pres.Slide(1).SaveImageTo(stream);
+        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
         
         // Arrange
         return Verify(stream.ToArray(), "png");
