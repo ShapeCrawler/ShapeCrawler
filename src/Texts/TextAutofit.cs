@@ -18,6 +18,9 @@ internal sealed class TextAutofit(
     Func<bool> getTextWrapped,
     OpenXmlElement textBody)
 {
+    // TODO: check whether it is possible to define correct DPI in runtime
+    private const decimal DpiConversionFactor = 96m / 72m; // SkiaSharp uses 72 DPI, ShapeCrawler uses 96 DPI. 96/72 = 4/3 ≈ 1.33
+    
     /// <summary>
     ///     Applies to autofit by resizing the parent shape on demand.
     /// </summary>
@@ -54,12 +57,7 @@ internal sealed class TextAutofit(
             if (isTextWrapped)
             {
                 var requiredRowsCount = paragraphTextWidth / shapeWidthCapacity;
-                intRequiredRowsCount = (int)requiredRowsCount;
-                var fractionalPart = requiredRowsCount - intRequiredRowsCount;
-                if (fractionalPart > 0)
-                {
-                    intRequiredRowsCount++;
-                }
+                intRequiredRowsCount = (int)Math.Ceiling(requiredRowsCount);
             }
 
             textHeight += intRequiredRowsCount * paragraphTextHeight;
@@ -70,7 +68,7 @@ internal sealed class TextAutofit(
         {
             this.UpdateWidth();
         }
-    }
+    } // TODO: refactor: the design doesn't look correct.
 
     /// <summary>
     ///     Shrinks font size to fit the text in the shape.
@@ -111,7 +109,7 @@ internal sealed class TextAutofit(
         const decimal widthTolerance = 2m;
         var newWidth =
             (int)(textWidth *
-                  1.4M) // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi. 96/72 = 1.4 
+                  DpiConversionFactor)
             + leftMargin + rightMargin + widthTolerance;
         shapeSize.Width = newWidth;
     }
@@ -120,8 +118,7 @@ internal sealed class TextAutofit(
     {
         var parentShape = textBody.Parent!;
         var requiredHeight = textHeight + margins.Top + margins.Bottom;
-        var newHeight = requiredHeight + margins.Top + margins.Bottom + margins.Top +
-                        margins.Bottom;
+        var newHeight = requiredHeight;
         shapeSize.Height = newHeight;
 
         // Raise the shape up by the amount, which is half of the increased offset, like PowerPoint does it
