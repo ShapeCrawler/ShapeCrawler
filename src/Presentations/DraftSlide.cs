@@ -358,12 +358,37 @@ public sealed class DraftSlide
                 categoryValues[categories[i]] = values[i];
             }
 
-            // Use shape position/size if chart doesn't override them
-            var x = chartBuilder.ChartX == 100 ? shapeBuilder.ShapeX : chartBuilder.ChartX;
-            var y = chartBuilder.ChartY == 100 ? shapeBuilder.ShapeY : chartBuilder.ChartY;
-            var width = chartBuilder.ChartWidth == 400 ? shapeBuilder.ShapeWidth : chartBuilder.ChartWidth;
-            var height = chartBuilder.ChartHeight == 300 ? shapeBuilder.ShapeHeight : chartBuilder.ChartHeight;
+            // Determine chart position/size based on whether the chart overrides the defaults.
+            // Obtain the current default values from a fresh DraftPieChartShape/DraftPieChartBuilder
+            // instance instead of relying on hard-coded magic numbers.
+            var defaultShapeBuilder = new DraftPieChartShape();
+            var defaultChartBuilder = defaultShapeBuilder.DraftPieChartBuilder;
 
+            double x;
+            double y;
+            double width;
+            double height;
+
+            if (defaultChartBuilder == null)
+            {
+                // If we cannot obtain default chart values, fall back to the shape dimensions.
+                x = shapeBuilder.ShapeX;
+                y = shapeBuilder.ShapeY;
+                width = shapeBuilder.ShapeWidth;
+                height = shapeBuilder.ShapeHeight;
+            }
+            else
+            {
+                var defaultX = defaultChartBuilder.ChartX;
+                var defaultY = defaultChartBuilder.ChartY;
+                var defaultWidth = defaultChartBuilder.ChartWidth;
+                var defaultHeight = defaultChartBuilder.ChartHeight;
+
+                x = chartBuilder.ChartX == defaultX ? shapeBuilder.ShapeX : chartBuilder.ChartX;
+                y = chartBuilder.ChartY == defaultY ? shapeBuilder.ShapeY : chartBuilder.ChartY;
+                width = chartBuilder.ChartWidth == defaultWidth ? shapeBuilder.ShapeWidth : chartBuilder.ChartWidth;
+                height = chartBuilder.ChartHeight == defaultHeight ? shapeBuilder.ShapeHeight : chartBuilder.ChartHeight;
+            }
             slide.Shapes.AddPieChart(x, y, width, height, categoryValues, chartBuilder.SeriesName, chartBuilder.ChartName);
         });
 
