@@ -82,6 +82,8 @@ public sealed class DraftPieChart
     /// <summary>
     ///     Adds a series with values to the pie chart.
     /// </summary>
+    /// <param name="seriesName">The name of the data series to be added to the pie chart.</param>
+    /// <param name="values">The numeric values for the series, corresponding to the defined categories.</param>
     public DraftPieChart Series(string seriesName, params double[] values)
     {
         this.SeriesName = seriesName;
