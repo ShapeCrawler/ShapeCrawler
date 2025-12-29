@@ -619,6 +619,34 @@ public class UserSlideTests : SCTest
         // Assert
         return Verify(stream.ToArray(), "png");
     }
+    
+    [Test]
+    public Task SaveImageTo_draws_Charts()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.PieChartShape(shape =>
+                {
+                    shape.X(50);
+                    shape.Y(50);
+                    shape.Chart(chart =>
+                    {
+                        chart.Series("Series 1", 50, 50);
+                        chart.Categories("Category 1", "Category 2");
+                    });
+                });
+            });
+        });
+        var stream = new MemoryStream();
+        
+        // Act
+        pres.Slide(1).SaveImageTo(stream);
+        
+        // Arrange
+        return Verify(stream.ToArray(), "png");
+    }
 
     [Test, Explicit("Used for developer debugging")]
     public void Debug()
@@ -654,28 +682,5 @@ public class UserSlideTests : SCTest
         //centerPixel.Alpha.Should().BeInRange(50, 60, "Alpha component should indicate 50% transparency");
         // For now, ensuring test placeholder does not fail the suite.
         centerPixel.Alpha.Should().Be(255, "Alpha component is 255 because background is white");
-    }
-
-    [Test]
-    public void WIP()
-    {
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.PieChartShape(shape =>
-                {
-                    shape.X(50);
-                    shape.Y(50);
-                    shape.Chart(chart =>
-                    {
-                        chart.Series("Series 1", new double[] { 50, 50 });
-                        chart.Categories(new[] { "Category 1", "Category 2"});
-                    });
-                });
-            });
-        });
-        
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
     }
 }

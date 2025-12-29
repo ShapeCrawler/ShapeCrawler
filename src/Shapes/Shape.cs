@@ -249,7 +249,24 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
     {
         get
         {
-            var pSpPr = pShapeTreeElement.GetFirstChild<P.ShapeProperties>()!;
+            // Handle GraphicFrame (charts, tables, etc.) which use P.Transform instead of P.ShapeProperties
+            if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
+            {
+                var pTransform = pGraphicFrame.Transform;
+                if (pTransform?.Rotation is null)
+                {
+                    return 0;
+                }
+
+                return pTransform.Rotation.Value / 60_000d;
+            }
+
+            var pSpPr = pShapeTreeElement.GetFirstChild<P.ShapeProperties>();
+            if (pSpPr == null)
+            {
+                return 0;
+            }
+
             var aTransform2D = pSpPr.Transform2D;
             if (aTransform2D == null)
             {
