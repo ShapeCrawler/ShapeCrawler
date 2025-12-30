@@ -40,9 +40,35 @@ tests/
     - No `-er`, `-or`, `-service` suffixes
 - **Method complexity**:
   - The maximum allowed method Cognitive Complexity is 15.
-  - The maximum allowed method Cyclomatic Complexity is 10.
   - The maximum allowed method Lines of Code is 80.
   - The maximum allowed method Parameters is 7.
+  - The maximum allowed method Cyclomatic Complexity is 10.
+    - Example of violating Cyclomatic Complexity (12 > 10):
+
+      ```csharp
+      internal sealed class CyclomaticComplexityViolation
+      {
+          internal int Score(int code)
+          {
+              // Intentionally too complex for docs: cyclomatic complexity is 12 (>10).
+              var score = 0;
+
+              if (code == 0) { score++; }
+              if (code == 1) { score++; }
+              if (code == 2) { score++; }
+              if (code == 3) { score++; }
+              if (code == 4) { score++; }
+              if (code == 5) { score++; }
+              if (code == 6) { score++; }
+              if (code == 7) { score++; }
+              if (code == 8) { score++; }
+              if (code == 9) { score++; }
+              if (code == 10) { score++; }
+
+              return score;
+          }
+      }
+      ```
 - **File Size Limit**: Keep files under 500 lines. If a file exceeds this, extract logic into new classes/files.
 
 - **Instance Members**: Use `this` prefix for all instance members
@@ -52,6 +78,7 @@ tests/
    
    // Bad
    fieldName = value;
+   ```
 
 - **Code comments:** 
   - Use WHY comment instead of WHAT comment
@@ -69,7 +96,7 @@ tests/
     { 
           return 18; // default font size 
     }
-   
+    ```
   - Use "Open XML", not "OpenXML".
 
 - **No Public/Internal Static Members**: Classes should not have public or internal static members. Encapsulate behavior in instance methods.

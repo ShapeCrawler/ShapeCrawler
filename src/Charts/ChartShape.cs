@@ -180,7 +180,7 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         }
 
         const float legendItemHeight = 25f;
-        var legendX = layout.AvailableWidth + 20;
+        var legendX = layout.CenterX + (layout.AvailableWidth / 2) + 20;
         var totalLegendHeight = chartData.Categories.Count * legendItemHeight;
         var legendY = layout.CenterY - (totalLegendHeight / 2);
 
@@ -244,31 +244,23 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
         var richText = chartText?.RichText;
         if (richText != null)
         {
-            var result = string.Empty;
-            var paragraphs = richText.Descendants<DocumentFormat.OpenXml.Drawing.Paragraph>();
-
-            return paragraphs.Aggregate(
-                result,
-                (
-                    current1,
-                    paragraph) => paragraph.Descendants<DocumentFormat.OpenXml.Drawing.Run>()
-                    .Aggregate(
-                        current1,
-                        (
-                            current,
-                            run) => current + (run.Text?.Text ?? string.Empty)));
+            return GetTitleFromRichText(richText);
         }
 
-        var strRef = chartText?.StringReference;
-        var strCache = strRef?.StringCache;
-        if (strCache == null)
-        {
-            return string.Empty;
-        }
+        return GetTitleFromStringCache(chartText);
+    }
 
-        var firstPoint = strCache.Elements<StringPoint>().FirstOrDefault();
-        return firstPoint?.NumericValue?.Text ?? string.Empty;
+    private static string GetTitleFromRichText(DocumentFormat.OpenXml.OpenXmlElement richText)
+    {
+        return string.Concat(
+            richText
+                .Descendants<DocumentFormat.OpenXml.Drawing.Run>()
+                .Select(r => r.Text?.Text ?? string.Empty));
+    }
 
+    private static string GetTitleFromStringCache(ChartText? chartText)
+    {
+        return chartText?.StringReference?.StringCache?.Elements<StringPoint>().FirstOrDefault()?.NumericValue?.Text ?? string.Empty;
     }
 
     private static string GetTitleFromSeriesName(PieChartSeries pieChartSeries)
@@ -309,58 +301,62 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
     private static void ExtractCategories(PieChartSeries pieChartSeries, PieChartData data)
     {
         var categoryAxisData = pieChartSeries.GetFirstChild<CategoryAxisData>();
-        var stringLiteral = categoryAxisData?.StringLiteral;
-        if (stringLiteral != null)
+        var points = GetCategoryPoints(categoryAxisData);
+        if (points == null)
         {
-            foreach (var stringPoint in stringLiteral.Elements<StringPoint>().OrderBy(sp => sp.Index?.Value ?? 0))
-            {
-                data.Categories.Add(stringPoint.NumericValue?.Text ?? string.Empty);
-            }
+            return;
         }
-        else
+
+        foreach (var stringPoint in points.OrderBy(sp => sp.Index?.Value ?? 0))
         {
-            var stringReference = categoryAxisData?.StringReference;
-            var stringCache = stringReference?.StringCache;
-            if (stringCache != null)
-            {
-                foreach (var stringPoint in stringCache.Elements<StringPoint>().OrderBy(sp => sp.Index?.Value ?? 0))
-                {
-                    data.Categories.Add(stringPoint.NumericValue?.Text ?? string.Empty);
-                }
-            }
+            data.Categories.Add(stringPoint.NumericValue?.Text ?? string.Empty);
         }
+    }
+
+    private static IEnumerable<StringPoint>? GetCategoryPoints(CategoryAxisData? categoryAxisData)
+    {
+        return categoryAxisData?.StringLiteral?.Elements<StringPoint>()
+               ?? categoryAxisData?.StringReference?.StringCache?.Elements<StringPoint>();
     }
 
     private static void ExtractValues(PieChartSeries pieChartSeries, PieChartData data)
     {
         var values = pieChartSeries.GetFirstChild<Values>();
-        var numberLiteral = values?.NumberLiteral;
-        if (numberLiteral != null)
-        {
-            foreach (var numericPoint in numberLiteral.Elements<NumericPoint>().OrderBy(np => np.Index?.Value ?? 0))
-            {
-                if (double.TryParse(numericPoint.NumericValue?.Text, out var val))
-                {
-                    data.Values.Add(val);
-                }
-            }
-
-            return;
-        }
-
-        var numberReference = values?.NumberReference;
-        var numCache = numberReference?.NumberingCache;
-        if (numCache == null)
+        if (values == null)
         {
             return;
         }
 
-        foreach (var numericPoint in numCache.Elements<NumericPoint>().OrderBy(np => np.Index?.Value ?? 0))
+        var literalPoints = values.NumberLiteral?.Elements<NumericPoint>();
+        if (literalPoints != null)
         {
-            if (double.TryParse(numericPoint.NumericValue?.Text, out var val))
+            AddParsedValues(literalPoints, data);
+            return;
+        }
+
+        var cachedPoints = values.NumberReference?.NumberingCache?.Elements<NumericPoint>();
+        if (cachedPoints == null)
+        {
+            return;
+        }
+
+        AddParsedValues(cachedPoints, data);
+    }
+
+    private static void AddParsedValues(IEnumerable<NumericPoint> numericPoints, PieChartData data)
+    {
+        foreach (var numericPoint in numericPoints.OrderBy(np => np.Index?.Value ?? 0))
+        {
+            if (!double.TryParse(
+                numericPoint.NumericValue?.Text,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out var val))
             {
-                data.Values.Add(val);
+                continue;
             }
+
+            data.Values.Add(val);
         }
     }
 
