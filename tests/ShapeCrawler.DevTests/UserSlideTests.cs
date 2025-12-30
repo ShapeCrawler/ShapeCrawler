@@ -540,7 +540,7 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Linux and macOS")]
-    public Task SaveImageTo_draws_Text_Shapes()
+    public Task SaveImageTo_draws_Text_shapes()
     {
         var pres = new Presentation(pres =>
         {
@@ -607,6 +607,35 @@ public class UserSlideTests : SCTest
                             row.Cell(1).TextBox("R1C1");
                             row.Cell(2).TextBox("R1C2");
                         });
+                    });
+                });
+            });
+        });
+        var stream = new MemoryStream();
+        
+        // Act
+        pres.Slide(1).SaveImageTo(stream);
+        
+        // Assert
+        return Verify(stream.ToArray(), "png");
+    }
+    
+    [Test]
+    [Platform(Exclude = "Linux,MacOSX", Reason = "diff(0.1123369852499511) > threshold(0.005).")]
+    public Task SaveImageTo_draws_Charts()
+    {
+        var pres = new Presentation(pres =>
+        {
+            pres.Slide(slide =>
+            {
+                slide.PieChartShape(shape =>
+                {
+                    shape.X(50);
+                    shape.Y(50);
+                    shape.Chart(chart =>
+                    {
+                        chart.Series("Series 1", 50, 50);
+                        chart.Categories("Category 1", "Category 2");
                     });
                 });
             });

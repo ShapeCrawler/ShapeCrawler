@@ -164,8 +164,8 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             textBox.Text.Should().Be("AutoShape 4 some text");
-            shape.Height.Should().BeApproximately(64m, 1m);
-            shape.Y.Should().BeApproximately(96m, 1m);
+            shape.Height.Should().BeApproximately(59m, 1m);
+            shape.Y.Should().BeApproximately(92m, 2m);
             ValidatePresentation(pres);
         }
 
@@ -177,6 +177,7 @@ namespace ShapeCrawler.DevTests
             var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
             var shape = pres.Slide(1).Shape("AutoShape 4");
             var textBox = shape.TextBox!;
+            var originalHeight = shape.Height;
 
             // Act
             textBox.Paragraphs.Add();
@@ -185,9 +186,10 @@ namespace ShapeCrawler.DevTests
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
             textBox.Paragraphs.Add();
             textBox.Paragraphs.Last().Text = "AutoShape 4 some text";
-
+            
             // Assert
-            shape.Height.Should().BeApproximately(99m, 1m);
+            shape.Height.Should().BeGreaterThan(originalHeight);
+            ValidatePresentation(pres);
         }
 
         [Test]

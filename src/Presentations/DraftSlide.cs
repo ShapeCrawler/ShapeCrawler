@@ -181,9 +181,9 @@ public sealed class DraftSlide
             configure(builder);
 
             slide.Shapes.AddShape(
-                builder.DraftX, 
-                builder.DraftY, 
-                builder.DraftWidth, 
+                builder.DraftX,
+                builder.DraftY,
+                builder.DraftWidth,
                 builder.DraftHeight,
                 Geometry.Rectangle);
             var rectangle = slide.Shapes[^1];
@@ -317,7 +317,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a pie chart with specified name.
     /// </summary>
-    public DraftSlide PieChart(string name)
+    public DraftSlide PieChartShape(string name)
     {
         this.actions.Add((slide, _) =>
         {
@@ -326,6 +326,39 @@ public sealed class DraftSlide
                 { "Category 1", 40 }, { "Category 2", 30 }, { "Category 3", 30 }
             };
             slide.Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Series 1", name);
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a pie chart shape using a nested builder.
+    /// </summary>
+    /// <param name="configure">An action that configures the pie chart shape via the nested <see cref="DraftPieChartShape"/> builder.</param>
+    public DraftSlide PieChartShape(Action<DraftPieChartShape> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var shapeBuilder = new DraftPieChartShape();
+            configure(shapeBuilder);
+
+            var chartBuilder = shapeBuilder.DraftPieChartBuilder;
+            if (chartBuilder == null)
+            {
+                return;
+            }
+
+            var categoryValues = BuildCategoryValues(chartBuilder);
+            var (x, y, width, height) = GetChartDimensions(shapeBuilder, chartBuilder);
+
+            slide.Shapes.AddPieChart(
+                x, 
+                y, 
+                width, 
+                height, 
+                categoryValues, 
+                chartBuilder.SeriesName,
+                chartBuilder.ChartName);
         });
 
         return this;
@@ -395,6 +428,45 @@ public sealed class DraftSlide
         {
             action(slide, presentation);
         }
+    }
+    
+    private static Dictionary<string, double> BuildCategoryValues(DraftPieChart chartBuilder)
+    {
+        var categoryValues = new Dictionary<string, double>();
+        var categories = chartBuilder.CategoryNames;
+        var values = chartBuilder.SeriesValues;
+
+        var count = Math.Min(categories.Length, values.Length);
+        for (var i = 0; i < count; i++)
+        {
+            categoryValues[categories[i]] = values[i];
+        }
+
+        return categoryValues;
+    }
+
+    private static (double X, double Y, double Width, double Height) GetChartDimensions(
+        DraftPieChartShape shapeBuilder,
+        DraftPieChart chartBuilder)
+    {
+        var defaultShapeBuilder = new DraftPieChartShape();
+        var defaultChartBuilder = defaultShapeBuilder.DraftPieChartBuilder;
+
+        if (defaultChartBuilder == null)
+        {
+            return (shapeBuilder.ShapeX, shapeBuilder.ShapeY, shapeBuilder.ShapeWidth, shapeBuilder.ShapeHeight);
+        }
+
+        var x = chartBuilder.ChartX == defaultChartBuilder.ChartX ? shapeBuilder.ShapeX : chartBuilder.ChartX;
+        var y = chartBuilder.ChartY == defaultChartBuilder.ChartY ? shapeBuilder.ShapeY : chartBuilder.ChartY;
+        var width = chartBuilder.ChartWidth == defaultChartBuilder.ChartWidth
+            ? shapeBuilder.ShapeWidth
+            : chartBuilder.ChartWidth;
+        var height = chartBuilder.ChartHeight == defaultChartBuilder.ChartHeight
+            ? shapeBuilder.ShapeHeight
+            : chartBuilder.ChartHeight;
+
+        return (x, y, width, height);
     }
 
     private static void AddRectangleShape(IUserSlide slide, Action<DraftTextBox> configure)

@@ -50,8 +50,9 @@ internal sealed class TextAutofit(
             var scFont = popularPortion.Font;
 
             var paragraphText = paragraph.Text.ToUpper();
-            var paragraphTextWidth = new Text(paragraphText, scFont).Width;
-            var paragraphTextHeight = scFont.Size;
+            var text = new Text(paragraphText, scFont);
+            var paragraphTextWidth = text.Width;
+            var paragraphTextHeight = text.LineHeight;
 
             var intRequiredRowsCount = 1;
             if (isTextWrapped)
