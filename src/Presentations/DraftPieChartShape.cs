@@ -56,6 +56,7 @@ public sealed class DraftPieChartShape
     /// <summary>
     ///     Configures the pie chart using a nested builder.
     /// </summary>
+    /// <param name="configure">Delegate that configures the draft pie chart builder instance.</param>
     public DraftPieChartShape Chart(Action<DraftPieChart> configure)
     {
         var builder = new DraftPieChart();
