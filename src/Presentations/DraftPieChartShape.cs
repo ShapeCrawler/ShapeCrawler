@@ -3,7 +3,7 @@ using System;
 namespace ShapeCrawler.Presentations;
 
 /// <summary>
-///     Represents a draft pie chart shape builder.
+///     Represents a draft pie chart shape.
 /// </summary>
 public sealed class DraftPieChartShape
 {

@@ -1,7 +1,7 @@
 namespace ShapeCrawler.Presentations;
 
 /// <summary>
-///     Represents a draft pie chart builder.
+///     Represents a draft pie chart.
 /// </summary>
 public sealed class DraftPieChart
 {
