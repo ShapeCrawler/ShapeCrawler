@@ -334,6 +334,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Configures a pie chart shape using a nested builder.
     /// </summary>
+    /// <param name="configure">An action that configures the pie chart shape via the nested <see cref="DraftPieChartShape"/> builder.</param>
     public DraftSlide PieChartShape(Action<DraftPieChartShape> configure)
     {
         this.actions.Add((slide, _) =>
