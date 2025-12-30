@@ -181,9 +181,9 @@ public sealed class DraftSlide
             configure(builder);
 
             slide.Shapes.AddShape(
-                builder.DraftX, 
-                builder.DraftY, 
-                builder.DraftWidth, 
+                builder.DraftX,
+                builder.DraftY,
+                builder.DraftWidth,
                 builder.DraftHeight,
                 Geometry.Rectangle);
             var rectangle = slide.Shapes[^1];
@@ -348,50 +348,17 @@ public sealed class DraftSlide
                 return;
             }
 
-            // Build category values dictionary from categories and series values
-            var categoryValues = new Dictionary<string, double>();
-            var categories = chartBuilder.CategoryNames;
-            var values = chartBuilder.SeriesValues;
+            var categoryValues = BuildCategoryValues(chartBuilder);
+            var (x, y, width, height) = GetChartDimensions(shapeBuilder, chartBuilder);
 
-            var count = Math.Min(categories.Length, values.Length);
-            for (var i = 0; i < count; i++)
-            {
-                categoryValues[categories[i]] = values[i];
-            }
-
-            // Determine chart position/size based on whether the chart overrides the defaults.
-            // Obtain the current default values from a fresh DraftPieChartShape/DraftPieChartBuilder
-            // instance instead of relying on hard-coded magic numbers.
-            var defaultShapeBuilder = new DraftPieChartShape();
-            var defaultChartBuilder = defaultShapeBuilder.DraftPieChartBuilder;
-
-            double x;
-            double y;
-            double width;
-            double height;
-
-            if (defaultChartBuilder == null)
-            {
-                // If we cannot obtain default chart values, fall back to the shape dimensions.
-                x = shapeBuilder.ShapeX;
-                y = shapeBuilder.ShapeY;
-                width = shapeBuilder.ShapeWidth;
-                height = shapeBuilder.ShapeHeight;
-            }
-            else
-            {
-                var defaultX = defaultChartBuilder.ChartX;
-                var defaultY = defaultChartBuilder.ChartY;
-                var defaultWidth = defaultChartBuilder.ChartWidth;
-                var defaultHeight = defaultChartBuilder.ChartHeight;
-
-                x = chartBuilder.ChartX == defaultX ? shapeBuilder.ShapeX : chartBuilder.ChartX;
-                y = chartBuilder.ChartY == defaultY ? shapeBuilder.ShapeY : chartBuilder.ChartY;
-                width = chartBuilder.ChartWidth == defaultWidth ? shapeBuilder.ShapeWidth : chartBuilder.ChartWidth;
-                height = chartBuilder.ChartHeight == defaultHeight ? shapeBuilder.ShapeHeight : chartBuilder.ChartHeight;
-            }
-
-            slide.Shapes.AddPieChart(x, y, width, height, categoryValues, chartBuilder.SeriesName, chartBuilder.ChartName);
+            slide.Shapes.AddPieChart(
+                x, 
+                y, 
+                width, 
+                height, 
+                categoryValues, 
+                chartBuilder.SeriesName,
+                chartBuilder.ChartName);
         });
 
         return this;
@@ -461,6 +428,45 @@ public sealed class DraftSlide
         {
             action(slide, presentation);
         }
+    }
+    
+    private static Dictionary<string, double> BuildCategoryValues(DraftPieChart chartBuilder)
+    {
+        var categoryValues = new Dictionary<string, double>();
+        var categories = chartBuilder.CategoryNames;
+        var values = chartBuilder.SeriesValues;
+
+        var count = Math.Min(categories.Length, values.Length);
+        for (var i = 0; i < count; i++)
+        {
+            categoryValues[categories[i]] = values[i];
+        }
+
+        return categoryValues;
+    }
+
+    private static (double X, double Y, double Width, double Height) GetChartDimensions(
+        DraftPieChartShape shapeBuilder,
+        DraftPieChart chartBuilder)
+    {
+        var defaultShapeBuilder = new DraftPieChartShape();
+        var defaultChartBuilder = defaultShapeBuilder.DraftPieChartBuilder;
+
+        if (defaultChartBuilder == null)
+        {
+            return (shapeBuilder.ShapeX, shapeBuilder.ShapeY, shapeBuilder.ShapeWidth, shapeBuilder.ShapeHeight);
+        }
+
+        var x = chartBuilder.ChartX == defaultChartBuilder.ChartX ? shapeBuilder.ShapeX : chartBuilder.ChartX;
+        var y = chartBuilder.ChartY == defaultChartBuilder.ChartY ? shapeBuilder.ShapeY : chartBuilder.ChartY;
+        var width = chartBuilder.ChartWidth == defaultChartBuilder.ChartWidth
+            ? shapeBuilder.ShapeWidth
+            : chartBuilder.ChartWidth;
+        var height = chartBuilder.ChartHeight == defaultChartBuilder.ChartHeight
+            ? shapeBuilder.ShapeHeight
+            : chartBuilder.ChartHeight;
+
+        return (x, y, width, height);
     }
 
     private static void AddRectangleShape(IUserSlide slide, Action<DraftTextBox> configure)
