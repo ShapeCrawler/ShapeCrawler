@@ -200,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.77.0 - 2025-12-24
-🍀Added support for updating the category name of the multi-category chart [#151](https://github.com/ShapeCrawler/ShapeCrawler/issues/151)
+### Version 0.77.1 - 2025-12-31
+🐞Resolved potential security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
