@@ -763,7 +763,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    [Platform(Exclude = "Linux", Reason = "\n vs. \r\n")]
+    [Platform(Exclude = "Linux,MacOSX", Reason = "\n vs. \r\n")]
     public void AsMarkdown_returns_markdown_string()
     {
         // Arrange

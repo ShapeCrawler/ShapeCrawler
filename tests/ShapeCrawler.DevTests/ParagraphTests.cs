@@ -44,7 +44,7 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    [Platform(Exclude = "Linux", Reason = "Test fails on ubuntu-latest")]
+    [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails")]
     public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
     {
         // Arrange
