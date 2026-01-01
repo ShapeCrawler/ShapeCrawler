@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NUnit.Framework;
 using System.Text.Json;
 using ShapeCrawler.DevTests.Helpers;
 
