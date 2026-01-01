@@ -244,7 +244,7 @@ internal class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollection shap
 
         // Find the exact SlideId corresponding to this slide
         var slideIdRelationship = presPart.GetIdOfPart(slidePart);
-        var removingPSlideId = slideIdList.Elements<DocumentFormat.OpenXml.Presentation.SlideId>()
+        var removingPSlideId = slideIdList.Elements<SlideId>()
                                    .FirstOrDefault(slideId => slideId.RelationshipId!.Value == slideIdRelationship) ??
                                throw new SCException("Could not find slide ID in presentation.");
 
