@@ -28,7 +28,7 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
         var canvas = surface.Canvas;
 
         this.RenderBackground(canvas);
-        ((UserSlideShapeCollection)this.Shapes).Render(canvas);
+        shapes.Render(canvas);
 
         using var image = surface.Snapshot();
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
