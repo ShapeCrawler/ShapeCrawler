@@ -56,23 +56,29 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
     private void RenderBackground(SKCanvas canvas)
     {
         var slideFill = this.Fill;
-        if (slideFill is { Type: FillType.Solid, Color: not null })
+        switch (slideFill)
         {
-            var skColor = this.GetSkColor();
-            canvas.Clear(skColor);
-        }
-        else if (slideFill is { Type: FillType.Picture, Picture: not null })
-        {
-            var bytes = slideFill.Picture.AsByteArray();
-            using var stream = new MemoryStream(bytes);
-            using var bitmap = SKBitmap.Decode(stream);
-            var destRect = new SKRect(0, 0, canvas.DeviceClipBounds.Width, canvas.DeviceClipBounds.Height);
-            canvas.DrawBitmap(bitmap, destRect);
-        }
-        else
-        {
-            // Default to white for unsupported backgrounds.
-            canvas.Clear(SKColors.White);
+            case { Type: FillType.Solid, Color: not null }:
+                {
+                    var skColor = this.GetSkColor();
+                    canvas.Clear(skColor);
+                    break;
+                }
+
+            case { Type: FillType.Picture, Picture: not null }:
+                {
+                    var bytes = slideFill.Picture.AsByteArray();
+                    using var stream = new MemoryStream(bytes);
+                    using var bitmap = SKBitmap.Decode(stream);
+                    var destRect = new SKRect(0, 0, canvas.DeviceClipBounds.Width, canvas.DeviceClipBounds.Height);
+                    canvas.DrawBitmap(bitmap, destRect);
+                    break;
+                }
+
+            default:
+                // Default to white for unsupported backgrounds.
+                canvas.Clear(SKColors.White);
+                break;
         }
     }
 }
