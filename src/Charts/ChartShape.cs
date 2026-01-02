@@ -444,27 +444,4 @@ internal sealed class ChartShape : DrawingShape // TODO: reduce class size
 
         return (ChartPart)slidePart.GetPartById(chartReference.Id!);
     }
-
-    private readonly record struct ChartBounds(float X, float Y, float Width, float Height);
-
-    private readonly record struct ChartLayout(
-        float CenterX,
-        float CenterY,
-        float Radius,
-        float AvailableWidth);
-
-    private readonly record struct SliceAngle(float Start, float Sweep, int Index);
-
-    private sealed class PieChartData
-    {
-        public List<double> Values { get; } = [];
-
-        public List<string> Categories { get; } = [];
-
-        public string Title { get; set; } = string.Empty;
-
-        public bool ShowLegend { get; set; }
-
-        public bool ShowDataLabels { get; set; }
-    }
 }
