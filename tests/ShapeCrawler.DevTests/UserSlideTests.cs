@@ -633,30 +633,7 @@ public class UserSlideTests : SCTest
         // Assert
         return Verify(stream.ToArray(), "png");
     }
-
-    [Test]
-    public void WIP()
-    {
-        var pres = new Presentation(pres =>
-        {
-            pres.Slide(slide =>
-            {
-                slide.ClusteredBarChartShape(shape =>
-                {
-                    shape.Chart(chart =>
-                    {
-                        chart.Categories("Category 1", "Category 2");
-                        chart.Series("Series 1", 4.3, 2.5);
-                        chart.Series("Series 2", 2.4, 4.4);
-                    });
-                });
-            });
-        });
-
-        pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
-        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
-    }
-
+    
     [Test, Explicit("Used for developer debugging")]
     public void Debug()
     {
