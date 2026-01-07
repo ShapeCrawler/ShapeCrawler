@@ -402,7 +402,7 @@ internal sealed class ChartShape : DrawingShape
         var bounds = this.CalculateChartBounds();
         var colors = GetPieChartColors();
 
-        // Draw white background
+        // Draw a white background
         using var bgPaint = new SKPaint { Color = SKColors.White, Style = SKPaintStyle.Fill };
         canvas.DrawRect(new SKRect(bounds.X, bounds.Y, bounds.X + bounds.Width, bounds.Y + bounds.Height), bgPaint);
 
@@ -431,7 +431,7 @@ internal sealed class ChartShape : DrawingShape
             .Where(value => value > 0)
             .DefaultIfEmpty(0.0)
             .Max();
-        // Draw axes
+
         this.DrawBarChartAxes(canvas, chartAreaX, chartAreaY, chartAreaWidth, chartAreaHeight, maxValue);
 
         // Draw bars (horizontal for bar chart)
