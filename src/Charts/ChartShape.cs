@@ -428,14 +428,9 @@ internal sealed class ChartShape : DrawingShape
         var maxValue = seriesCollection
             .SelectMany(series => series.Points)
             .Select(point => point.Value)
-            .Append(0.0)
+            .Where(value => value > 0)
+            .DefaultIfEmpty(0.0)
             .Max();
-
-        if (maxValue <= 0)
-        {
-            return;
-        }
-
         // Draw axes
         this.DrawBarChartAxes(canvas, chartAreaX, chartAreaY, chartAreaWidth, chartAreaHeight, maxValue);
 
