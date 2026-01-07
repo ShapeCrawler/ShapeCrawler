@@ -425,17 +425,11 @@ internal sealed class ChartShape : DrawingShape
         var chartAreaHeight = bounds.Height - topMargin - bottomMargin;
 
         // Find max value for scaling
-        var maxValue = 0.0;
-        foreach (var series in seriesCollection)
-        {
-            foreach (var point in series.Points)
-            {
-                if (point.Value > maxValue)
-                {
-                    maxValue = point.Value;
-                }
-            }
-        }
+        var maxValue = seriesCollection
+            .SelectMany(series => series.Points)
+            .Select(point => point.Value)
+            .Append(0.0)
+            .Max();
 
         if (maxValue <= 0)
         {
