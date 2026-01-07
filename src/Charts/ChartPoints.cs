@@ -27,10 +27,16 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         }
         else
         {
-            // Inline data (NumberLiteral) occurs when chart data is embedded directly in the chart XML,
-            // rather than referenced from a worksheet via a formula. In this case, we return an empty
-            // collection because the current implementation only supports external references.
-            this.chartPoints = [];
+            // Try to get inline NumberLiteral data
+            var numberLiteral = GetNumberLiteral(cSerXmlElement);
+            if (numberLiteral != null)
+            {
+                this.chartPoints = CreateChartPointsFromLiteral(numberLiteral);
+            }
+            else
+            {
+                this.chartPoints = [];
+            }
         }
     }
 
@@ -52,6 +58,33 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 
         var cYVal = cSerXmlElement.GetFirstChild<YValues>();
         return cYVal?.NumberReference;
+    }
+
+    private static NumberLiteral? GetNumberLiteral(OpenXmlElement cSerXmlElement)
+    {
+        var cVal = cSerXmlElement.GetFirstChild<Values>();
+        if (cVal != null)
+        {
+            return cVal.NumberLiteral;
+        }
+
+        var cYVal = cSerXmlElement.GetFirstChild<YValues>();
+        return cYVal?.NumberLiteral;
+    }
+
+    private static List<ChartPoint> CreateChartPointsFromLiteral(NumberLiteral numberLiteral)
+    {
+        var points = new List<ChartPoint>();
+        foreach (var numericPoint in numberLiteral.Elements<NumericPoint>())
+        {
+            var numericValue = numericPoint.NumericValue;
+            if (numericValue != null)
+            {
+                points.Add(new ChartPoint(numericValue));
+            }
+        }
+
+        return points;
     }
 
     private static (string SheetName, List<string> Addresses) ParseFormulaAddresses(Formula formula)
