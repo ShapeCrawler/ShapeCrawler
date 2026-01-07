@@ -128,7 +128,7 @@ dotnet_diagnostic.CS8632.severity = error
 dotnet_diagnostic.CS8764.severity = error
 dotnet_diagnostic.CS8766.severity = error
 dotnet_diagnostic.CS8767.severity = error
-dotnet_diagnostic.CS9107.severity = error
+dotnet_diagnostic.CS9107.severity = none
 dotnet_diagnostic.CS9113.severity = error
 
 #### Core EditorConfig Options ####
