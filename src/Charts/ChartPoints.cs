@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
@@ -29,14 +30,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         {
             // Try to get inline NumberLiteral data
             var numberLiteral = GetNumberLiteral(cSerXmlElement);
-            if (numberLiteral != null)
-            {
-                this.chartPoints = CreateChartPointsFromLiteral(numberLiteral);
-            }
-            else
-            {
-                this.chartPoints = [];
-            }
+            this.chartPoints = numberLiteral != null ? CreateChartPointsFromLiteral(numberLiteral) : [];
         }
     }
 
@@ -74,17 +68,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 
     private static List<ChartPoint> CreateChartPointsFromLiteral(NumberLiteral numberLiteral)
     {
-        var points = new List<ChartPoint>();
-        foreach (var numericPoint in numberLiteral.Elements<NumericPoint>())
-        {
-            var numericValue = numericPoint.NumericValue;
-            if (numericValue != null)
-            {
-                points.Add(new ChartPoint(numericValue));
-            }
-        }
-
-        return points;
+        return numberLiteral.Elements<NumericPoint>().Select(numericPoint => numericPoint.NumericValue).OfType<NumericValue>().Select(numericValue => new ChartPoint(numericValue)).ToList();
     }
 
     private static (string SheetName, List<string> Addresses) ParseFormulaAddresses(Formula formula)
