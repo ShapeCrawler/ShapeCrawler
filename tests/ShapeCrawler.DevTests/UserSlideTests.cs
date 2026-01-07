@@ -400,13 +400,7 @@ public class UserSlideTests : SCTest
     public void SaveImageTo_saves_slide_image_with_solid_background()
     {
         // Arrange
-        var pres = new Presentation(p =>
-        {
-            p.Slide(s =>
-            {
-                s.SolidBackground("FF0000");
-            });
-        });
+        var pres = new Presentation(p => { p.Slide(s => { s.SolidBackground("FF0000"); }); });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -430,13 +424,7 @@ public class UserSlideTests : SCTest
     {
         // Arrange
         var image = TestImage();
-        var pres = new Presentation(p =>
-        {
-            p.Slide(s =>
-            {
-                s.ImageBackground(image);
-            });
-        });
+        var pres = new Presentation(p => { p.Slide(s => { s.ImageBackground(image); }); });
         var slide = pres.Slide(1);
         var stream = new MemoryStream();
 
@@ -561,13 +549,10 @@ public class UserSlideTests : SCTest
                     {
                         para.Text("Scalability first");
                         para.Font(font => font.Size(14));
-                        para.Indentation(indent =>
-                        {
-                            indent.BeforeText(36);
-                        });
+                        para.Indentation(indent => { indent.BeforeText(36); });
                     });
                 });
-                
+
                 slide.TextShape(ts =>
                 {
                     ts.Y(50);
@@ -575,7 +560,7 @@ public class UserSlideTests : SCTest
                 });
             });
         });
-        
+
         using var stream = new MemoryStream();
 
         // Act
@@ -585,7 +570,7 @@ public class UserSlideTests : SCTest
         var imageBytes = stream.ToArray();
         return Verify(imageBytes, "png");
     }
-    
+
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "diff(0.17881351277633012) > threshold(0.005)")]
     public Task SaveImageTo_draws_Table_Shapes()
@@ -612,14 +597,14 @@ public class UserSlideTests : SCTest
             });
         });
         var stream = new MemoryStream();
-        
+
         // Act
         pres.Slide(1).SaveImageTo(stream);
-        
+
         // Assert
         return Verify(stream.ToArray(), "png");
     }
-    
+
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "diff(0.1123369852499511) > threshold(0.005).")]
     public Task SaveImageTo_draws_Charts()
@@ -641,19 +626,19 @@ public class UserSlideTests : SCTest
             });
         });
         var stream = new MemoryStream();
-        
+
         // Act
         pres.Slide(1).SaveImageTo(stream);
-        
+
         // Assert
         return Verify(stream.ToArray(), "png");
     }
-
+    
     [Test, Explicit("Used for developer debugging")]
     public void Debug()
     {
         var pres = new Presentation(@"c:\Repo\ShapeCrawler\.context\input.pptx");
-        
+
         pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
     }
 
@@ -672,12 +657,14 @@ public class UserSlideTests : SCTest
         var centerPixel = new SkiaSharp.SKColor();
         using (var skImage = SkiaSharp.SKImage.FromEncodedData(stream))
         {
-            using (var skBitmap = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(skImage.Width, skImage.Height, SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Premul)))
+            using (var skBitmap = new SkiaSharp.SKBitmap(new SkiaSharp.SKImageInfo(skImage.Width, skImage.Height,
+                       SkiaSharp.SKColorType.Rgba8888, SkiaSharp.SKAlphaType.Premul)))
             {
                 skImage.ReadPixels(skBitmap.Info, skBitmap.GetPixels(), skBitmap.RowBytes);
                 centerPixel = skBitmap.GetPixel((skBitmap.Width / 2), (skBitmap.Height / 2));
             }
         }
+
         // Unsure how to test transparency properly. Was expecting Alpha to be 204 or something other than 255 (opaque) because shape is 50% transparent over white background.
         // Want to use test below but it fails with message "Expected centerPixel.Alpha to be between 0x32 and 0x3C because Alpha component should indicate 50% transparency, but found 0xFF"
         //centerPixel.Alpha.Should().BeInRange(50, 60, "Alpha component should indicate 50% transparency");

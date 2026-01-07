@@ -7,10 +7,10 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class ChartPoint : IChartPoint
 {
-    private readonly ChartPart chartPart;
+    private readonly ChartPart? chartPart;
     private readonly C.NumericValue cNumericValue;
-    private readonly string worksheetName;
-    private readonly string address;
+    private readonly string? worksheetName;
+    private readonly string? address;
 
     internal ChartPoint(ChartPart chartPart, C.NumericValue cNumericValue, string worksheetName, string address)
     {
@@ -18,6 +18,14 @@ internal sealed class ChartPoint : IChartPoint
         this.cNumericValue = cNumericValue;
         this.worksheetName = worksheetName;
         this.address = address;
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ChartPoint"/> class for inline literal data.
+    /// </summary>
+    internal ChartPoint(C.NumericValue cNumericValue)
+    {
+        this.cNumericValue = cNumericValue;
     }
 
     public double Value
@@ -33,7 +41,7 @@ internal sealed class ChartPoint : IChartPoint
         {
             this.cNumericValue.Text = value.ToString(CultureInfo.InvariantCulture);
 
-            if (this.chartPart.EmbeddedPackagePart == null)
+            if (this.chartPart?.EmbeddedPackagePart == null || this.worksheetName == null || this.address == null)
             {
                 return;
             }

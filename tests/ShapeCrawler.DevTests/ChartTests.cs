@@ -538,7 +538,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.ClusteredBarChart(chart =>
+                s.ClusteredBarChartShape(chart =>
                 {
                     chart.Categories("Category 1", "Category 2");
                     chart.Series("Series 1", 4.3, 2.5);
@@ -564,7 +564,7 @@ public class ChartTests : SCTest
         {
             p.Slide(s =>
             {
-                s.ClusteredBarChart(chart =>
+                s.ClusteredBarChartShape(chart =>
                 {
                     chart.Categories(
                         ("Main1", "Sub1"),

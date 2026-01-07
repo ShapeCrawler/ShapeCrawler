@@ -367,7 +367,7 @@ public sealed class DraftSlide
     /// <summary>
     ///     Adds a clustered bar chart with configuration.
     /// </summary>
-    public DraftSlide ClusteredBarChart(Action<DraftChart> configure)
+    public DraftSlide ClusteredBarChartShape(Action<DraftChart> configure)
     {
         this.actions.Add((slide, _) =>
         {
@@ -381,6 +381,37 @@ public sealed class DraftSlide
                 builder.CategoryNames,
                 builder.SeriesDataList,
                 builder.ChartName);
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures a clustered bar chart shape using a nested builder.
+    /// </summary>
+    /// <param name="configure">An action that configures the clustered bar chart shape via the nested <see cref="DraftClusteredBarChartShape"/> builder.</param>
+    public DraftSlide ClusteredBarChartShape(Action<DraftClusteredBarChartShape> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var shapeBuilder = new DraftClusteredBarChartShape();
+            configure(shapeBuilder);
+
+            var chartBuilder = shapeBuilder.DraftChartBuilder;
+            if (chartBuilder == null)
+            {
+                return;
+            }
+
+            var (x, y, width, height) = GetChartDimensions(shapeBuilder, chartBuilder);
+            slide.Shapes.AddClusteredBarChart(
+                x,
+                y,
+                width,
+                height,
+                chartBuilder.CategoryNames,
+                chartBuilder.SeriesDataList,
+                chartBuilder.ChartName);
         });
 
         return this;
@@ -449,13 +480,30 @@ public sealed class DraftSlide
         DraftPieChartShape shapeBuilder,
         DraftPieChart chartBuilder)
     {
-        var defaultShapeBuilder = new DraftPieChartShape();
-        var defaultChartBuilder = defaultShapeBuilder.DraftPieChartBuilder;
+        var defaultChartBuilder = new DraftPieChartShape().DraftPieChartBuilder;
 
         if (defaultChartBuilder == null)
         {
             return (shapeBuilder.ShapeX, shapeBuilder.ShapeY, shapeBuilder.ShapeWidth, shapeBuilder.ShapeHeight);
         }
+
+        var x = chartBuilder.ChartX == defaultChartBuilder.ChartX ? shapeBuilder.ShapeX : chartBuilder.ChartX;
+        var y = chartBuilder.ChartY == defaultChartBuilder.ChartY ? shapeBuilder.ShapeY : chartBuilder.ChartY;
+        var width = chartBuilder.ChartWidth == defaultChartBuilder.ChartWidth
+            ? shapeBuilder.ShapeWidth
+            : chartBuilder.ChartWidth;
+        var height = chartBuilder.ChartHeight == defaultChartBuilder.ChartHeight
+            ? shapeBuilder.ShapeHeight
+            : chartBuilder.ChartHeight;
+
+        return (x, y, width, height);
+    }
+
+    private static (int X, int Y, int Width, int Height) GetChartDimensions(
+        DraftClusteredBarChartShape shapeBuilder,
+        DraftChart chartBuilder)
+    {
+        var defaultChartBuilder = new DraftChart();
 
         var x = chartBuilder.ChartX == defaultChartBuilder.ChartX ? shapeBuilder.ShapeX : chartBuilder.ChartX;
         var y = chartBuilder.ChartY == defaultChartBuilder.ChartY ? shapeBuilder.ShapeY : chartBuilder.ChartY;
