@@ -68,7 +68,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 
     private static List<ChartPoint> CreateChartPointsFromLiteral(NumberLiteral numberLiteral)
     {
-        return numberLiteral.Elements<NumericPoint>().Select(numericPoint => numericPoint.NumericValue).OfType<NumericValue>().Select(numericValue => new ChartPoint(numericValue)).ToList();
+        return [.. numberLiteral.Elements<NumericPoint>().Select(numericPoint => numericPoint.NumericValue).OfType<NumericValue>().Select(numericValue => new ChartPoint(numericValue))];
     }
 
     private static (string SheetName, List<string> Addresses) ParseFormulaAddresses(Formula formula)
