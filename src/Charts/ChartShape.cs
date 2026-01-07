@@ -11,15 +11,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartShape : DrawingShape
+internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : DrawingShape(new Position(pGraphicFrame),
+    new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame)
 {
-    internal ChartShape(Chart chart, P.GraphicFrame pGraphicFrame)
-        : base(new Position(pGraphicFrame), new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame)
-    {
-        this.Chart = chart;
-    }
-
-    public override IChart? Chart { get; }
+    public override IChart? Chart => chart;
 
     public override Geometry GeometryType
     {
@@ -265,7 +260,8 @@ internal sealed class ChartShape : DrawingShape
 
     private static string GetTitleFromStringCache(ChartText? chartText)
     {
-        return chartText?.StringReference?.StringCache?.Elements<StringPoint>().FirstOrDefault()?.NumericValue?.Text ?? string.Empty;
+        return chartText?.StringReference?.StringCache?.Elements<StringPoint>().FirstOrDefault()?.NumericValue?.Text ??
+               string.Empty;
     }
 
     private static string GetTitleFromSeriesName(PieChartSeries pieChartSeries)
@@ -353,15 +349,88 @@ internal sealed class ChartShape : DrawingShape
         foreach (var numericPoint in numericPoints.OrderBy(np => np.Index?.Value ?? 0))
         {
             if (!double.TryParse(
-                numericPoint.NumericValue?.Text,
-                NumberStyles.Float,
-                CultureInfo.InvariantCulture,
-                out var val))
+                    numericPoint.NumericValue?.Text,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var val))
             {
                 continue;
             }
 
             data.Values.Add(val);
+        }
+    }
+
+    private static void DrawBarChartAxes(
+        SKCanvas canvas,
+        float chartAreaX,
+        float chartAreaY,
+        float chartAreaWidth,
+        float chartAreaHeight,
+        double maxValue)
+    {
+        using var axisPaint = new SKPaint();
+        axisPaint.Color = SKColors.Black;
+        axisPaint.Style = SKPaintStyle.Stroke;
+        axisPaint.StrokeWidth = 1;
+        axisPaint.IsAntialias = true;
+
+        // Draw Y axis (vertical line on the left)
+        canvas.DrawLine(chartAreaX, chartAreaY, chartAreaX, chartAreaY + chartAreaHeight, axisPaint);
+
+        // Draw X axis (horizontal line at the bottom)
+        canvas.DrawLine(
+            chartAreaX, 
+            chartAreaY + chartAreaHeight, 
+            chartAreaX + chartAreaWidth,
+            chartAreaY + chartAreaHeight, 
+            axisPaint);
+
+        // Draw X axis ticks and labels
+        using var tickFont = new SKFont(SKTypeface.FromFamilyName("Arial"), 9);
+        using var tickPaint = new SKPaint();
+        tickPaint.Color = SKColors.Black;
+        tickPaint.IsAntialias = true;
+
+        const int tickCount = 6;
+        for (var i = 0; i <= tickCount; i++)
+        {
+            var tickX = chartAreaX + (i * chartAreaWidth / tickCount);
+            var tickValue = (maxValue * i / tickCount).ToString("F0", CultureInfo.InvariantCulture);
+
+            canvas.DrawLine(tickX, chartAreaY + chartAreaHeight, tickX, chartAreaY + chartAreaHeight + 5, axisPaint);
+            canvas.DrawText(tickValue, tickX, chartAreaY + chartAreaHeight + 15, SKTextAlign.Center, tickFont, tickPaint);
+        }
+    }
+
+    private static void DrawBarChartLegend(
+        SKCanvas canvas,
+        ChartBounds bounds,
+        ISeriesCollection seriesCollection,
+        SKColor[] colors)
+    {
+        const float legendItemHeight = 20f;
+        var legendX = bounds.X + bounds.Width - 90f;
+        var legendY = bounds.Y + (bounds.Height / 2) - (seriesCollection.Count * legendItemHeight / 2);
+
+        using var legendFont = new SKFont(SKTypeface.FromFamilyName("Arial"), 10);
+        using var legendTextPaint = new SKPaint();
+        legendTextPaint.Color = SKColors.Black;
+        legendTextPaint.IsAntialias = true;
+
+        for (var i = 0; i < seriesCollection.Count; i++)
+        {
+            var series = seriesCollection[i];
+            var itemY = legendY + (i * legendItemHeight);
+
+            using var boxPaint = new SKPaint();
+            boxPaint.Color = colors[i % colors.Length];
+            boxPaint.Style = SKPaintStyle.Fill;
+            boxPaint.IsAntialias = true;
+            canvas.DrawRect(new SKRect(legendX, itemY, legendX + 10, itemY + 10), boxPaint);
+
+            var seriesName = series.HasName ? series.Name : $"Series {i + 1}";
+            canvas.DrawText(seriesName, legendX + 15, itemY + 9, SKTextAlign.Left, legendFont, legendTextPaint);
         }
     }
 
@@ -373,21 +442,17 @@ internal sealed class ChartShape : DrawingShape
         var height = (float)new Units.Points(this.Height).AsPixels();
         var rect = new SKRect(x, y, x + width, y + height);
 
-        using var fillPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
+        using var fillPaint = new SKPaint();
+        fillPaint.Color = SKColors.White;
+        fillPaint.Style = SKPaintStyle.Fill;
+        fillPaint.IsAntialias = true;
         canvas.DrawRect(rect, fillPaint);
 
-        using var outlinePaint = new SKPaint
-        {
-            Color = SKColors.LightGray,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1,
-            IsAntialias = true
-        };
+        using var outlinePaint = new SKPaint();
+        outlinePaint.Color = SKColors.LightGray;
+        outlinePaint.Style = SKPaintStyle.Stroke;
+        outlinePaint.StrokeWidth = 1;
+        outlinePaint.IsAntialias = true;
         canvas.DrawRect(rect, outlinePaint);
     }
 
@@ -432,7 +497,7 @@ internal sealed class ChartShape : DrawingShape
             .DefaultIfEmpty(0.0)
             .Max();
 
-        this.DrawBarChartAxes(canvas, chartAreaX, chartAreaY, chartAreaWidth, chartAreaHeight, maxValue);
+        DrawBarChartAxes(canvas, chartAreaX, chartAreaY, chartAreaWidth, chartAreaHeight, maxValue);
 
         // Draw bars (horizontal for bar chart)
         var categoryCount = categories.Count;
@@ -459,9 +524,7 @@ internal sealed class ChartShape : DrawingShape
 
                 using var barPaint = new SKPaint
                 {
-                    Color = colors[serIndex % colors.Length],
-                    Style = SKPaintStyle.Fill,
-                    IsAntialias = true
+                    Color = colors[serIndex % colors.Length], Style = SKPaintStyle.Fill, IsAntialias = true
                 };
                 canvas.DrawRect(new SKRect(chartAreaX, barY, chartAreaX + barWidth, barY + barHeight), barPaint);
             }
@@ -475,75 +538,7 @@ internal sealed class ChartShape : DrawingShape
         }
 
         // Draw legend
-        this.DrawBarChartLegend(canvas, bounds, seriesCollection, colors);
-    }
-
-    private void DrawBarChartAxes(
-        SKCanvas canvas,
-        float chartAreaX,
-        float chartAreaY,
-        float chartAreaWidth,
-        float chartAreaHeight,
-        double maxValue)
-    {
-        using var axisPaint = new SKPaint
-        {
-            Color = SKColors.Black,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1,
-            IsAntialias = true
-        };
-
-        // Draw Y axis (vertical line on the left)
-        canvas.DrawLine(chartAreaX, chartAreaY, chartAreaX, chartAreaY + chartAreaHeight, axisPaint);
-
-        // Draw X axis (horizontal line at the bottom)
-        canvas.DrawLine(chartAreaX, chartAreaY + chartAreaHeight, chartAreaX + chartAreaWidth, chartAreaY + chartAreaHeight, axisPaint);
-
-        // Draw X axis ticks and labels
-        using var tickFont = new SKFont(SKTypeface.FromFamilyName("Arial"), 9);
-        using var tickPaint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
-
-        var tickCount = 6;
-        for (var i = 0; i <= tickCount; i++)
-        {
-            var tickX = chartAreaX + (i * chartAreaWidth / tickCount);
-            var tickValue = (maxValue * i / tickCount).ToString("F0", CultureInfo.InvariantCulture);
-
-            canvas.DrawLine(tickX, chartAreaY + chartAreaHeight, tickX, chartAreaY + chartAreaHeight + 5, axisPaint);
-            canvas.DrawText(tickValue, tickX, chartAreaY + chartAreaHeight + 15, SKTextAlign.Center, tickFont, tickPaint);
-        }
-    }
-
-    private void DrawBarChartLegend(
-        SKCanvas canvas,
-        ChartBounds bounds,
-        ISeriesCollection seriesCollection,
-        SKColor[] colors)
-    {
-        const float legendItemHeight = 20f;
-        var legendX = bounds.X + bounds.Width - 90f;
-        var legendY = bounds.Y + (bounds.Height / 2) - (seriesCollection.Count * legendItemHeight / 2);
-
-        using var legendFont = new SKFont(SKTypeface.FromFamilyName("Arial"), 10);
-        using var legendTextPaint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
-
-        for (var i = 0; i < seriesCollection.Count; i++)
-        {
-            var series = seriesCollection[i];
-            var itemY = legendY + (i * legendItemHeight);
-
-            using var boxPaint = new SKPaint
-            {
-                Color = colors[i % colors.Length],
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
-            canvas.DrawRect(new SKRect(legendX, itemY, legendX + 10, itemY + 10), boxPaint);
-
-            var seriesName = series.HasName ? series.Name : $"Series {i + 1}";
-            canvas.DrawText(seriesName, legendX + 15, itemY + 9, SKTextAlign.Left, legendFont, legendTextPaint);
-        }
+        DrawBarChartLegend(canvas, bounds, seriesCollection, colors);
     }
 
     private void RenderPieChart(SKCanvas canvas)
