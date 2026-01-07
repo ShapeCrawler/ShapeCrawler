@@ -654,6 +654,7 @@ public class UserSlideTests : SCTest
         });
 
         pres.Save(@"c:\Repo\ShapeCrawler\.context\output.pptx");
+        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
     }
 
     [Test, Explicit("Used for developer debugging")]
