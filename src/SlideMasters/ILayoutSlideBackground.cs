@@ -46,8 +46,8 @@ internal sealed class LayoutSlideBackground(SlideLayoutPart slideLayoutPart) : I
 
     public void SolidFillColor(string hex)
     {
-        var pCommonSlideData = slideLayoutPart.SlideLayout.CommonSlideData
-                               ?? slideLayoutPart.SlideLayout.AppendChild(new P.CommonSlideData());
+        var pCommonSlideData = slideLayoutPart.SlideLayout!.CommonSlideData
+                               ?? slideLayoutPart.SlideLayout!.AppendChild(new P.CommonSlideData());
 
         var pBackground = pCommonSlideData.GetFirstChild<P.Background>()
                           ?? pCommonSlideData.InsertAt(new P.Background(), 0);
@@ -60,8 +60,8 @@ internal sealed class LayoutSlideBackground(SlideLayoutPart slideLayoutPart) : I
 
     public void Picture(Stream image)
     {
-        var pCommonSlideData = slideLayoutPart.SlideLayout.CommonSlideData
-                               ?? slideLayoutPart.SlideLayout.AppendChild(new P.CommonSlideData());
+        var pCommonSlideData = slideLayoutPart.SlideLayout!.CommonSlideData
+                               ?? slideLayoutPart.SlideLayout!.AppendChild(new P.CommonSlideData());
 
         var pBackground = pCommonSlideData.GetFirstChild<P.Background>()
                           ?? pCommonSlideData.InsertAt(new P.Background(), 0);
@@ -93,7 +93,7 @@ internal sealed class LayoutSlideBackground(SlideLayoutPart slideLayoutPart) : I
 
     public MemoryStream Picture()
     {
-        var pBackground = slideLayoutPart.SlideLayout.CommonSlideData?.GetFirstChild<P.Background>();
+        var pBackground = slideLayoutPart.SlideLayout!.CommonSlideData?.GetFirstChild<P.Background>();
         var aBlipFill = pBackground?.GetFirstChild<P.BackgroundProperties>()?.GetFirstChild<A.BlipFill>();
         var aBlip = aBlipFill?.Blip;
         if (aBlip?.Embed?.Value is null)

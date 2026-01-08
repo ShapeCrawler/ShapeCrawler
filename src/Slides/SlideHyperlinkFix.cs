@@ -17,7 +17,7 @@ internal static class SlideHyperlinkFix
     {
         var sourcePresentation = ((PresentationDocument)sourceSlidePart.OpenXmlPackage).PresentationPart!;
 
-        var hyperlinks = clonedSlidePart.Slide.Descendants<HyperlinkOnClick>()
+        var hyperlinks = clonedSlidePart.Slide!.Descendants<HyperlinkOnClick>()
             .Where(h => h.Action?.Value == "ppaction://hlinksldjump" && !string.IsNullOrEmpty(h.Id?.Value));
 
         foreach (var hyperlink in hyperlinks)
@@ -25,7 +25,7 @@ internal static class SlideHyperlinkFix
             try
             {
                 var sourceTargetSlidePart = (SlidePart)sourceSlidePart.GetPartById(hyperlink.Id!.Value!);
-                var sourceSlideIdList = sourcePresentation.Presentation.SlideIdList!.ChildElements.OfType<SlideId>();
+                var sourceSlideIdList = sourcePresentation.Presentation!.SlideIdList!.ChildElements.OfType<SlideId>();
                 var sourceTargetSlideRelId = sourcePresentation.GetIdOfPart(sourceTargetSlidePart);
 
                 var sourceSlideNumber = 0;
@@ -39,7 +39,7 @@ internal static class SlideHyperlinkFix
                 }
 
                 var targetSlideIdList =
-                    targetPresentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>();
+                    targetPresentationPart.Presentation!.SlideIdList!.ChildElements.OfType<SlideId>();
                 var targetSlideId = targetSlideIdList.ElementAtOrDefault(sourceSlideNumber - 1);
 
                 if (targetSlideId != null)

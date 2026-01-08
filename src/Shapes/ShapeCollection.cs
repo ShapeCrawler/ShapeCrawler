@@ -55,10 +55,10 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
     {
         var pShapeTree = openXmlPart switch
         {
-            SlidePart slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-            NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
-            _ => ((SlideMasterPart)openXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
+            SlidePart slidePart => slidePart.Slide!.CommonSlideData!.ShapeTree!,
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideLayout!.CommonSlideData!.ShapeTree!,
+            NotesSlidePart notesSlidePart => notesSlidePart.NotesSlide!.CommonSlideData!.ShapeTree!,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster!.CommonSlideData!.ShapeTree!
         };
 
         foreach (var element in pShapeTree.OfType<OpenXmlCompositeElement>())
@@ -260,7 +260,7 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         var aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>()!;
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>()!;
         var chartPart = (ChartPart)openXmlPart.GetPartById(cChartRef.Id!);
-        var cPlotArea = chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
+        var cPlotArea = chartPart.ChartSpace!.GetFirstChild<C.Chart>()!.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         // Combination chart has multiple chart types

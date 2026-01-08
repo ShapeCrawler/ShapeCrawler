@@ -60,7 +60,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
 
             var sdkSlidePart = (SlidePart)openXmlPart;
             var bodyStyleFonts =
-                new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+                new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.TextStyles!.BodyStyle!);
             var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
             if (bodyStyleFont.HasValue)
             {
@@ -103,7 +103,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>()!;
         var referencedLayoutPShape =
-            new SCPShapeTree(slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(
+            new SCPShapeTree(slidePart.SlideLayoutPart!.SlideLayout!.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(
                 pPlaceholderShape);
 
         return referencedLayoutPShape;
@@ -121,9 +121,9 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var slideOrLayoutPShapeTree = openXmlPart switch
         {
-            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.CommonSlideData!
                 .ShapeTree!,
-            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
+            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster!.CommonSlideData!
                 .ShapeTree!
         };
 
@@ -229,7 +229,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
             {
                 if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.CenteredTitle)
                 {
-                    return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.TitleStyle!
+                    return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.TextStyles!.TitleStyle!
                         .Level1ParagraphProperties!
                         .GetFirstChild<A.DefaultRunProperties>()!
                         .GetFirstChild<A.LatinFont>();
@@ -293,7 +293,7 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         if (parentSlidePart?.SlideLayoutPart?.SlideMasterPart != null)
         {
             var slideMasterFonts =
-                new IndentFonts(parentSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
+                new IndentFonts(parentSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster!.TextStyles!.BodyStyle!);
             var slideMasterIndentFont = slideMasterFonts.FontOrNull(indentLevel);
             if (slideMasterIndentFont.HasValue)
             {

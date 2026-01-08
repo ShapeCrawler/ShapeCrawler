@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -23,7 +23,7 @@ internal readonly ref struct SCPresentationPart
 
         rId = new SCOpenXmlPart(this.presentationPart).NextRelationshipId();
         var addedSlideMasterPart = this.presentationPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
-        var layoutIdList = addedSlideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
+        var layoutIdList = addedSlideMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
         foreach (var layoutId in layoutIdList.ToList())
         {
             if (!addedSlideMasterPart.TryGetPartById(layoutId.RelationshipId!, out _))

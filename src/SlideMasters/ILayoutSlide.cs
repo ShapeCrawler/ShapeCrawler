@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
@@ -49,7 +49,7 @@ internal sealed class LayoutSlide : ILayoutSlide
         this.background = new LayoutSlideBackground(slideLayoutPart);
     }
 
-    public string Name => this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    public string Name => this.SlideLayoutPart.SlideLayout!.CommonSlideData!.Name!.Value!;
 
     public IShapeCollection Shapes { get; }
 

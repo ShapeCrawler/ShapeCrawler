@@ -14,7 +14,7 @@ internal readonly ref struct SCSlideMasterPart
 
     internal void RemoveLayoutsExcept(SlideLayoutPart exceptSlideLayoutPart)
     {
-        var pSlideLayoutIds = this.slideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<DocumentFormat.OpenXml.Presentation.SlideLayoutId>();
+        var pSlideLayoutIds = this.slideMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<DocumentFormat.OpenXml.Presentation.SlideLayoutId>();
         foreach (var slideLayoutPart in this.slideMasterPart.SlideLayoutParts.ToList())
         {
             if (slideLayoutPart == exceptSlideLayoutPart)

@@ -52,7 +52,7 @@ internal sealed class SectionCollection(PresentationDocument presDocument) : ISe
 
         if (total == 1)
         {
-            presDocument.PresentationPart!.Presentation.PresentationExtensionList
+            presDocument.PresentationPart!.Presentation!.PresentationExtensionList
                 ?.Descendants<P14.SectionList>().First()
                 .Remove();
         }
@@ -62,7 +62,7 @@ internal sealed class SectionCollection(PresentationDocument presDocument) : ISe
 
     private List<Section> SectionList()
     {
-        var p14SectionList = presDocument.PresentationPart!.Presentation.PresentationExtensionList
+        var p14SectionList = presDocument.PresentationPart!.Presentation!.PresentationExtensionList
             ?.Descendants<P14.SectionList>().FirstOrDefault();
         return p14SectionList == null
             ? []

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -40,12 +40,12 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
     {
         this.aFontScheme = openXmlPart switch
         {
-            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme!.ThemeElements!
                 .FontScheme!,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme!.ThemeElements!
                 .FontScheme!,
-            NotesSlidePart notesSlidePart => GetFontSchemeFromNotesSlidePart(notesSlidePart),
-            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.FontScheme!
+            NotesSlidePart notesSlidePart => GetFontSchemeFromNotesSlidePart(notesSlidePart)!,
+            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme!.ThemeElements!.FontScheme!
         };
     }
 
@@ -87,7 +87,7 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
     private static A.FontScheme GetFontSchemeFromNotesSlidePart(NotesSlidePart notesSlidePart)
     {
         // If NotesMasterPart exists, use it
-        var notesMasterFontScheme = notesSlidePart.NotesMasterPart?.ThemePart?.Theme.ThemeElements?.FontScheme;
+        var notesMasterFontScheme = notesSlidePart.NotesMasterPart?.ThemePart?.Theme!.ThemeElements!.FontScheme;
         if (notesMasterFontScheme != null)
         {
             return notesMasterFontScheme;
@@ -95,8 +95,8 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
 
         // Fall back to the slide's master part if NotesMasterPart is null
         var parentSlidePart = notesSlidePart.GetParentParts().OfType<SlidePart>().FirstOrDefault();
-        var slideMasterFontScheme = parentSlidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme.ThemeElements
-            ?.FontScheme;
+        var slideMasterFontScheme = parentSlidePart?.SlideLayoutPart?.SlideMasterPart?.ThemePart?.Theme!.ThemeElements!
+            .FontScheme;
         if (slideMasterFontScheme != null)
         {
             return slideMasterFontScheme;

@@ -75,7 +75,7 @@ internal sealed class PictureShapeCollection(SlidePart slidePart, PresentationIm
 
     private int GetNextShapeId()
     {
-        var shapeIds = slidePart.Slide
+        var shapeIds = slidePart.Slide!
             .Descendants<P.NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0U)
             .ToArray();

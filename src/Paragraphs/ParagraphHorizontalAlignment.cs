@@ -97,7 +97,7 @@ internal sealed class ParagraphHorizontalAlignment
             return null;
         }
 
-        var layoutShapeTree = slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!;
+        var layoutShapeTree = slidePart.SlideLayoutPart!.SlideLayout!.CommonSlideData!.ShapeTree!;
         var referencedLayoutShape = new SCPShapeTree(layoutShapeTree).ReferencedPShapeOrNull(pPlaceholderShape);
         if (referencedLayoutShape?.TextBody?.ListStyle is null)
         {
@@ -115,15 +115,15 @@ internal sealed class ParagraphHorizontalAlignment
         P.ShapeTree? shapeTree = null;
         if (openXmlPart is SlidePart slidePart)
         {
-            shapeTree = slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!.ShapeTree!;
+            shapeTree = slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.CommonSlideData!.ShapeTree!;
         }
         else if (openXmlPart is SlideLayoutPart slideLayoutPart)
         {
-            shapeTree = slideLayoutPart.SlideMasterPart!.SlideMaster.CommonSlideData!.ShapeTree!;
+            shapeTree = slideLayoutPart.SlideMasterPart!.SlideMaster!.CommonSlideData!.ShapeTree!;
         }
         else if (openXmlPart is SlideMasterPart slideMasterPart)
         {
-            shapeTree = slideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!;
+            shapeTree = slideMasterPart.SlideMaster!.CommonSlideData!.ShapeTree!;
         }
 
         if (shapeTree is null)
@@ -146,7 +146,7 @@ internal sealed class ParagraphHorizontalAlignment
         int indentLevel)
     {
         var slideMasterPart = SlideMasterPartOrNull(openXmlPart);
-        var textStyles = slideMasterPart?.SlideMaster.TextStyles;
+        var textStyles = slideMasterPart?.SlideMaster!.TextStyles;
         if (textStyles is null)
         {
             return null;

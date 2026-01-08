@@ -61,7 +61,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         return pPicture;
     }
@@ -152,7 +152,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         pPicture.AppendChild(blipFill);
         pPicture.AppendChild(shapeProperties);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
 
         return pPicture;
     }

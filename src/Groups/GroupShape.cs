@@ -84,7 +84,7 @@ internal sealed class GroupShape : DrawingShape
             pGroupShape.Append(openXmlElement);
         }
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGroupShape);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pGroupShape);
 
         foreach (var grouping in groupingShapes)
         {

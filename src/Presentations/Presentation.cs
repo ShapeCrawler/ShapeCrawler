@@ -35,7 +35,7 @@ public sealed class Presentation : IPresentation
         this.inputPresStream.CopyTo(this.presStream);
 
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation!.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
@@ -59,7 +59,7 @@ public sealed class Presentation : IPresentation
         fileStream.CopyTo(this.presStream);
 
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation!.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
@@ -81,7 +81,7 @@ public sealed class Presentation : IPresentation
         this.presStream = new AssetCollection(Assembly.GetExecutingAssembly()).StreamOf("new presentation.pptx");
 
         this.PresDocument = PresentationDocument.Open(this.presStream, true);
-        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation!.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
         this.Slides = new UpdatedSlideCollection(
@@ -167,7 +167,7 @@ public sealed class Presentation : IPresentation
     {
         // Materialize initial template slide if SlideIdList is empty but slide parts exist
         this.EnsureInitialSlideId();
-        this.PresDocument.PresentationPart!.Presentation.Save();
+        this.PresDocument.PresentationPart!.Presentation!.Save();
         this.PresDocument.Save();
         if (this.inputPresStream is not null)
         {
@@ -185,7 +185,7 @@ public sealed class Presentation : IPresentation
     {
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
         this.EnsureInitialSlideId();
-        this.PresDocument.PresentationPart!.Presentation.Save();
+        this.PresDocument.PresentationPart!.Presentation!.Save();
 
         if (stream is FileStream fileStream)
         {
@@ -260,7 +260,7 @@ public sealed class Presentation : IPresentation
     private void EnsureInitialSlideId()
     {
         var presentationPart = this.PresDocument.PresentationPart!;
-        var presentation = presentationPart.Presentation;
+        var presentation = presentationPart.Presentation!;
         presentation.SlideIdList ??= new P.SlideIdList();
 #if NETSTANDARD2_0
         var existingIds = new HashSet<string>(

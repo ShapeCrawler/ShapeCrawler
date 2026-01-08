@@ -152,7 +152,7 @@ internal sealed class AudioVideoShapeCollection(SlidePart slidePart, Presentatio
             applicationNonVisualDrawingProperties);
         var pPicture = new P.Picture(nonVisualPictureProperties, blipFill, shapeProperties);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pPicture);
     }
 
     private static P.NonVisualDrawingProperties GetPNonVisualDrawingProperties(OpenXmlCompositeElement compositeElement)
@@ -170,7 +170,7 @@ internal sealed class AudioVideoShapeCollection(SlidePart slidePart, Presentatio
 
     private int GetNextShapeId()
     {
-        var shapeIds = slidePart.Slide
+        var shapeIds = slidePart.Slide!
             .Descendants<P.NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0U)
             .ToList();
@@ -250,7 +250,7 @@ internal sealed class AudioVideoShapeCollection(SlidePart slidePart, Presentatio
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pPicture);
 
         return pPicture;
     }

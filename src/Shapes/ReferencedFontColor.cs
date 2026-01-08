@@ -142,7 +142,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
 
         if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
         {
-            var pTitleStyle = slideMasterPart.SlideMaster.TextStyles!.TitleStyle!;
+            var pTitleStyle = slideMasterPart.SlideMaster!.TextStyles!.TitleStyle!;
             var masterTitleFonts = new IndentFonts(pTitleStyle);
             var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterTitleFont, out var masterTitleColor))
@@ -152,7 +152,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
         }
         else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
         {
-            var pBodyStyle = slideMasterPart.SlideMaster.TextStyles!.BodyStyle!;
+            var pBodyStyle = slideMasterPart.SlideMaster!.TextStyles!.BodyStyle!;
             var masterBodyFonts = new IndentFonts(pBodyStyle);
             var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
             if (this.HexFromName(masterBodyFont, out var masterTitleColor))
@@ -241,13 +241,13 @@ internal sealed class ReferencedFontColor(A.Text aText)
     {
         var pTitleStyle = openXmlPart switch
         {
-            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.TextStyles!
                 .TitleStyle!,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.SlideMaster.TextStyles!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.SlideMaster!.TextStyles!
                 .TitleStyle!,
             NotesSlidePart notesSlidePart =>
                 notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
-                    .SlideMaster.TextStyles!
+                    .SlideMaster!.TextStyles!
                     .TitleStyle!,
             _ => throw new ArgumentException($"Unsupported OpenXmlPart type: {openXmlPart.GetType()}")
         };
@@ -264,12 +264,12 @@ internal sealed class ReferencedFontColor(A.Text aText)
     {
         var pBodyStyle = openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.TextStyles!
                 .BodyStyle!,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!,
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.SlideMaster!.TextStyles!.BodyStyle!,
             NotesSlidePart notesSlidePart =>
                 notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
-                    .SlideMaster.TextStyles!.BodyStyle!,
+                    .SlideMaster!.TextStyles!.BodyStyle!,
             _ => throw new ArgumentException($"Unsupported OpenXmlPart type: {openXmlPart.GetType()}")
         };
 
@@ -292,7 +292,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>()!;
         var referencedLayoutPShape =
-            new SCPShapeTree(slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(
+            new SCPShapeTree(slidePart.SlideLayoutPart!.SlideLayout!.CommonSlideData!.ShapeTree!).ReferencedPShapeOrNull(
                 pPlaceholderShape);
 
         return referencedLayoutPShape;
@@ -313,7 +313,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
             }
 
             referencedMasterPShape =
-                new SCPShapeTree(slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!.ShapeTree!)
+                new SCPShapeTree(slidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.CommonSlideData!.ShapeTree!)
                     .ReferencedPShapeOrNull(pPlaceholderShape);
         }
         else if (openXmlPart is SlideLayoutPart slideLayoutPart)
@@ -326,7 +326,7 @@ internal sealed class ReferencedFontColor(A.Text aText)
             }
 
             referencedMasterPShape =
-                new SCPShapeTree(slideLayoutPart.SlideMasterPart!.SlideMaster.CommonSlideData!.ShapeTree!)
+                new SCPShapeTree(slideLayoutPart.SlideMasterPart!.SlideMaster!.CommonSlideData!.ShapeTree!)
                     .ReferencedPShapeOrNull(pPlaceholderShape);
         }
 
