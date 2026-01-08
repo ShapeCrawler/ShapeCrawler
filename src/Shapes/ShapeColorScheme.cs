@@ -63,7 +63,7 @@ internal sealed class ShapeColorScheme
     private static A.ColorScheme? GetColorSchemeFromSlideMasterPart(SlideMasterPart slideMasterPart)
     {
         var themePart = slideMasterPart.ThemePart;
-        var themeElements = themePart?.Theme.ThemeElements;
+        var themeElements = themePart?.Theme!.ThemeElements;
 
         return themeElements?.ColorScheme;
     }
@@ -77,7 +77,7 @@ internal sealed class ShapeColorScheme
         }
 
         var themePart = notesMasterPart.ThemePart;
-        var themeElements = themePart?.Theme.ThemeElements;
+        var themeElements = themePart?.Theme!.ThemeElements;
 
         return themeElements?.ColorScheme;
     }

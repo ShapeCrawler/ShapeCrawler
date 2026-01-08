@@ -114,7 +114,7 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         }
 
         var layoutPShapes =
-            slidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
+            slidePart.SlideLayoutPart!.SlideLayout!.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
 
         var referencedPShape = PShapeOrNull(layoutPShapes, pPlaceholderShape);
         if (referencedPShape != null)
@@ -132,9 +132,9 @@ internal readonly ref struct ReferencedPShape(OpenXmlElement pShapeTreeElement)
         var openXmlPart = pShape.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var masterPShapes = openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.CommonSlideData!
                 .ShapeTree!.Elements<P.Shape>(),
-            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
+            _ => ((SlideLayoutPart)openXmlPart).SlideMasterPart!.SlideMaster!.CommonSlideData!
                 .ShapeTree!.Elements<P.Shape>()
         };
 

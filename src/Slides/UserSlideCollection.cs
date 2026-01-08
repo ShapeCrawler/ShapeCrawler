@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
@@ -28,7 +28,7 @@ internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : I
 
         var presDocument = (PresentationDocument)slideParts.First().OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
-        var pSlideIdList = presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>();
+        var pSlideIdList = presPart.Presentation!.SlideIdList!.ChildElements.OfType<P.SlideId>();
         foreach (var pSlideId in pSlideIdList)
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);

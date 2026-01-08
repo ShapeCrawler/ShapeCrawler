@@ -53,7 +53,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
     public void Add(IShape addingShape)
     {
-        var pShapeTree = this.slidePart.Slide.CommonSlideData!.ShapeTree!;
+        var pShapeTree = this.slidePart.Slide!.CommonSlideData!.ShapeTree!;
         switch (addingShape)
         {
             case PictureShape picture:
@@ -166,7 +166,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.newShapeProperties.Id();
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
@@ -184,7 +184,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.newShapeProperties.Id();
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = geometry.ToString();
@@ -202,7 +202,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new rectangle.xml");
         var pShape = new P.Shape(xml);
         var nextShapeId = this.newShapeProperties.Id();
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pShape);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pShape);
 
         var addedShape = this.shapes.Last<TextShape>();
         addedShape.Name = "Text Box";
@@ -227,7 +227,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     {
         var newPConnectionShape = new P.ConnectionShape(xml);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
@@ -299,7 +299,7 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         graphicFrame.Append(pTransform);
         graphicFrame.Append(graphic);
 
-        this.slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
     public IShape GetById(int id) => this.shapes.GetById(id);

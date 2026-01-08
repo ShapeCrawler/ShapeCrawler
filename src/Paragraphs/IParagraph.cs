@@ -396,7 +396,7 @@ internal sealed class Paragraph : IParagraph
             return null;
         }
 
-        return presDocument.PresentationPart?.Presentation.DefaultTextStyle;
+        return presDocument.PresentationPart!.Presentation!.DefaultTextStyle;
     }
 
     private ISpacing GetSpacing() => new Spacing(this.aParagraph);

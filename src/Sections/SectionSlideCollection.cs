@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
@@ -23,7 +23,7 @@ internal sealed class SectionSlideCollection(P14.Section p14Section) : IReadOnly
         var p14SectionSlideIdListEntryList = p14Section.Descendants<P14.SectionSlideIdListEntry>();
         var presDocument = new SCOpenXmlElement(p14Section).ParentPresentationDocument;
         var slideParts = new List<SlidePart>();
-        var idToRId = presDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>()
+        var idToRId = presDocument.PresentationPart!.Presentation!.SlideIdList!.ChildElements.OfType<P.SlideId>()
             .ToDictionary(slideId => slideId.Id!, slideId => slideId.RelationshipId);
         foreach (var p14SectionSlideIdListEntry in p14SectionSlideIdListEntryList)
         {

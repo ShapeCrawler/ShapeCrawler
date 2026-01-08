@@ -12,7 +12,7 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
     internal IndentFont? PresentationOrThemeFontOrNull(int indentLevel)
     {
         var presDocument = (PresentationDocument)openXmlPart.OpenXmlPackage;
-        var pDefaultTextStyle = presDocument.PresentationPart!.Presentation.DefaultTextStyle;
+        var pDefaultTextStyle = presDocument.PresentationPart!.Presentation!.DefaultTextStyle;
         if (pDefaultTextStyle != null)
         {
             var pDefaultTextStyleFont = new IndentFonts(pDefaultTextStyle).FontOrNull(indentLevel);
@@ -22,7 +22,7 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
             }
         }
 
-        var aTextDefault = presDocument.PresentationPart!.ThemePart?.Theme.ObjectDefaults!
+        var aTextDefault = presDocument.PresentationPart!.ThemePart?.Theme!.ObjectDefaults!
             .TextDefault;
         return aTextDefault != null
             ? new IndentFonts(aTextDefault).FontOrNull(indentLevel)
@@ -47,15 +47,15 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
     {
         return openXmlPart switch
         {
-            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlidePart slidePart => slidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme!.ThemeElements!
                 .ColorScheme!,
-            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlideLayoutPart slideLayoutPart => slideLayoutPart.SlideMasterPart!.ThemePart!.Theme!.ThemeElements!
                 .ColorScheme!,
             NotesSlidePart notesSlidePart =>
                 notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!.ThemePart!
-                    .Theme.ThemeElements!
+                    .Theme!.ThemeElements!
                     .ColorScheme!,
-            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme!.ThemeElements!.ColorScheme!
         };
     }
 
@@ -120,12 +120,12 @@ internal sealed class PresentationColor(OpenXmlPart openXmlPart)
     {
         var pColorMap = openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster.ColorMap!,
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!.ColorMap!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster!.ColorMap!,
             NotesSlidePart notesSlidePart =>
                 notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
-                    .SlideMaster.ColorMap!,
-            _ => ((SlideMasterPart)openXmlPart).SlideMaster.ColorMap!
+                    .SlideMaster!.ColorMap!,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster!.ColorMap!
         };
         if (themeColor == A.SchemeColorValues.Text1)
         {

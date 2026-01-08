@@ -41,7 +41,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             newSlidePart.AddPart(layoutPartPair.OpenXmlPart, layoutPartPair.RelationshipId);
         }
 
-        newSlidePart.Slide = new P.Slide(layout.SlideLayoutPart.SlideLayout.CommonSlideData!.CloneNode(true));
+        newSlidePart.Slide = new P.Slide(layout.SlideLayoutPart.SlideLayout!.CommonSlideData!.CloneNode(true));
         var removingShapes = newSlidePart.Slide.CommonSlideData!.ShapeTree!.OfType<P.Shape>()
             .Where(shape =>
             {
@@ -56,9 +56,9 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         removingShapes.ForEach(shape => shape.Remove());
 
         // Older packages omit the SlideIdList element; create it to avoid null reference
-        presPart.Presentation.SlideIdList ??= new P.SlideIdList();
+        presPart.Presentation!.SlideIdList ??= new P.SlideIdList();
 
-        var pSlideIdList = presPart.Presentation.SlideIdList!;
+        var pSlideIdList = presPart.Presentation!.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Any()
             ? pSlideIdList.OfType<P.SlideId>().Last().Id! + 1
             : 256; // PowerPoint reserves IDs below 256 for built-in slides
@@ -74,7 +74,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         }
 
         var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[userSlide.Number - 1];
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
@@ -83,7 +83,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         SlideHyperlinkFix.FixSlideHyperlinks(sourceSlidePart, clonedSlidePart, presentationPart);
         InsertSlideAtPosition(presentationPart, newSlideRelId, slideNumber);
 
-        presentationPart.Presentation.Save();
+        presentationPart.Presentation!.Save();
     }
 
     public void Add(int layoutNumber, int slideNumber)
@@ -110,7 +110,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             .InternalSlideLayout(layoutNumber);
         slidePart.AddPart(layout.SlideLayoutPart, "rId1");
 
-        if (layout.SlideLayoutPart.SlideLayout.CommonSlideData is { ShapeTree: { } shapeTree })
+        if (layout.SlideLayoutPart.SlideLayout!.CommonSlideData is { ShapeTree: { } shapeTree })
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()
@@ -146,11 +146,11 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             };
         }
 
-        presPart.Presentation.SlideIdList ??= new P.SlideIdList();
+        presPart.Presentation!.SlideIdList ??= new P.SlideIdList();
 
         InsertSlideAtPosition(presPart, newRelId, slideNumber);
 
-        presPart.Presentation.Save();
+        presPart.Presentation!.Save();
     }
 
     public void Add(IUserSlide userSlide)
@@ -158,8 +158,8 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
         var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
         var targetPresPart = targetPresDocument.PresentationPart!;
-        var targetPres = targetPresPart.Presentation;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation.SlideIdList!.ChildElements[userSlide.Number - 1];
+        var targetPres = targetPresPart.Presentation!;
+        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
         new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
@@ -171,7 +171,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var addedSlideMasterPart = wrappedPresentationPart.Last<SlideMasterPart>();
 
         AddNewSlideId(targetPresDocument, addedSlidePart);
-        var masterId = AddNewSlideMasterId(targetPres, targetPresDocument, addedSlideMasterPart);
+        var masterId = AddNewSlideMasterId(targetPres!, targetPresDocument, addedSlideMasterPart);
         AdjustLayoutIds(targetPresDocument, masterId);
 
         var imageCatalog = new ImagePartCatalog();
@@ -185,9 +185,9 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
     {
         // Slide IDs must remain unique and monotonically increasing
         uint maxSlideId = 256; // Default starting ID
-        if (presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().Any())
+        if (presentationPart.Presentation!.SlideIdList!.Elements<P.SlideId>().Any())
         {
-            maxSlideId = presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>()
+            maxSlideId = presentationPart.Presentation!.SlideIdList!.Elements<P.SlideId>()
                 .Max(id => id.Id!.Value) + 1;
         }
 
@@ -195,7 +195,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var slideId = new P.SlideId { Id = maxSlideId, RelationshipId = relationshipId };
 
         // Maintain presentation order when inserting before the end
-        var slideIdList = presentationPart.Presentation.SlideIdList!;
+        var slideIdList = presentationPart.Presentation!.SlideIdList!;
         if (position > slideIdList.Elements<P.SlideId>().Count())
         {
             slideIdList.Append(slideId);
@@ -224,14 +224,14 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
         {
-            foreach (var pSlideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!
+            foreach (var pSlideLayoutId in slideMasterPart.SlideMaster!.SlideLayoutIdList!
                          .OfType<P.SlideLayoutId>())
             {
                 masterId++;
                 pSlideLayoutId.Id = masterId;
             }
 
-            slideMasterPart.SlideMaster.Save();
+            slideMasterPart.SlideMaster!.Save();
         }
     }
 
@@ -246,8 +246,8 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             Id = masterId,
             RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
         };
-        sdkPresDocDest.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
-        sdkPresDocDest.PresentationPart.Presentation.Save();
+        sdkPresDocDest.PresentationPart!.Presentation!.SlideMasterIdList!.Append(slideMaterId);
+        sdkPresDocDest.PresentationPart!.Presentation!.Save();
         return masterId;
     }
 
@@ -255,23 +255,23 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
     {
         P.SlideId slideId = new()
         {
-            Id = CreateId(targetSdkPresDoc.PresentationPart!.Presentation.SlideIdList!),
+            Id = CreateId(targetSdkPresDoc.PresentationPart!.Presentation!.SlideIdList!),
             RelationshipId = targetSdkPresDoc.PresentationPart!.GetIdOfPart(addedSdkSlidePart)
         };
-        targetSdkPresDoc.PresentationPart!.Presentation.SlideIdList!.Append(slideId);
+        targetSdkPresDoc.PresentationPart!.Presentation!.SlideIdList!.Append(slideId);
     }
 
     private static bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
     {
         // PowerPoint considers layout type when resolving placeholders
-        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
+        if (layout1.SlideLayout!.Type != null && layout2.SlideLayout!.Type != null)
         {
-            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
+            return layout1.SlideLayout!.Type!.Value == layout2.SlideLayout!.Type!.Value;
         }
 
         // Layouts fallback to name equality when type is missing
-        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
-        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
+        var name1 = layout1.SlideLayout!.CommonSlideData?.Name?.Value;
+        var name2 = layout2.SlideLayout!.CommonSlideData?.Name?.Value;
 
         if (name1 != null && name2 != null)
         {

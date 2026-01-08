@@ -175,7 +175,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
 
     private decimal GetCustomAngle()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -200,7 +200,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
 
     private void SetCustomAngle(decimal angle)
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
 
         // Ensure title structure exists
@@ -245,7 +245,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
 
     private decimal? GetX()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -285,8 +285,8 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
 
     private (C.Layout CLayout, C.ManualLayout? CManualLayout) EnsureLayoutStructure()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
-        var cTitle = cChart?.Title;
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>()!;
+        var cTitle = cChart.Title;
 
         // Ensure title structure exists
         if (cTitle == null)
@@ -308,7 +308,7 @@ internal sealed class ChartTitleAlignment(ChartPart chartPart) : IChartTitleAlig
 
     private decimal? GetY()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {

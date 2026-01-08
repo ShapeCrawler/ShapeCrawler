@@ -20,7 +20,7 @@ internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties ne
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new line.xml");
         var pConnectionShape = new P.ConnectionShape(xml);
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
 
         var deltaY = endPointY - startPointY;
         var cx = endPointX;

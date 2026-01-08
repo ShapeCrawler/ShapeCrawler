@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
@@ -82,7 +82,7 @@ internal sealed class MasterSlide : IMasterSlide
 
     public IShapeCollection Shapes { get; }
 
-    public ITheme Theme => new Theme(this.slideMasterPart, this.slideMasterPart.ThemePart!.Theme);
+    public ITheme Theme => new Theme(this.slideMasterPart, this.slideMasterPart.ThemePart!.Theme!);
 
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
 
@@ -105,7 +105,7 @@ internal sealed class MasterSlide : IMasterSlide
 
     private MasterSlideNumber? CreateSlideNumber()
     {
-        var pSldNum = this.slideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!
+        var pSldNum = this.slideMasterPart.SlideMaster!.CommonSlideData!.ShapeTree!
             .Elements<P.Shape>()
             .FirstOrDefault(s =>
                 s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value ==

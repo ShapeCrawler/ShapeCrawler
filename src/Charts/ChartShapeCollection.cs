@@ -117,12 +117,12 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
             )
         };
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(graphicFrame);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(graphicFrame);
     }
 
     private uint GetNextShapeId()
     {
-        var shapeIds = slidePart.Slide.Descendants<NonVisualDrawingProperties>()
+        var shapeIds = slidePart.Slide!.Descendants<NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0)
             .ToArray();
 

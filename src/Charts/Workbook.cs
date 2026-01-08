@@ -22,9 +22,9 @@ internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
         var stream = embeddedPackagePart!.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, false);
         var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!;
-        var sdkSheet = sdkWorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+        var sdkSheet = sdkWorkbookPart.Workbook!.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkWorkbookPart.GetPartById(sdkSheet.Id!);
-        var sheetXCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
+        var sheetXCells = sdkWorksheetPart.Worksheet!.Descendants<X.Cell>();
 
         var addresses = new CellsRange(cellsRange).Addresses();
         var rangeXCells = new List<X.Cell>(addresses.Count);

@@ -27,7 +27,7 @@ internal sealed class SlidePictureImage : IImage
     {
         var presDocument = (PresentationDocument)this.openXmlPart.OpenXmlPackage;
         var slideParts = presDocument.PresentationPart!.SlideParts;
-        var allABlips = slideParts.SelectMany(slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!.Descendants<A.Blip>());
+        var allABlips = slideParts.SelectMany(slidePart => slidePart.Slide!.CommonSlideData!.ShapeTree!.Descendants<A.Blip>());
         var isSharedImagePart = allABlips.Count(blip => blip.Embed!.Value == this.aBlip.Embed!.Value) > 1;
         if (isSharedImagePart)
         {

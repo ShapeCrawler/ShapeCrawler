@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
@@ -29,7 +29,7 @@ internal sealed class LayoutSlideCollection(SlideMasterPart slideMasterPart) : I
 
     private IEnumerable<LayoutSlide> Layouts()
     {
-        var rIdList = slideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>()
+        var rIdList = slideMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<P.SlideLayoutId>()
             .Select(layoutId => layoutId.RelationshipId!);
         foreach (var rId in rIdList)
         {

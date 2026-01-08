@@ -584,7 +584,7 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
 
         var chartSpace = chartPart.ChartSpace;
 
-        var pieChartSeries = chartSpace.Descendants<PieChartSeries>().FirstOrDefault();
+        var pieChartSeries = chartSpace!.Descendants<PieChartSeries>().FirstOrDefault();
         if (pieChartSeries == null)
         {
             return null;

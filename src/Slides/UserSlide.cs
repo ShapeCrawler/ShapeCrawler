@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,7 +28,7 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
             var presPart = presDocument.PresentationPart!;
             var currentSlidePartId = presPart.GetIdOfPart(slidePart);
             var slideIdList =
-                presPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
+                presPart.Presentation!.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
             for (var i = 0; i < slideIdList.Count; i++)
             {
                 if (slideIdList[i].RelationshipId == currentSlidePartId)
@@ -57,7 +57,7 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
 
             var presentationPart = presDocument.PresentationPart!;
             var presentation = presentationPart.Presentation;
-            var slideIdList = presentation.SlideIdList!;
+            var slideIdList = presentation!.SlideIdList!;
 
             // Get the slide ID of the source slide.
             var sourceSlide = (SlideId)slideIdList.ChildElements[currentIndex];
@@ -103,8 +103,8 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
                 return field!;
             }
 
-            var pcSld = slidePart.Slide.CommonSlideData
-                        ?? slidePart.Slide.AppendChild(
+            var pcSld = slidePart.Slide!.CommonSlideData
+                        ?? slidePart.Slide!.AppendChild(
                             new CommonSlideData());
 
             // Background element needs to be first, else it gets ignored.
@@ -141,11 +141,11 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         }
     }
 
-    public bool Hidden() => slidePart.Slide.Show is not null && !slidePart.Slide.Show.Value;
+    public bool Hidden() => slidePart.Slide!.Show is not null && !slidePart.Slide!.Show.Value;
 
     public void Hide()
     {
-        if (slidePart.Slide.Show is null)
+        if (slidePart.Slide!.Show is null)
         {
             var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
             slidePart.Slide.SetAttribute(showAttribute);
@@ -214,8 +214,8 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
     {
         var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
-        var pPresentation = presDocument.PresentationPart!.Presentation;
-        var slideIdList = pPresentation.SlideIdList!;
+        var pPresentation = presDocument.PresentationPart!.Presentation!;
+        var slideIdList = pPresentation!.SlideIdList!;
 
         // Find the exact SlideId corresponding to this slide
         var slideIdRelationship = presPart.GetIdOfPart(slidePart);
@@ -237,7 +237,7 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         var removingSlidePart = (SlidePart)presPart.GetPartById(removingSlideIdRelationshipId!);
         presPart.DeletePart(removingSlidePart);
 
-        presPart.Presentation.Save();
+        presPart.Presentation!.Save();
     }
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)

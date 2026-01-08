@@ -447,7 +447,7 @@ public sealed class DraftSlide
     internal void ApplyTo(Presentation presentation)
     {
         // Always add a new slide for each DraftSlide application
-        var sdkPres = presentation.PresDocument.PresentationPart!.Presentation;
+        var sdkPres = presentation.PresDocument.PresentationPart!.Presentation!;
         sdkPres.SlideIdList ??= new DocumentFormat.OpenXml.Presentation.SlideIdList();
 
         var blankLayout = presentation.MasterSlides[0].LayoutSlides.First(l => l.Name == "Blank");

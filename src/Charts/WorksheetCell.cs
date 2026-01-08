@@ -15,10 +15,10 @@ internal sealed class WorksheetCell(EmbeddedPackagePart embeddedPackagePart, str
     {
         var stream = embeddedPackagePart.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, true);
-        var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>()
+        var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook!.Sheets!.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>()
             .First(xSheet => xSheet.Name == sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkSpreadsheetDocument.WorkbookPart!.GetPartById(xSheet.Id!);
-        var xCells = sdkWorksheetPart.Worksheet.Descendants<DocumentFormat.OpenXml.Spreadsheet.Cell>();
+        var xCells = sdkWorksheetPart.Worksheet!.Descendants<DocumentFormat.OpenXml.Spreadsheet.Cell>();
         var xCell = xCells.FirstOrDefault(xCell => xCell.CellReference == address);
 
         if (xCell != null)

@@ -89,7 +89,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
 
     private string GetFontColor()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -116,7 +116,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
 
     private void SetFontColor(string hex)
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cRichText = cChart?.Title?.GetFirstChild<C.ChartText>()?.GetFirstChild<C.RichText>();
         if (cRichText is null)
         {
@@ -154,7 +154,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
 
     private string? GetTitleText()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
 
         if (cTitle == null)
@@ -202,7 +202,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
     private void UpdateTitleText(string? value)
     {
         // Delegate to the existing SetTitle method in Chart
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
 
         if (string.IsNullOrEmpty(value))
@@ -257,7 +257,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
 
     private int GetFontSize()
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>();
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>();
         var cTitle = cChart?.Title;
         if (cTitle == null)
         {
@@ -275,7 +275,7 @@ internal sealed class ChartTitle(ChartPart chartPart, ChartType chartType, ISeri
 
     private void SetFontSize(int fontSize)
     {
-        var cChart = chartPart.ChartSpace.GetFirstChild<C.Chart>()!;
+        var cChart = chartPart.ChartSpace!.GetFirstChild<C.Chart>()!;
         var cTitle = cChart.Title;
 
         // Ensure title structure exists

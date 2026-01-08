@@ -69,7 +69,7 @@ internal sealed class Chart : IChart
     {
         get
         {
-            var plotArea = this.chartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea!;
+            var plotArea = this.chartPart.ChartSpace!.GetFirstChild<C.Chart>()!.PlotArea!;
             var cXCharts = plotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
             if (cXCharts.Count() > 1)
             {

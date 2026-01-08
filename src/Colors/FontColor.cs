@@ -119,7 +119,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
                     .SlideMaster,
             _ => ((SlideMasterPart)openXmlPart).SlideMaster
         };
-        var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
+        var typeAndColor = HexParser.FromSolidFill(aSolidFill, pSlideMaster!);
         return typeAndColor.Type;
     }
 
@@ -127,12 +127,12 @@ internal sealed class FontColor(A.Text aText) : IFontColor
     {
         return openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster!,
             NotesSlidePart notesSlidePart =>
                 notesSlidePart.GetParentParts().OfType<SlidePart>().First().SlideLayoutPart!.SlideMasterPart!
-                    .SlideMaster,
-            _ => ((SlideMasterPart)openXmlPart).SlideMaster
+                    .SlideMaster!,
+            _ => ((SlideMasterPart)openXmlPart).SlideMaster!
         };
     }
 

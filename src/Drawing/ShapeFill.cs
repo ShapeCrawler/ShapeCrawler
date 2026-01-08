@@ -163,11 +163,11 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
     {
         return openXmlPart switch
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme!.ThemeElements!
                 .ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme!.ThemeElements!
                 .ColorScheme!,
-            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+            _ => ((SlideMasterPart)openXmlPart).ThemePart!.Theme!.ThemeElements!.ColorScheme!
         };
     }
 

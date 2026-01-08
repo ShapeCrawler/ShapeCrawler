@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
@@ -90,7 +90,7 @@ internal sealed class SlideShapeOutline(OpenXmlCompositeElement openXmlComposite
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
             _ => ((SlideMasterPart)openXmlPart).SlideMaster
         };
-        var (_, hex) = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
+        var (_, hex) = HexParser.FromSolidFill(aSolidFill, pSlideMaster!);
 
         return hex;
     }

@@ -92,7 +92,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         graphic.Append(graphicData);
         pGraphicFrame.Append(graphic);
 
-        slidePart.Slide.CommonSlideData!.ShapeTree!.Append(pGraphicFrame);
+        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pGraphicFrame);
 
         return
             new SmartArtShape(
@@ -162,7 +162,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
     {
-        return slidePart.Slide.CommonSlideData!
+        return slidePart.Slide!.CommonSlideData!
             .ShapeTree!
             .Descendants<A.GraphicData>()
             .Where(graphicData => graphicData.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
@@ -246,13 +246,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private static bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
     {
-        if (layout1.SlideLayout.Type != null && layout2.SlideLayout.Type != null)
+        if (layout1.SlideLayout!.Type != null && layout2.SlideLayout!.Type != null)
         {
-            return layout1.SlideLayout.Type!.Value == layout2.SlideLayout.Type!.Value;
+            return layout1.SlideLayout!.Type!.Value == layout2.SlideLayout!.Type!.Value;
         }
 
-        var name1 = layout1.SlideLayout.CommonSlideData?.Name?.Value;
-        var name2 = layout2.SlideLayout.CommonSlideData?.Name?.Value;
+        var name1 = layout1.SlideLayout!.CommonSlideData?.Name?.Value;
+        var name2 = layout2.SlideLayout!.CommonSlideData?.Name?.Value;
 
         if (name1 != null && name2 != null)
         {
@@ -343,7 +343,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private void CopyImageParts(SlidePart clonedSlidePart)
     {
-        var blips = clonedSlidePart.Slide.CommonSlideData!
+        var blips = clonedSlidePart.Slide!.CommonSlideData!
             .ShapeTree!
             .Descendants<A.Blip>()
             .ToList();
@@ -412,7 +412,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
     private uint GetNextShapeId()
     {
         // Get all existing shape IDs from the slide
-        var shapeIds = slidePart.Slide.Descendants<NonVisualDrawingProperties>()
+        var shapeIds = slidePart.Slide!.Descendants<NonVisualDrawingProperties>()
             .Select(p => p.Id?.Value ?? 0)
             .ToList();
 

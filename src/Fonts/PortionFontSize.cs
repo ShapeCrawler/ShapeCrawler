@@ -82,7 +82,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
 
     private static decimal? GetFontSizeFromBodyStyle(SlideMasterPart slideMasterPart, int indentLevel)
     {
-        var indentFonts = new IndentFonts(slideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
+        var indentFonts = new IndentFonts(slideMasterPart.SlideMaster!.TextStyles!.BodyStyle!);
         var indentFont = indentFonts.FontOrNull(indentLevel);
         return indentFont?.Size != null ? indentFont.Value.Size!.Value / 100m : null;
     }
@@ -97,7 +97,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         // Check if it's a title placeholder
         if (shape.PlaceholderType == PlaceholderType.Title)
         {
-            var titleFontSizeHundredPoints = slideMasterPart.SlideMaster.TextStyles!
+            var titleFontSizeHundredPoints = slideMasterPart.SlideMaster!.TextStyles!
                 .TitleStyle!.Level1ParagraphProperties!
                 .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
 
@@ -105,7 +105,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         }
 
         // Check body style
-        var indentFonts = new IndentFonts(slideMasterPart.SlideMaster.TextStyles!.BodyStyle!);
+        var indentFonts = new IndentFonts(slideMasterPart.SlideMaster!.TextStyles!.BodyStyle!);
         var indentFont = indentFonts.FontOrNull(indentLevel);
         if (indentFont?.Size != null)
         {
@@ -120,7 +120,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var pPresentation = ((PresentationDocument)openXmlPart.OpenXmlPackage).PresentationPart!.Presentation;
 
-        if (pPresentation.DefaultTextStyle == null)
+        if (pPresentation!.DefaultTextStyle == null)
         {
             return null;
         }
@@ -134,7 +134,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
         }
 
         // Try theme part text defaults
-        var aTextDefault = pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault;
+        var aTextDefault = pPresentation.PresentationPart!.ThemePart!.Theme!.ObjectDefaults!.TextDefault;
         if (aTextDefault?.ListStyle != null)
         {
             var listStyleFonts = new IndentFonts(aTextDefault.ListStyle);
@@ -152,7 +152,7 @@ internal class PortionFontSize(A.Text aText) : IFontSize
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
         var pPresentation = ((PresentationDocument)openXmlPart.OpenXmlPackage).PresentationPart!;
-        var aTextDefault = pPresentation.ThemePart!.Theme.ObjectDefaults!.TextDefault;
+        var aTextDefault = pPresentation.ThemePart!.Theme!.ObjectDefaults!.TextDefault;
 
         if (aTextDefault?.ListStyle == null)
         {
