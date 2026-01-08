@@ -65,6 +65,9 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
             case TableShape table:
                 table.CopyTo(pShapeTree);
                 break;
+            case ChartShape chartShape:
+                chartShape.CopyTo(pShapeTree);
+                break;
             case Shape shape:
                 shape.CopyTo(pShapeTree);
                 break;

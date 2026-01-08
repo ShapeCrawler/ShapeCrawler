@@ -1,10 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -20,6 +23,49 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
     {
         get => Geometry.Rectangle;
         set => throw new SCException("Geometry type cannot be set for Chart shape.");
+    }
+
+    /// <inheritdoc/>
+    public override void CopyTo(P.ShapeTree pShapeTree)
+    {
+        var pGraphicFrame = (P.GraphicFrame)this.PShapeTreeElement;
+
+        // Clone the graphic frame and add it to the target shape tree
+        new SCPShapeTree(pShapeTree).Add(pGraphicFrame);
+
+        // Get the source and target parts
+        var sourceOpenXmlPart = pGraphicFrame.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var targetOpenXmlPart = pShapeTree.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+
+        // If source and target parts are the same, no need to copy chart parts
+        if (sourceOpenXmlPart == targetOpenXmlPart)
+        {
+            return;
+        }
+
+        // Get the source chart part via the chart reference
+        var sourceChartReference = pGraphicFrame.Graphic?.GraphicData?.GetFirstChild<ChartReference>();
+        if (sourceChartReference?.Id == null)
+        {
+            return;
+        }
+
+        var sourceChartPart = (ChartPart)sourceOpenXmlPart.GetPartById(sourceChartReference.Id!);
+
+        // Create a new chart part in the target slide
+        var targetChartPartRId = new SCOpenXmlPart(targetOpenXmlPart).NextRelationshipId();
+        var targetChartPart = targetOpenXmlPart.AddNewPart<ChartPart>(sourceChartPart.ContentType, targetChartPartRId);
+
+        // Copy the chart content by cloning the ChartSpace DOM
+        targetChartPart.ChartSpace = (ChartSpace)sourceChartPart.ChartSpace!.CloneNode(true);
+
+        // Copy all child parts (embedded workbook, chart styles, color styles, images, etc.)
+        CopyChartChildParts(sourceChartPart, targetChartPart);
+
+        // Update the copied graphic frame with the new chart reference ID
+        var copiedGraphicFrame = pShapeTree.Elements<P.GraphicFrame>().Last();
+        var copiedChartReference = copiedGraphicFrame.Graphic!.GraphicData!.GetFirstChild<ChartReference>()!;
+        copiedChartReference.Id = targetChartPartRId;
     }
 
     internal override void Render(SKCanvas canvas)
@@ -432,6 +478,38 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
             var seriesName = series.HasName ? series.Name : $"Series {i + 1}";
             canvas.DrawText(seriesName, legendX + 15, itemY + 9, SKTextAlign.Left, legendFont, legendTextPaint);
         }
+    }
+
+    private static void CopyChartChildParts(ChartPart sourceChartPart, ChartPart targetChartPart)
+    {
+        foreach (var child in sourceChartPart.Parts)
+        {
+            var childRelationshipId = child.RelationshipId;
+            var childPart = child.OpenXmlPart;
+            if (childPart is EmbeddedPackagePart embeddedPackagePart)
+            {
+                CopyEmbeddedPackagePart(embeddedPackagePart, targetChartPart, childRelationshipId);
+            }
+            else
+            {
+                // For other parts (chart styles, color styles, images), add them directly
+                targetChartPart.AddPart(childPart, childRelationshipId);
+            }
+        }
+    }
+
+    private static void CopyEmbeddedPackagePart(
+        EmbeddedPackagePart sourceEmbeddedPackagePart,
+        ChartPart targetChartPart,
+        string relationshipId)
+    {
+        var destinationPart = targetChartPart.AddNewPart<EmbeddedPackagePart>(
+            sourceEmbeddedPackagePart.ContentType,
+            relationshipId);
+        using var sourceStream = sourceEmbeddedPackagePart.GetStream(FileMode.Open);
+        sourceStream.Position = 0;
+        using var destinationStream = destinationPart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destinationStream);
     }
 
     private void RenderChartPlaceholder(SKCanvas canvas)

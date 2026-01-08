@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.77.2 - Unreleased
+🐞Fixed adding chart from external presentation [#934](https://github.com/ShapeCrawler/ShapeCrawler/issues/934)  
+
 ## Version 0.77.1 - 2025-12-31
 🐞Resolved potential security vulnerabilities
 
