@@ -1,10 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Positions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -20,6 +23,49 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
     {
         get => Geometry.Rectangle;
         set => throw new SCException("Geometry type cannot be set for Chart shape.");
+    }
+
+    /// <inheritdoc/>
+    public override void CopyTo(P.ShapeTree pShapeTree)
+    {
+        var pGraphicFrame = (P.GraphicFrame)this.PShapeTreeElement;
+
+        // Clone the graphic frame and add it to the target shape tree
+        new SCPShapeTree(pShapeTree).Add(pGraphicFrame);
+
+        // Get the source and target parts
+        var sourceOpenXmlPart = pGraphicFrame.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var targetOpenXmlPart = pShapeTree.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+
+        // If source and target parts are the same, no need to copy chart parts
+        if (sourceOpenXmlPart == targetOpenXmlPart)
+        {
+            return;
+        }
+
+        // Get the source chart part via the chart reference
+        var sourceChartReference = pGraphicFrame.Graphic?.GraphicData?.GetFirstChild<ChartReference>();
+        if (sourceChartReference?.Id == null)
+        {
+            return;
+        }
+
+        var sourceChartPart = (ChartPart)sourceOpenXmlPart.GetPartById(sourceChartReference.Id!);
+
+        // Create a new chart part in the target slide
+        var targetChartPartRId = new SCOpenXmlPart(targetOpenXmlPart).NextRelationshipId();
+        var targetChartPart = targetOpenXmlPart.AddNewPart<ChartPart>(sourceChartPart.ContentType, targetChartPartRId);
+
+        // Copy the chart content by cloning the ChartSpace DOM
+        targetChartPart.ChartSpace = (ChartSpace)sourceChartPart.ChartSpace!.CloneNode(true);
+
+        // Copy the embedded workbook if present
+        this.CopyEmbeddedPackage(sourceChartPart, targetChartPart);
+
+        // Update the copied graphic frame with the new chart reference ID
+        var copiedGraphicFrame = pShapeTree.Elements<P.GraphicFrame>().Last();
+        var copiedChartReference = copiedGraphicFrame.Graphic!.GraphicData!.GetFirstChild<ChartReference>()!;
+        copiedChartReference.Id = targetChartPartRId;
     }
 
     internal override void Render(SKCanvas canvas)
@@ -624,5 +670,24 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
         }
 
         return (ChartPart)slidePart.GetPartById(chartReference.Id!);
+    }
+
+    private void CopyEmbeddedPackage(ChartPart sourceChartPart, ChartPart targetChartPart)
+    {
+        var sourceEmbeddedPart = sourceChartPart.EmbeddedPackagePart;
+        if (sourceEmbeddedPart == null)
+        {
+            return;
+        }
+
+        // Preserve the original relationship ID so the cloned ChartSpace references still work
+        var sourceEmbeddedPartRId = sourceChartPart.GetIdOfPart(sourceEmbeddedPart);
+        var targetEmbeddedPart = targetChartPart.AddNewPart<EmbeddedPackagePart>(
+            sourceEmbeddedPart.ContentType,
+            sourceEmbeddedPartRId);
+
+        using var sourceStream = sourceEmbeddedPart.GetStream(FileMode.Open);
+        sourceStream.Position = 0;
+        targetEmbeddedPart.FeedData(sourceStream);
     }
 }

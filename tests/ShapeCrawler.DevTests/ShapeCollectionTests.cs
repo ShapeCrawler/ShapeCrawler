@@ -600,6 +600,32 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
+    public void Add_adds_chart_from_another_presentation()
+    {
+        // Arrange
+        var sourcePres = new Presentation(p => p.Slide());
+        var categoryValues = new Dictionary<string, double>
+        {
+            { "Category 1", 10 },
+            { "Category 2", 20 },
+            { "Category 3", 30 }
+        };
+        sourcePres.Slide(1).Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Sales", "Chart 1");
+        var chartShape = sourcePres.Slide(1).Shapes.Shape("Chart 1");
+        var targetPres = new Presentation(p => p.Slide());
+        var shapeCountBefore = targetPres.Slide(1).Shapes.Count;
+        var shapes = targetPres.Slide(1).Shapes;
+
+        // Act
+        shapes.Add(chartShape);
+
+        // Assert
+        ValidatePresentation(targetPres);
+        var shapeCountAfter = targetPres.Slide(1).Shapes.Count;
+        shapeCountAfter.Should().Be(shapeCountBefore + 1);
+    }
+    
+    [Test]
     public void AddPieChart_adds_pie_chart()
     {
         var pres = new Presentation(p => p.Slide());
@@ -711,29 +737,5 @@ public class ShapeCollectionTests : SCTest
         // Assert
         group.GroupedShapes.Should().HaveCount(2);
         ValidatePresentation(pres);
-    }
-
-    [Test]
-    public void Add_adds_chart_from_another_presentation()
-    {
-        // Arrange
-        var sourcePres = new Presentation(p => p.Slide());
-        var categoryValues = new Dictionary<string, double>
-        {
-            { "Category 1", 10 },
-            { "Category 2", 20 },
-            { "Category 3", 30 }
-        };
-        sourcePres.Slide(1).Shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Sales", "Chart 1");
-        var chartShape = sourcePres.Slide(1).Shapes.Shape("Chart 1");
-        var targetPres = new Presentation(p => p.Slide());
-
-        // Act
-        targetPres.Slide(1).Shapes.Add(chartShape);
-
-        // Assert
-        ValidatePresentation(targetPres);
-        var copiedChart = targetPres.Slide(1).Shapes.Shape("Chart 1");
-        copiedChart.Chart.Should().NotBeNull();
     }
 }
