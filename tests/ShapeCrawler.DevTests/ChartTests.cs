@@ -29,6 +29,44 @@ public class ChartTests : SCTest
     }
 
     [Test]
+    public void BubbleChartSeries_XPoints_Value_setter_updates_x_values()
+    {
+        // Arrange
+        var pres = new Presentation(p =>
+        {
+            p.Slide(s =>
+            {
+                s.BubbleChartShape(shape =>
+                {
+                    shape.Chart(chart =>
+                    {
+                        chart.Name("Bubble Chart 1");
+                        chart.Series(
+                            "Series 1",
+                            (X: 10, Y: 20, Size: 5),
+                            (X: 30, Y: 40, Size: 10));
+                    });
+                });
+            });
+        });
+        var bubbleChart = pres.Slide(1).Shape("Bubble Chart 1").Chart!;
+        var series = bubbleChart.SeriesCollection[0];
+
+        // Act
+        series.XPoints![0].Value = 11;
+
+        // Assert
+        series.XPoints[0].Value.Should().Be(11);
+        bubbleChart.XAxis!.Values[0].Should().Be(11);
+
+        pres = SaveAndOpenPresentation(pres);
+        bubbleChart = pres.Slide(1).Shape("Bubble Chart 1").Chart!;
+        bubbleChart.SeriesCollection[0].XPoints![0].Value.Should().Be(11);
+        bubbleChart.XAxis!.Values[0].Should().Be(11);
+        ValidatePresentation(pres);
+    }
+
+    [Test]
     public void Categories_is_null_When_the_chart_type_doesnt_have_categories()
     {
         // Arrange

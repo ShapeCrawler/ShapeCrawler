@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -30,6 +30,12 @@ public interface ISeries
     IReadOnlyList<IChartPoint> Points { get; }
 
     /// <summary>
+    ///     Gets the collection of X-values points of the series.
+    ///     Returns <see langword="null"/> when the series doesn't support X-values.
+    /// </summary>
+    IReadOnlyList<IChartPoint>? XPoints { get; }
+
+    /// <summary>
     ///     Gets a value indicating whether chart has name.
     /// </summary>
     bool HasName { get; }
@@ -46,11 +52,16 @@ internal sealed class Series : ISeries
         this.cSer = cSer;
         this.Type = type;
         this.Points = new ChartPoints(this.chartPart, this.cSer);
+        this.XPoints = type is ChartType.ScatterChart or ChartType.BubbleChart
+            ? new SeriesXPoints(this.chartPart, this.cSer)
+            : null;
     }
 
     public ChartType Type { get; }
 
     public IReadOnlyList<IChartPoint> Points { get; }
+
+    public IReadOnlyList<IChartPoint>? XPoints { get; }
 
     public bool HasName => this.cSer.GetFirstChild<C.SeriesText>()?.StringReference != null;
 

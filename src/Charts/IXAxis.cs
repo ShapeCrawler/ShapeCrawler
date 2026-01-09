@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -42,11 +42,16 @@ internal class XAxis(ChartPart chartPart) : IXAxis
     {
         get
         {
-            var cXValues = this.FirstSeries().GetFirstChild<C.XValues>()!;
-
-            if (cXValues.NumberReference!.NumberingCache != null)
+            var cXValues = this.FirstSeries().GetFirstChild<C.XValues>();
+            if (cXValues == null)
             {
-                var cNumericValues = cXValues.NumberReference.NumberingCache.Descendants<C.NumericValue>();
+                return [];
+            }
+
+            var numberReference = cXValues.NumberReference;
+            if (numberReference?.NumberingCache != null)
+            {
+                var cNumericValues = numberReference.NumberingCache.Descendants<C.NumericValue>();
                 var cachedPointValues = new List<double>(cNumericValues.Count());
                 foreach (var numericValue in cNumericValues)
                 {
@@ -58,10 +63,28 @@ internal class XAxis(ChartPart chartPart) : IXAxis
                 return [.. cachedPointValues];
             }
 
-            return
-            [
-                .. new Workbook(chartPart.EmbeddedPackagePart!).FormulaValues(cXValues.NumberReference.Formula!.Text)
-            ];
+            if (numberReference?.Formula != null)
+            {
+                return
+                [
+                    .. new Workbook(chartPart.EmbeddedPackagePart!).FormulaValues(numberReference.Formula.Text)
+                ];
+            }
+
+            var numberLiteral = cXValues.NumberLiteral;
+            if (numberLiteral != null)
+            {
+                var literalPointValues = new List<double>(numberLiteral.ChildElements.Count);
+                foreach (var cNumericValue in numberLiteral.Descendants<C.NumericValue>())
+                {
+                    var number = double.Parse(cNumericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+                    literalPointValues.Add(Math.Round(number, 1));
+                }
+
+                return [.. literalPointValues];
+            }
+
+            return [];
         }
     }
 
