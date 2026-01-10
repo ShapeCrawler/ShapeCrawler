@@ -29,7 +29,7 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void BubbleChartSeries_XPoints_Value_setter_updates_x_values()
+    public void Series_XPoint_Value_setter_updates_Bubble_chart_x_value()
     {
         // Arrange
         var pres = new Presentation(p =>
