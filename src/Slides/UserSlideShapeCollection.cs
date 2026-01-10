@@ -122,6 +122,25 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         string seriesName
     ) => this.chartShapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
+    public void AddBubbleChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName
+    ) => this.chartShapes.AddBubbleChart(x, y, width, height, pointValues, seriesName);
+
+    public void AddBubbleChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName,
+        string chartName
+    ) => this.chartShapes.AddBubbleChart(x, y, width, height, pointValues, seriesName, chartName);
+
     public void AddStackedColumnChart(
         int x,
         int y,

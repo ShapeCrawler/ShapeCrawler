@@ -116,6 +116,42 @@ public interface IUserSlideShapeCollection : IShapeCollection
     void AddScatterChart(int x, int y, int width, int height, Dictionary<double, double> pointValues, string seriesName);
 
     /// <summary>
+    ///     Adds Bubble Chart.
+    /// </summary>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in point.</param>
+    /// <param name="height">Height in points.</param>
+    /// <param name="pointValues">List of X, Y and bubble size values for each point.</param>
+    /// <param name="seriesName">Name of the data series.</param>
+    void AddBubbleChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName);
+
+    /// <summary>
+    ///     Adds Bubble Chart with the specified name.
+    /// </summary>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in point.</param>
+    /// <param name="height">Height in points.</param>
+    /// <param name="pointValues">List of X, Y and bubble size values for each point.</param>
+    /// <param name="seriesName">Name of the data series.</param>
+    /// <param name="chartName">Chart shape name.</param>
+    void AddBubbleChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName,
+        string chartName);
+
+    /// <summary>
     ///     Adds a Clustered Bar Chart.
     /// </summary>
     void AddClusteredBarChart(
