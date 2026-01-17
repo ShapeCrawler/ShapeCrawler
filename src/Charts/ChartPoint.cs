@@ -7,11 +7,14 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class ChartPoint : IChartPoint
 {
-    private readonly ChartPart? chartPart;
     private readonly C.NumericValue cNumericValue;
-    private readonly string? worksheetName;
+    private readonly ChartPart? chartPart;
+    private readonly string? worksheetName; 
     private readonly string? address;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ChartPoint"/> class for data from worksheet.
+    /// </summary>
     internal ChartPoint(ChartPart chartPart, C.NumericValue cNumericValue, string worksheetName, string address)
     {
         this.chartPart = chartPart;
