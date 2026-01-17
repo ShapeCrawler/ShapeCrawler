@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
@@ -12,13 +8,10 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class SeriesXPoints : IReadOnlyList<IChartPoint>
 {
-    private readonly ChartPart chartPart;
     private readonly List<ChartPoint> chartPoints;
 
     internal SeriesXPoints(ChartPart chartPart, OpenXmlElement cSerXmlElement)
     {
-        this.chartPart = chartPart;
-
         var cXValues = cSerXmlElement.GetFirstChild<C.XValues>();
         if (cXValues == null)
         {
@@ -27,18 +20,8 @@ internal sealed class SeriesXPoints : IReadOnlyList<IChartPoint>
         }
 
         var numberReference = cXValues.NumberReference;
-        if (numberReference?.Formula != null)
-        {
-            var (sheetName, addresses) = ParseFormulaAddresses(numberReference.Formula);
-            var numericValues = GetNumericValues(numberReference);
-            this.chartPoints = this.CreateChartPoints(addresses, numericValues, sheetName);
-        }
-        else
-        {
-            // Try to get inline NumberLiteral data
-            var numberLiteral = cXValues.NumberLiteral;
-            this.chartPoints = numberLiteral != null ? CreateChartPointsFromLiteral(numberLiteral) : [];
-        }
+        var numberLiteral = cXValues.NumberLiteral;
+        this.chartPoints = new ChartPointData(chartPart).Create(numberReference, numberLiteral);
     }
 
     public int Count => this.chartPoints.Count;
@@ -48,93 +31,4 @@ internal sealed class SeriesXPoints : IReadOnlyList<IChartPoint>
     public IEnumerator<IChartPoint> GetEnumerator() => this.chartPoints.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    private static List<ChartPoint> CreateChartPointsFromLiteral(NumberLiteral numberLiteral)
-    {
-        return
-        [
-            .. numberLiteral
-                .Elements<NumericPoint>()
-                .Select(numericPoint => numericPoint.NumericValue)
-                .OfType<NumericValue>()
-                .Select(numericValue => new ChartPoint(numericValue))
-        ];
-    }
-
-    private static (string SheetName, List<string> Addresses) ParseFormulaAddresses(Formula formula)
-    {
-        var normalizedFormula = formula.Text.Replace("$", string.Empty).Replace("'", string.Empty);
-        var sheetName = ExtractSheetName(normalizedFormula);
-        var addresses = ExtractAddresses(normalizedFormula);
-
-        return (sheetName, addresses);
-    }
-
-    private static string ExtractSheetName(string normalizedFormula)
-    {
-        return Regex.Match(
-            normalizedFormula,
-            @"(?<=\(*)[\p{L} 0-9]+?(?=!)",
-            RegexOptions.None,
-            TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
-    }
-
-    private static List<string> ExtractAddresses(string normalizedFormula)
-    {
-        var addressMatches = Regex.Matches(
-            normalizedFormula,
-            @"[A-Z]\d+(:[A-Z]\d+)*",
-            RegexOptions.None,
-            TimeSpan.FromMilliseconds(1000)); // eg: Sheet1!A2:A5 -> A2:A5
-
-        var addresses = new List<string>();
-        foreach (Match match in addressMatches)
-        {
-            if (match.Value.Contains(":"))
-            {
-                var rangePointAddresses = new CellsRange(match.Value).Addresses();
-                addresses.AddRange(rangePointAddresses);
-            }
-            else
-            {
-                addresses.Add(match.Value);
-            }
-        }
-
-        return addresses;
-    }
-
-    private static List<C.NumericValue>? GetNumericValues(NumberReference numberReference)
-    {
-        if (numberReference.NumberingCache != null)
-        {
-            return [.. numberReference.NumberingCache.Descendants<C.NumericValue>()];
-        }
-
-        return null;
-    }
-
-    private List<ChartPoint> CreateChartPoints(List<string> addresses, List<C.NumericValue>? numericValues, string sheetName)
-    {
-        var points = new List<ChartPoint>(addresses.Count);
-
-        if (addresses.Count == 1 && numericValues?.Count > 1)
-        {
-            foreach (var numericValue in numericValues)
-            {
-                points.Add(new ChartPoint(this.chartPart, numericValue, sheetName, addresses[0]));
-            }
-        }
-        else
-        {
-            // Empty cells of range don't have the corresponding C.NumericValue.
-            var quPoints = Math.Min(addresses.Count, numericValues?.Count ?? 0);
-            for (int i = 0; i < quPoints; i++)
-            {
-                points.Add(new ChartPoint(this.chartPart, numericValues?[i]!, sheetName, addresses[i]));
-            }
-        }
-
-        return points;
-    }
 }
