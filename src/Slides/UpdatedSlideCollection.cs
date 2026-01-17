@@ -73,10 +73,28 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             throw new SCException(nameof(slideNumber));
         }
 
+        var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
+        if (userSlide is UserSlide internalSlide)
+        {
+            var directSourceSlidePart = internalSlide.GetSdkSlidePart();
+            var sourcePresPart = ((PresentationDocument)directSourceSlidePart.OpenXmlPackage).PresentationPart!;
+            if (ReferenceEquals(sourcePresPart.OpenXmlPackage, presentationPart.OpenXmlPackage))
+            {
+                var directNewSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
+                var directClonedSlidePart =
+                    new SCSlidePart(directSourceSlidePart).CloneTo(presentationPart, directNewSlideRelId);
+
+                SlideHyperlinkFix.FixSlideHyperlinks(directSourceSlidePart, directClonedSlidePart, presentationPart);
+                InsertSlideAtPosition(presentationPart, directNewSlideRelId, slideNumber);
+
+                presentationPart.Presentation!.Save();
+                return;
+            }
+        }
+
         var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
-        var presentationPart = ((PresentationDocument)presPart.OpenXmlPackage).PresentationPart!;
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
         var clonedSlidePart = new SCSlidePart(sourceSlidePart).CloneTo(presentationPart, newSlideRelId);
 
