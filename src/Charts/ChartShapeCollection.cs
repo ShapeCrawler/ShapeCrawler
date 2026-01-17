@@ -65,6 +65,32 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, "Scatter Chart");
     }
 
+    internal void AddBubbleChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName)
+    {
+        this.AddBubbleChart(x, y, width, height, pointValues, seriesName, "Bubble Chart");
+    }
+
+    internal void AddBubbleChart(
+        int x,
+        int y,
+        int width,
+        int height,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName,
+        string chartName)
+    {
+        var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
+        var chartPart = slidePart.AddNewPart<ChartPart>(rId);
+        new BubbleChart(chartPart, pointValues, seriesName).Generate();
+        this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
+    }
+
     internal void AddStackedColumnChart(
         int x,
         int y,

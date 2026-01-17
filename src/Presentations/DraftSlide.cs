@@ -365,6 +365,36 @@ public sealed class DraftSlide
     }
 
     /// <summary>
+    ///     Configures a bubble chart shape using a nested builder.
+    /// </summary>
+    /// <param name="configure">An action that configures the bubble chart shape via the nested <see cref="DraftBubbleChartShape"/> builder.</param>
+    public DraftSlide BubbleChartShape(Action<DraftBubbleChartShape> configure)
+    {
+        this.actions.Add((slide, _) =>
+        {
+            var shapeBuilder = new DraftBubbleChartShape();
+            configure(shapeBuilder);
+
+            var chartBuilder = shapeBuilder.DraftBubbleChartBuilder;
+            if (chartBuilder == null)
+            {
+                return;
+            }
+
+            slide.Shapes.AddBubbleChart(
+                shapeBuilder.ShapeX,
+                shapeBuilder.ShapeY,
+                shapeBuilder.ShapeWidth,
+                shapeBuilder.ShapeHeight,
+                chartBuilder.SeriesPoints,
+                chartBuilder.SeriesName,
+                chartBuilder.ChartName);
+        });
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a clustered bar chart with configuration.
     /// </summary>
     public DraftSlide ClusteredBarChartShape(Action<DraftChart> configure)
