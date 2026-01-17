@@ -200,7 +200,8 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.77.1 - 2025-12-31
-🐞Resolved potential security vulnerabilities
+### Version 0.78.0 - 2026-01-17
+🍀Added support for updating the Bubble Chart X value [#726](https://github.com/ShapeCrawler/ShapeCrawler/issues/726)  
+🐞Fixed adding chart from external presentation [#934](https://github.com/ShapeCrawler/ShapeCrawler/issues/934)  
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
