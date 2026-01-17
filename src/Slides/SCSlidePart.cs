@@ -41,6 +41,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var clonedSlidePart = targetPresentationPart.AddNewPart<SlidePart>(relationshipId);
         this.CopySlideContent(clonedSlidePart);
         this.CopyCustomXmlParts(clonedSlidePart);
+        this.CopyNotesSlidePart(clonedSlidePart);
         this.CopyImageParts(clonedSlidePart);
         this.CopyChartParts(clonedSlidePart);
         this.LinkToLayoutPart(targetPresentationPart, clonedSlidePart);
@@ -353,7 +354,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private void CopyImageParts(SlidePart clonedSlidePart)
     {
-        var shapeTree = slidePart.Slide?.CommonSlideData?.ShapeTree;
+        var shapeTree = clonedSlidePart.Slide?.CommonSlideData?.ShapeTree;
         if (shapeTree == null)
         {
             return;
@@ -400,6 +401,28 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         foreach (var relationshipId in GetChartRelationshipIds(clonedSlidePart))
         {
             this.EnsureChartRelationship(relationshipId, clonedSlidePart);
+        }
+    }
+
+    private void CopyNotesSlidePart(SlidePart clonedSlidePart)
+    {
+        var sourceNotesPart = slidePart.NotesSlidePart;
+        if (sourceNotesPart == null)
+        {
+            return;
+        }
+
+        var targetNotesPart = clonedSlidePart.AddNewPart<NotesSlidePart>(sourceNotesPart.ContentType);
+        CopyStream(sourceNotesPart, targetNotesPart);
+
+        foreach (var childPart in sourceNotesPart.Parts)
+        {
+            targetNotesPart.AddPart(childPart.OpenXmlPart, childPart.RelationshipId);
+        }
+
+        if (targetNotesPart.NotesMasterPart != null)
+        {
+            targetNotesPart.DeletePart(targetNotesPart.NotesMasterPart);
         }
     }
 
