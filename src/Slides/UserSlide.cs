@@ -177,6 +177,12 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         return presDocument.Clone().PresentationPart!;
     }
 
+    /// <summary>
+    ///     Gets the underlying <see cref="SlidePart"/>.
+    /// </summary>
+    /// <returns>Slide part instance.</returns>
+    internal SlidePart GetSdkSlidePart() => slidePart;
+
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
     public IList<ITextBox> GetTexts()

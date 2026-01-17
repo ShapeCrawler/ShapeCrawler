@@ -226,6 +226,23 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Slides_Add_same_presentation_should_not_duplicate_slide_masters()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var sourceSlide = pres.Slide(1);
+        var expectedSlideMastersCount = pres.MasterSlides.Count();
+
+        // Act
+        pres.Slides.Add(sourceSlide);
+        pres.Slides.Add(sourceSlide);
+
+        // Assert
+        pres.MasterSlides.Count().Should().Be(expectedSlideMastersCount);
+        ValidatePresentation(pres);
+    }
+
+    [Test]
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {
         // Arrange

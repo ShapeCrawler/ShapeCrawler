@@ -162,9 +162,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
     {
-        return slidePart.Slide!.CommonSlideData!
-            .ShapeTree!
-            .Descendants<A.GraphicData>()
+        var shapeTree = slidePart.Slide?.CommonSlideData?.ShapeTree;
+        if (shapeTree == null)
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        return shapeTree.Descendants<A.GraphicData>()
             .Where(graphicData => graphicData.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
             .Select(graphicData => graphicData.GetFirstChild<ChartReference>())
             .Where(chartReference => chartReference?.Id?.Value != null)
@@ -309,6 +313,12 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             return;
         }
 
+        if (ReferenceEquals(slidePart.OpenXmlPackage, presentationPart.OpenXmlPackage))
+        {
+            clonedSlidePart.AddPart(sourceLayoutPart);
+            return;
+        }
+
         var targetLayoutPart = FindMatchingLayout(presentationPart, sourceLayoutPart) ??
                                CreateNewLayout(presentationPart, sourceLayoutPart);
 
@@ -317,6 +327,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private void CopySlideContent(SlidePart clonedSlidePart)
     {
+        slidePart.Slide?.Save();
         using var sourceStream = slidePart.GetStream();
         sourceStream.Position = 0;
         using var destinationStream = clonedSlidePart.GetStream(FileMode.Create, FileAccess.Write);
@@ -343,10 +354,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private void CopyImageParts(SlidePart clonedSlidePart)
     {
-        var blips = clonedSlidePart.Slide!.CommonSlideData!
-            .ShapeTree!
-            .Descendants<A.Blip>()
-            .ToList();
+        var shapeTree = slidePart.Slide?.CommonSlideData?.ShapeTree;
+        if (shapeTree == null)
+        {
+            return;
+        }
+
+        var blips = shapeTree.Descendants<A.Blip>().ToList();
 
         foreach (var blip in blips)
         {

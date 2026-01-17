@@ -156,12 +156,26 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
     public void Add(IUserSlide userSlide)
     {
         var targetPresDocument = (PresentationDocument)presPart.OpenXmlPackage;
-        var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
         var targetPresPart = targetPresDocument.PresentationPart!;
         var targetPres = targetPresPart.Presentation!;
+        if (userSlide is UserSlide internalSlide)
+        {
+            var directSourceSlidePart = internalSlide.GetSdkSlidePart();
+            var sourcePresPart = ((PresentationDocument)directSourceSlidePart.OpenXmlPackage).PresentationPart!;
+            if (ReferenceEquals(sourcePresPart.OpenXmlPackage, targetPresPart.OpenXmlPackage))
+            {
+                var newSlideRelId = new SCOpenXmlPart(targetPresPart).NextRelationshipId();
+                var clonedSlidePart = new SCSlidePart(directSourceSlidePart).CloneTo(targetPresPart, newSlideRelId);
+                SlideHyperlinkFix.FixSlideHyperlinks(directSourceSlidePart, clonedSlidePart, targetPresPart);
+                InsertSlideAtPosition(targetPresPart, newSlideRelId, this.Count + 1);
+                targetPres.Save();
+                return;
+            }
+        }
+
+        var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
-
         new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
             .SlideLayoutPart!);
 
