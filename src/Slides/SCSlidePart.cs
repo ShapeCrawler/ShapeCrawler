@@ -412,7 +412,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             return;
         }
 
-        var targetNotesPart = clonedSlidePart.AddNewPart<NotesSlidePart>(sourceNotesPart.ContentType);
+        var notesRelId = new SCOpenXmlPart(clonedSlidePart).NextRelationshipId();
+        var targetNotesPart = clonedSlidePart.AddNewPart<NotesSlidePart>(sourceNotesPart.ContentType, notesRelId);
         CopyStream(sourceNotesPart, targetNotesPart);
 
         foreach (var childPart in sourceNotesPart.Parts)
