@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Assets;
@@ -161,22 +159,6 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         sourceStream.CopyTo(destinationStream);
     }
 
-    private static IEnumerable<string> GetChartRelationshipIds(SlidePart slidePart)
-    {
-        var shapeTree = slidePart.Slide?.CommonSlideData?.ShapeTree;
-        if (shapeTree == null)
-        {
-            return [];
-        }
-
-        return shapeTree.Descendants<A.GraphicData>()
-            .Where(graphicData => graphicData.Uri?.Value == "http://schemas.openxmlformats.org/drawingml/2006/chart")
-            .Select(graphicData => graphicData.GetFirstChild<ChartReference>())
-            .Where(chartReference => chartReference?.Id?.Value != null)
-            .Select(chartReference => chartReference!.Id!.Value!)
-            .Distinct();
-    }
-
     private static bool RelationshipExists(SlidePart slidePart, string relationshipId)
     {
         return slidePart.Parts.Any(part => part.RelationshipId == relationshipId);
@@ -294,18 +276,6 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         return masterPart;
     }
 
-    private bool TryGetSourceChartPart(string relationshipId, out ChartPart? sourceChartPart)
-    {
-        sourceChartPart = null;
-        if (slidePart.TryGetPartById(relationshipId, out var part) && part is ChartPart chartPart)
-        {
-            sourceChartPart = chartPart;
-            return true;
-        }
-
-        return false;
-    }
-
     private void LinkToLayoutPart(PresentationPart presentationPart, SlidePart clonedSlidePart)
     {
         var sourceLayoutPart = slidePart.SlideLayoutPart;
@@ -399,9 +369,26 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private void CopyChartParts(SlidePart clonedSlidePart)
     {
-        foreach (var relationshipId in GetChartRelationshipIds(clonedSlidePart))
+        foreach (var sourceChartPart in slidePart.ChartParts)
         {
-            this.EnsureChartRelationship(relationshipId, clonedSlidePart);
+            var relationshipId = slidePart.GetIdOfPart(sourceChartPart);
+            if (string.IsNullOrWhiteSpace(relationshipId))
+            {
+                continue;
+            }
+
+            if (RelationshipExists(clonedSlidePart, relationshipId))
+            {
+                continue;
+            }
+
+            if (ReferenceEquals(slidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
+            {
+                ShareChartPartWithinSamePackage(sourceChartPart, clonedSlidePart, relationshipId);
+                continue;
+            }
+
+            CloneChartPartAcrossPackages(sourceChartPart, clonedSlidePart, relationshipId);
         }
     }
 
@@ -451,27 +438,6 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             }
         }
 
-    }
-
-    private void EnsureChartRelationship(string relationshipId, SlidePart targetSlidePart)
-    {
-        if (RelationshipExists(targetSlidePart, relationshipId))
-        {
-            return;
-        }
-
-        if (!this.TryGetSourceChartPart(relationshipId, out var sourceChartPart))
-        {
-            return;
-        }
-
-        if (ReferenceEquals(slidePart.OpenXmlPackage, targetSlidePart.OpenXmlPackage))
-        {
-            ShareChartPartWithinSamePackage(sourceChartPart!, targetSlidePart, relationshipId);
-            return;
-        }
-
-        CloneChartPartAcrossPackages(sourceChartPart!, targetSlidePart, relationshipId);
     }
 
     private static OpenXmlElement? GetNotesSlideIdElement(SlidePart slidePart)
