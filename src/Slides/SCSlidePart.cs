@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -412,9 +413,18 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             return;
         }
 
-        var notesRelId = new SCOpenXmlPart(clonedSlidePart).NextRelationshipId();
+        var sourceNotesRelId = slidePart.GetIdOfPart(sourceNotesPart);
+        var notesRelId = string.IsNullOrWhiteSpace(sourceNotesRelId)
+            ? new SCOpenXmlPart(clonedSlidePart).NextRelationshipId()
+            : sourceNotesRelId;
         var targetNotesPart = clonedSlidePart.AddNewPart<NotesSlidePart>(sourceNotesPart.ContentType, notesRelId);
         CopyStream(sourceNotesPart, targetNotesPart);
+        var notesSlideId = GetNotesSlideIdElement(clonedSlidePart);
+        notesSlideId?.SetAttribute(new OpenXmlAttribute(
+            "r",
+            "id",
+            "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+            notesRelId));
 
         var sourcePackage = slidePart.OpenXmlPackage;
         var targetPackage = clonedSlidePart.OpenXmlPackage;
@@ -422,6 +432,10 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         foreach (var childPart in sourceNotesPart.Parts)
         {
             var sourceChildPart = childPart.OpenXmlPart;
+            if (sourceChildPart is NotesMasterPart)
+            {
+                continue;
+            }
 
             if (ReferenceEquals(sourcePackage, targetPackage))
             {
@@ -431,18 +445,12 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
             else
             {
                 // Different packages: clone the part into the target package.
-                var targetChildPart = targetNotesPart.AddNewPart(
-                    sourceChildPart.GetType(),
-                    childPart.RelationshipId);
+                var targetChildPart = CreatePart(targetNotesPart, sourceChildPart, childPart.RelationshipId);
 
                 CopyStream(sourceChildPart, targetChildPart);
             }
         }
 
-        if (targetNotesPart.NotesMasterPart != null)
-        {
-            targetNotesPart.DeletePart(targetNotesPart.NotesMasterPart);
-        }
     }
 
     private void EnsureChartRelationship(string relationshipId, SlidePart targetSlidePart)
@@ -464,6 +472,22 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         }
 
         CloneChartPartAcrossPackages(sourceChartPart!, targetSlidePart, relationshipId);
+    }
+
+    private static OpenXmlElement? GetNotesSlideIdElement(SlidePart slidePart)
+        => slidePart.Slide?.Descendants<OpenXmlElement>()
+            .FirstOrDefault(element => string.Equals(element.LocalName, "notesSlideId", StringComparison.Ordinal));
+
+    private static OpenXmlPart CreatePart(OpenXmlPartContainer partContainer, OpenXmlPart sourcePart, string relationshipId)
+    {
+        var addMethod = typeof(OpenXmlPartContainer).GetMethods()
+            .First(method => method.Name == "AddNewPart" &&
+                             method.IsGenericMethodDefinition &&
+                             method.GetParameters().Length == 2 &&
+                             method.GetParameters()[0].ParameterType == typeof(string));
+        var genericAdd = addMethod.MakeGenericMethod(sourcePart.GetType());
+        object?[] args = [sourcePart.ContentType, relationshipId];
+        return (OpenXmlPart)genericAdd.Invoke(partContainer, args)!;
     }
 
     private uint GetNextShapeId()
