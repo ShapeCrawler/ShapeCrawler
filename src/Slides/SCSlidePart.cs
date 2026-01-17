@@ -81,14 +81,13 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
         // Create the diagram graphic
         var graphic = new A.Graphic();
-        var graphicData = new A.GraphicData { Uri = SmartArtDiagramUri };
-        graphicData.InnerXml =
-            "<dgm:relIds xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" " +
-            "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " +
-            $"r:dm=\"{diagramPartIds.DataId}\" " +
-            $"r:lo=\"{diagramPartIds.LayoutId}\" " +
-            $"r:qs=\"{diagramPartIds.QuickStyleId}\" " +
-            $"r:cs=\"{diagramPartIds.ColorsId}\" />";
+        var graphicData = new A.GraphicData { Uri = SmartArtDiagramUri, InnerXml = "<dgm:relIds xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\" " +
+                                                                                   "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " +
+                                                                                   $"r:dm=\"{diagramPartIds.DataId}\" " +
+                                                                                   $"r:lo=\"{diagramPartIds.LayoutId}\" " +
+                                                                                   $"r:qs=\"{diagramPartIds.QuickStyleId}\" " +
+                                                                                   $"r:cs=\"{diagramPartIds.ColorsId}\" />"
+        };
         graphic.Append(graphicData);
         pGraphicFrame.Append(graphic);
 
@@ -165,7 +164,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var shapeTree = slidePart.Slide?.CommonSlideData?.ShapeTree;
         if (shapeTree == null)
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
 
         return shapeTree.Descendants<A.GraphicData>()
@@ -375,21 +374,23 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
                 continue;
             }
 
-            if (slidePart.TryGetPartById(relId!, out var openXmlPart) &&
-                openXmlPart is ImagePart sourceImage)
+            if (!slidePart.TryGetPartById(relId!, out var openXmlPart) ||
+                openXmlPart is not ImagePart sourceImage)
             {
-                if (ReferenceEquals(slidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
-                {
-                    clonedSlidePart.AddPart(sourceImage, relId!);
-                }
-                else
-                {
-                    var destinationImage = clonedSlidePart.AddNewPart<ImagePart>(sourceImage.ContentType, relId);
-                    using var sourceStream = sourceImage.GetStream();
-                    sourceStream.Position = 0;
-                    using var destinationStream = destinationImage.GetStream(FileMode.Create, FileAccess.Write);
-                    sourceStream.CopyTo(destinationStream);
-                }
+                continue;
+            }
+
+            if (ReferenceEquals(slidePart.OpenXmlPackage, clonedSlidePart.OpenXmlPackage))
+            {
+                clonedSlidePart.AddPart(sourceImage, relId!);
+            }
+            else
+            {
+                var destinationImage = clonedSlidePart.AddNewPart<ImagePart>(sourceImage.ContentType, relId);
+                using var sourceStream = sourceImage.GetStream();
+                sourceStream.Position = 0;
+                using var destinationStream = destinationImage.GetStream(FileMode.Create, FileAccess.Write);
+                sourceStream.CopyTo(destinationStream);
             }
         }
     }

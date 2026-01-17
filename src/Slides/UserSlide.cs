@@ -177,12 +177,6 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         return presDocument.Clone().PresentationPart!;
     }
 
-    /// <summary>
-    ///     Gets the underlying <see cref="SlidePart"/>.
-    /// </summary>
-    /// <returns>Slide part instance.</returns>
-    internal SlidePart GetSdkSlidePart() => slidePart;
-
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
     public IList<ITextBox> GetTexts()
@@ -221,7 +215,7 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
         var presPart = presDocument.PresentationPart!;
         var pPresentation = presDocument.PresentationPart!.Presentation!;
-        var slideIdList = pPresentation!.SlideIdList!;
+        var slideIdList = pPresentation.SlideIdList!;
 
         // Find the exact SlideId corresponding to this slide
         var slideIdRelationship = presPart.GetIdOfPart(slidePart);
@@ -245,6 +239,12 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
 
         presPart.Presentation!.Save();
     }
+    
+    /// <summary>
+    ///     Gets the underlying <see cref="SlidePart"/>.
+    /// </summary>
+    /// <returns>Slide part instance.</returns>
+    internal SlidePart GetSdkSlidePart() => slidePart;
 
     private void CollectTextBoxes(IShape shape, List<ITextBox> buffer)
     {
@@ -294,11 +294,11 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         // Add in the text lines
         textBodyChildren.AddRange(
             lines
-                .Select(line => new DocumentFormat.OpenXml.Drawing.Paragraph(
+                .Select(line => new A.Paragraph(
                     new ParagraphProperties(),
                     new Run(
                         new RunProperties(),
-                        new DocumentFormat.OpenXml.Drawing.Text(line)),
+                        new A.Text(line)),
                     new EndParagraphRunProperties())));
 
         // Always add at least one paragraph, even if empty
