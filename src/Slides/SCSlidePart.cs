@@ -416,9 +416,27 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         var targetNotesPart = clonedSlidePart.AddNewPart<NotesSlidePart>(sourceNotesPart.ContentType, notesRelId);
         CopyStream(sourceNotesPart, targetNotesPart);
 
+        var sourcePackage = slidePart.OpenXmlPackage;
+        var targetPackage = clonedSlidePart.OpenXmlPackage;
+
         foreach (var childPart in sourceNotesPart.Parts)
         {
-            targetNotesPart.AddPart(childPart.OpenXmlPart, childPart.RelationshipId);
+            var sourceChildPart = childPart.OpenXmlPart;
+
+            if (ReferenceEquals(sourcePackage, targetPackage))
+            {
+                // Same package: share the existing part.
+                targetNotesPart.AddPart(sourceChildPart, childPart.RelationshipId);
+            }
+            else
+            {
+                // Different packages: clone the part into the target package.
+                var targetChildPart = targetNotesPart.AddNewPart(
+                    sourceChildPart.GetType(),
+                    childPart.RelationshipId);
+
+                CopyStream(sourceChildPart, targetChildPart);
+            }
         }
 
         if (targetNotesPart.NotesMasterPart != null)
