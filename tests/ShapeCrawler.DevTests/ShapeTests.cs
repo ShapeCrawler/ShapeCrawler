@@ -870,4 +870,29 @@ public class ShapeTests : SCTest
         pres.Slide(1).Shapes.First().Width.Should().BeApproximately(241, 1, "text content should fit text box");
         ValidatePresentation(pres);
     }
+    
+    [Test]
+    [SlideShape("006_1 slides.pptx", 1, "Shape 1", ShapeContentType.Shape)]
+    [SlideShape("059_crop-images.pptx", 1, "None", ShapeContentType.Picture)]
+    [SlideShape("table-case001.pptx", 1, "Table 1", ShapeContentType.Table)]
+    [SlideShape("025_chart.pptx", 1, 4, ShapeContentType.Chart)]
+    [SlideShape("autoshape-grouping.pptx", 1, "Group 2", ShapeContentType.Group)]
+    [SlideShape("audio-case001.pptx", 1, "Audio 1", ShapeContentType.Audio)]
+    [SlideShape("video-case001.pptx", 1, "Video 1", ShapeContentType.Video)]
+    public void ContentType(IShape shape, ShapeContentType expectedType)
+    {
+        // Act-Assert
+        shape.ContentType.Should().Be(expectedType);
+    }
+
+    [Test]
+    public void ContentType_returns_SmartArt()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var shape = pres.Slide(1).Shapes.AddSmartArt(50, 50, 400, 300, SmartArtType.BasicBlockList);
+
+        // Act-Assert
+        shape.ContentType.Should().Be(ShapeContentType.SmartArt);
+    }
 }

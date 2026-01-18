@@ -29,6 +29,8 @@ internal sealed class TableShape : DrawingShape
 
     public override ITable? Table { get; }
 
+    public override ShapeContentType ContentType => ShapeContentType.Table;
+
     public override decimal Width
     {
         get => base.Width;

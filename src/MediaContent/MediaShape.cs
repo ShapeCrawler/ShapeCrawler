@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Slides;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
@@ -22,6 +23,30 @@ internal sealed class MediaShape : DrawingShape
     }
 
     public override IMedia? Media { get; }
+
+    public override ShapeContentType ContentType
+    {
+        get
+        {
+            var appProps = this.pPicture.NonVisualPictureProperties?.ApplicationNonVisualDrawingProperties;
+            if (appProps is null)
+            {
+                return ShapeContentType.Shape;
+            }
+
+            if (appProps.Descendants<A.AudioFromFile>().Any())
+            {
+                return ShapeContentType.Audio;
+            }
+
+            if (appProps.Descendants<A.VideoFromFile>().Any())
+            {
+                return ShapeContentType.Video;
+            }
+
+            return ShapeContentType.Shape;
+        }
+    }
 
     public override void SetVideo(Stream video)
     {

@@ -29,6 +29,8 @@ dotnet_diagnostic.CS8620.severity = error
 dotnet_diagnostic.CS8622.severity = error
 dotnet_diagnostic.CS8625.severity = error
 
+dotnet_diagnostic.IL2060.severity = error
+
 # Stylecop
 dotnet_diagnostic.SA1000.severity = none
 dotnet_diagnostic.SA1005.severity = error

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -98,6 +98,8 @@ internal sealed class GroupShape : DrawingShape
     public override Geometry GeometryType => Geometry.Rectangle;
 
     public override IShapeCollection GroupedShapes { get; }
+
+    public override ShapeContentType ContentType => ShapeContentType.Group;
 
     public override double Rotation
     {

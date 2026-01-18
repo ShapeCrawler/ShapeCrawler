@@ -245,6 +245,8 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public virtual IShapeCollection? GroupedShapes => null;
 
+    public virtual ShapeContentType ContentType => ShapeContentType.Shape;
+
     public virtual double Rotation
     {
         get

@@ -446,14 +446,40 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
 
     private static OpenXmlPart CreatePart(OpenXmlPartContainer partContainer, OpenXmlPart sourcePart, string relationshipId)
     {
-        var addMethod = typeof(OpenXmlPartContainer).GetMethods()
-            .First(method => method.Name == "AddNewPart" &&
-                             method.IsGenericMethodDefinition &&
-                             method.GetParameters().Length == 2 &&
-                             method.GetParameters()[0].ParameterType == typeof(string));
-        var genericAdd = addMethod.MakeGenericMethod(sourcePart.GetType());
-        object?[] args = [sourcePart.ContentType, relationshipId];
-        return (OpenXmlPart)genericAdd.Invoke(partContainer, args)!;
+        return sourcePart switch
+        {
+            ImagePart => partContainer.AddNewPart<ImagePart>(sourcePart.ContentType, relationshipId),
+            SlidePart => partContainer.AddNewPart<SlidePart>(sourcePart.ContentType, relationshipId),
+            ChartPart => partContainer.AddNewPart<ChartPart>(sourcePart.ContentType, relationshipId),
+            EmbeddedPackagePart => partContainer.AddNewPart<EmbeddedPackagePart>(sourcePart.ContentType, relationshipId),
+            EmbeddedObjectPart => partContainer.AddNewPart<EmbeddedObjectPart>(sourcePart.ContentType, relationshipId),
+            VmlDrawingPart => partContainer.AddNewPart<VmlDrawingPart>(sourcePart.ContentType, relationshipId),
+            DiagramDataPart => partContainer.AddNewPart<DiagramDataPart>(sourcePart.ContentType, relationshipId),
+            DiagramLayoutDefinitionPart => partContainer.AddNewPart<DiagramLayoutDefinitionPart>(sourcePart.ContentType, relationshipId),
+            DiagramStylePart => partContainer.AddNewPart<DiagramStylePart>(sourcePart.ContentType, relationshipId),
+            DiagramColorsPart => partContainer.AddNewPart<DiagramColorsPart>(sourcePart.ContentType, relationshipId),
+            ExtendedPart extendedPart => CreateExtendedPart(partContainer, extendedPart, relationshipId),
+            _ => throw new NotSupportedException(
+                $"Notes child part type '{sourcePart.GetType().Name}' is not supported.")
+        };
+    }
+
+    private static OpenXmlPart CreateExtendedPart(
+        OpenXmlPartContainer partContainer,
+        ExtendedPart sourcePart,
+        string relationshipId)
+    {
+        var targetExt = Path.GetExtension(sourcePart.Uri?.ToString() ?? string.Empty);
+        if (string.IsNullOrWhiteSpace(targetExt))
+        {
+            targetExt = ".xml";
+        }
+
+        return partContainer.AddExtendedPart(
+            sourcePart.RelationshipType,
+            sourcePart.ContentType,
+            targetExt,
+            relationshipId);
     }
 
     private uint GetNextShapeId()
