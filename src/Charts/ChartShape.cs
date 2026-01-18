@@ -19,6 +19,8 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
 {
     public override IChart? Chart => chart;
 
+    public override ShapeContentType ContentType => ShapeContentType.Chart;
+
     public override Geometry GeometryType
     {
         get => Geometry.Rectangle;

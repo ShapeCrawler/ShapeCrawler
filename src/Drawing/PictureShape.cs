@@ -50,6 +50,8 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : DrawingShape(
 
     public override IPicture Picture => picture;
 
+    public override ShapeContentType ContentType => ShapeContentType.Picture;
+
     public override void CopyTo(P.ShapeTree pShapeTree) => picture.CopyTo(pShapeTree);
 
     internal override void Render(SKCanvas canvas)

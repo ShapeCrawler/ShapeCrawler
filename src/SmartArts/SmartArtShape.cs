@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 using Position = ShapeCrawler.Positions.Position;
 
@@ -13,4 +13,6 @@ internal sealed class SmartArtShape : DrawingShape
     }
 
     public override ISmartArt? SmartArt { get; }
+
+    public override ShapeContentType ContentType => ShapeContentType.SmartArt;
 }

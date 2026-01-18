@@ -12,6 +12,8 @@ internal class TextShape(P.Shape pShape, DrawingTextBox textBox)
 {
     public override ITextBox TextBox => textBox;
 
+    public override ShapeContentType ContentType => ShapeContentType.Text;
+
     public override void SetText(string text) => textBox.SetText(text);
 
     public override void SetFontName(string fontName)
