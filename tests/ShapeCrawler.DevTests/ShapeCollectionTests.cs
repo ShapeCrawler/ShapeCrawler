@@ -17,17 +17,7 @@ public class ShapeCollectionTests : SCTest
 {
     private readonly Fixtures fixture = new();
 
-    private static IChart GetChart(IShape shape)
-    {
-        return (IChart?)shape.BarChart
-               ?? (IChart?)shape.ColumnChart
-               ?? (IChart?)shape.LineChart
-               ?? (IChart?)shape.PieChart
-               ?? (IChart?)shape.ScatterChart
-               ?? (IChart?)shape.BubbleChart
-               ?? (IChart?)shape.AreaChart
-               ?? throw new InvalidOperationException("The shape doesn't contain a chart.");
-    }
+    
 
     [Test]
     public void Add_adds_shape()
