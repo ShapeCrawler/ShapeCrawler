@@ -11,9 +11,7 @@ namespace ShapeCrawler.Charts;
 /// </summary>
 internal sealed class BubbleChart
 {
-    internal BubbleChart(ChartPart chartPart,
-        IReadOnlyList<(double X, double Y, double Size)> pointValues,
-        string seriesName)
+    internal BubbleChart(ChartPart chartPart, IReadOnlyList<(double X, double Y, double Size)> pointValues, string seriesName)
     {
         // Create the ChartSpace element
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
