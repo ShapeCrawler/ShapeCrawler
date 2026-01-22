@@ -343,7 +343,10 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
+# Testing
 coverage/
-
-.context/
 *.received.png
+
+# Vibe Coding
+.context/
+.claude/
