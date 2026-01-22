@@ -8,7 +8,8 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Chart : IChart
+internal sealed class Chart : IChart, IBarChart, IColumnChart, ILineChart, IPieChart, IScatterChart, IBubbleChart,
+    IAreaChart
 {
     private readonly SeriesCollection seriesCollection;
     private readonly SlideShapeOutline outline;
