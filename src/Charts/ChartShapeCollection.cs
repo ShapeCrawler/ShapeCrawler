@@ -87,7 +87,7 @@ internal sealed class ChartShapeCollection(SlidePart slidePart)
     {
         var rId = new SCOpenXmlPart(slidePart).NextRelationshipId();
         var chartPart = slidePart.AddNewPart<ChartPart>(rId);
-        new BubbleChart(chartPart, pointValues, seriesName).Generate();
+        new BubbleChart(chartPart, pointValues, seriesName);
         this.InsertChartGraphicFrame(chartPart, x, y, width, height, chartName);
     }
 

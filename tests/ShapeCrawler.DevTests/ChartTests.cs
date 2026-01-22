@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using ClosedXML.Excel;
 using FluentAssertions;
@@ -14,12 +15,24 @@ namespace ShapeCrawler.DevTests;
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
 public class ChartTests : SCTest
 {
+    private static IChart GetChart(IShape shape)
+    {
+        return (IChart?)shape.BarChart
+               ?? (IChart?)shape.ColumnChart
+               ?? (IChart?)shape.LineChart
+               ?? (IChart?)shape.PieChart
+               ?? (IChart?)shape.ScatterChart
+               ?? (IChart?)shape.BubbleChart
+               ?? (IChart?)shape.AreaChart
+               ?? throw new InvalidOperationException("The shape doesn't contain a chart.");
+    }
+
     [Test]
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
     {
         // Arrange
         var pres = new Presentation(TestAsset("024_chart.pptx"));
-        var scatterChart = pres.Slide(2).Shapes.GetById(5).Chart;
+        var scatterChart = pres.Slide(2).Shapes.GetById(5).ScatterChart;
 
         // Act
         double xValue = scatterChart!.XAxis.Values[0];
@@ -49,7 +62,7 @@ public class ChartTests : SCTest
                 });
             });
         });
-        var bubbleChart = pres.Slide(1).Shape("Bubble Chart 1").Chart!;
+        var bubbleChart = pres.Slide(1).Shape("Bubble Chart 1").BubbleChart!;
         var series = bubbleChart.SeriesCollection[0];
 
         // Act
@@ -60,7 +73,7 @@ public class ChartTests : SCTest
         bubbleChart.XAxis!.Values[0].Should().Be(11);
 
         pres = SaveAndOpenPresentation(pres);
-        bubbleChart = pres.Slide(1).Shape("Bubble Chart 1").Chart!;
+        bubbleChart = pres.Slide(1).Shape("Bubble Chart 1").BubbleChart!;
         bubbleChart.SeriesCollection[0].XPoints![0].Value.Should().Be(11);
         bubbleChart.XAxis!.Values[0].Should().Be(11);
         ValidatePresentation(pres);
@@ -71,7 +84,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("021.pptx"));
-        var chart = pres.Slide(3).Shape(4).Chart;
+        var chart = GetChart(pres.Slide(3).Shape(4));
 
         // Act & Assert
         chart.Categories.Should().BeNull();
@@ -83,15 +96,15 @@ public class ChartTests : SCTest
         // Arrange
         var pres13 = new Presentation(TestAsset("013.pptx"));
         var pres19 = new Presentation(TestAsset("019.pptx"));
-        var chartCase1 = new Presentation(TestAsset("018.pptx")).Slide(1).Shape(6).Chart;
-        var chartCase2 = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(7).Chart;
-        var chartCase3 = pres13.Slide(1).Shape(5).Chart;
-        var chartCase5 = pres19.Slide(1).Shape(4).Chart;
-        var chartCase7 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(7).Chart;
-        var chartCase8 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(6).Chart;
-        var chartCase9 = new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(6).Chart;
-        var chartCase10 = new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(3).Chart;
-        var chartCase11 = new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(5).Chart;
+        var chartCase1 = GetChart(new Presentation(TestAsset("018.pptx")).Slide(1).Shape(6));
+        var chartCase2 = GetChart(new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(7));
+        var chartCase3 = GetChart(pres13.Slide(1).Shape(5));
+        var chartCase5 = GetChart(pres19.Slide(1).Shape(4));
+        var chartCase7 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(7));
+        var chartCase8 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(6));
+        var chartCase9 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(6));
+        var chartCase10 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(3));
+        var chartCase11 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slide(5).Shape(5));
 
         // Act
         string charTitleCase1 = chartCase1.Title!.Text!;
@@ -120,8 +133,8 @@ public class ChartTests : SCTest
     public void Title_Setter_updates_chart_title()
     {
         // Arrange
-        var chart1 = new Presentation(TestAsset("018.pptx")).Slide(1).Shape(6).Chart;
-        var chart2 = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(7).Chart;
+        var chart1 = GetChart(new Presentation(TestAsset("018.pptx")).Slide(1).Shape(6));
+        var chart2 = GetChart(new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(7));
 
         var newTitle = "To infinity and beyond!";
 
@@ -140,7 +153,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptxStream = TestAsset("005 chart.pptx");
         var presentation = new Presentation(pptxStream);
-        var chart = (IChart)presentation.Slides[0].Shapes.First(shape => shape.Name == "chart").Chart;
+        var chart = GetChart(presentation.Slides[0].Shapes.First(shape => shape.Name == "chart"));
         var series = chart.SeriesCollection[0];
 
         // Act
@@ -157,7 +170,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptxStream = TestAsset(pptxFile);
         var pres = new Presentation(pptxStream);
-        var chart = pres.Slides[0].Shapes.Shape(chartName).Chart;
+        var chart = GetChart(pres.Slides[0].Shapes.Shape(chartName));
         var expectedSeriesCount = chart.SeriesCollection.Count - 1;
 
         // Act
@@ -171,8 +184,8 @@ public class ChartTests : SCTest
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
-        var chart1 = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(4).Chart;
-        var chart2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(7).Chart;
+        var chart1 = GetChart(new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(4));
+        var chart2 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(7));
 
         // Act-Assert
         chart1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
@@ -186,7 +199,7 @@ public class ChartTests : SCTest
     public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
     {
         // Arrange
-        var comboChart = new Presentation(TestAsset("021.pptx")).Slide(1).Shape(4).Chart;
+        var comboChart = GetChart(new Presentation(TestAsset("021.pptx")).Slide(1).Shape(4));
 
         // Act-Assert
         comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
@@ -196,7 +209,7 @@ public class ChartTests : SCTest
     public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
     {
         // Arrange
-        var chart = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(4).Chart;
+        var chart = GetChart(new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(4));
 
         // Act-Assert
         chart.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
@@ -208,7 +221,7 @@ public class ChartTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("025_chart.pptx"));
         var mStream = new MemoryStream();
-        var pieChart = pres.Slides[0].Shapes.GetById(7).Chart;
+        var pieChart = pres.Slides[0].Shapes.GetById(7).PieChart!;
 
         // Act
         pieChart.Categories[0].Name = "Category 1_new";
@@ -217,7 +230,7 @@ public class ChartTests : SCTest
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
         pres.Save(mStream);
         pres = new Presentation(mStream);
-        pieChart = pres.Slides[0].Shape(7).Chart;
+        pieChart = pres.Slides[0].Shape(7).PieChart!;
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
     }
 
@@ -226,7 +239,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("025_chart.pptx"));
-        var lineChart = pres.Slides[3].Shape(13).Chart;
+        var lineChart = pres.Slides[3].Shape(13).LineChart!;
         var category = lineChart.Categories[0];
 
         // Act
@@ -245,7 +258,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptxStream = TestAsset("025_chart.pptx");
         var pres = new Presentation(pptxStream);
-        var barChart = pres.Slide(1).Shapes.First(sp => sp.Id == 4).Chart!;
+        var barChart = GetChart(pres.Slide(1).Shapes.First(sp => sp.Id == 4));
         const string newCategoryName = "Clothing_new";
 
         // Act
@@ -256,7 +269,7 @@ public class ChartTests : SCTest
 
         pres.Save();
         pres = new Presentation(pptxStream);
-        barChart = pres.Slide(1).Shapes.First(sp => sp.Id == 4).Chart!;
+        barChart = GetChart(pres.Slide(1).Shapes.First(sp => sp.Id == 4));
         barChart.Categories![0].Name.Should().Be(newCategoryName);
     }
 
@@ -264,7 +277,7 @@ public class ChartTests : SCTest
     public void SeriesType_ReturnsChartTypeOfTheSeries()
     {
         // Arrange
-        IChart chart = (IChart)new Presentation(TestAsset("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3).Chart;
+        IChart chart = GetChart(new Presentation(TestAsset("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3));
         ISeries series2 = chart.SeriesCollection[1];
         ISeries series3 = chart.SeriesCollection[2];
 
@@ -281,7 +294,7 @@ public class ChartTests : SCTest
     public void Series_Name_returns_chart_series_name()
     {
         // Arrange
-        var chart = new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(5).Chart;
+        var chart = GetChart(new Presentation(TestAsset("025_chart.pptx")).Slide(1).Shape(5));
 
         // Act
         string seriesNameCase1 = chart.SeriesCollection[0].Name;
@@ -297,13 +310,10 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres13 = new Presentation(TestAsset("013.pptx"));
-        IChart chartCase1 =
-            (IChart)new Presentation(TestAsset("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3).Chart;
-        IChart chartCase2 =
-            (IChart)new Presentation(TestAsset("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4).Chart;
-        IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
-        IChart chartCase4 = (IChart)new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes
-            .First(sp => sp.Id == 7).Chart;
+        IChart chartCase1 = GetChart(new Presentation(TestAsset("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3));
+        IChart chartCase2 = GetChart(new Presentation(TestAsset("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4));
+        IChart chartCase3 = GetChart(pres13.Slides[0].Shapes.First(sp => sp.Id == 5));
+        IChart chartCase4 = GetChart(new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7));
 
         // Act
         ChartType chartTypeCase1 = chartCase1.Type;
@@ -334,7 +344,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var barChart = pres.Slide(1).Shape("Bar Chart 1").Chart;
+        var barChart = GetChart(pres.Slide(1).Shape("Bar Chart 1"));
 
         // Act
         var minimum = barChart.XAxis.Minimum;
@@ -348,7 +358,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var barChart = pres.Slides[0].Shape("Bar Chart 1").Chart;
+        var barChart = GetChart(pres.Slides[0].Shape("Bar Chart 1"));
         var mStream = new MemoryStream();
 
         // Act
@@ -356,7 +366,7 @@ public class ChartTests : SCTest
 
         // Assert
         pres.Save(mStream);
-        barChart = new Presentation(mStream).Slides[0].Shape("Bar Chart 1").Chart;
+        barChart = GetChart(new Presentation(mStream).Slides[0].Shape("Bar Chart 1"));
         barChart.XAxis!.Minimum.Should().Be(1);
         ValidatePresentation(pres);
     }
@@ -367,7 +377,7 @@ public class ChartTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var barChart = pres.Slides[0].Shapes.Shape("Bar Chart 1").Chart;
+        var barChart = GetChart(pres.Slides[0].Shapes.Shape("Bar Chart 1"));
 
         // Act
         barChart.XAxis!.Maximum = 7;
@@ -382,7 +392,7 @@ public class ChartTests : SCTest
     {
         // Arrange  
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
-        var barChart = pres.Slide(1).Shape("Bar Chart 1").Chart;
+        var barChart = GetChart(pres.Slide(1).Shape("Bar Chart 1"));
 
         // Act & Assert
         barChart.XAxis!.Maximum.Should().Be(6);
@@ -394,7 +404,7 @@ public class ChartTests : SCTest
     public void SeriesCollection_Count_returns_number_of_series(IShape shape, int expectedSeriesCount)
     {
         // Act
-        var chart = shape.Chart;
+        var chart = GetChart(shape);
         int seriesCount = chart.SeriesCollection.Count;
 
         // Assert
@@ -407,7 +417,7 @@ public class ChartTests : SCTest
         // Arrange
         var pres = new Presentation(p => { p.Slide(s => { s.PieChartShape("Pie Chart 1"); }); });
         const string green = "00ff00";
-        var chart = pres.Slide(1).Shape("Pie Chart 1").Chart!;
+        var chart = pres.Slide(1).Shape("Pie Chart 1").PieChart!;
         chart.Title!.Text = "Sales Chart";
 
         // Act
@@ -423,7 +433,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new Presentation(p => { p.Slide(s => { s.PieChartShape("Pie Chart 1"); }); });
-        var title = pres.Slide(1).Shape("Pie Chart 1").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart 1").PieChart!.Title!;
 
         // Act
         title.FontSize = 14;
@@ -439,7 +449,7 @@ public class ChartTests : SCTest
         var pres = new Presentation(p => { p.Slide(s => { s.PieChartShape("Pie Chart 1"); }); });
 
         // Act-Assert
-        pres.Slide(1).Shape("Pie Chart 1").Chart!.Title!.Text.Should().Be("Series 1");
+        pres.Slide(1).Shape("Pie Chart 1").PieChart!.Title!.Text.Should().Be("Series 1");
     }
 
     [Test]
@@ -453,7 +463,7 @@ public class ChartTests : SCTest
                 s.PieChartShape("Pie Chart");
             });
         });
-        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart").PieChart!.Title!;
         
         // Act
         title.Alignment.CustomAngle = 5;
@@ -474,7 +484,7 @@ public class ChartTests : SCTest
                 s.PieChartShape("Pie Chart");
             });
         });
-        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart").PieChart!.Title!;
         
         // Act
         title.Alignment.X = 0.2m;
@@ -495,7 +505,7 @@ public class ChartTests : SCTest
                 s.PieChartShape("Pie Chart");
             });
         });
-        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart").PieChart!.Title!;
         
         // Act
         title.Alignment.Y = 0.1m;
@@ -516,7 +526,7 @@ public class ChartTests : SCTest
                 s.PieChartShape("Pie Chart");
             });
         });
-        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart").PieChart!.Title!;
 
         // Act & Assert
         title.Alignment.X.Should().BeNull();
@@ -534,7 +544,7 @@ public class ChartTests : SCTest
                 s.PieChartShape("Pie Chart");
             });
         });
-        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart").PieChart!.Title!;
         
         // Act
         title.Alignment.X = 0.3m;
@@ -557,7 +567,7 @@ public class ChartTests : SCTest
                 s.PieChartShape("Pie Chart");
             });
         });
-        var title = pres.Slide(1).Shape("Pie Chart").Chart!.Title!;
+        var title = pres.Slide(1).Shape("Pie Chart").PieChart!.Title!;
         title.Alignment.X = 0.3m;
         
         // Act
@@ -584,7 +594,7 @@ public class ChartTests : SCTest
                 });
             });
         });
-        var chart = pres.Slide(1).Shapes.First().Chart!;
+        var chart = GetChart(pres.Slide(1).Shapes.First());
         
         // Act
         chart.XAxis!.Title = "Series values";
@@ -616,7 +626,7 @@ public class ChartTests : SCTest
         });
 
         // Assert
-        var chartShape = pres.Slides.Last().Shapes.Last().Chart;
+        var chartShape = GetChart(pres.Slides.Last().Shapes.Last());
         var categories = chartShape.Categories;
 
         categories.Count.Should().Be(4);

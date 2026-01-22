@@ -14,10 +14,51 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : DrawingShape(new Position(pGraphicFrame),
+internal sealed class ChartShape(Chart chartModel, P.GraphicFrame pGraphicFrame) : DrawingShape(new Position(pGraphicFrame),
     new ShapeSize(pGraphicFrame), new ShapeId(pGraphicFrame), pGraphicFrame)
 {
-    public override IChart? Chart => chart;
+    private readonly Chart chart = chartModel;
+
+    public override IBarChart? BarChart => this.IsBarChart(BarDirectionValues.Bar) ? this.chart : null;
+
+    public override IColumnChart? ColumnChart => this.IsBarChart(BarDirectionValues.Column) ? this.chart : null;
+
+    public override ILineChart? LineChart =>
+        this.IsChartType(ChartType.LineChart, ChartType.Line3DChart)
+        || (this.chart.Type == ChartType.Combination
+            && (this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.LineChart>()
+                || this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.Line3DChart>()))
+            ? this.chart
+            : null;
+
+    public override IPieChart? PieChart =>
+        this.IsChartType(ChartType.PieChart, ChartType.Pie3DChart, ChartType.DoughnutChart)
+        || (this.chart.Type == ChartType.Combination
+            && (this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.PieChart>()
+                || this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.Pie3DChart>()
+                || this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.DoughnutChart>()))
+            ? this.chart
+            : null;
+
+    public override IScatterChart? ScatterChart =>
+        this.IsChartType(ChartType.ScatterChart)
+        || (this.chart.Type == ChartType.Combination && this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.ScatterChart>())
+            ? this.chart
+            : null;
+
+    public override IBubbleChart? BubbleChart =>
+        this.IsChartType(ChartType.BubbleChart)
+        || (this.chart.Type == ChartType.Combination && this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.BubbleChart>())
+            ? this.chart
+            : null;
+
+    public override IAreaChart? AreaChart =>
+        this.IsChartType(ChartType.AreaChart, ChartType.Area3DChart)
+        || (this.chart.Type == ChartType.Combination
+            && (this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.AreaChart>()
+                || this.HasChartElement<global::DocumentFormat.OpenXml.Drawing.Charts.Area3DChart>()))
+            ? this.chart
+            : null;
 
     public override ShapeContentType ContentType => ShapeContentType.Chart;
 
@@ -72,11 +113,11 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
 
     internal override void Render(SKCanvas canvas)
     {
-        if (this.Chart?.Type == ChartType.PieChart)
+        if (this.chart.Type == ChartType.PieChart)
         {
             this.RenderPieChart(canvas);
         }
-        else if (this.Chart?.Type == ChartType.BarChart)
+        else if (this.chart.Type == ChartType.BarChart)
         {
             this.RenderBarChart(canvas);
         }
@@ -514,6 +555,60 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
         sourceStream.CopyTo(destinationStream);
     }
 
+    private bool IsChartType(params ChartType[] types) => types.Contains(this.chart.Type);
+
+    private bool HasChartElement<T>()
+        where T : OpenXmlElement
+    {
+        var chartPart = this.GetChartPart();
+        var chartSpace = chartPart?.ChartSpace;
+        if (chartSpace == null)
+        {
+            return false;
+        }
+
+        return chartSpace.Descendants<T>().Any();
+    }
+
+    private bool IsBarChart(BarDirectionValues direction)
+    {
+        if (!this.IsChartType(ChartType.BarChart, ChartType.Bar3DChart, ChartType.Combination))
+        {
+            return false;
+        }
+
+        var barDirection = this.GetBarDirection();
+        if (barDirection == null)
+        {
+            return this.IsChartType(ChartType.BarChart, ChartType.Bar3DChart) && direction == BarDirectionValues.Column;
+        }
+
+        return barDirection == direction;
+    }
+
+    private BarDirectionValues? GetBarDirection()
+    {
+        var chartPart = this.GetChartPart();
+        if (chartPart?.ChartSpace == null)
+        {
+            return null;
+        }
+
+        var barChart = chartPart.ChartSpace
+            .Descendants<DocumentFormat.OpenXml.Drawing.Charts.BarChart>()
+            .FirstOrDefault();
+        var barChartDirection = barChart?.BarDirection?.Val?.Value;
+        if (barChartDirection != null)
+        {
+            return barChartDirection;
+        }
+
+        var bar3DChart = chartPart.ChartSpace
+            .Descendants<DocumentFormat.OpenXml.Drawing.Charts.Bar3DChart>()
+            .FirstOrDefault();
+        return bar3DChart?.BarDirection?.Val?.Value;
+    }
+
     private void RenderChartPlaceholder(SKCanvas canvas)
     {
         var x = (float)new Units.Points(this.X).AsPixels();
@@ -538,11 +633,7 @@ internal sealed class ChartShape(Chart chart, P.GraphicFrame pGraphicFrame) : Dr
 
     private void RenderBarChart(SKCanvas canvas)
     {
-        var chart = this.Chart;
-        if (chart == null)
-        {
-            return;
-        }
+        var chart = this.chart;
 
         var bounds = this.CalculateChartBounds();
         var colors = GetPieChartColors();

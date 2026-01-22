@@ -18,7 +18,7 @@ internal sealed class StackedColumnChart(
     /// <summary>
     ///     Generates the stacked column chart content.
     /// </summary>
-    public void Generate()
+    public void Generate() // TODO: move to constructor
     {
         // Create the ChartSpace element
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });

@@ -231,7 +231,19 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public virtual IPicture? Picture => null;
 
-    public virtual IChart? Chart => null;
+    public virtual IBarChart? BarChart => null;
+
+    public virtual IColumnChart? ColumnChart => null;
+
+    public virtual ILineChart? LineChart => null;
+
+    public virtual IPieChart? PieChart => null;
+
+    public virtual IScatterChart? ScatterChart => null;
+
+    public virtual IBubbleChart? BubbleChart => null;
+
+    public virtual IAreaChart? AreaChart => null;
 
     public virtual ITable? Table => null;
 

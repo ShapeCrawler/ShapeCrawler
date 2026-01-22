@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Fixture;
 using FluentAssertions;
@@ -15,6 +16,8 @@ namespace ShapeCrawler.DevTests;
 public class ShapeCollectionTests : SCTest
 {
     private readonly Fixtures fixture = new();
+
+    
 
     [Test]
     public void Add_adds_shape()
@@ -116,7 +119,15 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides.First().Shapes;
 
         // Act & Assert
-        shapes.Count(sp => sp.Chart is not null).Should().Be(1);
+        shapes.Count(sp =>
+                sp.BarChart is not null
+                || sp.ColumnChart is not null
+                || sp.LineChart is not null
+                || sp.PieChart is not null
+                || sp.ScatterChart is not null
+                || sp.BubbleChart is not null
+                || sp.AreaChart is not null)
+            .Should().Be(1);
         shapes.Count(sp => sp.Picture is not null).Should().Be(1);
         shapes.Count(sp => sp.Table is not null).Should().Be(1);
         shapes.Count(sp => sp.GroupedShapes is not null).Should().Be(1);
@@ -555,7 +566,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var chart = pres.Slides[0].Shape("Bar Chart 1").Chart;
+        var chart = pres.Slide(1).Shape("Bar Chart 1").BarChart;
         var expectedSlidesCount = pres.Slides.Count + 1;
 
         // Act
@@ -636,7 +647,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPieChart(100, 100, 400, 300, categoryValues, "Sales");
 
         // Assert
-        shapes.First().Chart.Should().NotBeNull();
+        shapes.First().PieChart.Should().NotBeNull();
         ValidatePresentation(pres);
     }
 
@@ -661,7 +672,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddBarChart(x, y, width, height, categoryValues, seriesName);
 
         // Assert
-        shapes.First().Chart.Should().NotBeNull();
+        shapes.First().ColumnChart.Should().NotBeNull();
         ValidatePresentation(pres);
     }
 
@@ -689,7 +700,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
         // Assert
-        var chart = shapes.First().Chart;
+        var chart = shapes.First().ScatterChart;
         chart.Type.Should().Be(ChartType.ScatterChart);
         ValidatePresentation(pres);
     }
@@ -716,7 +727,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
         // Assert
-        shapes.First().Chart.Type.Should().Be(ChartType.BarChart);
+        shapes.First().ColumnChart.Should().NotBeNull();
         ValidatePresentation(pres);
     }
 

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 
@@ -75,9 +75,39 @@ public interface IShape : IPosition, IShapeGeometry
     IPicture? Picture { get; }
 
     /// <summary>
-    ///     Gets chart. Returns <c>null</c> if the shape doesn't contain image content.
+    ///     Gets bar chart. Returns <c>null</c> if the shape doesn't contain a bar chart.
     /// </summary>
-    IChart? Chart { get; }
+    IBarChart? BarChart { get; }
+
+    /// <summary>
+    ///     Gets column chart. Returns <c>null</c> if the shape doesn't contain a column chart.
+    /// </summary>
+    IColumnChart? ColumnChart { get; }
+
+    /// <summary>
+    ///     Gets line chart. Returns <c>null</c> if the shape doesn't contain a line chart.
+    /// </summary>
+    ILineChart? LineChart { get; }
+
+    /// <summary>
+    ///     Gets pie chart. Returns <c>null</c> if the shape doesn't contain a pie chart.
+    /// </summary>
+    IPieChart? PieChart { get; }
+
+    /// <summary>
+    ///     Gets scatter chart. Returns <c>null</c> if the shape doesn't contain a scatter chart.
+    /// </summary>
+    IScatterChart? ScatterChart { get; }
+
+    /// <summary>
+    ///     Gets bubble chart. Returns <c>null</c> if the shape doesn't contain a bubble chart.
+    /// </summary>
+    IBubbleChart? BubbleChart { get; } // TODO: combine with ScatterChart since in the PowerPoint Bubble Chart is a subtype of the Scatter Chart
+
+    /// <summary>
+    ///     Gets area chart. Returns <c>null</c> if the shape doesn't contain an area chart.
+    /// </summary>
+    IAreaChart? AreaChart { get; }
 
     /// <summary>
     ///     Gets table. Returns <c>null</c> if the shape doesn't contain table content.

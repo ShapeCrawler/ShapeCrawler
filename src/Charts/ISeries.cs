@@ -36,6 +36,12 @@ public interface ISeries
     IReadOnlyList<IChartPoint>? XPoints { get; }
 
     /// <summary>
+    ///     Gets the collection of bubble size points of the series.
+    ///     Returns <see langword="null"/> when the series doesn't support bubble size values.
+    /// </summary>
+    IReadOnlyList<IChartPoint>? BubbleSizePoints { get; }
+
+    /// <summary>
     ///     Gets a value indicating whether chart has name.
     /// </summary>
     bool HasName { get; }
@@ -55,6 +61,9 @@ internal sealed class Series : ISeries
         this.XPoints = type is ChartType.ScatterChart or ChartType.BubbleChart
             ? new SeriesXPoints(this.chartPart, this.cSer)
             : null;
+        this.BubbleSizePoints = type is ChartType.BubbleChart
+            ? new SeriesBubbleSizePoints(this.chartPart, this.cSer)
+            : null;
     }
 
     public ChartType Type { get; }
@@ -62,6 +71,8 @@ internal sealed class Series : ISeries
     public IReadOnlyList<IChartPoint> Points { get; }
 
     public IReadOnlyList<IChartPoint>? XPoints { get; }
+
+    public IReadOnlyList<IChartPoint>? BubbleSizePoints { get; }
 
     public bool HasName => this.cSer.GetFirstChild<C.SeriesText>()?.StringReference != null;
 
