@@ -6,7 +6,7 @@ public class ChartExamples
     public void Update_series()
     {
         using var pres = new Presentation("hello world.pptx");
-        var chart = pres.Slides[0].Shapes.Shape("Chart 1").Chart;
+        var chart = pres.Slides[0].Shapes.Shape("Chart 1").BarChart;
         var point = chart.SeriesCollection[0].Points[0];
         point.Value = 10;
     }
