@@ -1,6 +1,4 @@
-﻿using System;
-using FluentAssertions;
-using NUnit.Framework;
+﻿using FluentAssertions;
 using ShapeCrawler.DevTests.Helpers;
 using Assert = NUnit.Framework.Assert;
 
@@ -50,9 +48,9 @@ public class ChartPointTests : SCTest
         // Arrange
         var pres1 = new Presentation(TestAsset("021.pptx"));
         var pres2 = new Presentation(TestAsset("009_table.pptx"));
-        var series1 = GetChart(pres1.Slide(2).Shape(3)).SeriesCollection[0];
-        var series2 = GetChart(pres1.Slide(3).Shape(4)).SeriesCollection[0];
-        var series3 = GetChart(pres2.Slide(3).Shape(7)).SeriesCollection[0];
+        var series1 = pres1.Slide(2).Shape(3).BubbleChart.SeriesCollection[0];
+        var series2 = pres1.Slide(3).Shape(4).ScatterChart.SeriesCollection[0];
+        var series3 = pres2.Slide(3).Shape(7).PieChart.SeriesCollection[0];
 
         // Act
         double seriesPointValue1 = series1.Points[0].Value;
@@ -72,7 +70,7 @@ public class ChartPointTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("024_chart.pptx"));
-        var chart = GetChart(pres.Slides[2].Shape(5));
+        var chart = pres.Slide(3).Shape(5).ColumnChart;
         var point = chart.SeriesCollection[0].Points[0];
 
         // Act
@@ -89,17 +87,17 @@ public class ChartPointTests : SCTest
         // Arrange
         var pres = new Presentation(TestAsset("002 bar chart.pptx"));
 
-        var chart1 = GetChart(pres.Slides[0].Shapes.First());
+        var chart1 = pres.Slide(1).Shapes.First().ColumnChart;
         var points1 = chart1.SeriesCollection.SelectMany(p => p.Points);
         Assert.That(chart1.SeriesCollection.First().Points.Count, Is.EqualTo(4));
         Assert.That(points1.Count(), Is.EqualTo(20));
 
-        var chart2 = GetChart(pres.Slides[1].Shapes.First());
+        var chart2 = pres.Slide(2).Shapes.First().ColumnChart;
         var points2 = chart2.SeriesCollection.SelectMany(p => p.Points);
         Assert.That(chart2.SeriesCollection.First().Points.Count(), Is.EqualTo(4));
         Assert.That(points2.Count(), Is.EqualTo(20));
 
-        var chart3 = GetChart(pres.Slides[2].Shapes.First());
+        var chart3 = pres.Slide(3).Shapes.First().ColumnChart;
         var points3 = chart3.SeriesCollection.SelectMany(p => p.Points);
         Assert.That(chart3.SeriesCollection.Count, Is.EqualTo(14));
         Assert.That(chart3.SeriesCollection.First().Points.Count(), Is.EqualTo(11));

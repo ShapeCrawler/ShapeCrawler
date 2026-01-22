@@ -102,7 +102,7 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets bubble chart. Returns <c>null</c> if the shape doesn't contain a bubble chart.
     /// </summary>
-    IBubbleChart? BubbleChart { get; }
+    IBubbleChart? BubbleChart { get; } // TODO: combine with ScatterChart since in the PowerPoint Bubble Chart is a subtype of the Scatter Chart
 
     /// <summary>
     ///     Gets area chart. Returns <c>null</c> if the shape doesn't contain an area chart.

@@ -566,7 +566,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pptx = TestAsset("001 bar chart.pptx");
         var pres = new Presentation(pptx);
-        var chart = GetChart(pres.Slides[0].Shape("Bar Chart 1"));
+        var chart = pres.Slide(1).Shape("Bar Chart 1").BarChart;
         var expectedSlidesCount = pres.Slides.Count + 1;
 
         // Act
@@ -700,7 +700,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddScatterChart(x, y, width, height, pointValues, seriesName);
 
         // Assert
-        var chart = GetChart(shapes.First());
+        var chart = shapes.First().ScatterChart;
         chart.Type.Should().Be(ChartType.ScatterChart);
         ValidatePresentation(pres);
     }
@@ -727,7 +727,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddStackedColumnChart(x, y, width, height, categoryValues, seriesNames);
 
         // Assert
-        GetChart(shapes.First()).Type.Should().Be(ChartType.BarChart);
+        shapes.First().ColumnChart.Should().NotBeNull();
         ValidatePresentation(pres);
     }
 
