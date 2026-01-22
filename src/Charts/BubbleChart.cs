@@ -9,15 +9,11 @@ namespace ShapeCrawler.Charts;
 /// <summary>
 ///     Represents the content of a bubble chart.
 /// </summary>
-internal sealed class BubbleChart(
-    ChartPart chartPart,
-    IReadOnlyList<(double X, double Y, double Size)> pointValues,
-    string seriesName)
+internal sealed class BubbleChart
 {
-    /// <summary>
-    ///     Generates the bubble chart content.
-    /// </summary>
-    public void Generate()
+    internal BubbleChart(ChartPart chartPart,
+        IReadOnlyList<(double X, double Y, double Size)> pointValues,
+        string seriesName)
     {
         // Create the ChartSpace element
         var chartSpace = new ChartSpace(new EditingLanguage { Val = "en-US" }, new RoundedCorners { Val = false });
@@ -42,8 +38,7 @@ internal sealed class BubbleChart(
         var xValues = new XValues();
         var xNumberLiteral = new NumberLiteral
         {
-            FormatCode = new FormatCode("General"),
-            PointCount = new PointCount { Val = pointsCount }
+            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = pointsCount }
         };
         uint index = 0;
         foreach (var point in pointValues)
@@ -61,8 +56,7 @@ internal sealed class BubbleChart(
         var yValues = new YValues();
         var yNumberLiteral = new NumberLiteral
         {
-            FormatCode = new FormatCode("General"),
-            PointCount = new PointCount { Val = pointsCount }
+            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = pointsCount }
         };
         index = 0;
         foreach (var point in pointValues)
@@ -80,8 +74,7 @@ internal sealed class BubbleChart(
         var bubbleSize = new BubbleSize();
         var sizeNumberLiteral = new NumberLiteral
         {
-            FormatCode = new FormatCode("General"),
-            PointCount = new PointCount { Val = pointsCount }
+            FormatCode = new FormatCode("General"), PointCount = new PointCount { Val = pointsCount }
         };
         index = 0;
         foreach (var point in pointValues)
