@@ -11,18 +11,6 @@ namespace ShapeCrawler.DevTests;
 
 public class ChartPointTests : SCTest
 {
-    private static IChart GetChart(IShape shape)
-    {
-        return (IChart?)shape.BarChart
-               ?? (IChart?)shape.ColumnChart
-               ?? (IChart?)shape.LineChart
-               ?? (IChart?)shape.PieChart
-               ?? (IChart?)shape.ScatterChart
-               ?? (IChart?)shape.BubbleChart
-               ?? (IChart?)shape.AreaChart
-               ?? throw new InvalidOperationException("The shape doesn't contain a chart.");
-    }
-
     [Test]
     public void Value_Getter_returns_point_value()
     {
