@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.78.1 - 2026-01-30
+🐞Resolved potential security vulnerabilities
+
 ## Version 0.78.0 - 2026-01-17
 🍀Added support for updating the Bubble Chart X value [#726](https://github.com/ShapeCrawler/ShapeCrawler/issues/726)  
 🐞Fixed adding chart from external presentation [#934](https://github.com/ShapeCrawler/ShapeCrawler/issues/934)  

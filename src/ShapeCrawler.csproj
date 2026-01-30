@@ -11,9 +11,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
     <Version>0.78.0</Version>
-    <PackageReleaseNotes>
-      🍀Added support for updating the Bubble Chart X value; 🐞Fixed adding chart from external presentation
-    </PackageReleaseNotes>
+    <PackageReleaseNotes>🐞Resolved potential security vulnerabilities</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
