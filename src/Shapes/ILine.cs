@@ -1,4 +1,4 @@
-﻿using ShapeCrawler.Shapes;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
@@ -22,6 +22,9 @@ public interface ILine
 
 internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentLineShape) : ILine
 {
+    private readonly P.ConnectionShape connectionShape = pConnectionShape;
+    private readonly LineShape lineShape = parentLineShape;
+
     public Geometry GeometryType
     {
         get => Geometry.Line;
@@ -31,23 +34,15 @@ internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentL
     {
         get
         {
-            var aTransform2D = pConnectionShape.GetFirstChild<P.ShapeProperties>()!.Transform2D!;
+            var aTransform2D = this.connectionShape.GetFirstChild<P.ShapeProperties>()!.Transform2D!;
             var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
             var flipH = horizontalFlip != null && horizontalFlip.Value;
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (flipH && (parentLineShape.Height == 0 || flipV))
-            {
-                return new Point(parentLineShape.X, parentLineShape.Y);
-            }
-
-            if (flipH)
-            {
-                return new Point(parentLineShape.X + parentLineShape.Width, parentLineShape.Y);
-            }
-
-            return new Point(parentLineShape.X, parentLineShape.Y);
+            var startX = flipH ? this.lineShape.X + this.lineShape.Width : this.lineShape.X;
+            var startY = flipV ? this.lineShape.Y + this.lineShape.Height : this.lineShape.Y;
+            return new Point(startX, startY);
         }
     }
 
@@ -55,33 +50,15 @@ internal sealed class Line(P.ConnectionShape pConnectionShape, LineShape parentL
     {
         get
         {
-            var aTransform2D = pConnectionShape.GetFirstChild<P.ShapeProperties>()!.Transform2D!;
+            var aTransform2D = this.connectionShape.GetFirstChild<P.ShapeProperties>()!.Transform2D!;
             var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
             var flipH = horizontalFlip != null && horizontalFlip.Value;
             var verticalFlip = aTransform2D.VerticalFlip?.Value;
             var flipV = verticalFlip != null && verticalFlip.Value;
 
-            if (parentLineShape.Width == 0)
-            {
-                return new Point(parentLineShape.X, parentLineShape.Height);
-            }
-
-            if (flipH && parentLineShape.Height == 0)
-            {
-                return new Point(parentLineShape.X - parentLineShape.Width, parentLineShape.Y);
-            }
-
-            if (flipV)
-            {
-                return new Point(parentLineShape.Width, parentLineShape.Height);
-            }
-
-            if (flipH)
-            {
-                return new Point(parentLineShape.X, parentLineShape.Height);
-            }
-
-            return new Point(parentLineShape.Width, parentLineShape.Y);
+            var endX = flipH ? this.lineShape.X : this.lineShape.X + this.lineShape.Width;
+            var endY = flipV ? this.lineShape.Y : this.lineShape.Y + this.lineShape.Height;
+            return new Point(endX, endY);
         }
     }
 }

@@ -99,7 +99,7 @@ public class UserSlideShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddSmartArt_CreatesBasicBlockList_WhenCalled()
+    public void AddSmartArt_adds_Basic_Block_List_SmartArt_graphic()
     {
         // Arrange
         var pres = new Presentation(p=>p.Slide());
@@ -122,5 +122,24 @@ public class UserSlideShapeCollectionTests : SCTest
         var slidePart = pres.GetSdkPresentationDocument().PresentationPart!.SlideParts.First();
         var relationshipTypes = slidePart.Parts.Select(part => part.OpenXmlPart.RelationshipType).ToArray();
         relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
+    }
+    
+    [Test]
+    public void AddLine_adds_line_shape()
+    {
+        // Arrange
+        const int startPointX = 80;
+        const int startPointY = 100;
+        const int endPointX = 200;
+        const int endPointY = 100;
+        const int expectedWidth = endPointX - startPointX;
+        var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slide(1).Shapes;
+
+        // Act
+        shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
+
+        // Assert
+        shapes.First().Width.Should().Be(expectedWidth);
     }
 }

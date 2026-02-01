@@ -161,6 +161,7 @@ dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
 4. Build Release: `dotnet build src/ShapeCrawler.csproj -c Release`
 5. Fix any linter errors
 
+Use CRLF line separators.
 ## Build and Validation
 
 ### Development Build

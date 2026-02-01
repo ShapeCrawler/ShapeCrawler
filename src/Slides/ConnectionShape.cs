@@ -22,54 +22,12 @@ internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties ne
         var pConnectionShape = new P.ConnectionShape(xml);
         slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
 
-        var deltaY = endPointY - startPointY;
-        var cx = endPointX;
-
-        var cy = endPointY;
-        if (deltaY == 0)
-        {
-            cy = 0;
-        }
-
-        if (startPointX == endPointX)
-        {
-            cx = 0;
-        }
-
-        var x = startPointX;
-        var y = startPointY;
-        var flipV = false;
-        var flipH = false;
-        if (startPointX > endPointX && endPointY > startPointY)
-        {
-            x = endPointX;
-            y = startPointY;
-            cx = startPointX - endPointX;
-            cy = endPointY;
-            flipH = true;
-        }
-        else if (startPointX > endPointX && startPointY == endPointY)
-        {
-            x = startPointX;
-            cx = Math.Abs(startPointX - endPointX);
-            cy = 0;
-        }
-        else if (startPointY > endPointY)
-        {
-            y = startPointY;
-            cy = endPointY;
-            flipV = true;
-        }
-
-        if (cx == 0)
-        {
-            flipV = true;
-        }
-
-        if (startPointX > endPointX)
-        {
-            flipH = true;
-        }
+        var x = Math.Min(startPointX, endPointX);
+        var y = Math.Min(startPointY, endPointY);
+        var cx = Math.Abs(endPointX - startPointX);
+        var cy = Math.Abs(endPointY - startPointY);
+        var flipH = startPointX > endPointX;
+        var flipV = startPointY > endPointY;
 
         pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)newShapeProperties.Id();
 
