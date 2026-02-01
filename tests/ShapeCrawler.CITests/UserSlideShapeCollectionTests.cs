@@ -99,7 +99,7 @@ public class UserSlideShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddSmartArt_CreatesBasicBlockList_WhenCalled()
+    public void AddSmartArt_adds_Basic_Block_List_SmartArt_graphic()
     {
         // Arrange
         var pres = new Presentation(p=>p.Slide());
