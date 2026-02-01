@@ -13,11 +13,9 @@ using ShapeCrawler.DevTests.Helpers;
 namespace ShapeCrawler.DevTests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-public class ShapeCollectionTests : SCTest
+public class UserSlideShapeCollectionTests : SCTest
 {
     private readonly Fixtures fixture = new();
-
-    
 
     [Test]
     public void Add_adds_shape()
@@ -748,5 +746,24 @@ public class ShapeCollectionTests : SCTest
         // Assert
         group.GroupedShapes.Should().HaveCount(2);
         ValidatePresentation(pres);
+    }
+    
+    [Test]
+    public void AddLine_adds_line_shape()
+    {
+        // Arrange
+        const int startPointX = 80;
+        const int startPointY = 100;
+        const int endPointX = 200;
+        const int endPointY = 100;
+        const int expectedWidth = endPointX - startPointX;
+        var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slide(1).Shapes;
+
+        // Act
+        shapes.AddLine(startPointX, startPointY, endPointX, endPointY);
+
+        // Assert
+        shapes.Last().Width.Should().Be(expectedWidth);
     }
 }
