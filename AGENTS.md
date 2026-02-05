@@ -135,31 +135,6 @@ The project uses strict `.editorconfig` rules. Key settings:
 dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
 ```
 
-## Common Workflows
-
-### Adding New Features
-1. Identify the appropriate namespace/folder (e.g., `Shapes/`, `Charts/`)
-2. Create interface first (if public API)
-3. Implement internal class
-4. Keep files under 500 lines
-5. Add XML documentation
-6. Write test only if explicitly requested
-7. Build in Release configuration
-
-### Bug Fixes
-1. Locate the issue in the codebase
-2. Write a failing test that reproduces the bug only if explicitly requested
-3. Fix the bug
-4. Ensure test passes and `.Validate()` is called if side effects exist
-5. Build in Release configuration
-
-### Making Changes
-1. Read relevant files to understand context
-2. Make targeted changes
-3. Run tests: `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
-4. Build Release: `dotnet build src/ShapeCrawler.csproj -c Release`
-5. Fix any linter errors
-
 ## Build and Validation
 
 ### Development Build
