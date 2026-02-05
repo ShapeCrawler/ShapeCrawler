@@ -23,9 +23,7 @@ tests/
 ### Key Design Patterns
 
 - **Interface-based API**: Public API is exposed through interfaces.
-- **Object-Oriented Design**:
-  - **What is an Object?** The project follows the principle that the correct object is a representation of a real-world entity or concept. In its constructor, the class encapsulates properties or another object as “coordinates” that the class instance will use to refer to the real-world entity.
-  - **Encapsulation**: A class should encapsulate all logic required to produce its result. It should not rely on pre-calculated data passed from the caller if it can calculate that data itself using its dependencies.
+- **Class creation rules**: See `.cursor/skills/create-class/SKILL.md`.
 
 ## Code Review
 - Do not review test coverage.
@@ -122,6 +120,7 @@ The project uses strict `.editorconfig` rules. Key settings:
 
 ## Testing Guidelines
 - The folder `.context/` used to store input and output files during manual testing. Prefer using this folder for your temp files.
+- **Only write tests when explicitly requested**.
 
 ### Test Project
 - **Always use**: `tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
@@ -144,12 +143,12 @@ dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
 3. Implement internal class
 4. Keep files under 500 lines
 5. Add XML documentation
-6. Write test
+6. Write test only if explicitly requested
 7. Build in Release configuration
 
 ### Bug Fixes
 1. Locate the issue in the codebase
-2. Write a failing test that reproduces the bug
+2. Write a failing test that reproduces the bug only if explicitly requested
 3. Fix the bug
 4. Ensure test passes and `.Validate()` is called if side effects exist
 5. Build in Release configuration
