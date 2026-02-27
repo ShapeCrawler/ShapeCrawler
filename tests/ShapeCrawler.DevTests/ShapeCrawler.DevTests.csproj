@@ -35,7 +35,7 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="FluentAssertions" Version="[7.2.0]" />
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.10.2" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.10.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="NUnit" Version="4.4.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />

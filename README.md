@@ -200,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.78.2 - 2026-02-01
-🐞Fixed adding Line shape [#1266](https://github.com/ShapeCrawler/ShapeCrawler/issues/1266) 
+### Version 0.78.3 - 2026-02-27
+🐞Resolved potential security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
