@@ -200,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.78.3 - 2026-02-27
+### Version 0.78.4 - 2026-03-14
 🐞Resolved potential security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
