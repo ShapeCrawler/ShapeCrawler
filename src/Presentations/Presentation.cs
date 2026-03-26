@@ -3,10 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-#if NETSTANDARD2_0
-using System.Collections.Generic;
-using ShapeCrawler.Extensions;
-#endif
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
@@ -42,7 +38,8 @@ public sealed class Presentation : IPresentation
             new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
             this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -66,7 +63,8 @@ public sealed class Presentation : IPresentation
             new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
             this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -88,7 +86,8 @@ public sealed class Presentation : IPresentation
             new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
             this.PresDocument.PresentationPart);
         this.Footer = new Footer(new UpdatedSlideCollection(
-            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts), this.PresDocument.PresentationPart));
+            new UserSlideCollection(this.PresDocument.PresentationPart.SlideParts),
+            this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
                 ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties)
@@ -154,7 +153,10 @@ public sealed class Presentation : IPresentation
             throw new SCException($"Specified slide number is must {number} be more than zero.");
         }
 
-        return number > this.Slides.Count ? throw new SCException($"Specified slide number {number} exceeds the number of slides {this.Slides.Count} in the presentation.") : this.Slides[number - 1];
+        return number > this.Slides.Count
+            ? throw new SCException(
+                $"Specified slide number {number} exceeds the number of slides {this.Slides.Count} in the presentation.")
+            : this.Slides[number - 1];
     }
 
     /// <summary>
@@ -262,17 +264,10 @@ public sealed class Presentation : IPresentation
         var presentationPart = this.PresDocument.PresentationPart!;
         var presentation = presentationPart.Presentation!;
         presentation.SlideIdList ??= new P.SlideIdList();
-#if NETSTANDARD2_0
-        var existingIds = new HashSet<string>(
+        var existingIds = new System.Collections.Generic.HashSet<string>(
             presentation.SlideIdList
                 .OfType<P.SlideId>()
                 .Select(s => (string)s.RelationshipId!));
-#else
-        var existingIds = presentation.SlideIdList
-            .OfType<P.SlideId>()
-            .Select(s => (string)s.RelationshipId!)
-            .ToHashSet();
-#endif
         uint nextIdVal = presentation.SlideIdList.OfType<P.SlideId>().Any()
             ? presentation.SlideIdList.OfType<P.SlideId>().Max(s => s.Id!.Value) + 1u
             : 256u;
