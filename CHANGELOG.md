@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.78.5 - 2026-03-31
+## Version 0.79.0 - 2026-03-31
 🍀Added `Presentation.Properties.Company`
 
 ## Version 0.78.5 - 2026-03-21
