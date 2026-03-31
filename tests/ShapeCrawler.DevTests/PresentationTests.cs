@@ -843,4 +843,17 @@ public class PresentationTests : SCTest
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
     }
+
+    [Test]
+    public void Properties_CompanyName()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("010.pptx"));
+
+        // Act
+        var companyName = pres.Properties.Company;
+
+        // Assert
+        companyName.Should().BeEquivalentTo( "PricewaterhouseCoopers" );
+    }
 }

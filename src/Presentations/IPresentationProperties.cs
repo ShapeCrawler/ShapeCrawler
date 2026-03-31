@@ -1,4 +1,5 @@
 using System;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Packaging;
 
 #pragma warning disable IDE0130
@@ -104,10 +105,32 @@ public interface IPresentationProperties
     ///     This value is set by the user or by the application.
     /// </remarks>
     string? Version { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the company.
+    /// </summary>
+    string? Company { get; set; }
 }
 
-internal class PresentationProperties(IPackageProperties packageProperties) : IPresentationProperties
+internal class PresentationProperties : IPresentationProperties
 {
+    private IPackageProperties packageProperties { get; set; }
+    private ExtendedFilePropertiesPart? extendedFilePropertiesPart { get; set; }
+
+    public PresentationProperties(IPackageProperties packageProperties, ExtendedFilePropertiesPart? extendedFilePropertiesPart = null)
+    {
+        this.packageProperties = packageProperties;
+        this.extendedFilePropertiesPart = extendedFilePropertiesPart;
+
+        if (extendedFilePropertiesPart != null)
+        {
+            if (!extendedFilePropertiesPart.IsRootElementLoaded)
+            {
+                extendedFilePropertiesPart?.RootElement?.Reload();
+            }
+        }
+    }
+
     public string? Author
     {
         get => packageProperties.Creator;
@@ -213,5 +236,37 @@ internal class PresentationProperties(IPackageProperties packageProperties) : IP
     {
         get => packageProperties.Version;
         set => packageProperties.Version = value;
+    }
+
+    public string? Company
+    {
+        get => extendedFilePropertiesPart?.Properties?.Company?.Text;
+        set
+        {
+            if (extendedFilePropertiesPart == null)
+            {
+                throw new InvalidOperationException("Extended file properties part is missing.");
+            }
+
+            if (extendedFilePropertiesPart.Properties == null)
+            {
+                extendedFilePropertiesPart.Properties = new Properties();
+            }
+
+            var properties = extendedFilePropertiesPart.Properties;
+
+            if (value is null)
+            {
+                properties.Company = null;
+            }
+            else if (properties.Company == null)
+            {
+                properties.Company = new Company { Text = value };
+            }
+            else
+            {
+                properties.Company.Text = value;
+            }
+        }
     }
 }
