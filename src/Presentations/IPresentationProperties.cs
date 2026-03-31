@@ -114,20 +114,18 @@ public interface IPresentationProperties
 
 internal class PresentationProperties : IPresentationProperties
 {
-    private IPackageProperties packageProperties { get; set; }
-    private ExtendedFilePropertiesPart? extendedFilePropertiesPart { get; set; }
+    private readonly IPackageProperties packageProperties;
 
-    public PresentationProperties(IPackageProperties packageProperties, ExtendedFilePropertiesPart? extendedFilePropertiesPart = null)
+    private readonly ExtendedFilePropertiesPart? extendedFilePropertiesPart;
+
+    internal PresentationProperties(IPackageProperties packageProperties, ExtendedFilePropertiesPart? extendedFilePropertiesPart)
     {
         this.packageProperties = packageProperties;
         this.extendedFilePropertiesPart = extendedFilePropertiesPart;
 
-        if (extendedFilePropertiesPart != null)
+        if (extendedFilePropertiesPart is { IsRootElementLoaded: false })
         {
-            if (!extendedFilePropertiesPart.IsRootElementLoaded)
-            {
-                extendedFilePropertiesPart?.RootElement?.Reload();
-            }
+            extendedFilePropertiesPart.RootElement?.Reload();
         }
     }
 
@@ -248,10 +246,7 @@ internal class PresentationProperties : IPresentationProperties
                 throw new InvalidOperationException("Extended file properties part is missing.");
             }
 
-            if (extendedFilePropertiesPart.Properties == null)
-            {
-                extendedFilePropertiesPart.Properties = new Properties();
-            }
+            extendedFilePropertiesPart.Properties ??= new Properties();
 
             var properties = extendedFilePropertiesPart.Properties;
 

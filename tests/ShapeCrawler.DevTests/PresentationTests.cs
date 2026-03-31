@@ -662,7 +662,7 @@ public class PresentationTests : SCTest
 
 
     [Test]
-    public void FileProperties_Title_Setter_sets_title()
+    public void Properties_Title_Setter_sets_title()
     {
         // Arrange
         var pres = new Presentation();
@@ -678,7 +678,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void FileProperties_getters_return_valid_values_after_saving_presentation()
+    public void Properties_getters_return_valid_values_after_saving_presentation()
     {
         // Arrange
         var pres = new Presentation();
@@ -700,7 +700,7 @@ public class PresentationTests : SCTest
     }
 
     [Test]
-    public void FileProperties_Modified_Getter_returns_date_of_the_last_modification()
+    public void Properties_Modified_Getter_returns_date_of_the_last_modification()
     {
         var pres = new Presentation(TestAsset("059_crop-images.pptx"));
         var expectedModified = DateTime.Parse("2024-12-16T17:11:58Z", CultureInfo.InvariantCulture);
@@ -710,6 +710,16 @@ public class PresentationTests : SCTest
         pres.Properties.Title.Should().Be("");
         pres.Properties.RevisionNumber.Should().Be(7);
         pres.Properties.Comments.Should().BeNull();
+    }
+    
+    [Test]
+    public void Properties_Company()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("010.pptx"));
+
+        // Act-Assert
+        pres.Properties.Company.Should().BeEquivalentTo( "PricewaterhouseCoopers" );
     }
 
     [Test]
@@ -842,18 +852,5 @@ public class PresentationTests : SCTest
 
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
-    }
-
-    [Test]
-    public void Properties_CompanyName()
-    {
-        // Arrange
-        var pres = new Presentation(TestAsset("010.pptx"));
-
-        // Act
-        var companyName = pres.Properties.Company;
-
-        // Assert
-        companyName.Should().BeEquivalentTo( "PricewaterhouseCoopers" );
     }
 }
