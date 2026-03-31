@@ -42,9 +42,10 @@ public sealed class Presentation : IPresentation
             this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties,
+                ? new PresentationProperties(
+                    this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties,
                     this.PresDocument.ExtendedFilePropertiesPart)
-                : new PresentationProperties(new DefaultPackageProperties());
+                : new PresentationProperties(new DefaultPackageProperties(), this.PresDocument.ExtendedFilePropertiesPart);
     }
 
     /// <summary>
@@ -68,9 +69,10 @@ public sealed class Presentation : IPresentation
             this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties,
+                ? new PresentationProperties(
+                    this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties,
                     this.PresDocument.ExtendedFilePropertiesPart)
-                : new PresentationProperties(new DefaultPackageProperties());
+                : new PresentationProperties(new DefaultPackageProperties(),  this.PresDocument.ExtendedFilePropertiesPart);
     }
 
     /// <summary>
@@ -92,9 +94,10 @@ public sealed class Presentation : IPresentation
             this.PresDocument.PresentationPart));
         this.Properties =
             this.PresDocument.CoreFilePropertiesPart != null
-                ? new PresentationProperties(this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties,
+                ? new PresentationProperties(
+                    this.PresDocument.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties,
                     this.PresDocument.ExtendedFilePropertiesPart)
-                : new PresentationProperties(new DefaultPackageProperties());
+                : new PresentationProperties(new DefaultPackageProperties(), this.PresDocument.ExtendedFilePropertiesPart);
         this.Properties.Modified = SCSettings.TimeProvider.UtcNow;
     }
 
