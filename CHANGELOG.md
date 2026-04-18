@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.79.1 - 2026-04-18
+🐞Resolved potential security vulnerabilities
+
 ## Version 0.79.0 - 2026-03-31
 🍀Added `Presentation.Properties.Company`
 

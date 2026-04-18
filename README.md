@@ -200,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.79.0 - 2026-03-31
-🍀Added `Presentation.Properties.Company`
+### Version 0.79.1 - 2026-04-18
+🐞Resolved potential security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
