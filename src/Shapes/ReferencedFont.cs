@@ -243,15 +243,23 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
             return fonts.ALatinFontOrNull(indentLevel);
         }
 
-        var layoutFonts = new IndentFonts(refLayoutPShape.TextBody!.ListStyle!);
-        var layoutIndentColorType = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentColorType.HasValue)
+        if (refLayoutPShape.TextBody?.ListStyle != null)
         {
-            return layoutIndentColorType.Value.ALatinFont;
+            var layoutFonts = new IndentFonts(refLayoutPShape.TextBody.ListStyle);
+            var layoutIndentColorType = layoutFonts.FontOrNull(indentLevel);
+            if (layoutIndentColorType.HasValue)
+            {
+                return layoutIndentColorType.Value.ALatinFont;
+            }
         }
 
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNull(refLayoutPShape);
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
+        if (refMasterPShapeOfLayout?.TextBody?.ListStyle == null)
+        {
+            return null;
+        }
+
+        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody.ListStyle);
         var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
         if (masterOfLayoutIndentColorType.HasValue)
         {

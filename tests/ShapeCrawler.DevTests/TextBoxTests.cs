@@ -1,7 +1,9 @@
 using FluentAssertions;
+using DocumentFormat.OpenXml.Packaging;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
 using ShapeCrawler.Texts;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.DevTests
 {
@@ -93,6 +95,36 @@ namespace ShapeCrawler.DevTests
 
             // Assert
             textBox.Paragraphs[0].Portions[0].Font!.LatinName.Should().BeEquivalentTo(expectedFont);
+        }
+
+        [Test]
+        public void SetText_updates_placeholder_When_master_placeholder_is_missing()
+        {
+            // Arrange
+            var presStream = TestAsset("031.pptx");
+            using (var presDocument = PresentationDocument.Open(presStream, true))
+            {
+                var master = presDocument.PresentationPart!.SlideMasterParts.First().SlideMaster;
+                var titleShape = master.Descendants<P.Shape>().First(shape =>
+                    shape.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?
+                        .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == P.PlaceholderValues.Title);
+
+                titleShape.Remove();
+                master.Save();
+            }
+
+            presStream.Position = 0;
+            var pres = new Presentation(presStream);
+            var layout = pres.SlideMaster(1).LayoutSlides.First(l => l.Name == "Title Slide");
+            pres.Slides.Add(layout.Number);
+            var textBox = pres.Slides.Last().Shapes.First(shape => shape.PlaceholderType == PlaceholderType.Title).TextBox!;
+
+            // Act
+            textBox.SetText("Test title");
+
+            // Assert
+            textBox.Text.Should().Be("Test title");
+            ValidatePresentation(pres);
         }
 
         [Test]
