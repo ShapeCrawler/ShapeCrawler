@@ -22,6 +22,13 @@ internal sealed class ReferencedFontColor(A.Text aText)
         };
     }
 
+    private static IndentFonts? IndentFontsOrNull(P.Shape? pShape)
+    {
+        return pShape?.TextBody?.ListStyle == null
+            ? null
+            : new IndentFonts(pShape.TextBody.ListStyle);
+    }
+
     private string? SlideColorHexOrNull()
     {
         // Get basic shape and placeholder information
@@ -74,10 +81,10 @@ internal sealed class ReferencedFontColor(A.Text aText)
         var referencedMasterPShape = this.ReferencedMasterPShapeOrNull(pShape);
         var aParagraph = aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-        if (referencedMasterPShape != null)
+        var masterIndentFonts = IndentFontsOrNull(referencedMasterPShape);
+        if (masterIndentFonts.HasValue)
         {
-            var masterIndentFonts = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
-            var masterIndentFont = masterIndentFonts.FontOrNull(indentLevel);
+            var masterIndentFont = masterIndentFonts.Value.FontOrNull(indentLevel);
             if (masterIndentFont != null && this.HexFromName(masterIndentFont, out var masterColor))
             {
                 return masterColor;
@@ -174,12 +181,14 @@ internal sealed class ReferencedFontColor(A.Text aText)
             return this.GetColorFromMasterShape(pShape, indentLevel);
         }
 
-        // Check color from layout shape
-        var layoutFonts = new IndentFonts(referencedLayoutPShape.TextBody!.ListStyle!);
-        var layoutIndentFontOfSlide = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentFontOfSlide != null && this.HexFromName(layoutIndentFontOfSlide, out var layoutColorOfSlide))
+        var layoutFonts = IndentFontsOrNull(referencedLayoutPShape);
+        if (layoutFonts.HasValue)
         {
-            return layoutColorOfSlide;
+            var layoutIndentFontOfSlide = layoutFonts.Value.FontOrNull(indentLevel);
+            if (layoutIndentFontOfSlide != null && this.HexFromName(layoutIndentFontOfSlide, out var layoutColorOfSlide))
+            {
+                return layoutColorOfSlide;
+            }
         }
 
         // Try master shape of layout if no color found
@@ -189,13 +198,13 @@ internal sealed class ReferencedFontColor(A.Text aText)
     private string? GetColorFromMasterShape(P.Shape pShape, int indentLevel)
     {
         var referencedMasterPShape = this.ReferencedMasterPShapeOrNull(pShape);
-        if (referencedMasterPShape == null)
+        var masterFontsOfSlide = IndentFontsOrNull(referencedMasterPShape);
+        if (!masterFontsOfSlide.HasValue)
         {
             return null;
         }
 
-        var masterFontsOfSlide = new IndentFonts(referencedMasterPShape.TextBody!.ListStyle!);
-        var masterIndentFontOfSlide = masterFontsOfSlide.FontOrNull(indentLevel);
+        var masterIndentFontOfSlide = masterFontsOfSlide.Value.FontOrNull(indentLevel);
 
         return this.HexFromName(masterIndentFontOfSlide, out var masterColorOfSlide)
             ? masterColorOfSlide
@@ -205,13 +214,13 @@ internal sealed class ReferencedFontColor(A.Text aText)
     private string? GetColorFromMasterShapeOfLayout(P.Shape layoutShape, int indentLevel)
     {
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNull(layoutShape);
-        if (refMasterPShapeOfLayout == null)
+        var masterFontsOfLayout = IndentFontsOrNull(refMasterPShapeOfLayout);
+        if (!masterFontsOfLayout.HasValue)
         {
             return null;
         }
 
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
-        var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
+        var masterIndentFontOfLayout = masterFontsOfLayout.Value.FontOrNull(indentLevel);
 
         return (masterIndentFontOfLayout != null &&
                 this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))

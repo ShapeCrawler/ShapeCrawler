@@ -48,10 +48,10 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         if (refLayoutPShapeOfSlide == null)
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNull(slidePShape);
-            if (refMasterPShape != null)
+            var refMasterPShapeFonts = IndentFontsOrNull(refMasterPShape);
+            if (refMasterPShapeFonts.HasValue)
             {
-                var fonts = new IndentFonts(refMasterPShape.TextBody!.ListStyle!);
-                var font = fonts.FontOrNull(indentLevel);
+                var font = refMasterPShapeFonts.Value.FontOrNull(indentLevel);
                 if (font.HasValue)
                 {
                     return (int)font.Value.Size! / 100m;
@@ -70,11 +70,14 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
             return null;
         }
 
-        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
-        var layoutIndentFont = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentFont is { Size: not null })
+        var layoutFonts = IndentFontsOrNull(refLayoutPShapeOfSlide);
+        if (layoutFonts.HasValue)
         {
-            return (int)layoutIndentFont.Value.Size! / 100m;
+            var layoutIndentFont = layoutFonts.Value.FontOrNull(indentLevel);
+            if (layoutIndentFont is { Size: not null })
+            {
+                return (int)layoutIndentFont.Value.Size! / 100m;
+            }
         }
 
         return this.MasterFontSizeOrNull(refLayoutPShapeOfSlide, indentLevel) / 100m;
@@ -90,6 +93,13 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
             NotesSlidePart notesSlidePart => this.NotesSlideALatinFontOrNull(notesSlidePart),
             _ => throw new SCException("Not implemented.")
         };
+    }
+
+    private static IndentFonts? IndentFontsOrNull(P.Shape? pShape)
+    {
+        return pShape?.TextBody?.ListStyle == null
+            ? null
+            : new IndentFonts(pShape.TextBody.ListStyle);
     }
 
     private P.Shape? ReferencedLayoutPShapeOrNull(P.Shape pShape)
@@ -163,21 +173,24 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
             return fonts.BoldFlagOrNull(indentLevel);
         }
 
-        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
-        var layoutIndentColorType = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentColorType.HasValue)
+        var layoutFonts = IndentFontsOrNull(refLayoutPShapeOfSlide);
+        if (layoutFonts.HasValue)
         {
-            return layoutIndentColorType.Value.IsBold;
+            var layoutIndentColorType = layoutFonts.Value.FontOrNull(indentLevel);
+            if (layoutIndentColorType.HasValue)
+            {
+                return layoutIndentColorType.Value.IsBold;
+            }
         }
 
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNull(refLayoutPShapeOfSlide);
-        if (refMasterPShapeOfLayout == null)
+        var masterFontsOfLayout = IndentFontsOrNull(refMasterPShapeOfLayout);
+        if (!masterFontsOfLayout.HasValue)
         {
             return null;
         }
 
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
-        var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
+        var masterOfLayoutIndentColorType = masterFontsOfLayout.Value.FontOrNull(indentLevel);
         if (masterOfLayoutIndentColorType.HasValue)
         {
             return masterOfLayoutIndentColorType.Value.IsBold;
@@ -189,13 +202,13 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
     private int? MasterFontSizeOrNull(P.Shape refLayoutPShapeOfSlide, int indentLevel)
     {
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNull(refLayoutPShapeOfSlide);
-        if (refMasterPShapeOfLayout == null)
+        var masterFontsOfLayout = IndentFontsOrNull(refMasterPShapeOfLayout);
+        if (!masterFontsOfLayout.HasValue)
         {
             return null;
         }
 
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
-        var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
+        var masterOfLayoutIndentColorType = masterFontsOfLayout.Value.FontOrNull(indentLevel);
         if (masterOfLayoutIndentColorType is { Size: not null })
         {
             return (int)masterOfLayoutIndentColorType.Value.Size!;
@@ -238,9 +251,13 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
                 return null;
             }
 
-            var fonts = new IndentFonts(refMasterPShape.TextBody!.ListStyle!);
+            var fonts = IndentFontsOrNull(refMasterPShape);
+            if (!fonts.HasValue)
+            {
+                return null;
+            }
 
-            return fonts.ALatinFontOrNull(indentLevel);
+            return fonts.Value.ALatinFontOrNull(indentLevel);
         }
 
         if (refLayoutPShape.TextBody?.ListStyle != null)
