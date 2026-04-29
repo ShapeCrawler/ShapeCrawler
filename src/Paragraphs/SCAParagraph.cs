@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System;
+using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable InconsistentNaming
@@ -17,5 +18,13 @@ internal sealed class SCAParagraph(A.Paragraph aParagraph)
         return level + 1;
     }
 
-    internal void UpdateIndentLevel(int level) => aParagraph.ParagraphProperties!.Level = new Int32Value(level - 1);
+    internal void UpdateIndentLevel(int level)
+    {
+        if (level is < 1 or > 9)
+        {
+            throw new ArgumentOutOfRangeException(nameof(level), level, "Indent level must be between 1 and 9.");
+        }
+
+        aParagraph.ParagraphProperties!.Level = new Int32Value(level - 1);
+    }
 }
