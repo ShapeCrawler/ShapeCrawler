@@ -159,8 +159,8 @@
     <EmbeddedResource Include="Assets\016.pptx" />
     <None Remove="Assets\017.pptx" />
     <EmbeddedResource Include="Assets\017.pptx" />
-    <None Remove="Assets\issue-1284-settext-placeholder.pptx" />
-    <EmbeddedResource Include="Assets\issue-1284-settext-placeholder.pptx" />
+    <None Remove="Assets\086.pptx" />
+    <EmbeddedResource Include="Assets\086.pptx" />
     <None Remove="Assets\018.pptx" />
     <EmbeddedResource Include="Assets\018.pptx" />
     <None Remove="Assets\019.pptx" />
