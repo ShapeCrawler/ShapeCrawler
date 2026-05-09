@@ -43,6 +43,30 @@ namespace ShapeCrawler.DevTests
             text.Should().BeEquivalentTo("");
         }
 
+        // Regression: https://github.com/ShapeCrawler/ShapeCrawler/issues/1284
+        [Test]
+        public void SetText_on_title_placeholder_after_reseeding_slides_from_layout_does_not_throw()
+        {
+            // Arrange
+            var pres = new Presentation(TestAsset("086.pptx"));
+            for (var i = pres.Slides.Count; i >= 1; i--)
+            {
+                pres.Slide(i).Remove();
+            }
+
+            var layout = pres.MasterSlides[0].SlideLayout("Title and Content");
+            pres.Slides.Add(layout.Number);
+            var slide = pres.Slide(pres.Slides.Count);
+            var titleShape = slide.Shapes.First(s => s.PlaceholderType == PlaceholderType.Title);
+
+            // Act
+            var act = () => titleShape.TextBox!.SetText("Hello");
+
+            // Assert
+            act.Should().NotThrow();
+            ValidatePresentation(pres);
+        }
+
         [Test]
         public void SetText_can_update_content_multiple_times()
         {
