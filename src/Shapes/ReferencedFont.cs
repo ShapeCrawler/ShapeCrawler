@@ -251,7 +251,12 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         }
 
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNull(refLayoutPShape);
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
+        if (refMasterPShapeOfLayout?.TextBody?.ListStyle == null)
+        {
+            return null;
+        }
+
+        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody.ListStyle);
         var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
         if (masterOfLayoutIndentColorType.HasValue)
         {
