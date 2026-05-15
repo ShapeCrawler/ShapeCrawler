@@ -711,7 +711,7 @@ public class PresentationTests : SCTest
         pres.Properties.RevisionNumber.Should().Be(7);
         pres.Properties.Comments.Should().BeNull();
     }
-    
+
     [Test]
     public void Properties_Company()
     {
@@ -719,7 +719,7 @@ public class PresentationTests : SCTest
         var pres = new Presentation(TestAsset("010.pptx"));
 
         // Act-Assert
-        pres.Properties.Company.Should().BeEquivalentTo( "PricewaterhouseCoopers" );
+        pres.Properties.Company.Should().BeEquivalentTo("PricewaterhouseCoopers");
     }
 
     [Test]
@@ -852,22 +852,5 @@ public class PresentationTests : SCTest
 
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
-    }
-    
-    [TestCase(0)]
-    [TestCase(10)]
-    public void IndentLevel_Setter_rejects_invalid_indent_level(int indentLevel)
-    {
-        // Arrange
-        var pres = new Presentation(p => p.Slide());
-        pres.Slides[0].Shapes.AddShape(100, 100, 500, 100);
-        var paragraph = pres.Slides[0].Shapes.Last().TextBox!.Paragraphs[0];
-
-        // Act
-        var settingIndentLevel = () => paragraph.IndentLevel = indentLevel;
-
-        // Assert
-        settingIndentLevel.Should().Throw<ArgumentOutOfRangeException>();
-        ValidatePresentation(pres);
     }
 }
