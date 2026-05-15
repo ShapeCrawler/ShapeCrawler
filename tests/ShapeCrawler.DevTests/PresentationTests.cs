@@ -711,7 +711,7 @@ public class PresentationTests : SCTest
         pres.Properties.RevisionNumber.Should().Be(7);
         pres.Properties.Comments.Should().BeNull();
     }
-    
+
     [Test]
     public void Properties_Company()
     {
@@ -719,7 +719,7 @@ public class PresentationTests : SCTest
         var pres = new Presentation(TestAsset("010.pptx"));
 
         // Act-Assert
-        pres.Properties.Company.Should().BeEquivalentTo( "PricewaterhouseCoopers" );
+        pres.Properties.Company.Should().BeEquivalentTo("PricewaterhouseCoopers");
     }
 
     [Test]
