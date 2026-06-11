@@ -200,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.79.2 - 2026-05-15
-🐞Fixed `TextBox.SetText` throwing exception [#1284](https://github.com/ShapeCrawler/ShapeCrawler/issues/1284)
+### Version 0.79.3 - 2026-06-11
+🐞Resolved potential security vulnerabilities
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)

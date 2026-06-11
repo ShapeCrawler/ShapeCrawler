@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.79.3 - 2026-06-11
+🐞Resolved potential security vulnerabilities
+
 ## Version 0.79.2 - 2026-05-15
 🐞Fixed `TextBox.SetText` throwing exception [#1284](https://github.com/ShapeCrawler/ShapeCrawler/issues/1284)
 
