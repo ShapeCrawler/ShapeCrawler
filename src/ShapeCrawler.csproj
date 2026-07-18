@@ -10,8 +10,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <Version>0.79.3</Version>
-    <PackageReleaseNotes>🐞Resolved potential security vulnerabilities</PackageReleaseNotes>
+    <Version>0.79.4</Version>
+    <PackageReleaseNotes>🐞Fixed DLL properties</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
@@ -25,7 +25,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <IsTrimmable Condition="'$(TargetFramework)' == 'net10.0'">true</IsTrimmable> 
     <Copyright>Copyright (c) 2019-2026 Adam Shakhabov</Copyright> 
     <PackageIcon>package icon.jpg</PackageIcon> 
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <NoWarn>OOXML0001</NoWarn>
   </PropertyGroup>

@@ -200,7 +200,7 @@ Want to try the latest features? Access pre-release builds from the `master` bra
 
 ## 📝 Changelog
 
-### Version 0.79.3 - 2026-06-11
-🐞Resolved potential security vulnerabilities
+### Version 0.79.4 - 2026-07-18
+🐞Fixed DLL properties [D1292](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1292)
 
 [**View Full Changelog**](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md)
