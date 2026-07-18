@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.79.4 - 2026-07-18
+🐞Fixed DLL properties [D1292](https://github.com/ShapeCrawler/ShapeCrawler/discussions/1292)
+
 ## Version 0.79.3 - 2026-06-11
 🐞Resolved potential security vulnerabilities
 
