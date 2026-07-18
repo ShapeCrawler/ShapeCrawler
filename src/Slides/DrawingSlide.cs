@@ -71,7 +71,7 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
                     using var stream = new MemoryStream(bytes);
                     using var bitmap = SKBitmap.Decode(stream);
                     var destRect = new SKRect(0, 0, canvas.DeviceClipBounds.Width, canvas.DeviceClipBounds.Height);
-                    canvas.DrawBitmap(bitmap, destRect);
+                    canvas.DrawBitmap(bitmap, destRect, SKSamplingOptions.Default);
                     break;
                 }
 

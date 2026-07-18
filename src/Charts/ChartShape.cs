@@ -216,10 +216,12 @@ internal sealed class ChartShape(Chart chartModel, P.GraphicFrame pGraphicFrame)
             layout.CenterX + layout.Radius,
             layout.CenterY + layout.Radius);
 
-        using var path = new SKPath();
-        path.MoveTo(layout.CenterX, layout.CenterY);
-        path.ArcTo(rect, startAngle, sweepAngle, false);
-        path.Close();
+        using var pathBuilder = new SKPathBuilder();
+        pathBuilder.MoveTo(layout.CenterX, layout.CenterY);
+        pathBuilder.ArcTo(rect, startAngle, sweepAngle, false);
+        pathBuilder.Close();
+
+        using var path = pathBuilder.Detach();
 
         canvas.DrawPath(path, paint);
 

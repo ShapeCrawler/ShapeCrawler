@@ -90,7 +90,7 @@ internal class PictureShape(Picture picture, P.Picture pPicture) : DrawingShape(
             paint.Color = paint.Color.WithAlpha(alpha);
         }
 
-        canvas.DrawBitmap(bitmap, srcRect, destRect, paint);
+        canvas.DrawBitmap(bitmap, srcRect, destRect, SKSamplingOptions.Default, paint);
         canvas.Restore();
     }
 
