@@ -106,34 +106,35 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         paint.Color = linePaint.Color;
         paint.IsAntialias = true;
 
-        using var path = new SKPath();
+        using var pathBuilder = new SKPathBuilder();
         if (type == A.LineEndValues.Stealth)
         {
             paint.Style = SKPaintStyle.Fill;
-            path.MoveTo(0, 0);
-            path.LineTo(-arrowSize, -arrowSize / 2);
-            path.LineTo(-arrowSize * 0.6f, 0);
-            path.LineTo(-arrowSize, arrowSize / 2);
-            path.Close();
+            pathBuilder.MoveTo(0, 0);
+            pathBuilder.LineTo(-arrowSize, -arrowSize / 2);
+            pathBuilder.LineTo(-arrowSize * 0.6f, 0);
+            pathBuilder.LineTo(-arrowSize, arrowSize / 2);
+            pathBuilder.Close();
         }
         else if (type == A.LineEndValues.Arrow)
         {
             paint.Style = SKPaintStyle.Stroke;
             paint.StrokeWidth = linePaint.StrokeWidth;
-            path.MoveTo(-arrowSize, -arrowSize / 2);
-            path.LineTo(0, 0);
-            path.LineTo(-arrowSize, arrowSize / 2);
+            pathBuilder.MoveTo(-arrowSize, -arrowSize / 2);
+            pathBuilder.LineTo(0, 0);
+            pathBuilder.LineTo(-arrowSize, arrowSize / 2);
         }
         else
         {
             // Default to Triangle for other types (Oval, Diamond, etc.) or when explicitly Triangle
             paint.Style = SKPaintStyle.Fill;
-            path.MoveTo(0, 0);
-            path.LineTo(-arrowSize, -arrowSize / 2);
-            path.LineTo(-arrowSize, arrowSize / 2);
-            path.Close();
+            pathBuilder.MoveTo(0, 0);
+            pathBuilder.LineTo(-arrowSize, -arrowSize / 2);
+            pathBuilder.LineTo(-arrowSize, arrowSize / 2);
+            pathBuilder.Close();
         }
 
+        using var path = pathBuilder.Detach();
         canvas.Save();
         canvas.Translate(tip.X, tip.Y);
         canvas.RotateDegrees((float)(angle * 180 / Math.PI));
