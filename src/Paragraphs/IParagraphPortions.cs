@@ -60,13 +60,25 @@ internal sealed class ParagraphPortions(A.Paragraph aParagraph) : IParagraphPort
 
     public void AddLineBreak()
     {
-        var lastARunOrABreak = aParagraph.Last();
-        lastARunOrABreak.InsertAfterSelf(new A.Break());
+        var endParagraphRunProperties = aParagraph.GetFirstChild<A.EndParagraphRunProperties>();
+        if (endParagraphRunProperties != null)
+        {
+            endParagraphRunProperties.InsertBeforeSelf(new A.Break());
+            return;
+        }
+
+        aParagraph.Append(new A.Break());
     }
 
-    public IEnumerator<IParagraphPortion> GetEnumerator() => this.GetPortions().GetEnumerator();
+    public IEnumerator<IParagraphPortion> GetEnumerator()
+    {
+        return this.GetPortions().GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
 
     private void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text)
     {

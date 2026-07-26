@@ -24,6 +24,7 @@ public interface ITableRowCollection : IEnumerable<ITableRow>
     /// </summary>
     ITableRow this[int index] { get; }
 
+
     /// <summary>
     ///     Removes specified row from collection.
     /// </summary>
@@ -92,7 +93,7 @@ internal sealed class TableRowCollection : ITableRowCollection
             new SCATableRow(aTableRow).AddNewCell();
         }
 
-        aTable.Append(aTableRow);
+        this.aTable.Append(aTableRow);
     }
 
     public void Add(int index)
@@ -129,9 +130,15 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
     }
 
-    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
+    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()
+    {
+        return this.Rows().GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.Rows().GetEnumerator();
+    }
 
     public void Add(int index, int templateRowIndex)
     {
@@ -189,7 +196,8 @@ internal sealed class TableRowCollection : ITableRowCollection
         // Copy font color if present (check Run properties first, then EndParagraphRunProperties)
         var templatePara = templateACell.TextBody!.GetFirstChild<A.Paragraph>()!;
         var templateSolidFill = templatePara.GetFirstChild<A.Run>()?.RunProperties?.GetFirstChild<A.SolidFill>()
-            ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()?.GetFirstChild<A.SolidFill>();
+                                ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()
+                                    ?.GetFirstChild<A.SolidFill>();
 
         if (templateSolidFill != null)
         {
@@ -220,8 +228,11 @@ internal sealed class TableRowCollection : ITableRowCollection
         return newACell;
     }
 
-    private List<TableRow> Rows() =>
-    [
-        .. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
-    ];
+    private List<TableRow> Rows()
+    {
+        return
+        [
+            .. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
+        ];
+    }
 }
