@@ -149,6 +149,37 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Slides_Add_scales_picture_to_fit_target_slide_when_copying_to_presentation_with_different_slide_size()
+    {
+        // Arrange
+        var sourcePres = new Presentation(TestAsset("issue-587-source.pptx"));
+        var copyingSlide = sourcePres.Slide(1);
+        var copyingPicture = copyingSlide.Shape("Picture 4");
+        var destPres = new Presentation(TestAsset("issue-587-target.pptx"));
+        var scaleToFitTargetWidth = destPres.SlideWidth / sourcePres.SlideWidth;
+        var targetXOffset = (destPres.SlideWidth - sourcePres.SlideWidth * scaleToFitTargetWidth) / 2;
+        var targetYOffset = (destPres.SlideHeight - sourcePres.SlideHeight * scaleToFitTargetWidth) / 2;
+        var expectedPictureX = copyingPicture.X * scaleToFitTargetWidth + targetXOffset;
+        var expectedPictureY = copyingPicture.Y * scaleToFitTargetWidth + targetYOffset;
+        var expectedPictureWidth = copyingPicture.Width * scaleToFitTargetWidth;
+        var expectedPictureHeight = copyingPicture.Height * scaleToFitTargetWidth;
+        var savedPres = new MemoryStream();
+
+        // Act
+        destPres.Slides.Add(copyingSlide);
+        destPres.Save(savedPres);
+        destPres = new Presentation(savedPres);
+
+        // Assert
+        var copiedPicture = destPres.Slides.Last().Shape("Picture 4");
+        copiedPicture.X.Should().Be(expectedPictureX);
+        copiedPicture.Y.Should().Be(expectedPictureY);
+        copiedPicture.Width.Should().Be(expectedPictureWidth);
+        copiedPicture.Height.Should().Be(expectedPictureHeight);
+        ValidatePresentation(destPres);
+    }
+
+    [Test]
     public void Slides_Add_should_copy_notes()
     {
         // Arrange
