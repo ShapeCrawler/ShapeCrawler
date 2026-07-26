@@ -24,6 +24,7 @@ public interface ITableRowCollection : IEnumerable<ITableRow>
     /// </summary>
     ITableRow this[int index] { get; }
 
+
     /// <summary>
     ///     Removes specified row from collection.
     /// </summary>
@@ -58,12 +59,12 @@ internal sealed class TableRowCollection : ITableRowCollection
 
     internal TableRowCollection(P.GraphicFrame pGraphicFrame)
     {
-        this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
+        aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
     }
 
-    public int Count => this.Rows().Count;
+    public int Count => Rows().Count;
 
-    public ITableRow this[int index] => this.Rows()[index];
+    public ITableRow this[int index] => Rows()[index];
 
     public void Remove(ITableRow removing)
     {
@@ -73,19 +74,19 @@ internal sealed class TableRowCollection : ITableRowCollection
 
     public void RemoveAt(int index)
     {
-        var rows = this.Rows();
+        var rows = Rows();
         if (index < 0 || index >= rows.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         var innerRow = rows[index];
-        this.Remove(innerRow);
+        Remove(innerRow);
     }
 
     public void Add()
     {
-        var columnsCount = this.Rows()[0].Cells.Count;
+        var columnsCount = Rows()[0].Cells.Count;
         var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
@@ -97,7 +98,7 @@ internal sealed class TableRowCollection : ITableRowCollection
 
     public void Add(int index)
     {
-        var rows = this.Rows();
+        var rows = Rows();
         if (index < 0 || index > rows.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
@@ -116,26 +117,32 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
 
         // Get the element before which we want to insert the new row
-        var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
+        var aTableRows = aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
         {
             // Add at the end
-            this.aTable.Append(aTableRow);
+            aTable.Append(aTableRow);
         }
         else
         {
             // Insert before the row at the specified index
-            this.aTable.InsertBefore(aTableRow, aTableRows[index]);
+            aTable.InsertBefore(aTableRow, aTableRows[index]);
         }
     }
 
-    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
+    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()
+    {
+        return Rows().GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return Rows().GetEnumerator();
+    }
 
     public void Add(int index, int templateRowIndex)
     {
-        var rows = this.Rows();
+        var rows = Rows();
         if (index < 0 || index > rows.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
@@ -163,16 +170,16 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
 
         // Get the element before which we want to insert the new row
-        var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
+        var aTableRows = aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
         {
             // Add at the end
-            this.aTable.Append(newARow);
+            aTable.Append(newARow);
         }
         else
         {
             // Insert before the row at the specified index
-            this.aTable.InsertBefore(newARow, aTableRows[index]);
+            aTable.InsertBefore(newARow, aTableRows[index]);
         }
     }
 
@@ -189,7 +196,8 @@ internal sealed class TableRowCollection : ITableRowCollection
         // Copy font color if present (check Run properties first, then EndParagraphRunProperties)
         var templatePara = templateACell.TextBody!.GetFirstChild<A.Paragraph>()!;
         var templateSolidFill = templatePara.GetFirstChild<A.Run>()?.RunProperties?.GetFirstChild<A.SolidFill>()
-            ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()?.GetFirstChild<A.SolidFill>();
+                                ?? templatePara.GetFirstChild<A.EndParagraphRunProperties>()
+                                    ?.GetFirstChild<A.SolidFill>();
 
         if (templateSolidFill != null)
         {
@@ -220,8 +228,11 @@ internal sealed class TableRowCollection : ITableRowCollection
         return newACell;
     }
 
-    private List<TableRow> Rows() =>
-    [
-        .. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
-    ];
+    private List<TableRow> Rows()
+    {
+        return
+        [
+            .. aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
+        ];
+    }
 }
