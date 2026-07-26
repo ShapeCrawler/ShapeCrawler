@@ -59,12 +59,12 @@ internal sealed class TableRowCollection : ITableRowCollection
 
     internal TableRowCollection(P.GraphicFrame pGraphicFrame)
     {
-        aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
+        this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
     }
 
-    public int Count => Rows().Count;
+    public int Count => this.Rows().Count;
 
-    public ITableRow this[int index] => Rows()[index];
+    public ITableRow this[int index] => this.Rows()[index];
 
     public void Remove(ITableRow removing)
     {
@@ -74,31 +74,31 @@ internal sealed class TableRowCollection : ITableRowCollection
 
     public void RemoveAt(int index)
     {
-        var rows = Rows();
+        var rows = this.Rows();
         if (index < 0 || index >= rows.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         var innerRow = rows[index];
-        Remove(innerRow);
+        this.Remove(innerRow);
     }
 
     public void Add()
     {
-        var columnsCount = Rows()[0].Cells.Count;
+        var columnsCount = this.Rows()[0].Cells.Count;
         var aTableRow = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
             new SCATableRow(aTableRow).AddNewCell();
         }
 
-        aTable.Append(aTableRow);
+        this.aTable.Append(aTableRow);
     }
 
     public void Add(int index)
     {
-        var rows = Rows();
+        var rows = this.Rows();
         if (index < 0 || index > rows.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
@@ -117,32 +117,32 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
 
         // Get the element before which we want to insert the new row
-        var aTableRows = aTable.Elements<A.TableRow>().ToList();
+        var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
         {
             // Add at the end
-            aTable.Append(aTableRow);
+            this.aTable.Append(aTableRow);
         }
         else
         {
             // Insert before the row at the specified index
-            aTable.InsertBefore(aTableRow, aTableRows[index]);
+            this.aTable.InsertBefore(aTableRow, aTableRows[index]);
         }
     }
 
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()
     {
-        return Rows().GetEnumerator();
+        return this.Rows().GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return Rows().GetEnumerator();
+        return this.Rows().GetEnumerator();
     }
 
     public void Add(int index, int templateRowIndex)
     {
-        var rows = Rows();
+        var rows = this.Rows();
         if (index < 0 || index > rows.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
@@ -170,16 +170,16 @@ internal sealed class TableRowCollection : ITableRowCollection
         }
 
         // Get the element before which we want to insert the new row
-        var aTableRows = aTable.Elements<A.TableRow>().ToList();
+        var aTableRows = this.aTable.Elements<A.TableRow>().ToList();
         if (index == aTableRows.Count)
         {
             // Add at the end
-            aTable.Append(newARow);
+            this.aTable.Append(newARow);
         }
         else
         {
             // Insert before the row at the specified index
-            aTable.InsertBefore(newARow, aTableRows[index]);
+            this.aTable.InsertBefore(newARow, aTableRows[index]);
         }
     }
 
@@ -232,7 +232,7 @@ internal sealed class TableRowCollection : ITableRowCollection
     {
         return
         [
-            .. aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
+            .. this.aTable.Elements<A.TableRow>().Select((aTableRow, index) => new TableRow(aTableRow, index))
         ];
     }
 }

@@ -20,7 +20,7 @@ public class TextBoxTests : SCTest
         var text2 = textBox2.Text;
         var text3 = textBox3.Text;
 
-        // Act
+        // Assert
         text1.Should().NotBeEmpty();
         text2.Should().BeEquivalentTo("id3");
         text3.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
@@ -300,8 +300,6 @@ public class TextBoxTests : SCTest
     public void Shape_IsAutoShape()
     {
         // Arrange
-        var pres8 = new Presentation(TestAsset("008.pptx"));
-        var pres21 = new Presentation(TestAsset("021.pptx"));
         var shapeCase1 = new Presentation(TestAsset("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
         var shapeCase2 = new Presentation(TestAsset("021.pptx")).Slides[3].Shapes.First(sp => sp.Id == 2);
         var shapeCase3 = new Presentation(TestAsset("011_dt.pptx")).Slides[0].Shapes.First(sp => sp.Id == 54275);
@@ -367,8 +365,6 @@ public class TextBoxTests : SCTest
         var autoShape = pres.Slides[0].Shapes.First(sp => sp.Id == 3);
         var textBox = autoShape.TextBox!;
         var paragraphs = textBox.Paragraphs;
-        var paragraph = textBox.Paragraphs.First();
-
         // Act
         textBox.SetText("A new text");
         paragraphs.Add();
@@ -509,7 +505,6 @@ public class TextBoxTests : SCTest
         var textBox = shape.TextBox!;
 
         // Act
-        var text = textBox.Text;
         textBox.SetText("some text");
 
         // Assert
