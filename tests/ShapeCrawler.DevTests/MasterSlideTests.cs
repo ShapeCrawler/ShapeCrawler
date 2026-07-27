@@ -136,6 +136,21 @@ public class MasterSlideTests : SCTest
         // Act & Assert
         new Presentation().SlideMaster(1).Number.Should().Be(1);
     }
+
+    [Test]
+    public void Remove_removes_unused_slide_master()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("002.pptx"));
+
+        // Act
+        pres.MasterSlides.Single(slideMaster => slideMaster.Number == 2).Remove();
+        pres = SaveAndOpenPresentation(pres);
+
+        // Assert
+        pres.MasterSlides.Should().HaveCount(1);
+        ValidatePresentation(pres);
+    }
     
     [Test]
     public void SlideLayout_Background_SolidFill_Color_Getter_returns_solid_color_of_the_slide_layout_background()

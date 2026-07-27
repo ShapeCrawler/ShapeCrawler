@@ -149,6 +149,40 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Slides_Add_many_slides_with_pictures_smoke_test()
+    {
+        // Arrange
+        const int copiedSlidesCount = 15;
+        var image = TestImage();
+        var sourcePres = new Presentation(pres =>
+        {
+            for (var i = 0; i < copiedSlidesCount; i++)
+            {
+                pres.Slide(slide => slide.Picture(image));
+            }
+        });
+        var baseTemplate = new Presentation(pres => pres.Slide());
+        var output = Path.Combine(
+            TestContext.CurrentContext.WorkDirectory,
+            "Slides_Add_many_slides_with_pictures_smoke_test.pptx");
+
+        // Act
+        foreach (var sourceSlide in sourcePres.Slides)
+        {
+            baseTemplate.Slides.Add(sourceSlide);
+        }
+
+        baseTemplate.Save(output);
+        var savedPresentation = new Presentation(output);
+
+        // Assert
+        savedPresentation.Slides.Should().HaveCount(copiedSlidesCount + 1);
+        savedPresentation.Slides.Skip(1)
+            .Should().OnlyContain(slide => slide.Shapes.Any(shape => shape.Picture != null));
+        ValidatePresentation(savedPresentation);
+    }
+
+    [Test]
     public void Slides_Add_scales_picture_to_fit_target_slide_when_copying_to_presentation_with_different_slide_size()
     {
         // Arrange
