@@ -152,10 +152,10 @@ public class PresentationTests : SCTest
     public void Slides_Add_scales_picture_to_fit_target_slide_when_copying_to_presentation_with_different_slide_size()
     {
         // Arrange
-        var sourcePres = new Presentation(TestAsset("issue-587-source.pptx"));
+        var sourcePres = new Presentation(TestAsset("087 issue-587-source.pptx"));
         var copyingSlide = sourcePres.Slide(1);
         var copyingPicture = copyingSlide.Shape("Picture 4");
-        var destPres = new Presentation(TestAsset("issue-587-target.pptx"));
+        var destPres = new Presentation(TestAsset("088 issue-587-target.pptx"));
         var scaleToFitTargetWidth = destPres.SlideWidth / sourcePres.SlideWidth;
         var targetXOffset = (destPres.SlideWidth - sourcePres.SlideWidth * scaleToFitTargetWidth) / 2;
         var targetYOffset = (destPres.SlideHeight - sourcePres.SlideHeight * scaleToFitTargetWidth) / 2;
@@ -177,6 +177,8 @@ public class PresentationTests : SCTest
         copiedPicture.Width.Should().Be(expectedPictureWidth);
         copiedPicture.Height.Should().Be(expectedPictureHeight);
         ValidatePresentation(destPres);
+        
+        destPres.Save(@"c:\temp\test.pptx");
     }
 
     [Test]
