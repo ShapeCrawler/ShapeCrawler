@@ -82,7 +82,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             {
                 var directNewSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
                 var directClonedSlidePart =
-                    new SCSlidePart(directSourceSlidePart).CloneTo(presentationPart, directNewSlideRelId);
+                    new SCSlidePart(directSourceSlidePart).CloneTo(presentationPart, directNewSlideRelId, out _);
 
                 SlideHyperlinkFix.FixSlideHyperlinks(directSourceSlidePart, directClonedSlidePart, presentationPart);
                 InsertSlideAtPosition(presentationPart, directNewSlideRelId, slideNumber);
@@ -96,9 +96,18 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
-        var clonedSlidePart = new SCSlidePart(sourceSlidePart).CloneTo(presentationPart, newSlideRelId);
+        var clonedSlidePart = new SCSlidePart(sourceSlidePart).CloneTo(
+            presentationPart,
+            newSlideRelId,
+            out var importedLayout);
 
         SlideHyperlinkFix.FixSlideHyperlinks(sourceSlidePart, clonedSlidePart, presentationPart);
+        ScaleSlideContent(clonedSlidePart, sourceSlidePresPart.Presentation!.SlideSize!, presentationPart.Presentation!.SlideSize!);
+        if (importedLayout)
+        {
+            ScaleSlideLayout(clonedSlidePart.SlideLayoutPart!, sourceSlidePresPart.Presentation!.SlideSize!, presentationPart.Presentation!.SlideSize!);
+        }
+
         InsertSlideAtPosition(presentationPart, newSlideRelId, slideNumber);
 
         presentationPart.Presentation!.Save();
@@ -183,7 +192,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             if (ReferenceEquals(sourcePresPart.OpenXmlPackage, targetPresPart.OpenXmlPackage))
             {
                 var newSlideRelId = new SCOpenXmlPart(targetPresPart).NextRelationshipId();
-                var clonedSlidePart = new SCSlidePart(directSourceSlidePart).CloneTo(targetPresPart, newSlideRelId);
+                var clonedSlidePart = new SCSlidePart(directSourceSlidePart).CloneTo(targetPresPart, newSlideRelId, out _);
                 SlideHyperlinkFix.FixSlideHyperlinks(directSourceSlidePart, clonedSlidePart, targetPresPart);
                 InsertSlideAtPosition(targetPresPart, newSlideRelId, this.Count + 1);
                 targetPres.Save();
@@ -211,7 +220,136 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         imageCatalog.Deduplicate(addedSlidePart);
 
         SlideHyperlinkFix.FixSlideHyperlinks(sourceSlidePart, addedSlidePart, targetPresPart);
+        ScaleSlideContent(addedSlidePart, sourceSlidePresPart.Presentation!.SlideSize!, targetPres.SlideSize!);
+        ScaleSlideLayout(addedSlidePart.SlideLayoutPart!, sourceSlidePresPart.Presentation!.SlideSize!, targetPres.SlideSize!);
+        ScaleSlideMaster(addedSlideMasterPart, sourceSlidePresPart.Presentation!.SlideSize!, targetPres.SlideSize!);
+        targetPres.Save();
     }
+
+    private static void ScaleSlideContent(SlidePart slidePart, P.SlideSize sourceSize, P.SlideSize targetSize)
+    {
+        var scale = Math.Min(
+            (decimal)targetSize.Cx!.Value / sourceSize.Cx!.Value,
+            (decimal)targetSize.Cy!.Value / sourceSize.Cy!.Value);
+        var xOffset = (targetSize.Cx!.Value - Scale(sourceSize.Cx!.Value, scale)) / 2;
+        var yOffset = (targetSize.Cy!.Value - Scale(sourceSize.Cy!.Value, scale)) / 2;
+        var shapeTree = slidePart.Slide!.CommonSlideData!.ShapeTree!;
+
+        foreach (var element in shapeTree.ChildElements)
+        {
+            ScaleElement(element, scale, xOffset, yOffset);
+        }
+
+        slidePart.Slide.Save();
+    }
+
+    private static void ScaleElement(OpenXmlElement element, decimal scale, long xOffset, long yOffset)
+    {
+        switch (element)
+        {
+            case P.Shape shape:
+                ScaleTransform(shape.ShapeProperties?.Transform2D, scale, xOffset, yOffset);
+                break;
+            case P.Picture picture:
+                ScaleTransform(picture.ShapeProperties?.Transform2D, scale, xOffset, yOffset);
+                break;
+            case P.ConnectionShape connectionShape:
+                ScaleTransform(connectionShape.ShapeProperties?.Transform2D, scale, xOffset, yOffset);
+                break;
+            case P.GraphicFrame graphicFrame:
+                ScaleTransform(graphicFrame.Transform, scale, xOffset, yOffset);
+                ScaleTable(graphicFrame, scale);
+                break;
+            case P.GroupShape groupShape:
+                ScaleTransform(groupShape.GroupShapeProperties?.TransformGroup, scale, xOffset, yOffset);
+                break;
+        }
+    }
+
+    private static void ScaleTransform(A.Transform2D? transform, decimal scale, long xOffset, long yOffset)
+    {
+        if (transform is not { Offset: not null, Extents: not null })
+        {
+            return;
+        }
+
+        ScaleTransform(transform.Offset, transform.Extents, scale, xOffset, yOffset);
+    }
+
+    private static void ScaleTransform(P.Transform? transform, decimal scale, long xOffset, long yOffset)
+    {
+        if (transform is not { Offset: not null, Extents: not null })
+        {
+            return;
+        }
+
+        ScaleTransform(transform.Offset, transform.Extents, scale, xOffset, yOffset);
+    }
+
+    private static void ScaleTransform(A.TransformGroup? transform, decimal scale, long xOffset, long yOffset)
+    {
+        if (transform is not { Offset: not null, Extents: not null })
+        {
+            return;
+        }
+
+        ScaleTransform(transform.Offset, transform.Extents, scale, xOffset, yOffset);
+    }
+
+    private static void ScaleTransform(A.Offset offset, A.Extents extents, decimal scale, long xOffset, long yOffset)
+    {
+        offset.X = Scale(offset.X!.Value, scale) + xOffset;
+        offset.Y = Scale(offset.Y!.Value, scale) + yOffset;
+        extents.Cx = Scale(extents.Cx!.Value, scale);
+        extents.Cy = Scale(extents.Cy!.Value, scale);
+    }
+
+    private static void ScaleSlideLayout(SlideLayoutPart slideLayoutPart, P.SlideSize sourceSize, P.SlideSize targetSize)
+    {
+        ScaleShapeTree(slideLayoutPart.SlideLayout!.CommonSlideData!.ShapeTree!, sourceSize, targetSize);
+        slideLayoutPart.SlideLayout.Save();
+    }
+
+    private static void ScaleSlideMaster(SlideMasterPart slideMasterPart, P.SlideSize sourceSize, P.SlideSize targetSize)
+    {
+        ScaleShapeTree(slideMasterPart.SlideMaster!.CommonSlideData!.ShapeTree!, sourceSize, targetSize);
+        slideMasterPart.SlideMaster.Save();
+    }
+
+    private static void ScaleShapeTree(P.ShapeTree shapeTree, P.SlideSize sourceSize, P.SlideSize targetSize)
+    {
+        var scale = Math.Min(
+            (decimal)targetSize.Cx!.Value / sourceSize.Cx!.Value,
+            (decimal)targetSize.Cy!.Value / sourceSize.Cy!.Value);
+        var xOffset = (targetSize.Cx!.Value - Scale(sourceSize.Cx!.Value, scale)) / 2;
+        var yOffset = (targetSize.Cy!.Value - Scale(sourceSize.Cy!.Value, scale)) / 2;
+
+        foreach (var element in shapeTree.ChildElements)
+        {
+            ScaleElement(element, scale, xOffset, yOffset);
+        }
+    }
+
+    private static void ScaleTable(P.GraphicFrame graphicFrame, decimal scale)
+    {
+        var table = graphicFrame.Graphic?.GraphicData?.GetFirstChild<A.Table>();
+        if (table is null)
+        {
+            return;
+        }
+
+        foreach (var column in table.TableGrid!.Elements<A.GridColumn>())
+        {
+            column.Width = Scale(column.Width!.Value, scale);
+        }
+
+        foreach (var row in table.Elements<A.TableRow>())
+        {
+            row.Height = Scale(row.Height!.Value, scale);
+        }
+    }
+
+    private static long Scale(long value, decimal scale) => (long)Math.Round(value * scale, MidpointRounding.AwayFromZero);
 
     private static void InsertSlideAtPosition(PresentationPart presentationPart, string relationshipId, int position)
     {

@@ -304,6 +304,10 @@
     <EmbeddedResource Include="Assets\078.json" />
     <None Remove="Assets\084 charts.pptx" />
     <EmbeddedResource Include="Assets\084 charts.pptx" />
+    <None Remove="Assets\087 issue-587-source.pptx" />
+    <EmbeddedResource Include="Assets\087 issue-587-source.pptx" />
+    <None Remove="Assets\088 issue-587-target.pptx" />
+    <EmbeddedResource Include="Assets\088 issue-587-target.pptx" />
   </ItemGroup>
 
 </Project>
