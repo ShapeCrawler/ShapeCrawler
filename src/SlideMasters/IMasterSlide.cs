@@ -62,7 +62,7 @@ public interface IMasterSlide
     ILayoutSlide SlideLayout(int number);
 
     /// <summary>
-    ///     Removes the slide master when it is not used by any slides.
+    ///     Removes the slide master when it is unused and not the last slide master.
     /// </summary>
     void Remove();
 }
@@ -110,6 +110,11 @@ internal sealed class MasterSlide : IMasterSlide
     public void Remove()
     {
         var presentationPart = this.slideMasterPart.GetParentParts().OfType<PresentationPart>().Single();
+        if (presentationPart.SlideMasterParts.Count() == 1)
+        {
+            throw new SCException("Cannot remove the last slide master.");
+        }
+
         if (this.IsUsedBySlide(presentationPart))
         {
             throw new SCException("Cannot remove a slide master that is used by slides.");
