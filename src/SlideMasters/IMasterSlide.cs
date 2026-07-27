@@ -60,6 +60,11 @@ public interface IMasterSlide
     ///     Gets slide layout by number.
     /// </summary>
     ILayoutSlide SlideLayout(int number);
+
+    /// <summary>
+    ///     Removes the slide master when it is unused and not the last slide master.
+    /// </summary>
+    void Remove();
 }
 
 internal sealed class MasterSlide : IMasterSlide
@@ -101,7 +106,33 @@ internal sealed class MasterSlide : IMasterSlide
 
     public ILayoutSlide SlideLayout(int number) => this.InternalSlideLayout(number);
 
+    /// <inheritdoc />
+    public void Remove()
+    {
+        var presentationPart = this.slideMasterPart.GetParentParts().OfType<PresentationPart>().Single();
+        if (presentationPart.SlideMasterParts.Count() == 1)
+        {
+            throw new SCException("Cannot remove the last slide master.");
+        }
+
+        if (this.IsUsedBySlide(presentationPart))
+        {
+            throw new SCException("Cannot remove a slide master that is used by slides.");
+        }
+
+        var relationshipId = presentationPart.GetIdOfPart(this.slideMasterPart);
+        var pSlideMasterId = presentationPart.Presentation!.SlideMasterIdList!
+            .Elements<P.SlideMasterId>()
+            .Single(x => x.RelationshipId == relationshipId);
+        pSlideMasterId.Remove();
+        presentationPart.DeletePart(this.slideMasterPart);
+    }
+
     internal LayoutSlide InternalSlideLayout(int number) => this.layouts.Layout(number);
+
+    private bool IsUsedBySlide(PresentationPart presentationPart) =>
+        presentationPart.SlideParts.Any(slidePart =>
+            this.slideMasterPart.SlideLayoutParts.Contains(slidePart.SlideLayoutPart));
 
     private MasterSlideNumber? CreateSlideNumber()
     {

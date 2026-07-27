@@ -27,7 +27,7 @@ internal sealed class MasterSlideCollection(IEnumerable<SlideMasterPart> slideMa
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     internal MasterSlide SlideMaster(int number) =>
-        this.SlideMasters().First(slideMaster => slideMaster.Number == number);
+        this.SlideMasters().ElementAt(number - 1);
 
     private IEnumerable<MasterSlide> SlideMasters()
     {
