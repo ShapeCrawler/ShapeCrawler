@@ -177,8 +177,6 @@ public class PresentationTests : SCTest
         copiedPicture.Width.Should().Be(expectedPictureWidth);
         copiedPicture.Height.Should().Be(expectedPictureHeight);
         ValidatePresentation(destPres);
-        
-        destPres.Save(@"c:\temp\test.pptx");
     }
 
     [Test]
