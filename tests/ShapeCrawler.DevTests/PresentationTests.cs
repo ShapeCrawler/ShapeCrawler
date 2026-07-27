@@ -156,13 +156,15 @@ public class PresentationTests : SCTest
         var copyingSlide = sourcePres.Slide(1);
         var copyingPicture = copyingSlide.Shape("Picture 4");
         var destPres = new Presentation(TestAsset("088 issue-587-target.pptx"));
-        var scaleToFitTargetWidth = destPres.SlideWidth / sourcePres.SlideWidth;
-        var targetXOffset = (destPres.SlideWidth - sourcePres.SlideWidth * scaleToFitTargetWidth) / 2;
-        var targetYOffset = (destPres.SlideHeight - sourcePres.SlideHeight * scaleToFitTargetWidth) / 2;
-        var expectedPictureX = copyingPicture.X * scaleToFitTargetWidth + targetXOffset;
-        var expectedPictureY = copyingPicture.Y * scaleToFitTargetWidth + targetYOffset;
-        var expectedPictureWidth = copyingPicture.Width * scaleToFitTargetWidth;
-        var expectedPictureHeight = copyingPicture.Height * scaleToFitTargetWidth;
+        var scaleToFitTargetSize = Math.Min(
+            destPres.SlideWidth / sourcePres.SlideWidth,
+            destPres.SlideHeight / sourcePres.SlideHeight);
+        var targetXOffset = (destPres.SlideWidth - sourcePres.SlideWidth * scaleToFitTargetSize) / 2;
+        var targetYOffset = (destPres.SlideHeight - sourcePres.SlideHeight * scaleToFitTargetSize) / 2;
+        var expectedPictureX = copyingPicture.X * scaleToFitTargetSize + targetXOffset;
+        var expectedPictureY = copyingPicture.Y * scaleToFitTargetSize + targetYOffset;
+        var expectedPictureWidth = copyingPicture.Width * scaleToFitTargetSize;
+        var expectedPictureHeight = copyingPicture.Height * scaleToFitTargetSize;
         var savedPres = new MemoryStream();
 
         // Act

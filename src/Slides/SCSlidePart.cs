@@ -34,8 +34,9 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
     /// </summary>
     /// <param name="targetPresentationPart">Destination presentation part.</param>
     /// <param name="relationshipId">Relationship identifier to use for the new slide.</param>
+    /// <param name="importedLayout">Indicates whether the source layout was copied to the target presentation.</param>
     /// <returns>Cloned slide part instance.</returns>
-    internal SlidePart CloneTo(PresentationPart targetPresentationPart, string relationshipId)
+    internal SlidePart CloneTo(PresentationPart targetPresentationPart, string relationshipId, out bool importedLayout)
     {
         var clonedSlidePart = targetPresentationPart.AddNewPart<SlidePart>(relationshipId);
         this.CopySlideContent(clonedSlidePart);
@@ -43,7 +44,7 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         this.CopyNotesSlidePart(clonedSlidePart);
         this.CopyImageParts(clonedSlidePart);
         this.CopyChartParts(clonedSlidePart);
-        this.LinkToLayoutPart(targetPresentationPart, clonedSlidePart);
+        importedLayout = this.LinkToLayoutPart(targetPresentationPart, clonedSlidePart);
 
         return clonedSlidePart;
     }
@@ -276,24 +277,26 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         return masterPart;
     }
 
-    private void LinkToLayoutPart(PresentationPart presentationPart, SlidePart clonedSlidePart)
+    private bool LinkToLayoutPart(PresentationPart presentationPart, SlidePart clonedSlidePart)
     {
         var sourceLayoutPart = slidePart.SlideLayoutPart;
         if (sourceLayoutPart == null)
         {
-            return;
+            return false;
         }
 
         if (ReferenceEquals(slidePart.OpenXmlPackage, presentationPart.OpenXmlPackage))
         {
             clonedSlidePart.AddPart(sourceLayoutPart);
-            return;
+            return false;
         }
 
-        var targetLayoutPart = FindMatchingLayout(presentationPart, sourceLayoutPart) ??
-                               CreateNewLayout(presentationPart, sourceLayoutPart);
+        var targetLayoutPart = FindMatchingLayout(presentationPart, sourceLayoutPart);
+        var importedLayout = targetLayoutPart is null;
+        targetLayoutPart ??= CreateNewLayout(presentationPart, sourceLayoutPart);
 
         clonedSlidePart.AddPart(targetLayoutPart);
+        return importedLayout;
     }
 
     private void CopySlideContent(SlidePart clonedSlidePart)
