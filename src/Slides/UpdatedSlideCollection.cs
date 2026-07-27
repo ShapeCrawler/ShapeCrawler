@@ -27,10 +27,10 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var newSlidePart = presPart.AddNewPart<SlidePart>(rId);
         var layout = new MasterSlideCollection(presPart.SlideMasterParts).SlideMaster(1)
             .InternalSlideLayout(layoutNumber);
-        newSlidePart.AddPart(layout.SlideLayoutPart, "rId1");
+        newSlidePart.AddPart(layout.InternalSlideLayoutPart(), "rId1");
 
         // Copy layout's other relationships (images, charts, etc.) with same relationship IDs
-        foreach (var layoutPartPair in layout.SlideLayoutPart.Parts)
+        foreach (var layoutPartPair in layout.InternalSlideLayoutPart().Parts)
         {
             // Skip the slide master relationship as slides cannot reference masters directly
             if (layoutPartPair.OpenXmlPart is SlideMasterPart)
@@ -41,7 +41,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             newSlidePart.AddPart(layoutPartPair.OpenXmlPart, layoutPartPair.RelationshipId);
         }
 
-        newSlidePart.Slide = new P.Slide(layout.SlideLayoutPart.SlideLayout!.CommonSlideData!.CloneNode(true));
+        newSlidePart.Slide = new P.Slide(layout.InternalSlideLayoutPart().SlideLayout!.CommonSlideData!.CloneNode(true));
         var removingShapes = newSlidePart.Slide.CommonSlideData!.ShapeTree!.OfType<P.Shape>()
             .Where(shape =>
             {
@@ -135,9 +135,9 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var layout = new MasterSlideCollection(presPart.SlideMasterParts)
             .SlideMaster(1)
             .InternalSlideLayout(layoutNumber);
-        slidePart.AddPart(layout.SlideLayoutPart, "rId1");
+        slidePart.AddPart(layout.InternalSlideLayoutPart(), "rId1");
 
-        if (layout.SlideLayoutPart.SlideLayout!.CommonSlideData is { ShapeTree: { } shapeTree })
+        if (layout.InternalSlideLayoutPart().SlideLayout!.CommonSlideData is { ShapeTree: { } shapeTree })
         {
             var placeholderShapes = shapeTree.ChildElements
                 .OfType<P.Shape>()

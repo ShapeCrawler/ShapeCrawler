@@ -128,6 +128,12 @@ internal sealed class MasterSlide : IMasterSlide
         presentationPart.DeletePart(this.slideMasterPart);
     }
 
+    /// <summary>
+    ///     Gets the underlying Open XML slide master part.
+    /// </summary>
+    /// <returns>Open XML slide master part.</returns>
+    internal SlideMasterPart InternalSlideMasterPart() => this.slideMasterPart;
+
     internal LayoutSlide InternalSlideLayout(int number) => this.layouts.Layout(number);
 
     private bool IsUsedBySlide(PresentationPart presentationPart) =>
