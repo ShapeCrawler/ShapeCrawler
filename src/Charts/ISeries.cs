@@ -15,9 +15,9 @@ namespace ShapeCrawler;
 public interface ISeries
 {
     /// <summary>
-    ///     Gets series name.
+    ///     Gets or sets series name.
     /// </summary>
-    string Name { get; }
+    string Name { get; set; }
 
     /// <summary>
     ///     Gets chart type.
@@ -74,15 +74,90 @@ internal sealed class Series : ISeries
 
     public IReadOnlyList<IChartPoint>? BubbleSizePoints { get; }
 
-    public bool HasName => this.cSer.GetFirstChild<C.SeriesText>()?.StringReference != null;
+    public bool HasName
+    {
+        get
+        {
+            var cSeriesText = this.cSer.GetFirstChild<C.SeriesText>();
+            return cSeriesText?.NumericValue != null || cSeriesText?.StringReference != null;
+        }
+    }
 
-    public string Name => this.ParseName();
+    public string Name
+    {
+        get => this.ParseName();
+        set => this.SetName(value);
+    }
+
+    private static C.StringCache UpdatedStringCache(C.StringCache? currentCache, string value)
+    {
+        var updatedCache = (C.StringCache?)currentCache?.CloneNode(true) ?? new C.StringCache();
+        updatedCache.RemoveAllChildren<C.PointCount>();
+        updatedCache.RemoveAllChildren<C.StringPoint>();
+        updatedCache.AddChild(new C.PointCount { Val = 1U });
+        updatedCache.AddChild(
+            new C.StringPoint(new C.NumericValue(value))
+            {
+                Index = 0U
+            });
+
+        return updatedCache;
+    }
 
     private string ParseName()
     {
-        var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference ?? throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
-        var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>()!.Single().InnerText;
+        var cSeriesText = this.cSer.GetFirstChild<C.SeriesText>();
+        var cStringReference = cSeriesText?.StringReference;
+        if (cStringReference != null)
+        {
+            var cachedName = cStringReference.StringCache?
+                .Elements<C.StringPoint>()
+                .OrderBy(point => point.Index?.Value ?? uint.MaxValue)
+                .Select(point => point.NumericValue?.InnerText)
+                .FirstOrDefault(name => name != null);
+            if (cachedName != null)
+            {
+                return cachedName;
+            }
 
-        return fromCache ?? new Workbook(this.chartPart.EmbeddedPackagePart!).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
+            var formula = cStringReference.Formula?.Text;
+            if (formula != null && this.chartPart.EmbeddedPackagePart != null)
+            {
+                return new Workbook(this.chartPart.EmbeddedPackagePart).FormulaText(formula);
+            }
+        }
+
+        return cSeriesText?.NumericValue?.InnerText
+            ?? throw new SCException(
+                $"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
+    }
+
+    private void SetName(string value)
+    {
+        var cSeriesText = this.cSer.GetFirstChild<C.SeriesText>();
+        if (cSeriesText == null)
+        {
+            ((OpenXmlCompositeElement)this.cSer).AddChild(
+                new C.SeriesText(new C.NumericValue(value)));
+            return;
+        }
+
+        var cStringReference = cSeriesText.StringReference;
+        if (cStringReference == null)
+        {
+            cSeriesText.NumericValue ??= new C.NumericValue();
+            cSeriesText.NumericValue.Text = value;
+            return;
+        }
+
+        var updatedCache = UpdatedStringCache(cStringReference.StringCache, value);
+        var formula = cStringReference.Formula?.Text;
+        if (formula != null && this.chartPart.EmbeddedPackagePart != null)
+        {
+            new Workbook(this.chartPart.EmbeddedPackagePart).UpdateFormulaCell(formula, value);
+        }
+
+        cStringReference.StringCache = updatedCache;
+        cSeriesText.NumericValue?.Remove();
     }
 }
