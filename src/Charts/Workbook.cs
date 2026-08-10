@@ -25,7 +25,7 @@ internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
         var rangeXCells = new List<X.Cell>(addresses.Count);
         foreach (var address in addresses)
         {
-            var xCell = sheetXCells.First(xCell => xCell.CellReference == address);
+            var xCell = WorksheetCell(sheetXCells, sheetName, address);
             rangeXCells.Add(xCell);
         }
 
@@ -48,8 +48,7 @@ internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
         using var stream = embeddedPackagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, false);
         var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!;
-        var xCell = WorksheetCells(sdkWorkbookPart, sheetName)
-            .First(cell => cell.CellReference == address);
+        var xCell = WorksheetCell(WorksheetCells(sdkWorkbookPart, sheetName), sheetName, address);
         var value = xCell.CellValue?.Text ?? xCell.InlineString?.InnerText ?? string.Empty;
         if (xCell.DataType?.Value != X.CellValues.SharedString)
         {
@@ -78,8 +77,7 @@ internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
         using (var sdkSpreadsheetDocument = SpreadsheetDocument.Open(transactionStream, true))
         {
             var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!;
-            var xCell = WorksheetCells(sdkWorkbookPart, sheetName)
-                .First(cell => cell.CellReference == address);
+            var xCell = WorksheetCell(WorksheetCells(sdkWorkbookPart, sheetName), sheetName, address);
             xCell.RemoveAllChildren<X.InlineString>();
             xCell.CellFormula?.Remove();
             xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.String);
@@ -164,8 +162,15 @@ internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
     private static IEnumerable<X.Cell> WorksheetCells(WorkbookPart sdkWorkbookPart, string sheetName)
     {
         var sdkSheet = sdkWorkbookPart.Workbook!.Sheets!.Elements<X.Sheet>()
-            .First(xSheet => xSheet.Name == sheetName);
+            .FirstOrDefault(xSheet => string.Equals(xSheet.Name?.Value, sheetName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new SCException($"Could not find worksheet '{sheetName}'.");
         var sdkWorksheetPart = (WorksheetPart)sdkWorkbookPart.GetPartById(sdkSheet.Id!);
         return sdkWorksheetPart.Worksheet!.Descendants<X.Cell>();
+    }
+
+    private static X.Cell WorksheetCell(IEnumerable<X.Cell> worksheetCells, string sheetName, string address)
+    {
+        return worksheetCells.FirstOrDefault(cell => string.Equals(cell.CellReference?.Value, address, StringComparison.OrdinalIgnoreCase))
+            ?? throw new SCException($"Could not find cell '{address}' in worksheet '{sheetName}'.");
     }
 }

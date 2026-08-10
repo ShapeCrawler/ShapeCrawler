@@ -100,7 +100,7 @@ public class SeriesTests : SCTest
         var action = () => series.Name = "Must not commit";
 
         // Assert
-        action.Should().Throw<InvalidOperationException>();
+        action.Should().Throw<SCException>();
         series.Name.Should().Be(originalName);
         WorksheetCellText(chart.GetWorksheetByteArray(), "B1").Should().Be(originalName);
         ValidatePresentation(pres);
