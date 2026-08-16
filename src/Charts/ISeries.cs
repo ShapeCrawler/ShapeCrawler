@@ -31,6 +31,8 @@ public interface ISeries
 
     /// <summary>
     ///     Gets the collection of X-values points of the series.
+    ///     For a scatter chart, assigning <see cref="IChartPoint.Value"/> updates the X coordinate
+    ///     in both the chart cache and the embedded worksheet.
     ///     Returns <see langword="null"/> when the series doesn't support X-values.
     /// </summary>
     IReadOnlyList<IChartPoint>? XPoints { get; }
