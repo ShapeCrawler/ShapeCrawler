@@ -297,13 +297,6 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
     public void AddScribble(IReadOnlyList<Point> points) => this.AddCustomLine(LineType.Scribble, points);
 
-    private void AddCustomLine(LineType type, IReadOnlyList<Point> points)
-    {
-        var xml = CustomLineShape.Xml(type, points, this.newShapeProperties.Id());
-        var pShape = new P.Shape(xml);
-        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pShape);
-    }
-
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
         => this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
 
@@ -409,5 +402,12 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
             shape.Render(canvas);
         }
+    }
+
+    private void AddCustomLine(LineType type, IReadOnlyList<Point> points)
+    {
+        var xml = CustomLineShape.Xml(type, points, this.newShapeProperties.Id());
+        var pShape = new P.Shape(xml);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pShape);
     }
 }

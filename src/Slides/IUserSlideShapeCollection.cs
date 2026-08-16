@@ -78,20 +78,28 @@ public interface IUserSlideShapeCollection : IShapeCollection
     ///     Adds a new PowerPoint connector line of the specified type.
     /// </summary>
     void AddLine(int startPointX, int startPointY, int endPointX, int endPointY, LineType type);
+
     /// <summary>Adds an Arrow line.</summary>
     void AddArrow(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds a Double Arrow line.</summary>
     void AddDoubleArrow(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds an Elbow Connector.</summary>
     void AddElbowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds an Elbow Arrow Connector.</summary>
     void AddElbowArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds an Elbow Double Arrow Connector.</summary>
     void AddElbowDoubleArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds a Curved Connector.</summary>
     void AddCurvedConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds a Curved Arrow Connector.</summary>
     void AddCurvedArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+
     /// <summary>Adds a Curved Double Arrow Connector.</summary>
     void AddCurvedDoubleArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
 

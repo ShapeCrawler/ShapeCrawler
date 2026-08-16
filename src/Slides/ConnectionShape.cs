@@ -40,20 +40,21 @@ internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties ne
         var cxEmu = new Points(cx).AsEmus();
         var cyEmu = new Points(cy).AsEmus();
         var shapeProperties = pConnectionShape.ShapeProperties!;
-        var preset = LineTypeMapping.ToOpenXml(type);
+        var (presetName, hasHead, hasTail) = LineTypeMapping.ToOpenXml(type);
         var presetGeometry = shapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.PresetGeometry>()
             ?? shapeProperties.InsertAt(new DocumentFormat.OpenXml.Drawing.PresetGeometry(), 0);
-        presetGeometry.Preset = new DocumentFormat.OpenXml.Drawing.ShapeTypeValues(preset.Preset);
+        presetGeometry.Preset = new DocumentFormat.OpenXml.Drawing.ShapeTypeValues(presetName);
         presetGeometry.AdjustValueList ??= new DocumentFormat.OpenXml.Drawing.AdjustValueList();
         var outline = shapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.Outline>()
             ?? shapeProperties.AppendChild(new DocumentFormat.OpenXml.Drawing.Outline());
         outline.RemoveAllChildren<DocumentFormat.OpenXml.Drawing.HeadEnd>();
         outline.RemoveAllChildren<DocumentFormat.OpenXml.Drawing.TailEnd>();
-        if (preset.Head)
+        if (hasHead)
         {
             outline.AppendChild(new DocumentFormat.OpenXml.Drawing.HeadEnd { Type = DocumentFormat.OpenXml.Drawing.LineEndValues.Arrow });
         }
-        if (preset.Tail)
+
+        if (hasTail)
         {
             outline.AppendChild(new DocumentFormat.OpenXml.Drawing.TailEnd { Type = DocumentFormat.OpenXml.Drawing.LineEndValues.Arrow });
         }
