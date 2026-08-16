@@ -98,6 +98,33 @@ public class ChartPointTests : SCTest
     }
     
     [Test]
+    public void Value_Setter_updates_Scatter_chart_point()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("024_chart.pptx"));
+        var chart = pres.Slide(2).Shapes.GetById(5).ScatterChart;
+        var series = chart.SeriesCollection[0];
+        var xPoint = series.XPoints![0];
+        var yPoint = series.Points[0];
+        const int newXValue = 6;
+        const int newYValue = 7;
+
+        // Act
+        xPoint.Value = newXValue;
+        yPoint.Value = newYValue;
+
+        // Assert
+        xPoint.Value.Should().Be(newXValue);
+        yPoint.Value.Should().Be(newYValue);
+
+        pres = SaveAndOpenPresentation(pres);
+        chart = pres.Slide(2).Shapes.GetById(5).ScatterChart;
+        series = chart.SeriesCollection[0];
+        series.XPoints![0].Value.Should().Be(newXValue);
+        series.Points[0].Value.Should().Be(newYValue);
+    }
+
+    [Test]
     public void Value_Getter_returns_point_value_of_Line_chart()
     {
         // Arrange
