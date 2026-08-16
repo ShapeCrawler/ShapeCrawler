@@ -102,7 +102,7 @@ public class ChartPointTests : SCTest
     {
         // Arrange
         var pres = new Presentation(TestAsset("024_chart.pptx"));
-        var chart = pres.Slide(2).Shapes.GetById(5).ScatterChart;
+        var chart = pres.Slide(2).Shape(5).ScatterChart;
         var series = chart.SeriesCollection[0];
         var xPoint = series.XPoints![0];
         var yPoint = series.Points[0];
