@@ -3,6 +3,7 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Units;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -17,6 +18,9 @@ internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties ne
     ///     Creates a connection shape with the specified coordinates.
     /// </summary>
     internal void Create(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.Create(startPointX, startPointY, endPointX, endPointY, LineType.Line);
+
+    internal void Create(int startPointX, int startPointY, int endPointX, int endPointY, LineType type)
     {
         var xml = new AssetCollection(Assembly.GetExecutingAssembly()).StringOf("new line.xml");
         var pConnectionShape = new P.ConnectionShape(xml);
@@ -35,7 +39,27 @@ internal sealed class ConnectionShape(SlidePart slidePart, NewShapeProperties ne
         var yEmu = new Points(y).AsEmus();
         var cxEmu = new Points(cx).AsEmus();
         var cyEmu = new Points(cy).AsEmus();
-        var aXfrm = pConnectionShape.ShapeProperties!.Transform2D!;
+        var shapeProperties = pConnectionShape.ShapeProperties!;
+        var (presetName, hasHead, hasTail) = LineTypeMapping.ToOpenXml(type);
+        var presetGeometry = shapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.PresetGeometry>()
+            ?? shapeProperties.InsertAt(new DocumentFormat.OpenXml.Drawing.PresetGeometry(), 0);
+        presetGeometry.Preset = new DocumentFormat.OpenXml.Drawing.ShapeTypeValues(presetName);
+        presetGeometry.AdjustValueList ??= new DocumentFormat.OpenXml.Drawing.AdjustValueList();
+        var outline = shapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.Outline>()
+            ?? shapeProperties.AppendChild(new DocumentFormat.OpenXml.Drawing.Outline());
+        outline.RemoveAllChildren<DocumentFormat.OpenXml.Drawing.HeadEnd>();
+        outline.RemoveAllChildren<DocumentFormat.OpenXml.Drawing.TailEnd>();
+        if (hasHead)
+        {
+            outline.AppendChild(new DocumentFormat.OpenXml.Drawing.HeadEnd { Type = DocumentFormat.OpenXml.Drawing.LineEndValues.Arrow });
+        }
+
+        if (hasTail)
+        {
+            outline.AppendChild(new DocumentFormat.OpenXml.Drawing.TailEnd { Type = DocumentFormat.OpenXml.Drawing.LineEndValues.Arrow });
+        }
+
+        var aXfrm = shapeProperties.Transform2D!;
         aXfrm.Offset!.X = xEmu;
         aXfrm.Offset!.Y = yEmu;
         aXfrm.Extents!.Cx = cxEmu;
