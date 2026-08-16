@@ -70,9 +70,45 @@ public interface IUserSlideShapeCollection : IShapeCollection
     void AddLine(string xml);
 
     /// <summary>
-    ///     Adds a new line.
+    ///     Adds a new PowerPoint connector line.
     /// </summary>
     void AddLine(int startPointX, int startPointY, int endPointX, int endPointY);
+
+    /// <summary>
+    ///     Adds a new PowerPoint connector line of the specified type.
+    /// </summary>
+    void AddLine(int startPointX, int startPointY, int endPointX, int endPointY, LineType type);
+    /// <summary>Adds an Arrow line.</summary>
+    void AddArrow(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds a Double Arrow line.</summary>
+    void AddDoubleArrow(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds an Elbow Connector.</summary>
+    void AddElbowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds an Elbow Arrow Connector.</summary>
+    void AddElbowArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds an Elbow Double Arrow Connector.</summary>
+    void AddElbowDoubleArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds a Curved Connector.</summary>
+    void AddCurvedConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds a Curved Arrow Connector.</summary>
+    void AddCurvedArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+    /// <summary>Adds a Curved Double Arrow Connector.</summary>
+    void AddCurvedDoubleArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY);
+
+    /// <summary>
+    ///     Adds a Curve drawn with the PowerPoint Curve tool.
+    /// </summary>
+    void AddCurve(IReadOnlyList<Point> points);
+
+    /// <summary>
+    ///     Adds a Freeform Shape line drawn with the PowerPoint Freeform Shape tool.
+    /// </summary>
+    void AddFreeformShape(IReadOnlyList<Point> points);
+
+    /// <summary>
+    ///     Adds a Scribble line drawn with the PowerPoint Scribble tool.
+    /// </summary>
+    void AddScribble(IReadOnlyList<Point> points);
 
     /// <summary>
     ///     Adds a new table.

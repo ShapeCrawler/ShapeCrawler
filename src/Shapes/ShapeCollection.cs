@@ -128,6 +128,13 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
         );
     }
 
+    private static bool IsOpenCustomGeometryLine(P.Shape pShape)
+    {
+        var customGeometry = pShape.ShapeProperties?.GetFirstChild<A.CustomGeometry>();
+        var path = customGeometry?.PathList?.GetFirstChild<A.Path>();
+        return path is not null && !path.Elements<A.CloseShapePath>().Any();
+    }
+
     private static IEnumerable<DrawingShape> CreateGroupShapes(P.GroupShape pGroupShape)
     {
         yield return new GroupShape(pGroupShape);
@@ -141,6 +148,14 @@ internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollectio
                 pShape,
                 new DrawingTextBox(new TextBoxMargins(pShape.TextBody), pShape.TextBody)
             );
+        }
+        else if (IsOpenCustomGeometryLine(pShape))
+        {
+            yield return new LineShape(
+                new Position(pShape),
+                new ShapeSize(pShape),
+                new ShapeId(pShape),
+                pShape);
         }
         else
         {

@@ -1,4 +1,5 @@
-﻿using P = DocumentFormat.OpenXml.Presentation;
+﻿using DocumentFormat.OpenXml;
+using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
@@ -9,10 +10,10 @@ internal sealed class LineShape : DrawingShape
         Position position,
         ShapeSize shapeSize,
         ShapeId shapeId,
-        P.ConnectionShape pConnectionShape)
-        : base(position, shapeSize, shapeId, pConnectionShape)
+        OpenXmlElement shapeElement)
+        : base(position, shapeSize, shapeId, shapeElement)
     {
-        this.Line = new Line(pConnectionShape, this);
+        this.Line = new Line(shapeElement, this);
     }
 
     public override ILine? Line { get; }

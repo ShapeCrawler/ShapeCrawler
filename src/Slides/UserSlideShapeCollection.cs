@@ -1,5 +1,6 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable UseObjectOrCollectionInitializer
+using System;
 
 using System.Collections;
 using System.Collections.Generic;
@@ -253,8 +254,55 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
     }
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
-        => new ConnectionShape(this.slidePart, this.newShapeProperties)
-            .Create(startPointX, startPointY, endPointX, endPointY);
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.Line);
+
+    public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY, LineType type)
+    {
+        if (type is LineType.Curve or LineType.FreeformShape or LineType.Scribble)
+        {
+            throw new ArgumentException("Use AddCurve, AddFreeformShape, or AddScribble for custom line types.", nameof(type));
+        }
+
+        new ConnectionShape(this.slidePart, this.newShapeProperties)
+            .Create(startPointX, startPointY, endPointX, endPointY, type);
+    }
+
+    public void AddArrow(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.Arrow);
+
+    public void AddDoubleArrow(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.DoubleArrow);
+
+    public void AddElbowConnector(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.ElbowConnector);
+
+    public void AddElbowArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.ElbowArrowConnector);
+
+    public void AddElbowDoubleArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.ElbowDoubleArrowConnector);
+
+    public void AddCurvedConnector(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.CurvedConnector);
+
+    public void AddCurvedArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.CurvedArrowConnector);
+
+    public void AddCurvedDoubleArrowConnector(int startPointX, int startPointY, int endPointX, int endPointY)
+        => this.AddLine(startPointX, startPointY, endPointX, endPointY, LineType.CurvedDoubleArrowConnector);
+
+    public void AddCurve(IReadOnlyList<Point> points) => this.AddCustomLine(LineType.Curve, points);
+
+    public void AddFreeformShape(IReadOnlyList<Point> points) => this.AddCustomLine(LineType.FreeformShape, points);
+
+    public void AddScribble(IReadOnlyList<Point> points) => this.AddCustomLine(LineType.Scribble, points);
+
+    private void AddCustomLine(LineType type, IReadOnlyList<Point> points)
+    {
+        var xml = CustomLineShape.Xml(type, points, this.newShapeProperties.Id());
+        var pShape = new P.Shape(xml);
+        this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pShape);
+    }
 
     public void AddTable(int x, int y, int columnsCount, int rowsCount)
         => this.AddTable(x, y, columnsCount, rowsCount, CommonTableStyles.MediumStyle2Accent1);
