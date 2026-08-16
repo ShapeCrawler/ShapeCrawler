@@ -57,6 +57,9 @@ public class AllLineTypesTests : SCTest
         shapes[0].Line!.Type.Should().Be(LineType.Curve);
         shapes[1].Line!.Type.Should().Be(LineType.FreeformShape);
         shapes[2].Line!.Type.Should().Be(LineType.Scribble);
+        shapes[0].Line!.Points.Should().Equal(points);
+        shapes[1].Line!.Points.Should().Equal(points);
+        shapes[2].Line!.Points.Should().Equal(points);
         foreach (var shape in shapes)
         {
             shape.Line!.StartPoint = new Point(20, 30);

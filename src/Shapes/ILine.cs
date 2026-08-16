@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Shapes;
@@ -102,7 +104,26 @@ internal sealed class Line(OpenXmlElement shapeElement, LineShape parentLineShap
         set => this.UpdateEndpoints(this.StartPoint, value);
     }
 
-    public IReadOnlyList<Point> Points => [this.StartPoint, this.EndPoint];
+    public IReadOnlyList<Point> Points
+    {
+        get
+        {
+            var path = this.ShapeProperties.GetFirstChild<CustomGeometry>()?.PathList?.GetFirstChild<Path>();
+            if (path?.Width?.Value is not { } pathWidth || path.Height?.Value is not { } pathHeight || pathWidth == 0 || pathHeight == 0)
+            {
+                return [this.StartPoint, this.EndPoint];
+            }
+
+            var points = path.Descendants<DocumentFormat.OpenXml.Drawing.Point>()
+                .Where(point => point.X?.Value is not null && point.Y?.Value is not null)
+                .Select(point => new Point(
+                    decimal.Round(this.lineShape.X + decimal.Parse(point.X!.Value!, CultureInfo.InvariantCulture) / pathWidth * this.lineShape.Width, 6),
+                    decimal.Round(this.lineShape.Y + decimal.Parse(point.Y!.Value!, CultureInfo.InvariantCulture) / pathHeight * this.lineShape.Height, 6)))
+                .ToArray();
+
+            return points.Length > 0 ? points : [this.StartPoint, this.EndPoint];
+        }
+    }
 
     private P.ShapeProperties ShapeProperties =>
         this.shapeElement.GetFirstChild<P.ShapeProperties>()
