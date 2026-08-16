@@ -116,9 +116,16 @@ internal sealed class Line(OpenXmlElement shapeElement, LineShape parentLineShap
 
             var points = path.Descendants<DocumentFormat.OpenXml.Drawing.Point>()
                 .Where(point => point.X?.Value is not null && point.Y?.Value is not null)
-                .Select(point => new Point(
-                    decimal.Round(this.lineShape.X + decimal.Parse(point.X!.Value!, CultureInfo.InvariantCulture) / pathWidth * this.lineShape.Width, 6),
-                    decimal.Round(this.lineShape.Y + decimal.Parse(point.Y!.Value!, CultureInfo.InvariantCulture) / pathHeight * this.lineShape.Height, 6)))
+                .Select(point =>
+                {
+                    var localX = decimal.Parse(point.X!.Value!, CultureInfo.InvariantCulture);
+                    var localY = decimal.Parse(point.Y!.Value!, CultureInfo.InvariantCulture);
+                    var scaleX = this.lineShape.Width / pathWidth;
+                    var scaleY = this.lineShape.Height / pathHeight;
+                    var slideX = this.lineShape.X + (localX * scaleX);
+                    var slideY = this.lineShape.Y + (localY * scaleY);
+                    return new Point(decimal.Round(slideX, 6), decimal.Round(slideY, 6));
+                })
                 .ToArray();
 
             return points.Length > 0 ? points : [this.StartPoint, this.EndPoint];
