@@ -112,6 +112,41 @@ public class PresentationTests : SCTest
     }
 
     [Test]
+    public void Slides_Add_adds_source_slide_to_empty_presentation()
+    {
+        // Arrange
+        var sourceSlideAtPosition = new Presentation(TestAsset("001.pptx")).Slide(1);
+        var sourceSlideAtEnd = new Presentation(TestAsset("001.pptx")).Slide(1);
+        var destinationAtPosition = new Presentation();
+        var destinationAtEnd = new Presentation();
+
+        // Act
+        destinationAtPosition.Slides.Add(sourceSlideAtPosition, 1);
+        destinationAtEnd.Slides.Add(sourceSlideAtEnd);
+
+        // Assert
+        destinationAtPosition.Slides.Should().ContainSingle();
+        destinationAtEnd.Slides.Should().ContainSingle();
+        ValidatePresentation(destinationAtPosition);
+        ValidatePresentation(destinationAtEnd);
+    }
+
+    [Test]
+    public void Slides_Add_preserves_layout_relationships()
+    {
+        // Arrange
+        var sourceSlide = new Presentation(TestAsset("037.pptx")).Slide(1);
+        var destination = new Presentation(p => p.Slide());
+
+        // Act
+        destination.Slides.Add(sourceSlide, 2);
+
+        // Assert
+        destination.Slides.Should().HaveCount(2);
+        ValidatePresentation(destination);
+    }
+
+    [Test]
     public void Slides_Add()
     {
         // Arrange
