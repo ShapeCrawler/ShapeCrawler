@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <PackageReference Include="System.Text.Json" Version="10.0.3" />
+    <PackageReference Include="System.Text.Json" Version="10.0.11" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -35,16 +35,16 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="FluentAssertions" Version="7.2.2" />
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.15.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.16.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="NUnit" Version="4.6.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
     <PackageReference Include="NUnit.Analyzers" Version="4.14.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Verify.ImageMagick" Version="3.8.8" />
-    <PackageReference Include="Verify.NUnit" Version="31.25.0" />
+    <PackageReference Include="Verify.ImageMagick" Version="3.10.0" />
+    <PackageReference Include="Verify.NUnit" Version="32.0.0" />
   </ItemGroup>
 
   <ItemGroup>
