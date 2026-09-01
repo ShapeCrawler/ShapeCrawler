@@ -143,6 +143,7 @@ public class PresentationTests : SCTest
 
         // Assert
         destination.Slides.Should().HaveCount(2);
+        destination.MasterSlides[0].LayoutSlides.Should().Contain(layout => layout.Name == sourceSlide.LayoutSlide.Name);
         ValidatePresentation(destination);
     }
 

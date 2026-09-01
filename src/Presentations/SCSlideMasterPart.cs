@@ -34,6 +34,18 @@ internal readonly ref struct SCSlideMasterPart
             targetLayoutPart.AddPart(targetChildPart, childPart.RelationshipId);
         }
 
+        var pSlideMaster = this.slideMasterPart.SlideMaster!;
+        pSlideMaster.SlideLayoutIdList ??= new DocumentFormat.OpenXml.Presentation.SlideLayoutIdList();
+        pSlideMaster.SlideLayoutIdList.Append(new DocumentFormat.OpenXml.Presentation.SlideLayoutId
+        {
+            Id = pSlideMaster.SlideLayoutIdList
+                .Elements<DocumentFormat.OpenXml.Presentation.SlideLayoutId>()
+                .Select(layoutId => layoutId.Id!.Value)
+                .DefaultIfEmpty()
+                .Max() + 1,
+            RelationshipId = this.slideMasterPart.GetIdOfPart(targetLayoutPart)
+        });
+
         return targetLayoutPart;
     }
 
