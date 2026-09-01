@@ -250,13 +250,8 @@ internal readonly ref struct SCSlidePart(SlidePart slidePart)
         return false;
     }
 
-    private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart)
-    {
-        var masterPart = GetOrCreateMasterPart(presentationPart, sourceLayoutPart);
-        var targetLayoutPart = masterPart.AddNewPart<SlideLayoutPart>();
-        CopyStream(sourceLayoutPart, targetLayoutPart);
-        return targetLayoutPart;
-    }
+    private static SlideLayoutPart CreateNewLayout(PresentationPart presentationPart, SlideLayoutPart sourceLayoutPart) =>
+        new SCSlideMasterPart(GetOrCreateMasterPart(presentationPart, sourceLayoutPart)).AddLayout(sourceLayoutPart);
 
     private static SlideMasterPart GetOrCreateMasterPart(
         PresentationPart presentationPart,

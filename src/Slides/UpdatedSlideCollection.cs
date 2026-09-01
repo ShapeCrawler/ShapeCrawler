@@ -353,11 +353,15 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
 
     private static void InsertSlideAtPosition(PresentationPart presentationPart, string relationshipId, int position)
     {
+        var presentation = presentationPart.Presentation!;
+        presentation.SlideIdList ??= new P.SlideIdList();
+        var slideIdList = presentation.SlideIdList;
+
         // Slide IDs must remain unique and monotonically increasing
         uint maxSlideId = 256; // Default starting ID
-        if (presentationPart.Presentation!.SlideIdList!.Elements<P.SlideId>().Any())
+        if (slideIdList.Elements<P.SlideId>().Any())
         {
-            maxSlideId = presentationPart.Presentation!.SlideIdList!.Elements<P.SlideId>()
+            maxSlideId = slideIdList.Elements<P.SlideId>()
                 .Max(id => id.Id!.Value) + 1;
         }
 
@@ -365,7 +369,6 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         var slideId = new P.SlideId { Id = maxSlideId, RelationshipId = relationshipId };
 
         // Maintain presentation order when inserting before the end
-        var slideIdList = presentationPart.Presentation!.SlideIdList!;
         if (position > slideIdList.Elements<P.SlideId>().Count())
         {
             slideIdList.Append(slideId);
@@ -423,12 +426,15 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
 
     private static void AddNewSlideId(PresentationDocument targetSdkPresDoc, SlidePart addedSdkSlidePart)
     {
+        var presentation = targetSdkPresDoc.PresentationPart!.Presentation!;
+        presentation.SlideIdList ??= new P.SlideIdList();
+        var slideIdList = presentation.SlideIdList;
         P.SlideId slideId = new()
         {
-            Id = CreateId(targetSdkPresDoc.PresentationPart!.Presentation!.SlideIdList!),
+            Id = CreateId(slideIdList),
             RelationshipId = targetSdkPresDoc.PresentationPart!.GetIdOfPart(addedSdkSlidePart)
         };
-        targetSdkPresDoc.PresentationPart!.Presentation!.SlideIdList!.Append(slideId);
+        slideIdList.Append(slideId);
     }
 
     private static bool LayoutsMatch(SlideLayoutPart layout1, SlideLayoutPart layout2)
@@ -454,7 +460,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
 
     private static uint CreateId(P.SlideIdList slideIdList)
     {
-        uint currentId = 0;
+        uint currentId = 255; // PowerPoint reserves IDs below 256 for built-in slides
         foreach (var slideId in slideIdList.OfType<P.SlideId>())
         {
             if (slideId.Id! > currentId)

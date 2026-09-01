@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Presentations;
@@ -10,6 +11,42 @@ internal readonly ref struct SCSlideMasterPart
     internal SCSlideMasterPart(SlideMasterPart slideMasterPart)
     {
         this.slideMasterPart = slideMasterPart;
+    }
+
+    /// <summary>
+    /// Adds a copy of the specified layout and its relationships to the wrapped slide master part.
+    /// </summary>
+    /// <param name="sourceLayoutPart">Source layout part.</param>
+    /// <returns>Added layout part.</returns>
+    internal SlideLayoutPart AddLayout(SlideLayoutPart sourceLayoutPart)
+    {
+        var targetLayoutPart = this.slideMasterPart.AddNewPart<SlideLayoutPart>();
+        using var sourceStream = sourceLayoutPart.GetStream();
+        sourceStream.Position = 0;
+        using var destinationStream = targetLayoutPart.GetStream(FileMode.Create, FileAccess.Write);
+        sourceStream.CopyTo(destinationStream);
+
+        foreach (var childPart in sourceLayoutPart.Parts)
+        {
+            var targetChildPart = childPart.OpenXmlPart is SlideMasterPart
+                ? this.slideMasterPart
+                : childPart.OpenXmlPart;
+            targetLayoutPart.AddPart(targetChildPart, childPart.RelationshipId);
+        }
+
+        var pSlideMaster = this.slideMasterPart.SlideMaster!;
+        pSlideMaster.SlideLayoutIdList ??= new DocumentFormat.OpenXml.Presentation.SlideLayoutIdList();
+        pSlideMaster.SlideLayoutIdList.Append(new DocumentFormat.OpenXml.Presentation.SlideLayoutId
+        {
+            Id = pSlideMaster.SlideLayoutIdList
+                .Elements<DocumentFormat.OpenXml.Presentation.SlideLayoutId>()
+                .Select(layoutId => layoutId.Id!.Value)
+                .DefaultIfEmpty()
+                .Max() + 1,
+            RelationshipId = this.slideMasterPart.GetIdOfPart(targetLayoutPart)
+        });
+
+        return targetLayoutPart;
     }
 
     internal void RemoveLayoutsExcept(SlideLayoutPart exceptSlideLayoutPart)
