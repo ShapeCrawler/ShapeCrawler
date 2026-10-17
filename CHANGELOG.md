@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Reduced memory use of both `Slides.Add` import overloads by removing the whole-source presentation clone ([#1311](https://github.com/ShapeCrawler/ShapeCrawler/issues/1311)). Stopped rewriting existing slide masters on every append. Added constrained-memory stress coverage and documented remaining architecture and memory limits.
+
 - Added `IUserSlideShapeCollection.AddOleObject()` to embed Word, Excel, and PowerPoint documents on slides with a preview image ([#623](https://github.com/ShapeCrawler/ShapeCrawler/issues/623), [#646](https://github.com/ShapeCrawler/ShapeCrawler/issues/646)).
 
 - Added `IMedia.StartMode` to read and set audio playback to In Click Sequence, Automatically, or When Clicked On ([#581](https://github.com/ShapeCrawler/ShapeCrawler/issues/581)).

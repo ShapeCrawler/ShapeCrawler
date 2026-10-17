@@ -28,6 +28,9 @@ ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making 
 
 Requires .NET 10 or later.
 
+For large slide imports, use a 64-bit process. Source and destination packages
+remain in memory; see [slide import memory limits and regression tests](tests/slide-import-memory.md).
+
 ```bash
 dotnet add package ShapeCrawler
 ```

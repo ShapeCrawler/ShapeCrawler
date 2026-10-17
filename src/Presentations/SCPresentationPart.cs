@@ -17,6 +17,8 @@ internal readonly ref struct SCPresentationPart
     {
         var rId = new SCOpenXmlPart(this.presentationPart).NextRelationshipId();
         var addedSlidePart = this.presentationPart.AddPart(slidePart, rId);
+        new SCSlideMasterPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!)
+            .RemoveLayoutsExcept(addedSlidePart.SlideLayoutPart);
 
         var notesSlidePartAddedSlidePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
         notesSlidePartAddedSlidePart?.DeletePart(notesSlidePartAddedSlidePart.NotesMasterPart!);

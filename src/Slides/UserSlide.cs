@@ -170,13 +170,6 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
     /// <inheritdoc/>
     public abstract void SaveImageTo(Stream stream);
 
-    internal PresentationDocument ClonePresentationDocument()
-    {
-        var presDocument = (PresentationDocument)slidePart.OpenXmlPackage;
-
-        return presDocument.Clone();
-    }
-
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 
     public IList<ITextBox> GetTexts()

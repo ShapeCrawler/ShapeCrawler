@@ -92,10 +92,10 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             }
         }
 
-        using var sourceDocument = ((UserSlide)userSlide).ClonePresentationDocument();
+        var sourceSlidePart = ((UserSlide)userSlide).GetSdkSlidePart();
+        var sourceDocument = (PresentationDocument)sourceSlidePart.OpenXmlPackage;
+        sourceDocument.Save();
         var sourceSlidePresPart = sourceDocument.PresentationPart!;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
-        var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
         var clonedSlidePart = new SCSlidePart(sourceSlidePart).CloneTo(
             presentationPart,
@@ -201,13 +201,10 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             }
         }
 
-        using var sourceDocument = ((UserSlide)userSlide).ClonePresentationDocument();
+        var sourceSlidePart = ((UserSlide)userSlide).GetSdkSlidePart();
+        var sourceDocument = (PresentationDocument)sourceSlidePart.OpenXmlPackage;
+        sourceDocument.Save();
         var sourceSlidePresPart = sourceDocument.PresentationPart!;
-        var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
-        var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
-        new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart
-            .SlideLayoutPart!);
-
         var wrappedPresentationPart = new SCPresentationPart(targetPresPart);
         wrappedPresentationPart.AddSlidePart(sourceSlidePart);
         var addedSlidePart = wrappedPresentationPart.Last<SlidePart>();
@@ -215,7 +212,7 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
 
         AddNewSlideId(targetPresDocument, addedSlidePart);
         var masterId = AddNewSlideMasterId(targetPres!, targetPresDocument, addedSlideMasterPart);
-        AdjustLayoutIds(targetPresDocument, masterId);
+        AdjustLayoutIds(targetPresDocument, addedSlideMasterPart, masterId);
 
         var imageCatalog = new ImagePartCatalog();
         imageCatalog.SeedFrom(targetPresPart.SlideParts.SelectMany(sp => sp.ImageParts));
@@ -395,19 +392,24 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
         return (P.TextBody)shape.TextBody.CloneNode(true);
     }
 
-    private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
+    private static void AdjustLayoutIds(
+        PresentationDocument destination,
+        SlideMasterPart addedMaster,
+        uint masterId)
     {
-        foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
-        {
-            foreach (var pSlideLayoutId in slideMasterPart.SlideMaster!.SlideLayoutIdList!
-                         .OfType<P.SlideLayoutId>())
-            {
-                masterId++;
-                pSlideLayoutId.Id = masterId;
-            }
+        var nextId = destination.PresentationPart!.SlideMasterParts
+            .Where(master => master != addedMaster)
+            .SelectMany(master => master.SlideMaster!.SlideLayoutIdList!.Elements<P.SlideLayoutId>())
+            .Select(layoutId => layoutId.Id!.Value)
+            .Append(masterId)
+            .Max();
 
-            slideMasterPart.SlideMaster!.Save();
+        foreach (var layoutId in addedMaster.SlideMaster!.SlideLayoutIdList!.Elements<P.SlideLayoutId>())
+        {
+            layoutId.Id = ++nextId;
         }
+
+        addedMaster.SlideMaster.Save();
     }
 
     private static uint AddNewSlideMasterId(
