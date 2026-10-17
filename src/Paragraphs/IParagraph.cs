@@ -145,11 +145,7 @@ internal sealed class Paragraph : IParagraph
                 removing.Remove();
             }
 
-#if NETSTANDARD2_0
-            var textLines = value.Split([Environment.NewLine], StringSplitOptions.None);
-#else
             var textLines = value.Split(Environment.NewLine);
-#endif
             var mainRun = this.aParagraph.GetFirstChild<A.Run>()!;
             if (mainRun != null)
             {

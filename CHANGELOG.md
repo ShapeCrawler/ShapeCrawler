@@ -1,5 +1,8 @@
 # Changelog  
 
+## Unreleased
+Breaking change: ShapeCrawler now requires .NET 10 or later. Support for .NET Standard 2.0 and .NET Framework has been removed.
+
 ## Version 0.80.0 - 2026-08-11
 🍀Added capability to update chart series name [#251](https://github.com/ShapeCrawler/ShapeCrawler/issues/251)
 

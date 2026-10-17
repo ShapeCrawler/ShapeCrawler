@@ -90,21 +90,13 @@ public interface IUserSlide
     /// <summary>
     ///     Saves the slide image to the specified stream.
     /// </summary>
-#if NET10_0_OR_GREATER
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
-#else
-    [Experimental("EXP001")]
-#endif
     void SaveImageTo(Stream stream);
 
     /// <summary>
     ///     Saves the slide image to the specified file.
     /// </summary>
-#if NET10_0_OR_GREATER
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
-#else
-    [Experimental("EXP001")]
-#endif
     void SaveImageTo(string file);
 
     /// <summary>
