@@ -53,7 +53,6 @@ pres.Save();
 ## 🎯 Why ShapeCrawler?
 
 - **No Office Required** – Process presentations on any platform without Microsoft Office installation
-- **Clean API** – Intuitive object model that hides the complexity of Open XML
 - **Open Source** — Actively maintained
 
 ## 💡 Common Use Cases
