@@ -20,6 +20,3 @@ updates:
           - "*"
     ignore:
       - dependency-name: "ClosedXML"
-      - dependency-name: "FluentAssertions"
-        versions:
-          - "[8.0.0,)"

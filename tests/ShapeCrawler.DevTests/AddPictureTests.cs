@@ -381,7 +381,7 @@ public class AddPictureTests : SCTest
 
         // Assert
         var addedPictureImage = shapes.Last().Picture.Image!;
-        addedPictureImage.AsByteArray().Length.Should().BeLessOrEqualTo((int)imageStream.Length + fileSizeTolerance);
+        addedPictureImage.AsByteArray().Length.Should().BeLessThanOrEqualTo((int)imageStream.Length + fileSizeTolerance);
     }
     
     [Test]
