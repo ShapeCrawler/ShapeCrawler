@@ -1,7 +1,7 @@
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
-using ClosedXML.Excel;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
@@ -9,6 +9,7 @@ using Fixture;
 using ImageMagick;
 using VerifyTests;
 using A = DocumentFormat.OpenXml.Drawing;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.DevTests.Helpers;
 
@@ -47,11 +48,30 @@ public abstract class SCTest
 
     protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
     {
-        var stream = new MemoryStream(workbookByteArray);
-        var xlWorkbook = new XLWorkbook(stream);
-        var cellValue = xlWorkbook.Worksheets.First().Cell(cellAddress).Value;
+        using var stream = new MemoryStream(workbookByteArray);
+        using var workbook = SpreadsheetDocument.Open(stream, false);
+        var workbookPart = workbook.WorkbookPart!;
+        var sheet = workbookPart.Workbook!.Sheets!.Elements<X.Sheet>().First();
+        var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
+        var cell = worksheetPart.Worksheet!.Descendants<X.Cell>().Single(item => item.CellReference == cellAddress);
+        string cellValue;
+        if (cell.DataType?.Value == X.CellValues.SharedString)
+        {
+            cellValue = workbookPart.SharedStringTablePart!.SharedStringTable!
+                .Elements<X.SharedStringItem>()
+                .ElementAt(int.Parse(cell.InnerText, CultureInfo.InvariantCulture))
+                .InnerText;
+        }
+        else if (cell.DataType?.Value == X.CellValues.InlineString)
+        {
+            cellValue = cell.InlineString!.InnerText;
+        }
+        else
+        {
+            cellValue = cell.CellValue!.Text;
+        }
 
-        return (T)cellValue;
+        return (T)Convert.ChangeType(cellValue, typeof(T), CultureInfo.InvariantCulture);
     }
 
     public static MemoryStream TestAsset(string file)

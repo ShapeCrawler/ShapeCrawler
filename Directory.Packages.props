@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="ClosedXML" Version="0.95.4" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageVersion Include="DocumentFormat.OpenXml.Linq" Version="3.5.1" />
     <PackageVersion Include="FluentAssertions" Version="8.11.0" />
