@@ -22,12 +22,12 @@ public interface ILine
     LineType Type { get; }
 
     /// <summary>
-    ///     Gets or sets the start point of the line.
+    ///     Gets or sets the start point of the line in PowerPoint coordinates (points).
     /// </summary>
     Point StartPoint { get; set; }
 
     /// <summary>
-    ///     Gets or sets the end point of the line.
+    ///     Gets or sets the end point of the line in PowerPoint coordinates (points).
     /// </summary>
     Point EndPoint { get; set; }
 

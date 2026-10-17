@@ -6,6 +6,42 @@ namespace ShapeCrawler.DevTests;
 
 public class LineShapeTests : SCTest
 {
+    [TestCase(1)]
+    [TestCase(2)]
+    public void Straight_connectors_from_pptx_have_line_geometry_and_endpoints_in_points(int slideNumber)
+    {
+        // Arrange
+        var presentation = new Presentation(TestAsset("straight-lines.pptx"));
+        var expectedLines = new[]
+        {
+            (Name: "Horizontal arrow", Start: new Point(50.25m, 60.5m), End: new Point(150.75m, 60.5m)),
+            (Name: "Vertical arrow", Start: new Point(200.25m, 80.5m), End: new Point(200.25m, 180.75m)),
+            (Name: "Diagonal arrow", Start: new Point(300.25m, 50.5m), End: new Point(400.75m, 150.25m)),
+            (Name: "Upward diagonal arrow", Start: new Point(300.25m, 250.75m), End: new Point(400.75m, 150.25m)),
+            (Name: "Reversed horizontal arrow", Start: new Point(150.75m, 300.5m), End: new Point(50.25m, 300.5m)),
+            (Name: "Reversed vertical arrow", Start: new Point(200.25m, 300.75m), End: new Point(200.25m, 200.5m)),
+            (Name: "Reversed diagonal arrow", Start: new Point(500.75m, 300.25m), End: new Point(400.25m, 200.5m)),
+            (Name: "Horizontal plain line", Start: new Point(50.25m, 60.5m), End: new Point(150.75m, 60.5m)),
+        };
+
+        // Act
+        var shapes = presentation.Slide(slideNumber).Shapes.ToArray();
+
+        // Assert
+        shapes.Should().HaveCount(expectedLines.Length + 1);
+        shapes.Single(shape => shape.Name == "Rectangle").GeometryType.Should().Be(Geometry.Rectangle);
+        foreach (var expected in expectedLines)
+        {
+            var shape = shapes.Single(shape => shape.Name == expected.Name);
+            shape.GeometryType.Should().Be(Geometry.Line);
+            shape.Line.Should().NotBeNull();
+            shape.Line!.StartPoint.Should().Be(expected.Start);
+            shape.Line.EndPoint.Should().Be(expected.End);
+        }
+
+        ValidatePresentation(presentation);
+    }
+
     [Test]
     public void StartPoint_returns_start_point_coordinates()
     {
