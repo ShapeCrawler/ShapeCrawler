@@ -323,7 +323,13 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public void Remove() => pShapeTreeElement.Remove();
 
-    public virtual void CopyTo(P.ShapeTree pShapeTree) => new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
+    public virtual void CopyTo(P.ShapeTree pShapeTree)
+    {
+        var sourcePart = new SCOpenXmlElement(pShapeTreeElement).ParentOpenXmlPart;
+        var targetPart = new SCOpenXmlElement(pShapeTree).ParentOpenXmlPart;
+        new SCPShapeTree(pShapeTree).Add(pShapeTreeElement);
+        new ShapeRelationships(sourcePart, targetPart).CopyTo(pShapeTree.LastChild!);
+    }
 
     public virtual void SetText(string text) => throw new SCException(ShapeIsNotTextHolderErrorMessage);
 

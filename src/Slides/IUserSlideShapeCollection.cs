@@ -11,7 +11,8 @@ namespace ShapeCrawler;
 public interface IUserSlideShapeCollection : IEditableShapeCollection
 {
     /// <summary>
-    ///     Adds the specified shape.
+    ///     Adds a copy of the specified shape, including its embedded content,
+    ///     from this slide, another slide, or another presentation.
     /// </summary>
     void Add(IShape addingShape);
 
