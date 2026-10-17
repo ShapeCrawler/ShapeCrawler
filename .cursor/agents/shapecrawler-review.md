@@ -51,5 +51,5 @@ Return feedback in this exact structure:
 ### Quick sanity commands (optional)
 - If relevant, suggest running:
   - `dotnet build src/ShapeCrawler.csproj -c Release`
-  - `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
+  - `dotnet test tests/ShapeCrawler.Tests/ShapeCrawler.Tests.csproj`
 

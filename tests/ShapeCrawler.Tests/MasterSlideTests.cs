@@ -1,0 +1,216 @@
+﻿using FluentAssertions;
+using NUnit.Framework;
+using ShapeCrawler.Tests.Helpers;
+
+namespace ShapeCrawler.Tests;
+
+public class MasterSlideTests : SCTest
+{
+    [Test]
+    [Presentation("new")]
+    [Presentation("023.pptx")]
+    public void SlideNumber_Font_Color_Setter(IPresentation pres)
+    {
+        // Arrange
+        var slideMaster = pres.MasterSlides[0];
+        var green = new Color("00FF00");
+
+        // Act
+        slideMaster.SlideNumber!.Font.Color = green;
+
+        // Assert
+        Assert.That(slideMaster.SlideNumber.Font.Color.Hex, Is.EqualTo("00FF00"));
+    }
+
+    [Test]
+    public void SlideNumber_Font_Size_Setter()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slideMaster = pres.MasterSlides[0];
+
+        // Act
+        pres.Footer.AddSlideNumber();
+        slideMaster.SlideNumber!.Font.Size = 30;
+
+        // Assert
+        pres.Save();
+        pres = SaveAndOpenPresentation(pres);
+        slideMaster = pres.MasterSlides[0];
+        slideMaster.SlideNumber!.Font.Size.Should().Be(30);
+    }
+
+    [Test]
+    public void Shape_Width_and_Height_return_master_shape_width_and_height()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var slideMaster = pres.MasterSlides[0];
+        var shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+
+        // Act & Assert
+        shape.Width.Should().Be(828);
+        shape.Height.Should().BeApproximately(104.37m, 0.01m);
+    }
+
+    [Test]
+    public void Shape_X_and_Y_return_master_shape_x_and_y_coordinates()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var slideMaster = pres.MasterSlides[0];
+        var shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+
+        // Act & Assert
+        shape.X.Should().Be(66);
+        shape.Y.Should().BeApproximately(28.75m, 0.01m);
+    }
+
+    [Test]
+    public void SlideLayout_Name_returns_name_of_slide_layout()
+    {
+        // Arrange
+        var pptx = TestAsset("autoshape-case011_save-as-png.pptx");
+        var pres = new Presentation(pptx);
+        var slideMaster = pres.MasterSlides[0];
+
+        // Act
+        var layoutName = slideMaster.LayoutSlides[0].Name;
+
+        // Assert
+        layoutName.Should().Be("Title Slide");
+    }
+
+    [Test]
+    public void AutoShapePlaceholderType_ReturnsPlaceholderType()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001.pptx"));
+        var slideMaster = pres.MasterSlides[0];
+        var masterautoshapecase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+        var masterautoshapecase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+        var masterautoshapecase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
+
+        // Act
+        PlaceholderType? shapePlaceholderTypeCase1 = masterautoshapecase1.PlaceholderType;
+
+        // Assert
+        shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
+        masterautoshapecase2.PlaceholderType.Should().BeNull();
+        masterautoshapecase3.PlaceholderType.Should().BeNull();
+    }
+
+    [Test]
+    public void ShapeGeometryType_ReturnsShapesGeometryFormType()
+    {
+        // Arrange
+        var pptx = TestAsset("001.pptx");
+        var pres = new Presentation(pptx);
+        IMasterSlide masterSlide = pres.MasterSlides[0];
+        IShape shapeCase1 = masterSlide.Shapes.First(sp => sp.Id == 2);
+        IShape shapeCase2 = masterSlide.Shapes.First(sp => sp.Id == 8);
+
+        // Act
+        Geometry geometryTypeCase1 = shapeCase1.GeometryType;
+        Geometry geometryTypeCase2 = shapeCase2.GeometryType;
+
+        // Assert
+        geometryTypeCase1.Should().Be(Geometry.Rectangle);
+        geometryTypeCase2.Should().Be(Geometry.Custom);
+    }
+
+    [Test]
+    public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
+    {
+        // Arrange
+        IMasterSlide masterSlide = new Presentation(TestAsset("001.pptx")).MasterSlides[0];
+        IShape autoShape = (IShape)masterSlide.Shapes.First(sp => sp.Id == 8);
+
+        // Act-Assert
+        autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
+    }
+
+    [Test]
+    public void Number_returns_slide_master_order_number()
+    {
+        // Act & Assert
+        new Presentation().SlideMaster(1).Number.Should().Be(1);
+    }
+
+    [Test]
+    public void Remove_removes_unused_slide_master_and_allows_slide_addition()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("002.pptx"));
+        var layoutNumber = pres.MasterSlides.Single(slideMaster => slideMaster.Number == 2).LayoutSlides[0].Number;
+
+        // Act
+        pres.Slide(3).Remove();
+        pres.Slide(2).Remove();
+        pres.Slide(1).Remove();
+        pres.MasterSlides.Single(slideMaster => slideMaster.Number == 1).Remove();
+        pres.Slides.Add(layoutNumber);
+        pres = SaveAndOpenPresentation(pres);
+
+        // Assert
+        pres.MasterSlides.Should().HaveCount(1);
+        pres.Slides.Should().HaveCount(1);
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void SlideLayout_MoveTo_moves_layout_to_another_slide_master()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("002.pptx"));
+        var sourceMaster = pres.MasterSlides[0];
+        var targetMaster = pres.MasterSlides[1];
+        var layout = sourceMaster.LayoutSlides[0];
+        var layoutNumber = layout.Number;
+
+        // Act
+        layout.MoveTo(targetMaster);
+        pres = SaveAndOpenPresentation(pres);
+
+        // Assert
+        sourceMaster.LayoutSlides.Should().NotContain(slideLayout => slideLayout.Number == layoutNumber);
+        targetMaster.SlideLayout(layoutNumber).MasterSlide.Number.Should().Be(2);
+        ValidatePresentation(pres);
+    }
+    
+    [Test]
+    public void SlideLayout_Background_SolidFill_Color_Getter_returns_solid_color_of_the_slide_layout_background()
+    {
+        // Arrange
+        var expectedColor = fixture.Color();
+        var pres = new Presentation(p=>
+        {
+            p.SlideMaster(1).SlideLayout(1).Background.SolidFillColor(expectedColor);
+        });
+        var slideMaster = pres.SlideMaster(1);
+        
+        // Assert
+        slideMaster.SlideLayout(1).Background.SolidFill.Color.Should().Be(expectedColor);
+    }
+    
+    [Test]
+    public void SlideLayout_Background_Picture_returns_slide_layout_background_picture_image()
+    {
+        // Arrange
+        var expectedImage = fixture.Image();
+        var pres = new Presentation(p=>
+        {
+            p.SlideMaster(1).SlideLayout(1).Background.Picture(expectedImage);
+        });
+        expectedImage.Position = 0;
+        var expectedStream = new MemoryStream();
+        expectedImage.CopyTo(expectedStream);
+        var slideMaster = pres.SlideMaster(1);
+        
+        // Act
+        var actualStream = slideMaster.SlideLayout(1).Background.Picture();
+
+        // Assert
+        actualStream.ToArray().Should().Equal(expectedStream.ToArray());
+    }
+}

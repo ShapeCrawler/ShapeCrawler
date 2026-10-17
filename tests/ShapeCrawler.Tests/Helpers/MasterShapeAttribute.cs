@@ -1,0 +1,26 @@
+﻿using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
+using NUnit.Framework.Internal.Builders;
+
+namespace ShapeCrawler.Tests.Helpers;
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public class MasterShapeAttribute(string pptxName, string shapeName, object expectedResult) : Attribute, ITestBuilder
+{
+    public MasterShapeAttribute(string pptxName, string shapeName) : this(pptxName, shapeName, null)
+    {
+    }
+
+    public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
+    {
+        var pptxStream = SCTest.TestAsset(pptxName);
+        var pres = new Presentation(pptxStream);
+        var shape = pres.MasterSlides[0].Shapes.Shape(shapeName);
+
+        var parameters = expectedResult != null
+            ? new TestCaseParameters([shape, expectedResult])
+            : new TestCaseParameters([shape]);
+        
+        yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);
+    }
+}

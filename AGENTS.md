@@ -15,8 +15,7 @@ ShapeCrawler is a .NET library that provides a simplified object model for manip
 ```
 src/                        # Main source code
 tests/
-├── ShapeCrawler.DevTests/  # Fast developer tests to check for regression changes
-└── ShapeCrawler.CITests/   # Slow tests that are generally only run on GitHub Workflow along with fast developer tests
+└── ShapeCrawler.Tests/     # Unified test suite for local development and CI
 
 ```
 
@@ -123,8 +122,7 @@ The project uses strict `.editorconfig` rules. Key settings:
 - **Only write tests when explicitly requested**.
 
 ### Test Project
-- **Always use**: `tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj`
-- **Never use**: Other test projects (they're for CI/CD)
+- **Always use**: `tests/ShapeCrawler.Tests/ShapeCrawler.Tests.csproj`
 
 ### Test Requirements
 - **Side-Effect Tests**: Tests that modify presentations must call `ValidatePresentation()` in assertions
@@ -132,7 +130,7 @@ The project uses strict `.editorconfig` rules. Key settings:
 
 ### Running Tests
 ```bash
-dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
+dotnet test tests/ShapeCrawler.Tests/ShapeCrawler.Tests.csproj
 ```
 
 ## Build and Validation
@@ -169,7 +167,7 @@ dotnet build src/ShapeCrawler.csproj -c Release
    - Encapsulate in instance methods
 
 - ❌ **Don't test with wrong project**
-   - Only use `ShapeCrawler.DevTests`
+   - Only use `ShapeCrawler.Tests`
 
 - ❌ **Don't skip Release build**
    - Required to catch all linter/style issues
@@ -205,7 +203,7 @@ pres.Save("output.pptx");
 
 | Task | Command |
 |------|---------|
-| Run tests | `dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj` |
+| Run tests | `dotnet test tests/ShapeCrawler.Tests/ShapeCrawler.Tests.csproj` |
 | Build (dev) | `dotnet build src/ShapeCrawler.csproj -c Debug` |
 | Build (release) | `dotnet build src/ShapeCrawler.csproj -c Release` |
 

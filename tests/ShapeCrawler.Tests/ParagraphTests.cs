@@ -1,0 +1,383 @@
+using FluentAssertions;
+using NUnit.Framework;
+using ShapeCrawler.Tests.Helpers;
+
+namespace ShapeCrawler.Tests;
+
+public class ParagraphTests : SCTest
+{
+    [Test]
+    public void IndentLevel_Setter_sets_indent_level()
+    {
+        // Act
+        var pres = new Presentation(p => p.Slide());
+        pres.Slides[0].Shapes.AddShape(100, 100, 500, 100);
+        var addedShape = pres.Slides[0].Shapes.Last();
+        addedShape.TextBox!.Paragraphs.Add();
+        var paragraph = addedShape.TextBox.Paragraphs.Last();
+        paragraph.Text = "Test";
+
+        // Act
+        paragraph.IndentLevel = 2;
+
+        // Assert
+        paragraph.IndentLevel.Should().Be(2);
+    }
+
+    [TestCase(0)]
+    [TestCase(10)]
+    public void IndentLevel_Setter_rejects_invalid_indent_level(int indentLevel)
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        pres.Slides[0].Shapes.AddShape(100, 100, 500, 100);
+        var paragraph = pres.Slides[0].Shapes.Last().TextBox!.Paragraphs[0];
+
+        // Act
+        var settingIndentLevel = () => paragraph.IndentLevel = indentLevel;
+
+        // Assert
+        settingIndentLevel.Should().Throw<ArgumentOutOfRangeException>();
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void HorizontalAlignment_Setter_sets_horizontal_alignment()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        pres.Slide(1).Shapes.AddTable(10, 10, 2, 2);
+        var table = pres.Slide(1).Shapes.Last().Table;
+        var textBox = table.Rows[0].Cells[0].TextBox!;
+        textBox.SetText("some-text");
+        var paragraph = textBox.Paragraphs[0];
+
+        // Act 
+        paragraph.HorizontalAlignment = TextHorizontalAlignment.Center;
+
+        // Assert 
+        paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Center);
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails")]
+    public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
+        var shape = pres.Slide(1).Shape("AutoShape 4");
+        var paragraph = shape.TextBox!.Paragraphs[0];
+
+        // Act
+        paragraph.Text = "AutoShape 4 some text";
+
+        // Assert
+        shape.Height.Should().BeApproximately(34m, 1m);
+        shape.Y.Should().BeApproximately(104m, 1m);
+    }
+
+    [Test]
+    public void Text_Setter_sets_paragraph_text_in_New_Presentation()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes.Last();
+        var paragraph = addedShape.TextBox!.Paragraphs[0];
+
+        // Act
+        paragraph.Text = "test";
+
+        // Assert
+        paragraph.Text.Should().Be("test");
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Text_Setter_sets_paragraph_text_for_grouped_shape()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
+        var group = pres.Slide(1).Shape("Group 1");
+        var shape = group.GroupedShape("Shape 1");
+        var paragraph = shape.TextBox!.Paragraphs[0];
+
+        // Act
+        paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";
+
+        // Assert
+        paragraph.Text.Should()
+            .BeEquivalentTo($"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Paragraph_Text_Getter_returns_paragraph_text()
+    {
+        // Arrange
+        var textBox1 = new Presentation(TestAsset("008.pptx")).Slide(1).Shape(37).TextBox;
+        var textBox2 = new Presentation(TestAsset("009_table.pptx")).Slide(3).Shape(3).Table.Rows[0].Cells[0].TextBox;
+
+        // Act
+        string paragraphTextCase1 = textBox1.Paragraphs[0].Text;
+        string paragraphTextCase2 = textBox1.Paragraphs[1].Text;
+        string paragraphTextCase3 = textBox2.Paragraphs[0].Text;
+
+        // Assert
+        paragraphTextCase1.Should().BeEquivalentTo("P1t1 P1t2");
+        paragraphTextCase2.Should().BeEquivalentTo("p2");
+        paragraphTextCase3.Should().BeEquivalentTo("0:0_p1_lvl1");
+    }
+
+    [Test]
+    public void ReplaceText_finds_and_replaces_text()
+    {
+        // Arrange
+        var pptxStream = TestAsset("autoshape-case003.pptx");
+        var pres = new Presentation(pptxStream);
+        var paragraph = pres.Slides[0].Shapes.Shape<IShape>("AutoShape 3").TextBox!.Paragraphs[0];
+
+        // Act
+        paragraph.ReplaceText("Some text", "Some text2");
+
+        // Assert
+        paragraph.Text.Should().BeEquivalentTo("Some text2");
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
+    {
+        // Arrange
+        var textFrame = new Presentation(TestAsset("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextBox;
+
+        // Act
+        var portions = textFrame.Paragraphs[0].Portions;
+
+        // Assert
+        portions.Should().HaveCount(2);
+    }
+
+    [Test]
+    public void Portions_Add()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("autoshape-case001.pptx"));
+        var shape = pres.MasterSlides[0].Shapes.Shape<IShape>("AutoShape 1");
+        shape.TextBox!.Paragraphs.Add();
+        var paragraph = shape.TextBox.Paragraphs.Last();
+        var expectedPortionCount = paragraph.Portions.Count + 1;
+
+        // Act
+        paragraph.Portions.AddText(" ");
+
+        // Assert
+        paragraph.Portions.Count.Should().Be(expectedPortionCount);
+    }
+
+    [Test]
+    [SlideParagraph("Case #1", "autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
+    [SlideParagraph("Case #2", "autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
+    public void IndentLevel_Getter_returns_indent_level(IParagraph paragraph, int expectedLevel)
+    {
+        // Act
+        var indentLevel = paragraph.IndentLevel;
+
+        // Assert
+        indentLevel.Should().Be(expectedLevel);
+    }
+
+    [Test]
+    [SlideShape("001.pptx", 1, "TextBox 3", TextHorizontalAlignment.Center)]
+    [SlideShape("001.pptx", 1, "Head 1", TextHorizontalAlignment.Center)]
+    public void HorizontalAlignment_Getter_returns_text_horizontal_alignment(IShape autoShape,
+        TextHorizontalAlignment expectedAlignment)
+    {
+        // Arrange
+        var paragraph = autoShape.TextBox.Paragraphs[0];
+
+        // Act-Assert
+        paragraph.HorizontalAlignment.Should().Be(expectedAlignment);
+    }
+
+    [Test]
+    [TestCase("001.pptx", 1, "TextBox 4")]
+    public void HorizontalAlignment_Setter_updates_text_horizontal_alignment(string presName, int slideNumber,
+        string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset(presName));
+        var paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox.Paragraphs[0];
+        var mStream = new MemoryStream();
+
+        // Act
+        paragraph.HorizontalAlignment = TextHorizontalAlignment.Right;
+
+        // Assert
+        paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
+
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
+        paragraph = pres.Slides[slideNumber - 1].Shapes.Shape<IShape>(shapeName).TextBox.Paragraphs[0];
+        paragraph.HorizontalAlignment.Should().Be(TextHorizontalAlignment.Right);
+    }
+
+    [Test]
+    [TestCase("002.pptx", 2, 4, 3, "Text", 1)]
+    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}", 2)]
+    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2", 3)]
+    [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2{NewLine}", 4)]
+    [TestCase("023.pptx", 1, 2, 2, "Text", 1)]
+    public void Text_Setter_sets_paragraph_text(string presName, int slideNumber, int shapeId, int paraNumber,
+        string paraText, int expectedPortionsCount)
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset(presName));
+        var paragraph = pres.Slide(slideNumber).Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
+        var mStream = new MemoryStream();
+        paraText = paraText.Replace("{NewLine}", Environment.NewLine);
+
+        // Act
+        paragraph.Text = paraText;
+
+        // Assert
+        paragraph.Text.Should().BeEquivalentTo(paraText);
+        paragraph.Portions.Count.Should().Be(expectedPortionsCount);
+
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
+        paragraph = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId).TextBox.Paragraphs[paraNumber - 1];
+        paragraph.Text.Should().BeEquivalentTo(paraText);
+        paragraph.Portions.Count.Should().Be(expectedPortionsCount);
+    }
+
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 5", 1.0)]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 4", 1.5)]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 3", 2.0)]
+    public void Paragraph_Spacing_LineSpacingLines_returns_line_spacing_in_Lines(IShape shape, double expectedLines)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+
+        // Act
+        var spacingLines = paragraph.Spacing.LineSpacingLines;
+
+        // Assert
+        spacingLines.Should().Be(expectedLines);
+        paragraph.Spacing.LineSpacing.Should().BeNull();
+    }
+
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 6", 21.6)]
+    public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+        var decimalExpectedPoints = (decimal)expectedPoints;
+
+        // Act
+        var spacingPoints = paragraph.Spacing.LineSpacing!.Value;
+
+        // Assert
+        spacingPoints.Should().Be(decimalExpectedPoints);
+        paragraph.Spacing.LineSpacingLines.Should().BeNull();
+    }
+
+    [Test]
+    [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
+    public void Spacing_BeforeSpacingPoints_returns_before_spacing_in_points(IShape shape, double expectedPoints)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+        var expectedPointsDecimal = (decimal)expectedPoints;
+
+        // Act-Assert
+        paragraph.Spacing.BeforeSpacing.Should().Be(expectedPointsDecimal);
+    }
+
+    [Test]
+    [SlideShape("062_text_spacing.pptx", 1, "TextBox 4", 50)]
+    public void Spacing_AfterSpacingPoints_returns_after_spacing_in_points(IShape shape, double expectedPoints)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+
+        // Act-Assert
+        paragraph.Spacing.AfterSpacing.Should().Be((decimal)expectedPoints);
+    }
+
+    [Test]
+    public void Spacing_BeforeSpacingPoints_Setter_sets_before_spacing()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
+        paragraph.Text = "test";
+
+        // Act
+        paragraph.Spacing.BeforeSpacing = 50;
+
+        // Assert
+        paragraph.Spacing.BeforeSpacing.Should().Be(50);
+
+        using var mStream = new MemoryStream();
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
+        paragraph.Spacing.BeforeSpacing.Should().Be(50);
+    }
+
+    [Test]
+    public void Spacing_AfterSpacingPoints_Setter_sets_after_spacing()
+    {
+        // Arrange
+        var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Shapes.AddShape(10, 10, 10, 10);
+        var addedShape = slide.Shapes[0];
+        var paragraph = addedShape.TextBox.Paragraphs[0];
+        paragraph.Text = "test";
+
+        // Act
+        paragraph.Spacing.AfterSpacing = 50;
+
+        // Assert
+        paragraph.Spacing.AfterSpacing.Should().Be(50);
+        var mStream = new MemoryStream();
+        pres.Save(mStream);
+        pres = new Presentation(mStream);
+        paragraph = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0];
+        paragraph.Spacing.AfterSpacing.Should().Be(50);
+    }
+
+    [Test]
+    [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
+    public void Replacing_Paragraph_Text_Preserves_Newlines(IShape shape)
+    {
+        // Act
+        shape.TextBox!.Paragraphs[0].Text = shape.TextBox.Paragraphs[0].Text.Replace("World", "Earth");
+
+        // Assert
+        shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
+    }
+
+    [Test]
+    [SlideShape("073 replacing text.pptx", 1, "TextBox 3")]
+    public void ReplaceText_preserves_New_Lines(IShape shape)
+    {
+        // Arrange
+        var paragraph = shape.TextBox!.Paragraphs[0];
+
+        // Act
+        paragraph.ReplaceText("World", "Earth");
+
+        // Assert
+        shape.TextBox.Text.Should().Be("Hello" + Environment.NewLine + Environment.NewLine + "Earth");
+    }
+}
