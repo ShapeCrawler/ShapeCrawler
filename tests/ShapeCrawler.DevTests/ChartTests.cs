@@ -29,6 +29,16 @@ public class ChartTests : SCTest
                ?? throw new InvalidOperationException("The shape doesn't contain a chart.");
     }
 
+    private static void AddSeriesAndValidate(Presentation presentation, int slideNumber, int shapeId, params double[] values)
+    {
+        var chart = GetChart(presentation.Slide(slideNumber).Shape(shapeId));
+        chart.SeriesCollection.Add("Added Series", values);
+        presentation = SaveAndOpenPresentation(presentation);
+        chart = GetChart(presentation.Slide(slideNumber).Shape(shapeId));
+        chart.SeriesCollection[^1].Name.Should().Be("Added Series");
+        chart.SeriesCollection[^1].Points.Select(point => point.Value).Should().Equal(values);
+    }
+
     [Test]
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
     {
@@ -183,7 +193,7 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void SeriesCollection_Add_appends_series_to_template_bar_chart_and_embedded_workbook()
+    public void SeriesCollection_Add_appends_series_to_common_chart_families()
     {
         // Arrange
         var pres = new Presentation(TestAsset("001 bar chart.pptx"));
@@ -209,6 +219,33 @@ public class ChartTests : SCTest
         workbookCells["E5"].CellValue!.Text.Should().Be("9.4");
         workbook.WorkbookPart.WorksheetParts.Single().TableDefinitionParts.Single().Table!.Reference!.Value.Should().Be("A1:E5");
         ValidatePresentation(pres);
+
+        AddSeriesAndValidate(new Presentation(TestAsset("025_chart.pptx")), 1, 7, 5.0, 6.0);
+        AddSeriesAndValidate(new Presentation(TestAsset("025_chart.pptx")), 4, 13, 5.0, 6.0, 7.0, 8.0);
+        AddSeriesAndValidate(new Presentation(TestAsset("024_chart.pptx")), 2, 5, 5.0, 6.0, 7.0);
+
+        var generatedPie = new Presentation(presBuilder =>
+        {
+            presBuilder.Slide(slide =>
+            {
+                slide.PieChartShape(shape =>
+                {
+                    shape.Chart(chartBuilder =>
+                    {
+                        chartBuilder.Name("Generated Pie");
+                        chartBuilder.Series("Series 1", 50, 50);
+                        chartBuilder.Categories("Category 1", "Category 2");
+                    });
+                });
+            });
+        });
+        var generatedPieChart = GetChart(generatedPie.Slide(1).Shapes.First(shape => shape.PieChart != null));
+        generatedPieChart.SeriesCollection.Add("Added Series", 30, 70);
+        generatedPie = SaveAndOpenPresentation(generatedPie);
+        generatedPieChart = GetChart(generatedPie.Slide(1).Shapes.First(shape => shape.PieChart != null));
+        generatedPieChart.SeriesCollection[1].Name.Should().Be("Added Series");
+        generatedPieChart.SeriesCollection[1].Points.Select(point => point.Value).Should().Equal(30, 70);
+        ValidatePresentation(generatedPie);
     }
 
     [Test]

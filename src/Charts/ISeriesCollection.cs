@@ -16,10 +16,10 @@ namespace ShapeCrawler;
 public interface ISeriesCollection : IReadOnlyList<ISeries>
 {
     /// <summary>
-    ///     Adds a series to a bar or column chart using the existing categories.
+    ///     Adds a series to a bar, line, pie/doughnut, scatter, or area chart using the existing categories or template X values.
     /// </summary>
     /// <param name="name">The name of the series.</param>
-    /// <param name="values">The series values, one for each existing category.</param>
+    /// <param name="values">The series values, one for each existing category or template X value.</param>
     void Add(string name, params double[] values);
 
     /// <summary>
