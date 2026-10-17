@@ -10,6 +10,7 @@ public class AudioExamples
         using var audioStream = File.OpenRead("audio.mp3");
         shapes.AddAudio(x: 300, y: 100, audioStream);
         var addedAudio = shapes.Last().Media;
+        addedAudio.StartMode = AudioStartMode.Automatically;
         pres.Save();
 
         // Get byte content

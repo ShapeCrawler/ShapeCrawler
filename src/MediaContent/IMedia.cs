@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.MediaContent;
 using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -33,12 +34,10 @@ public interface IMedia
     /// <param name="media">Audio stream.</param>
     void Update(Stream media);
 
-#if DEBUG
     /// <summary>
     ///     Gets or sets audio start mode.
     /// </summary>
     AudioStartMode StartMode { get; set; }
-#endif
 }
 
 internal class Media(SlideShapeOutline outline, ShapeFill fill, P.Picture pPicture) : IMedia
@@ -63,8 +62,8 @@ internal class Media(SlideShapeOutline outline, ShapeFill fill, P.Picture pPictu
 
     public AudioStartMode StartMode
     {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => new AudioTiming(pPicture).StartMode;
+        set => new AudioTiming(pPicture).StartMode = value;
     }
 
     private OpenXmlPart OpenXmlPart => pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;

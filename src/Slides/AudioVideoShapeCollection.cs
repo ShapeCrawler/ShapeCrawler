@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.MediaContent;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -79,6 +80,7 @@ internal sealed class AudioVideoShapeCollection(SlidePart slidePart, Presentatio
         var applicationNonVisualDrawingProps = nonVisualPictureProps.ApplicationNonVisualDrawingProperties!;
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
+        new AudioTiming(pPicture).StartMode = AudioStartMode.InClickSequence;
     }
 
     public void AddVideo(int x, int y, Stream stream)

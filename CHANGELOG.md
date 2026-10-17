@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added `IMedia.StartMode` to read and set audio playback to In Click Sequence, Automatically, or When Clicked On ([#581](https://github.com/ShapeCrawler/ShapeCrawler/issues/581)).
+
 - Breaking: removed `IShape.SdkOpenXmlElement`, `IPresentation.GetSdkPresentationDocument()`, and `IUserSlide.GetSdkPresentationPart()` to keep SDK elements and packages internal. For independent XML inspection, save the presentation with `Save(Stream)` and open that PPTX with the Open XML SDK.
 
 ## Version 0.81.0 - 2026-10-17
