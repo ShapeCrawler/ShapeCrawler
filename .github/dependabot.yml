@@ -1,0 +1,25 @@
+version: 2
+
+updates:
+  - package-ecosystem: "nuget"
+    directories:
+      - "/src"
+      - "/tests/ShapeCrawler.DevTests"
+      - "/tests/ShapeCrawler.CITests"
+      - "/examples"
+    schedule:
+      interval: "weekly"
+    groups:
+      all-nuget-version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+      all-nuget-security-updates:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "ClosedXML"
+      - dependency-name: "FluentAssertions"
+        versions:
+          - "[8.0.0,)"
