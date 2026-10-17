@@ -131,6 +131,61 @@ public class TextBoxTests : SCTest
         textBox.Paragraphs[0].Portions[0].Font!.Color.Hex.Should().Be(expectedColor);
     }
 
+    [TestCase(1, "TextBox 3")]
+    [TestCase(3, "Text Placeholder 3")]
+    public void SetText_preserves_original_font_size(int slideNumber, string shapeName)
+    {
+        // Arrange
+        using var pres = new Presentation(TestAsset("001.pptx"));
+        var textBox = pres.Slide(slideNumber).Shape(shapeName).TextBox!;
+        var expectedSize = textBox.Paragraphs[0].Portions[0].Font!.Size;
+
+        // Act
+        textBox.SetText("New text");
+
+        // Assert
+        textBox.Paragraphs[0].Portions[0].Font!.Size.Should().Be(expectedSize);
+        using var reopened = SaveAndOpenPresentation(pres);
+        reopened.Slide(slideNumber).Shape(shapeName).TextBox!.Paragraphs[0].Portions[0].Font!.Size
+            .Should().Be(expectedSize);
+    }
+
+    [TestCase(AutofitType.None, 15.5)]
+    [TestCase(AutofitType.Resize, 15.5)]
+    [TestCase(AutofitType.Shrink, 15)]
+    public void SetText_preserves_font_size_for_each_replacement_paragraph(AutofitType autofitType, double size)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slide(1).Shapes;
+        shapes.AddShape(100, 100, 600, 300);
+        var textBox = shapes.Last().TextBox!;
+        textBox.SetText("Original text");
+        textBox.AutofitType = autofitType;
+        textBox.Paragraphs[0].Portions[0].Font!.Size = (decimal)size;
+        textBox.Paragraphs[0].Portions.AddText(" differently formatted text");
+        textBox.Paragraphs[0].Portions[1].Font!.Size = 30;
+        var replacement = $"New text{Environment.NewLine}Second line";
+
+        // Act
+        textBox.SetText(replacement);
+
+        // Assert
+        textBox.Text.Should().Be(replacement);
+        textBox.Paragraphs.Should().HaveCount(2);
+        foreach (var paragraph in textBox.Paragraphs)
+        {
+            paragraph.Portions.Should().ContainSingle().Which.Font!.Size.Should().Be((decimal)size);
+        }
+
+        using var reopened = SaveAndOpenPresentation(pres);
+        var reopenedTextBox = reopened.Slide(1).Shapes.Last().TextBox!;
+        reopenedTextBox.Text.Should().Be(replacement);
+        reopenedTextBox.Paragraphs.SelectMany(p => p.Portions).Should()
+            .OnlyContain(p => p.Font!.Size == (decimal)size);
+        ValidatePresentation(pres);
+    }
+
     [Test]
     public void SetMarkdownText()
     {
@@ -178,14 +233,19 @@ public class TextBoxTests : SCTest
         var pres = new Presentation(TestAsset("autoshape-case003.pptx"));
         var shape = pres.Slide(1).Shape("AutoShape 4");
         var textBox = shape.TextBox!;
+        using var expectedPres = new Presentation(TestAsset("autoshape-case003.pptx"));
+        var expectedShape = expectedPres.Slide(1).Shape("AutoShape 4");
+        expectedShape.TextBox!.Paragraphs[0].Text = "AutoShape 4 some text";
+        var expectedFontSize = textBox.Paragraphs[0].Portions[0].Font!.Size;
 
         // Act
         textBox.SetText("AutoShape 4 some text");
 
         // Assert
         textBox.Text.Should().Be("AutoShape 4 some text");
-        shape.Height.Should().BeApproximately(59m, 1m);
-        shape.Y.Should().BeApproximately(92m, 2m);
+        textBox.Paragraphs[0].Portions[0].Font!.Size.Should().Be(expectedFontSize);
+        shape.Height.Should().BeApproximately(expectedShape.Height, 1m);
+        shape.Y.Should().BeApproximately(expectedShape.Y, 2m);
         ValidatePresentation(pres);
     }
 
@@ -401,12 +461,16 @@ public class TextBoxTests : SCTest
         var pres = new Presentation(TestAsset("autoshape-case013.pptx"));
         var shape = pres.Slide(1).Shape("AutoShape 1");
         var textBox = shape.TextBox!;
+        using var expectedPres = new Presentation(TestAsset("autoshape-case013.pptx"));
+        var expectedShape = expectedPres.Slide(1).Shape("AutoShape 1");
+        expectedShape.TextBox!.Paragraphs[0].Text = "Some sentence. Some sentence";
 
         // Act
         textBox.SetText("Some sentence. Some sentence");
 
         // Assert
-        shape.Height.Should().BeApproximately(32m, 32m);
+        textBox.Text.Should().Be("Some sentence. Some sentence");
+        shape.Height.Should().BeApproximately(expectedShape.Height, 1m);
     }
 
     [Test]

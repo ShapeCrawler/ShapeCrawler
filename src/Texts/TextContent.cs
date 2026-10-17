@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ShapeCrawler.Paragraphs;
 
 namespace ShapeCrawler.Texts;
 
@@ -78,7 +79,9 @@ internal sealed class TextContent(
             paragraph.Remove();
         }
 
-        foreach (var portion in firstParagraph.Portions.ToList())
+        // Keep the first text run as a formatting template, including inherited font size.
+        var firstTextPortion = firstParagraph.Portions.FirstOrDefault() as TextParagraphPortion;
+        foreach (var portion in firstParagraph.Portions.Skip(firstTextPortion == null ? 0 : 1).ToList())
         {
             portion.Remove();
         }
@@ -94,14 +97,22 @@ internal sealed class TextContent(
         }
 
         // Add first line to the first paragraph
+        var templatePortion = firstParagraph.Portions.FirstOrDefault();
         firstParagraph.Portions.AddText(paragraphLines[0]);
+        templatePortion?.Remove();
         ApplyLatinNameIfNeeded(firstParagraph.Portions.Last(), latinNameToPreserve);
 
         // Add remaining lines as new paragraphs
         for (int i = 1; i < paragraphLines.Length; i++)
         {
             paragraphs.Add();
+            var emptyPortions = paragraphs[i].Portions.ToArray();
             paragraphs[i].Portions.AddText(paragraphLines[i]);
+            foreach (var emptyPortion in emptyPortions)
+            {
+                emptyPortion.Remove();
+            }
+
             ApplyLatinNameIfNeeded(paragraphs[i].Portions.Last(), latinNameToPreserve);
         }
     }

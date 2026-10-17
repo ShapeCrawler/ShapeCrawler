@@ -105,7 +105,7 @@ internal sealed class FontColor(A.Text aText) : IFontColor
         var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);
-        aRunProperties.InsertAt(aSolidFill, 0);
+        aRunProperties.AddChild(aSolidFill, true);
     }
 
     private static ColorType GetColorTypeFromSolidFill(OpenXmlPart openXmlPart, A.SolidFill aSolidFill)
