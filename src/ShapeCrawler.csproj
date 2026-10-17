@@ -93,10 +93,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageReference Include="DocumentFormat.OpenXml.Linq" />
     <PackageReference Include="SkiaSharp" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
-    <PackageReference Include="StyleCop.Analyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="System.Resources.Extensions" />
   </ItemGroup>
 
