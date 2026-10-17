@@ -1,7 +1,9 @@
 # Changelog  
 
-## Unreleased
-Breaking change: ShapeCrawler now requires .NET 10 or later. Support for .NET Standard 2.0 and .NET Framework has been removed.
+## Version 0.81.0 - 2026-10-17
+🍀Added `ISeriesCollection.Add()` to add series to bar/column, line, pie/doughnut, scatter, and area charts [#490](https://github.com/ShapeCrawler/ShapeCrawler/issues/490)  
+🍀Added support for creating and reading all PowerPoint line types and updating line endpoints [#217](https://github.com/ShapeCrawler/ShapeCrawler/issues/217)  
+🍀Added APIs to update SVG pictures and MP3/WAVE audio content [#362](https://github.com/ShapeCrawler/ShapeCrawler/issues/362), [#248](https://github.com/ShapeCrawler/ShapeCrawler/issues/248)
 
 ## Version 0.80.0 - 2026-08-11
 🍀Added capability to update chart series name [#251](https://github.com/ShapeCrawler/ShapeCrawler/issues/251)
