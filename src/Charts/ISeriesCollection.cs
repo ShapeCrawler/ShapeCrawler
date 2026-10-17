@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Charts;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -14,6 +15,13 @@ namespace ShapeCrawler;
 /// </summary>
 public interface ISeriesCollection : IReadOnlyList<ISeries>
 {
+    /// <summary>
+    ///     Adds a series to a bar, line, pie/doughnut, scatter, or area chart using the existing categories or template X values.
+    /// </summary>
+    /// <param name="name">The name of the series.</param>
+    /// <param name="values">The series values, one for each existing category or template X value.</param>
+    void Add(string name, params double[] values);
+
     /// <summary>
     ///     Removes the series at the specified index.
     /// </summary>
@@ -34,6 +42,8 @@ internal sealed class SeriesCollection : ISeriesCollection
     public int Count => this.SeriesListCore().Count;
 
     public ISeries this[int index] => this.SeriesListCore()[index];
+
+    public void Add(string name, params double[] values) => new ChartSeriesAddition(this.chartPart, this.cXCharts).Add(name, values);
 
     public void RemoveAt(int index) => this.CSerList()[index].Remove();
 
