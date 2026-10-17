@@ -159,8 +159,13 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
 
     public void SetNoFill()
     {
-        this.InitSolidFillOr();
         openXmlCompositeElement.AddNoFill();
+        openXmlCompositeElement.Ancestors<P.Shape>().FirstOrDefault()?.UseBackgroundFill = null;
+
+        this.aSolidFill = null;
+        this.aGradFill = null;
+        this.aBlipFill = null;
+        this.pictureImage = null;
     }
 
     private static A.ColorScheme GetColorScheme(OpenXmlPart openXmlPart)

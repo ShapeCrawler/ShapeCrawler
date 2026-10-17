@@ -123,6 +123,16 @@ pres.Save("with-sections.pptx");
 
 Slide numbers start at 1. Each new section contains slides from its starting slide up to the next section, or the end of the presentation. Adding a section splits the existing section at that slide. When the first section starts after slide 1, earlier slides are placed in a `Default Section`.
 
+### Remove a shape's fill
+
+```csharp
+using var pres = new Presentation("presentation.pptx");
+pres.Slide(1).Shape("Rectangle 1").Fill.SetNoFill();
+pres.Save("no-fill.pptx");
+```
+
+`SetNoFill()` replaces the existing fill and preserves the outline. To remove fills from shapes inside a group, call `SetNoFill()` on each member's `Fill` through `GroupedShapes`; repeat for members of nested groups.
+
 ### Read a fill's theme color name
 
 ```csharp

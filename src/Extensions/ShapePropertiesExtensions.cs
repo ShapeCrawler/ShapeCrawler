@@ -9,33 +9,14 @@ internal static class ShapePropertiesExtensions
     {
         internal void AddNoFill()
         {
-            pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
-            pShapeProperties.GetFirstChild<A.SolidFill>()?.Remove();
-            pShapeProperties.GetFirstChild<A.PatternFill>()?.Remove();
-            pShapeProperties.GetFirstChild<A.NoFill>()?.Remove();
-            pShapeProperties.GetFirstChild<A.BlipFill>()?.Remove();
+            pShapeProperties.RemoveAllChildren<A.GradientFill>();
+            pShapeProperties.RemoveAllChildren<A.SolidFill>();
+            pShapeProperties.RemoveAllChildren<A.PatternFill>();
+            pShapeProperties.RemoveAllChildren<A.NoFill>();
+            pShapeProperties.RemoveAllChildren<A.BlipFill>();
+            pShapeProperties.RemoveAllChildren<A.GroupFill>();
 
-            var aNoFill = pShapeProperties.GetFirstChild<A.NoFill>();
-            if (aNoFill != null)
-            {
-                foreach (var child in aNoFill)
-                {
-                    child.Remove();
-                }
-            }
-            else
-            {
-                aNoFill = new A.NoFill();
-                var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
-                if (aOutline != null)
-                {
-                    pShapeProperties.InsertAfter(aNoFill, aOutline);
-                }
-                else
-                {
-                    pShapeProperties.Append(aNoFill);
-                }
-            }
+            pShapeProperties.AddChild(new A.NoFill(), true);
         }
 
         internal void AddSolidFill(string hex)

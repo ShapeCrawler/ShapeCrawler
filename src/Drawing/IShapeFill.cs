@@ -56,7 +56,8 @@ public interface IShapeFill
     void SetColor(string hex);
 
     /// <summary>
-    ///     Removes Fills from the shape.
+    ///     Replaces the shape's fill with no fill, preserving its outline.
+    ///     For grouped shapes, call this method on each member whose fill should be removed.
     /// </summary>
     void SetNoFill();
 }
