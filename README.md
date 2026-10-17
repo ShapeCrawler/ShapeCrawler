@@ -73,6 +73,21 @@ addedShape.TextBox.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
+### Set audio timing
+
+```csharp
+using var pres = new Presentation(p => p.Slide());
+var shapes = pres.Slide(1).Shapes;
+using var audio = File.OpenRead("audio.mp3");
+shapes.AddAudio(100, 100, audio);
+var media = shapes.Last().Media!;
+media.StartMode = AudioStartMode.Automatically; // With Previous in animation Timing
+media.StartDelay = TimeSpan.FromSeconds(2);
+pres.Save("audio-timing.pptx");
+```
+
+`StartDelay` defaults to zero and is saved with millisecond precision. Changing `StartMode` preserves the delay.
+
 ### Organize slides into sections
 
 ```csharp

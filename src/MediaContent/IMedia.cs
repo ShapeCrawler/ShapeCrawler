@@ -38,6 +38,12 @@ public interface IMedia
     ///     Gets or sets audio start mode.
     /// </summary>
     AudioStartMode StartMode { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the audio animation start delay. The default is zero.
+    ///     Values are rounded to the nearest millisecond and must be between zero and 4,294,967,295 milliseconds.
+    /// </summary>
+    TimeSpan StartDelay { get; set; }
 }
 
 internal class Media(SlideShapeOutline outline, ShapeFill fill, P.Picture pPicture) : IMedia
@@ -64,6 +70,12 @@ internal class Media(SlideShapeOutline outline, ShapeFill fill, P.Picture pPictu
     {
         get => new AudioTiming(pPicture).StartMode;
         set => new AudioTiming(pPicture).StartMode = value;
+    }
+
+    public TimeSpan StartDelay
+    {
+        get => new AudioTiming(pPicture).StartDelay;
+        set => new AudioTiming(pPicture).StartDelay = value;
     }
 
     private OpenXmlPart OpenXmlPart => pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;

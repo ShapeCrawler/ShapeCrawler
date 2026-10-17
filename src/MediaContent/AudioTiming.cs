@@ -45,6 +45,7 @@ internal sealed class AudioTiming(P.Picture picture)
             }
 
             this.EnsureAudioShape();
+            var startDelay = this.StartDelay.TotalMilliseconds.ToString("0", CultureInfo.InvariantCulture);
             var root = this.Root();
             var command = this.PlayCommand();
             if (command is not null)
@@ -86,7 +87,7 @@ internal sealed class AudioTiming(P.Picture picture)
                   <p:childTnLst><p:par><p:cTn id="{nextId++}" fill="hold">
                     <p:stCondLst><p:cond delay="0"/></p:stCondLst>
                     <p:childTnLst><p:par><p:cTn id="{nextId++}" presetID="1" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="{effectType}">
-                      <p:stCondLst><p:cond delay="0"/></p:stCondLst>
+                      <p:stCondLst><p:cond delay="{startDelay}"/></p:stCondLst>
                       <p:childTnLst><p:cmd type="call" cmd="playFrom(0.0)"><p:cBhvr>
                         <p:cTn id="{nextId++}" dur="indefinite" fill="hold"/>
                         <p:tgtEl><p:spTgt spid="{this.ShapeId}"/></p:tgtEl>
@@ -128,6 +129,40 @@ internal sealed class AudioTiming(P.Picture picture)
             }
         }
     }
+
+    public TimeSpan StartDelay
+    {
+        get
+        {
+            this.EnsureAudioShape();
+            var delay = this.PlayEffect()?.StartConditionList?.GetFirstChild<P.Condition>()?.Delay?.Value;
+            return uint.TryParse(delay, NumberStyles.None, CultureInfo.InvariantCulture, out var milliseconds)
+                ? TimeSpan.FromMilliseconds(milliseconds)
+                : TimeSpan.Zero;
+        }
+        set
+        {
+            if (value < TimeSpan.Zero || value.TotalMilliseconds > uint.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            this.EnsureAudioShape();
+            if (this.PlayCommand() is null)
+            {
+                this.StartMode = AudioStartMode.WhenClickedOn;
+            }
+
+            var effect = this.PlayEffect()!;
+            effect.StartConditionList ??= new P.StartConditionList();
+            var condition = effect.StartConditionList.GetFirstChild<P.Condition>()
+                ?? effect.StartConditionList.AppendChild(new P.Condition());
+            condition.Delay = Math.Round(value.TotalMilliseconds).ToString("0", CultureInfo.InvariantCulture);
+        }
+    }
+
+    private P.CommonTimeNode? PlayEffect() => this.PlayCommand()?.Ancestors<P.CommonTimeNode>()
+        .First(node => node.PresetClass?.Value == P.TimeNodePresetClassValues.MediaCall);
 
     private void EnsureAudioShape()
     {

@@ -13,7 +13,7 @@ public enum AudioStartMode
     InClickSequence,
 
     /// <summary>
-    ///     Automatically.
+    ///     Automatically (With Previous in the animation Timing options).
     /// </summary>
     Automatically,
 
