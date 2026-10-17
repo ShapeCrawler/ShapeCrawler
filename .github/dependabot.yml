@@ -14,5 +14,3 @@ updates:
         applies-to: "security-updates"
         patterns:
           - "*"
-    ignore:
-      - dependency-name: "ClosedXML"
