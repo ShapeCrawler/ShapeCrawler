@@ -9,11 +9,14 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Categories(ChartPart chartPart) : IReadOnlyList<ICategory>
+internal sealed class Categories(ChartPart chartPart) : ICategoryCollection
 {
     public int Count => this.CategoryList().Count;
 
     public ICategory this[int index] => this.CategoryList()[index];
+
+    /// <inheritdoc />
+    public void Add(string name, params double[] values) => new ChartCategoryAddition(chartPart).Add(name, values);
 
     public IEnumerator<ICategory> GetEnumerator() => this.CategoryList().GetEnumerator();
 
