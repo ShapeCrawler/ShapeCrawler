@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using NUnit.Framework;
@@ -302,7 +301,7 @@ public class ChartTests : SCTest
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
     }
 
-    [Test, Ignore("ClosedXML dependency must be removed")]
+    [Test]
     public void Category_Name_Setter_updates_value_of_Excel_cell()
     {
         // Arrange
@@ -314,9 +313,7 @@ public class ChartTests : SCTest
         category.Name = "Category 1_new";
 
         // Assert
-        var mStream = new MemoryStream(lineChart.GetWorksheetByteArray());
-        var workbook = new XLWorkbook(mStream);
-        var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
+        var cellValue = GetWorksheetCellValue<string>(lineChart.GetWorksheetByteArray(), "A2");
         cellValue.Should().BeEquivalentTo("Category 1_new");
     }
 
