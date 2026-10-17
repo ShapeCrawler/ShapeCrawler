@@ -10,6 +10,41 @@ namespace ShapeCrawler.Tests;
 
 public partial class UserSlideShapeCollectionTests
 {
+    [Test]
+    public void AddOleObject_embeds_Word_and_Excel_documents_on_first_slide()
+    {
+        // Arrange
+        using var presentation = new Presentation(p => p.Slide().Slide());
+        using var document = OleDocument(OleObjectType.WordDocument);
+        using var workbook = OleDocument(OleObjectType.ExcelWorkbook);
+        using var documentPreview = TestAsset("09 png image.png");
+        using var workbookPreview = TestAsset("09 png image.png");
+        var shapes = presentation.Slide(1).Shapes;
+
+        // Act
+        shapes.AddOleObject(50, 60, 200, 100, document, OleObjectType.WordDocument, documentPreview);
+        shapes.AddOleObject(300, 60, 200, 100, workbook, OleObjectType.ExcelWorkbook, workbookPreview);
+
+        // Assert
+        using var reopened = SaveAndOpenPresentation(presentation);
+        reopened.Slide(1).Shapes.Should().HaveCount(2);
+        reopened.Slide(2).Shapes.Should().BeEmpty();
+        using var sdk = SaveAndOpenPresentationAsSdk(reopened);
+        var slideId = sdk.PresentationPart!.Presentation.SlideIdList!.Elements<P.SlideId>().First();
+        var slidePart = (SlidePart)sdk.PresentationPart.GetPartById(slideId.RelationshipId!);
+        var objects = slidePart.Slide.Descendants<P.OleObject>().ToArray();
+        objects.Select(o => o.ProgId!.Value).Should().Equal("Word.Document.12", "Excel.Sheet.12");
+        using var embeddedDocument = new MemoryStream(CopyTestPartBytes(slidePart.GetPartById(objects[0].Id!)));
+        using var word = WordprocessingDocument.Open(embeddedDocument, false);
+        word.MainDocumentPart!.Document.Body!.InnerText.Should().Be("Embedded document");
+        using var embeddedWorkbook = new MemoryStream(CopyTestPartBytes(slidePart.GetPartById(objects[1].Id!)));
+        using var excel = SpreadsheetDocument.Open(embeddedWorkbook, false);
+        excel.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>().Single().Name!.Value.Should().Be("Sheet1");
+        slidePart.Slide.Descendants<P.NonVisualDrawingProperties>()
+            .Select(p => p.Id!.Value).Should().OnlyHaveUniqueItems();
+        ValidatePresentation(reopened);
+    }
+
     [TestCase(OleObjectType.WordDocument, "Word.Document.12", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")]
     [TestCase(OleObjectType.ExcelWorkbook, "Excel.Sheet.12", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
     [TestCase(OleObjectType.PowerPointPresentation, "PowerPoint.Show.12", "application/vnd.openxmlformats-officedocument.presentationml.presentation")]

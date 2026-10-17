@@ -87,6 +87,16 @@ Use `ExcelWorkbook` for `.xlsx` or `PowerPointPresentation` for `.pptx`. Coordin
 Supply a preview image to display on the slide; ShapeCrawler embeds the original document without rendering it.
 Both streams are read from their current positions and remain open. Opening or editing the embedded document requires a compatible Office application.
 
+To insert an Excel object on the first slide of an existing presentation (PowerPoint's **Insert > Object > Create from file**):
+
+```csharp
+using var pres = new Presentation("presentation.pptx");
+using var workbook = File.OpenRead("workbook.xlsx");
+using var preview = File.OpenRead("workbook-preview.png");
+pres.Slide(1).Shapes.AddOleObject(50, 60, 300, 200, workbook, OleObjectType.ExcelWorkbook, preview);
+pres.Save("with-workbook.pptx");
+```
+
 ### Set audio timing
 
 ```csharp

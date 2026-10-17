@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added `IUserSlideShapeCollection.AddOleObject()` to embed Word, Excel, and PowerPoint documents on slides with a preview image ([#623](https://github.com/ShapeCrawler/ShapeCrawler/issues/623), [#646](https://github.com/ShapeCrawler/ShapeCrawler/issues/646)).
+
 - Added `IMedia.StartMode` to read and set audio playback to In Click Sequence, Automatically, or When Clicked On ([#581](https://github.com/ShapeCrawler/ShapeCrawler/issues/581)).
 
 - Breaking: removed `IShape.SdkOpenXmlElement`, `IPresentation.GetSdkPresentationDocument()`, and `IUserSlide.GetSdkPresentationPart()` to keep SDK elements and packages internal. For independent XML inspection, save the presentation with `Save(Stream)` and open that PPTX with the Open XML SDK.
