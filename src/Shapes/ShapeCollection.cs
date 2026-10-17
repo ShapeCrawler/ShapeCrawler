@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -9,6 +10,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Groups;
 using ShapeCrawler.MediaContent;
 using ShapeCrawler.Positions;
+using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using ShapeCrawler.SmartArts;
 using ShapeCrawler.Texts;
@@ -18,11 +20,18 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IShapeCollection
+internal sealed class ShapeCollection(OpenXmlPart openXmlPart) : IEditableShapeCollection
 {
     public int Count => this.GetInternalShapes().Count();
 
     public IShape this[int index] => this.GetInternalShapes().ElementAt(index);
+
+    public void AddPicture(Stream imageStream)
+    {
+        var presentationDocument = (PresentationDocument)openXmlPart.OpenXmlPackage;
+        var imageFiles = new PresentationImageFiles(presentationDocument.PresentationPart!);
+        new PictureShapeCollection(openXmlPart, imageFiles).AddPicture(imageStream);
+    }
 
     public IShape GetById(int id) => this.GetById<IShape>(id);
 

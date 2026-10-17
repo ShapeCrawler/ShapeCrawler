@@ -22,7 +22,7 @@ public interface ILayoutSlide
     /// <summary>
     ///     Gets layout shape collection.
     /// </summary>
-    IShapeCollection Shapes { get; }
+    IEditableShapeCollection Shapes { get; }
 
     /// <summary>
     ///     Gets slide master.
@@ -60,7 +60,7 @@ internal sealed class LayoutSlide : ILayoutSlide
 
     public string Name => this.slideLayoutPart.SlideLayout!.CommonSlideData!.Name!.Value!;
 
-    public IShapeCollection Shapes { get; }
+    public IEditableShapeCollection Shapes { get; }
 
     public IMasterSlide MasterSlide => new MasterSlide(this.slideLayoutPart.SlideMasterPart!);
 

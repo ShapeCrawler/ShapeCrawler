@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape collection.
 /// </summary>
-public interface IUserSlideShapeCollection : IShapeCollection
+public interface IUserSlideShapeCollection : IEditableShapeCollection
 {
     /// <summary>
     ///     Adds the specified shape.
@@ -127,11 +127,6 @@ public interface IUserSlideShapeCollection : IShapeCollection
     ///     Adds a new table with a custom style.
     /// </summary>
     void AddTable(int x, int y, int columnsCount, int rowsCount, ITableStyle style);
-
-    /// <summary>
-    ///     Adds picture.
-    /// </summary>
-    void AddPicture(Stream imageStream);
 
     /// <summary>
     ///     Adds Pie Chart.
