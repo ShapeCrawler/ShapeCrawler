@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using DocumentFormat.OpenXml.Packaging;
 
 #if DEBUG
 #endif
@@ -98,11 +97,6 @@ public interface IUserSlide
     /// </summary>
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
     void SaveImageTo(string file);
-
-    /// <summary>
-    ///     Gets a copy of the underlying parent <see cref="PresentationPart"/>.
-    /// </summary>
-    PresentationPart GetSdkPresentationPart(); // NOSONAR
 
     /// <summary>
     ///     Gets the first shape in the slide.

@@ -1,5 +1,4 @@
 using System.IO;
-using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable InconsistentNaming
@@ -143,11 +142,6 @@ public interface IShape : IPosition, IShapeGeometry
     ///     Gets XPath of the underlying Open XML element.
     /// </summary>
     public string SdkXPath { get; }
-
-    /// <summary>
-    ///     Gets a copy of the underlying Open XML element.
-    /// </summary>
-    OpenXmlElement SdkOpenXmlElement { get; }
 
     /// <summary>
     ///     Gets the parent presentation.

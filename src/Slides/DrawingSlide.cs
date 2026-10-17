@@ -19,7 +19,7 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
     /// <inheritdoc/>
     public override void SaveImageTo(Stream stream)
     {
-        var presPart = this.GetSdkPresentationPart();
+        var presPart = ((PresentationDocument)this.GetSdkSlidePart().OpenXmlPackage).PresentationPart!;
         var pSlideSize = presPart.Presentation!.SlideSize!;
         var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
         var height = new Emus(pSlideSize.Cy!.Value).AsPixels();

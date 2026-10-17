@@ -92,7 +92,8 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             }
         }
 
-        var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
+        using var sourceDocument = ((UserSlide)userSlide).ClonePresentationDocument();
+        var sourceSlidePresPart = sourceDocument.PresentationPart!;
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         string newSlideRelId = new SCOpenXmlPart(presentationPart).NextRelationshipId();
@@ -200,7 +201,8 @@ internal sealed class UpdatedSlideCollection(UserSlideCollection userSlideCollec
             }
         }
 
-        var sourceSlidePresPart = userSlide.GetSdkPresentationPart();
+        using var sourceDocument = ((UserSlide)userSlide).ClonePresentationDocument();
+        var sourceSlidePresPart = sourceDocument.PresentationPart!;
         var sourceSlideId = (P.SlideId)sourceSlidePresPart.Presentation!.SlideIdList!.ChildElements[userSlide.Number - 1];
         var sourceSlidePart = (SlidePart)sourceSlidePresPart.GetPartById(sourceSlideId.RelationshipId!);
         new SCSlideMasterPart(sourceSlidePart.SlideLayoutPart!.SlideMasterPart!).RemoveLayoutsExcept(sourceSlidePart

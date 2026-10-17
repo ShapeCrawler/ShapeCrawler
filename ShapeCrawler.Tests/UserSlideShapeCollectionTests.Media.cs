@@ -119,7 +119,8 @@ public partial class UserSlideShapeCollectionTests : SCTest
         smartArtShape.Y.Should().Be(y);
         smartArtShape.Width.Should().Be(width);
         smartArtShape.Height.Should().Be(height);
-        var slidePart = pres.GetSdkPresentationDocument().PresentationPart!.SlideParts.First();
+        using var sdkPresentation = SaveAndOpenPresentationAsSdk(pres);
+        var slidePart = sdkPresentation.PresentationPart!.SlideParts.First();
         var relationshipTypes = slidePart.Parts.Select(part => part.OpenXmlPart.RelationshipType).ToArray();
         relationshipTypes.Should().Contain("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
     }

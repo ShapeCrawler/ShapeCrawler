@@ -51,7 +51,7 @@ public class SeriesTests : SCTest
         chart.SeriesCollection[0].Name.Should().Be("Updated linked name");
         WorksheetCellText(chart.GetWorksheetByteArray(), "B1")
             .Should().Be("Updated linked name");
-        using var sdkPresentation = pres.GetSdkPresentationDocument();
+        using var sdkPresentation = SaveAndOpenPresentationAsSdk(pres);
         var stringReference = sdkPresentation.PresentationPart!.SlideParts
             .SelectMany(slidePart => slidePart.ChartParts)
             .Single()

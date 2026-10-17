@@ -1,5 +1,9 @@
 # Changelog  
 
+## Unreleased
+
+- Breaking: removed `IShape.SdkOpenXmlElement`, `IPresentation.GetSdkPresentationDocument()`, and `IUserSlide.GetSdkPresentationPart()` to keep SDK elements and packages internal. For independent XML inspection, save the presentation with `Save(Stream)` and open that PPTX with the Open XML SDK.
+
 ## Version 0.81.0 - 2026-10-17
 🍀Added `ISeriesCollection.Add()` to add series to bar/column, line, pie/doughnut, scatter, and area charts [#490](https://github.com/ShapeCrawler/ShapeCrawler/issues/490)  
 🍀Added support for creating and reading all PowerPoint line types and updating line endpoints [#217](https://github.com/ShapeCrawler/ShapeCrawler/issues/217)  

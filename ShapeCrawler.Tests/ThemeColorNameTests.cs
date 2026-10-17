@@ -15,14 +15,16 @@ public class ThemeColorNameTests : SCTest
         // Arrange
         using var pres = PresentationWithThemeFill(schemeValue, tableCell);
         var fill = FillOf(pres, tableCell);
-        var originalXml = pres.Slides[0].Shapes.Last().SdkOpenXmlElement.OuterXml;
+        using var originalDocument = SaveAndOpenPresentationAsSdk(pres);
+        var originalXml = originalDocument.PresentationPart!.SlideParts.Single().Slide!.OuterXml;
 
         // Act
         var name = fill.ThemeColorName;
 
         // Assert
         name.Should().Be(expectedName);
-        pres.Slides[0].Shapes.Last().SdkOpenXmlElement.OuterXml.Should().Be(originalXml,
+        using var updatedDocument = SaveAndOpenPresentationAsSdk(pres);
+        updatedDocument.PresentationPart!.SlideParts.Single().Slide!.OuterXml.Should().Be(originalXml,
             "reading the name must not change the fill");
         using var reopened = SaveAndOpenPresentation(pres);
         FillOf(reopened, tableCell).ThemeColorName.Should().Be(expectedName);

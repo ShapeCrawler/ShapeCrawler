@@ -304,8 +304,6 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
     public string SdkXPath => new XmlPath(pShapeTreeElement).XPath;
 
-    public OpenXmlElement SdkOpenXmlElement => pShapeTreeElement.CloneNode(true);
-
     /// <summary>
     ///     Gets the underlying Open XML SDK element instance for this shape, without cloning.
     ///     Use this property for internal operations that need to read or modify the live

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using DocumentFormat.OpenXml.Packaging;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -70,12 +69,6 @@ public interface IPresentation : IDisposable
     ///     Returns the presentation as a string in Markdown format.
     /// </summary>
     public string AsMarkdown();
-
-    /// <summary>
-    ///     Gets a copy of the underlying <see cref="PresentationDocument"/>.
-    /// </summary>
-    // ReSharper disable once InconsistentNaming
-    PresentationDocument GetSdkPresentationDocument();
 
     /// <summary>
     ///     Returns the presentation as a base64 string.

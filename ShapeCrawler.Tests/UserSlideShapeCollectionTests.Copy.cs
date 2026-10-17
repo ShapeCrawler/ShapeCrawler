@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -24,8 +25,9 @@ public partial class UserSlideShapeCollectionTests
         var original = sourceShapes.Last();
         var expectedBytes = original.Media!.AsByteArray();
         var expectedMime = original.Media.MIME;
-        using var sourceDocument = source.GetSdkPresentationDocument();
-        var originalImageId = original.SdkOpenXmlElement.Descendants<A.Blip>().Single().Embed!.Value!;
+        using var sourceDocument = SaveAndOpenPresentationAsSdk(source);
+        var originalElement = CopyTestShapeElement(CopyTestSlidePart(sourceDocument, 1), original.Id);
+        var originalImageId = originalElement.Descendants<A.Blip>().Single().Embed!.Value!;
         var expectedImage = CopyTestPartBytes(CopyTestSlidePart(sourceDocument, 1).GetPartById(originalImageId));
         var target = destination == 2 ? new Presentation(p => p.Slide()) : source;
         var targetSlide = target.Slides[destination == 1 ? 1 : 0];
@@ -45,16 +47,17 @@ public partial class UserSlideShapeCollectionTests
         copied.Media!.MIME.Should().Be(expectedMime);
         copied.Media.AsByteArray().Should().Equal(expectedBytes);
         original.Media.AsByteArray().Should().Equal(expectedBytes);
-        using var reopenedDocument = reopened.GetSdkPresentationDocument();
+        using var reopenedDocument = SaveAndOpenPresentationAsSdk(reopened);
         var slidePart = CopyTestSlidePart(reopenedDocument, targetSlide.Number);
-        var audioId = copied.SdkOpenXmlElement.Descendants<A.AudioFromFile>().Single().Link!.Value;
-        var mediaId = copied.SdkOpenXmlElement
+        var copiedElement = CopyTestShapeElement(slidePart, copied.Id);
+        var audioId = copiedElement.Descendants<A.AudioFromFile>().Single().Link!.Value;
+        var mediaId = copiedElement
             .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single().Embed!.Value;
         var audioRelationship = slidePart.DataPartReferenceRelationships.Single(r => r.Id == audioId);
         var mediaRelationship = slidePart.DataPartReferenceRelationships.Single(r => r.Id == mediaId);
         audioRelationship.Should().BeOfType<AudioReferenceRelationship>();
         audioRelationship.DataPart.Should().BeSameAs(mediaRelationship.DataPart);
-        var imageId = copied.SdkOpenXmlElement.Descendants<A.Blip>().Single().Embed!.Value!;
+        var imageId = copiedElement.Descendants<A.Blip>().Single().Embed!.Value!;
         CopyTestPartBytes(slidePart.GetPartById(imageId)).Should().Equal(expectedImage);
         ValidatePresentation(reopened);
     }
@@ -70,13 +73,14 @@ public partial class UserSlideShapeCollectionTests
         // Arrange
         var source = new Presentation(TestAsset("009_table.pptx"));
         var original = source.Slide(2).Shapes.Shape(shapeName);
-        using var sourceDocument = source.GetSdkPresentationDocument();
+        using var sourceDocument = SaveAndOpenPresentationAsSdk(source);
         var sourcePart = CopyTestSlidePart(sourceDocument, 2);
-        var originalOle = original.SdkOpenXmlElement.Descendants<P.OleObject>().First();
+        var originalElement = CopyTestShapeElement(sourcePart, original.Id);
+        var originalOle = originalElement.Descendants<P.OleObject>().First();
         using var originalStream = sourcePart.GetPartById(originalOle.Id!.Value!).GetStream();
         using var expectedData = new MemoryStream();
         originalStream.CopyTo(expectedData);
-        var originalImageId = original.SdkOpenXmlElement.Descendants<A.Blip>().First().Embed!.Value!;
+        var originalImageId = originalElement.Descendants<A.Blip>().First().Embed!.Value!;
         var expectedImage = CopyTestPartBytes(sourcePart.GetPartById(originalImageId));
         var target = destination == 2 ? new Presentation(p => p.Slide()) : source;
         var targetSlide = target.Slides[destination == 0 ? 1 : 0];
@@ -92,15 +96,16 @@ public partial class UserSlideShapeCollectionTests
         copiedShapes.Should().HaveCount(shapeCount + 1);
         copied.X.Should().Be(original.X);
         copied.Y.Should().Be(original.Y);
-        var copiedOle = copied.SdkOpenXmlElement.Descendants<P.OleObject>().First();
-        copiedOle.ProgId!.Value.Should().Be(originalOle.ProgId!.Value);
-        using var reopenedDocument = reopened.GetSdkPresentationDocument();
+        using var reopenedDocument = SaveAndOpenPresentationAsSdk(reopened);
         var targetPart = CopyTestSlidePart(reopenedDocument, targetSlide.Number);
+        var copiedElement = CopyTestShapeElement(targetPart, copied.Id);
+        var copiedOle = copiedElement.Descendants<P.OleObject>().First();
+        copiedOle.ProgId!.Value.Should().Be(originalOle.ProgId!.Value);
         using var copiedStream = targetPart.GetPartById(copiedOle.Id!.Value!).GetStream();
         using var copiedData = new MemoryStream();
         copiedStream.CopyTo(copiedData);
         copiedData.ToArray().Should().Equal(expectedData.ToArray());
-        var imageId = copied.SdkOpenXmlElement.Descendants<A.Blip>().First().Embed!.Value!;
+        var imageId = copiedElement.Descendants<A.Blip>().First().Embed!.Value!;
         CopyTestPartBytes(targetPart.GetPartById(imageId)).Should().Equal(expectedImage);
         ValidatePresentation(reopened);
     }
@@ -158,6 +163,12 @@ public partial class UserSlideShapeCollectionTests
         var presentationPart = document.PresentationPart!;
         var slideId = presentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().ElementAt(slideNumber - 1);
         return (SlidePart)presentationPart.GetPartById(slideId.RelationshipId!.Value!);
+    }
+
+    private static OpenXmlElement CopyTestShapeElement(SlidePart slidePart, int shapeId)
+    {
+        return slidePart.Slide!.CommonSlideData!.ShapeTree!.Elements()
+            .Single(element => element.Descendants<P.NonVisualDrawingProperties>().FirstOrDefault()?.Id?.Value == (uint)shapeId);
     }
 
     private static byte[] CopyTestPartBytes(OpenXmlPart part)

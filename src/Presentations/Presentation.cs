@@ -257,9 +257,6 @@ public sealed class Presentation : IPresentation
         return Convert.ToBase64String(stream.ToArray());
     }
 
-    /// <inheritdoc />
-    public PresentationDocument GetSdkPresentationDocument() => this.PresDocument.Clone();
-
     /// <summary>
     ///     Releases all resources used by the presentation.
     /// </summary>

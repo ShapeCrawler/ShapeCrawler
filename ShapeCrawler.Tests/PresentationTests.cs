@@ -904,8 +904,9 @@ public class PresentationTests : SCTest
         destPres.Slides.Add(sourceSlide, 1);
 
         // Assert
+        using var sdkPresentation = SaveAndOpenPresentationAsSdk(destPres);
         var slideIdRelationshipIdList =
-            destPres.GetSdkPresentationDocument().PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
+            sdkPresentation.PresentationPart!.Presentation.SlideIdList!.OfType<SlideId>()
                 .Select(s => s.RelationshipId);
         slideIdRelationshipIdList.Should().OnlyHaveUniqueItems();
     }
