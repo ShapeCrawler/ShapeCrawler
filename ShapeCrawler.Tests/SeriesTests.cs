@@ -9,6 +9,40 @@ namespace ShapeCrawler.Tests;
 
 public class SeriesTests : SCTest
 {
+    [TestCase(0, "B1")]
+    [TestCase(1, "C1")]
+    public void Name_Setter_renames_only_selected_series(int seriesIndex, string headerAddress)
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var chart = pres.Slide(1).Shape("Bar Chart 1").BarChart!;
+        var originalNames = chart.SeriesCollection.Select(series => series.Name).ToArray();
+        var originalValues = chart.SeriesCollection
+            .Select(series => series.Points.Select(point => point.Value).ToArray()).ToArray();
+        var originalCategories = chart.Categories!.Select(category => category.Name).ToArray();
+        const string newName = "Cats & Dogs";
+
+        // Act
+        chart.SeriesCollection[seriesIndex].Name = newName;
+
+        // Assert
+        pres = SaveAndOpenPresentation(pres);
+        chart = pres.Slide(1).Shape("Bar Chart 1").BarChart!;
+        originalNames[seriesIndex] = newName;
+        chart.SeriesCollection.Select(series => series.Name).Should().Equal(originalNames);
+        WorksheetCellText(chart.GetWorksheetByteArray(), headerAddress).Should().Be(newName);
+        for (var index = 0; index < chart.SeriesCollection.Count; index++)
+        {
+            chart.SeriesCollection[index].Points.Select(point => point.Value)
+                .Should().Equal(originalValues[index]);
+            var address = $"{(char)('B' + index)}1";
+            WorksheetCellText(chart.GetWorksheetByteArray(), address).Should().Be(originalNames[index]);
+        }
+
+        chart.Categories!.Select(category => category.Name).Should().Equal(originalCategories);
+        ValidatePresentation(pres);
+    }
+
     [Test]
     public void Name_Setter_updates_existing_name_record()
     {

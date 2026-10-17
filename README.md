@@ -226,6 +226,23 @@ chart.Categories[0].Name = "Renamed Category";
 pres.Save();
 ```
 
+#### Rename Chart Series (Column Title)
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var chart = pres.Slide(1).Shapes.Shape("Bar Chart 1").BarChart!;
+
+chart.SeriesCollection[0].Name = "Cats";
+chart.SeriesCollection[1].Name = "Dogs";
+
+pres.Save();
+```
+
+Assign `ISeries.Name` to update the series title shown in the chart legend.
+For charts linked to an embedded Excel workbook, the corresponding header cell
+is updated together with the chart cache. Use `SeriesCollection` in the current API
+in place of the older `SeriesList` property.
+
 #### Add Chart Category
 
 ```csharp

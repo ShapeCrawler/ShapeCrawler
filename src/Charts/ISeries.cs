@@ -14,7 +14,8 @@ namespace ShapeCrawler;
 public interface ISeries
 {
     /// <summary>
-    ///     Gets or sets series name.
+    ///     Gets or sets the series name shown in the chart legend.
+    ///     Setting the name also updates the referenced header cell in an embedded workbook, when present.
     /// </summary>
     string Name { get; set; }
 
