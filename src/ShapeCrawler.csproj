@@ -11,8 +11,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>latest</LangVersion>
-    <Version>0.80.0</Version>
-    <PackageReleaseNotes>🍀Added capability to update chart series name</PackageReleaseNotes>
+    <Version>0.81.0</Version>
+    <PackageReleaseNotes>🍀Added `ISeriesCollection.Add()` to add series to bar/column, line, pie/doughnut, scatter, and area charts
+🍀Added support for creating and reading all PowerPoint line types and updating line endpoints
+🍀Added APIs to update SVG pictures and MP3/WAVE audio content</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
