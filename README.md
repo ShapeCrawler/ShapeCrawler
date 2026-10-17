@@ -73,6 +73,48 @@ addedShape.TextBox.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
+### Add Markdown as editable text
+
+```csharp
+using var pres = new Presentation(p => p.Slide());
+pres.Slide(1).Shapes.AddMarkdownTextBox(50, 60, 500, 300, """
+    # Project update
+
+    **Completed** work and *next steps*: [details](https://example.com).
+
+    - First item
+      - Nested item
+    - Second item
+    """);
+pres.Save("markdown.pptx");
+```
+
+Coordinates and dimensions are in points. The result is a regular PowerPoint text box:
+use `Shapes.Last().TextBox` to edit its text, paragraphs, and portions after adding it.
+Content stays in the supplied box; it is not paginated across slides.
+
+Markdown is parsed with [Markdig](https://github.com/xoofx/markdig) using its default CommonMark syntax.
+
+| Markdown | PowerPoint result |
+| --- | --- |
+| Bold, italic, nested emphasis | Formatted text portions |
+| Inline links, reference links, `<https://…>` and email autolinks | Clickable text with hyperlink relationships |
+| Paragraphs and headings | Separate paragraphs; headings are bold at the default text size |
+| Bulleted and numbered lists | Native bullets and numbering, including the starting number; nested indentation is capped at nine levels |
+| Multiple paragraphs inside a list item | Continuation paragraphs aligned with the item text, without another bullet |
+| Soft line breaks / hard line breaks | A space / a line break within the same paragraph |
+| Inline and fenced/indented code | Literal text in Consolas; code block line breaks are preserved |
+| Images | Alt text only; no image is downloaded or embedded |
+| Block quotes | Their paragraphs and inline formatting, without quote-specific styling |
+| Thematic breaks (`---`) | Omitted |
+| Raw HTML | Literal tags and content; no HTML rendering, CSS, or script execution |
+| Extension syntax (tables, strikethrough, task checkboxes, math, etc.) | Extensions are disabled; syntax remains literal text within otherwise supported blocks |
+
+Blank lines separate paragraphs without creating extra empty paragraphs. Empty Markdown creates an empty text box;
+`null` throws `ArgumentNullException`. Numbered lists use decimal numbers followed by periods; starting numbers
+outside PowerPoint's range are clamped to 1–32767. Link titles and code language hints are ignored.
+This API imports Markdown; it does not import HTML documents or reproduce browser layout.
+
 ### Embed Word, Excel, or PowerPoint documents
 
 ```csharp

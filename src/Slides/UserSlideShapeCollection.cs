@@ -14,6 +14,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Groups;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tables;
+using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -247,6 +248,15 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
         {
             paragraph.HorizontalAlignment = TextHorizontalAlignment.Left;
         }
+    }
+
+    public void AddMarkdownTextBox(int x, int y, int width, int height, string markdown)
+    {
+        ArgumentNullException.ThrowIfNull(markdown);
+        var document = Markdig.Markdown.Parse(markdown);
+        this.AddTextBox(x, y, width, height, string.Empty);
+        var textBody = this.slidePart.Slide!.CommonSlideData!.ShapeTree!.Elements<P.Shape>().Last().TextBody!;
+        new MarkdownTextBox(textBody, this.slidePart).Write(document);
     }
 
     public void AddLine(string xml)

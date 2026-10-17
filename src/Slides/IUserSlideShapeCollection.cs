@@ -77,6 +77,14 @@ public interface IUserSlideShapeCollection : IEditableShapeCollection
     void AddTextBox(int x, int y, int width, int height, string text);
 
     /// <summary>
+    ///     Adds Markdown as editable PowerPoint text. Coordinates and dimensions are in points.
+    ///     Supports emphasis, links, paragraphs, headings and nested lists (up to nine levels).
+    ///     HTML is literal text, images become their alt text, and thematic breaks are omitted.
+    ///     Markdown extensions such as tables are not enabled and remain literal text.
+    /// </summary>
+    void AddMarkdownTextBox(int x, int y, int width, int height, string markdown);
+
+    /// <summary>
     ///     Adds a line from XML.
     /// </summary>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>
