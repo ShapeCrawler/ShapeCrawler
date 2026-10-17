@@ -75,7 +75,6 @@ internal sealed class AudioVideoShapeCollection(SlidePart slidePart, Presentatio
 
         var hyperlinkOnClick = new A.HyperlinkOnClick { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
-        nonVisualPictureProps.Append(new P.NonVisualPictureDrawingProperties());
 
         var applicationNonVisualDrawingProps = nonVisualPictureProps.ApplicationNonVisualDrawingProperties!;
         applicationNonVisualDrawingProps.Append(audioFromFile);
