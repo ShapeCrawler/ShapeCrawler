@@ -32,7 +32,7 @@ internal sealed class UserSlideCollection(IEnumerable<SlidePart> slideParts) : I
         foreach (var pSlideId in pSlideIdList)
         {
             var slidePart = (SlidePart)presPart.GetPartById(pSlideId.RelationshipId!);
-            var presImageFiles = new PresentationImageFiles(slideParts);
+            var presImageFiles = new PresentationImageFiles(presPart);
             yield return new DrawingSlide(
                 new LayoutSlide(slidePart.SlideLayoutPart!),
                 new UserSlideShapeCollection(

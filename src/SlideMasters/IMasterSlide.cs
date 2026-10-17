@@ -32,7 +32,7 @@ public interface IMasterSlide
     /// <summary>
     ///     Gets the collection of master shapes.
     /// </summary>
-    IShapeCollection Shapes { get; }
+    IEditableShapeCollection Shapes { get; }
 
     /// <summary>
     ///     Gets theme.
@@ -85,7 +85,7 @@ internal sealed class MasterSlide : IMasterSlide
 
     public ILayoutSlideCollection LayoutSlides => this.layouts;
 
-    public IShapeCollection Shapes { get; }
+    public IEditableShapeCollection Shapes { get; }
 
     public ITheme Theme => new Theme(this.slideMasterPart, this.slideMasterPart.ThemePart!.Theme!);
 

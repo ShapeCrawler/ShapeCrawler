@@ -5,12 +5,11 @@ using ShapeCrawler.Drawing;
 
 namespace ShapeCrawler.Presentations;
 
-internal sealed class PresentationImageFiles(IEnumerable<SlidePart> slideParts)
+internal sealed class PresentationImageFiles(PresentationPart presentationPart)
 {
     internal ImagePart? ImagePartByImageHashOrNull(string searchingImageHash)
     {
-        var imageParts = slideParts.SelectMany(slidePart => slidePart.ImageParts);
-        foreach (var imagePart in imageParts)
+        foreach (var imagePart in this.ImageParts())
         {
             using var stream = imagePart.GetStream();
             var hash = new ImageStream(stream).Base64Hash;
@@ -21,5 +20,14 @@ internal sealed class PresentationImageFiles(IEnumerable<SlidePart> slideParts)
         }
 
         return null;
+    }
+
+    private IEnumerable<ImagePart> ImageParts()
+    {
+        var masterSlideParts = presentationPart.SlideMasterParts;
+        return presentationPart.SlideParts.SelectMany(slidePart => slidePart.ImageParts)
+            .Concat(masterSlideParts.SelectMany(slideMasterPart => slideMasterPart.ImageParts))
+            .Concat(masterSlideParts.SelectMany(slideMasterPart => slideMasterPart.SlideLayoutParts)
+                .SelectMany(slideLayoutPart => slideLayoutPart.ImageParts));
     }
 }

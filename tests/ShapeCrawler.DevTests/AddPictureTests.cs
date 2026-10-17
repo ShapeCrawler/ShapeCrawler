@@ -11,6 +11,43 @@ namespace ShapeCrawler.DevTests;
 public class AddPictureTests : SCTest
 {
     [Test]
+    public void AddPicture_adds_picture_to_slide_layout_and_slide_master()
+    {
+        // Arrange
+        var image = fixture.Image();
+        using var expectedImage = new MemoryStream();
+        image.CopyTo(expectedImage);
+        var expectedImageBytes = expectedImage.ToArray();
+        image.Position = 0;
+        var presentation = new Presentation(p => p.Slide());
+        var masterShapes = presentation.SlideMaster(1).Shapes;
+        var layoutShapes = presentation.SlideMaster(1).SlideLayout("Blank").Shapes;
+        var masterShapeCount = masterShapes.Count;
+        var layoutShapeCount = layoutShapes.Count;
+
+        // Act
+        masterShapes.AddPicture(image);
+        image.Position = 0;
+        layoutShapes.AddPicture(image);
+        var reopenedPresentation = SaveAndOpenPresentation(presentation);
+        var reopenedMasterShapes = reopenedPresentation.SlideMaster(1).Shapes;
+        var reopenedLayoutShapes = reopenedPresentation.SlideMaster(1).SlideLayout("Blank").Shapes;
+
+        // Assert
+        reopenedMasterShapes.Should().HaveCount(masterShapeCount + 1);
+        reopenedLayoutShapes.Should().HaveCount(layoutShapeCount + 1);
+        reopenedMasterShapes.Last().Picture!.Image!.AsByteArray().Should().Equal(expectedImageBytes);
+        reopenedLayoutShapes.Last().Picture!.Image!.AsByteArray().Should().Equal(expectedImageBytes);
+        using var sdkPresentation = SaveAndOpenPresentationAsSdk(reopenedPresentation);
+        var imageParts = sdkPresentation.PresentationPart!.SlideMasterParts
+            .SelectMany(masterPart => masterPart.ImageParts.Concat(masterPart.SlideLayoutParts.SelectMany(layoutPart => layoutPart.ImageParts)))
+            .Select(imagePart => imagePart.Uri)
+            .ToHashSet();
+        imageParts.Should().ContainSingle();
+        ValidatePresentation(reopenedPresentation);
+    }
+
+    [Test]
     public void AddPicture_adds_svg_picture()
     {
         // Arrange

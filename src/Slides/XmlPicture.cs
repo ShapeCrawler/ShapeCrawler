@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
@@ -10,7 +9,7 @@ namespace ShapeCrawler.Slides;
 /// <summary>
 ///     Represents an Open XML picture element.
 /// </summary>
-internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shapeName)
+internal sealed class XmlPicture(P.ShapeTree shapeTree, uint shapeId, string shapeName)
 {
     /// <summary>
     ///     Sets the transform (position and size) of a picture element.
@@ -61,7 +60,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);
 
-        slidePart.Slide!.CommonSlideData!.ShapeTree!.Append(pPicture);
+        shapeTree.Append(pPicture);
 
         return pPicture;
     }
@@ -152,7 +151,7 @@ internal sealed class XmlPicture(SlidePart slidePart, uint shapeId, string shape
         pPicture.AppendChild(blipFill);
         pPicture.AppendChild(shapeProperties);
 
-        slidePart.Slide!.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
+        shapeTree.AppendChild(pPicture);
 
         return pPicture;
     }
