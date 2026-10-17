@@ -30,5 +30,4 @@ jobs:
         run: dotnet build src/ShapeCrawler.csproj --configuration Release --framework ${{ matrix.framework_version }}
       - name: Run tests
         run: |
-          dotnet test tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj --configuration Release --framework ${{ matrix.framework_version }}
-          dotnet test tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj --configuration Release --framework ${{ matrix.framework_version }}
+          dotnet test tests/ShapeCrawler.Tests/ShapeCrawler.Tests.csproj --configuration Release --framework ${{ matrix.framework_version }}

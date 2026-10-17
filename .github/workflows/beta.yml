@@ -26,8 +26,7 @@ jobs:
       - uses: actions/setup-dotnet@v5
       - name: Run tests
         run: |
-          dotnet test --configuration Release --framework ${{ matrix.framework_version }} tests/ShapeCrawler.DevTests/ShapeCrawler.DevTests.csproj
-          dotnet test --configuration Release --framework ${{ matrix.framework_version }} tests/ShapeCrawler.CITests/ShapeCrawler.CITests.csproj
+          dotnet test --configuration Release --framework ${{ matrix.framework_version }} tests/ShapeCrawler.Tests/ShapeCrawler.Tests.csproj
 
   publish:
     name: Publish
