@@ -191,6 +191,25 @@ Single-level text categories are supported in non-combination charts. For charts
 to an embedded Excel workbook, category and value ranges must be vertical; the workbook
 and chart caches are updated together.
 
+#### Add Chart Data Point
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var chart = pres.Slide(1).Shapes.Shape("Scatter Chart 1").ScatterChart;
+var series = chart.SeriesCollection[0];
+
+series.XPoints!.Add(6);
+series.Points.Add(12.5);
+
+pres.Save();
+```
+
+`Points`, `XPoints`, and `BubbleSizePoints` support appending numeric values to cached
+or literal data. Append matching coordinates and bubble sizes separately. Formula-backed
+data requires an embedded Excel workbook, a contiguous vertical range, and an unoccupied
+next cell. The chart cache, formula, and workbook are updated together. Use `Categories.Add`
+when adding a category and values for every series.
+
 ### More Examples
 
 **[See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**

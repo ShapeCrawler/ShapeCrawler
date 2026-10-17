@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
@@ -15,8 +14,8 @@ internal sealed class ChartPointData(ChartPart chartPart)
         if (numberReference?.Formula != null)
         {
             var (sheetName, addresses) = ParseFormulaAddresses(numberReference.Formula);
-            var numericValues = GetNumericValues(numberReference);
-            return this.CreateChartPoints(addresses, numericValues, sheetName);
+            var numericPoints = numberReference.NumberingCache?.Elements<NumericPoint>().ToList();
+            return this.CreateChartPoints(addresses, numericPoints, sheetName);
         }
 
         return numberLiteral != null ? CreateChartPointsFromLiteral(numberLiteral) : [];
@@ -56,7 +55,7 @@ internal sealed class ChartPointData(ChartPart chartPart)
     {
         var addressMatches = Regex.Matches(
             normalizedFormula,
-            @"[A-Z]\d+(:[A-Z]\d+)*",
+            @"[A-Z]+\d+(:[A-Z]+\d+)*",
             RegexOptions.None,
             TimeSpan.FromMilliseconds(1000)); // eg: Sheet1!A2:A5 -> A2:A5
 
@@ -77,34 +76,16 @@ internal sealed class ChartPointData(ChartPart chartPart)
         return addresses;
     }
 
-    private static List<C.NumericValue>? GetNumericValues(NumberReference numberReference)
-    {
-        if (numberReference.NumberingCache != null)
-        {
-            return [.. numberReference.NumberingCache.Descendants<C.NumericValue>()];
-        }
-
-        return null;
-    }
-
-    private List<ChartPoint> CreateChartPoints(List<string> addresses, List<C.NumericValue>? numericValues, string sheetName)
+    private List<ChartPoint> CreateChartPoints(List<string> addresses, List<NumericPoint>? numericPoints, string sheetName)
     {
         var points = new List<ChartPoint>(addresses.Count);
-
-        if (addresses.Count == 1 && numericValues?.Count > 1)
+        foreach (var numericPoint in numericPoints ?? [])
         {
-            foreach (var numericValue in numericValues)
+            var index = addresses.Count == 1 ? 0U : numericPoint.Index?.Value ?? 0U;
+            if (index < addresses.Count && numericPoint.NumericValue != null)
             {
-                points.Add(new ChartPoint(chartPart, numericValue, sheetName, addresses[0]));
-            }
-        }
-        else
-        {
-            // Empty cells of range don't have the corresponding C.NumericValue.
-            var quPoints = Math.Min(addresses.Count, numericValues?.Count ?? 0);
-            for (int i = 0; i < quPoints; i++)
-            {
-                points.Add(new ChartPoint(chartPart, numericValues?[i]!, sheetName, addresses[i]));
+                // Empty worksheet cells have no cached point, so indexes identify the actual cell.
+                points.Add(new ChartPoint(chartPart, numericPoint.NumericValue, sheetName, addresses[(int)index]));
             }
         }
 

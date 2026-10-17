@@ -13,17 +13,17 @@ namespace ShapeCrawler.Charts;
 internal sealed partial class Workbook
 {
     /// <summary>
-    ///     Extends a vertical chart data formula by one category.
+    ///     Extends a vertical chart data formula by one point.
     /// </summary>
     /// <param name="formula">The existing worksheet range formula.</param>
     /// <param name="count">The existing chart point count.</param>
     /// <returns>The extended worksheet range formula.</returns>
-    internal string ExtendedCategoryFormula(string formula, uint count)
+    internal string ExtendedPointFormula(string formula, uint count)
     {
         var range = ParseFormulaAddressRange(formula);
         if (range.StartColumn != range.EndColumn || range.EndRow - range.StartRow + 1 != count)
         {
-            throw new SCException("Category data must use contiguous vertical worksheet ranges matching the chart point count.");
+            throw new SCException("Chart data must use contiguous vertical worksheet ranges matching the chart point count.");
         }
 
         var prefix = formula[..(formula.LastIndexOf('!') + 1)];
@@ -32,10 +32,10 @@ internal sealed partial class Workbook
     }
 
     /// <summary>
-    ///     Writes a category and its series values after their existing worksheet ranges.
+    ///     Writes chart points after their existing worksheet ranges.
     /// </summary>
     /// <param name="cells">The original range formulas and their new cell values.</param>
-    internal void AppendCategoryCells(IReadOnlyList<(string Formula, string Value, bool IsText)> cells)
+    internal void AppendPointCells(IReadOnlyList<(string Formula, string Value, bool IsText)> cells)
     {
         if (cells.Count == 0)
         {
@@ -54,7 +54,7 @@ internal sealed partial class Workbook
             var writtenCells = new Dictionary<string, (string Value, bool IsText)>(StringComparer.OrdinalIgnoreCase);
             foreach (var (formula, value, isText) in cells)
             {
-                AppendCategoryCell(document.WorkbookPart!, formula, value, isText, writtenCells);
+                AppendPointCell(document.WorkbookPart!, formula, value, isText, writtenCells);
             }
         }
 
@@ -62,7 +62,7 @@ internal sealed partial class Workbook
         embeddedPackagePart.FeedData(updatedStream);
     }
 
-    private static void AppendCategoryCell(
+    private static void AppendPointCell(
         WorkbookPart workbookPart,
         string formula,
         string value,
@@ -95,12 +95,12 @@ internal sealed partial class Workbook
 
         AddCell(worksheet.GetFirstChild<X.SheetData>()!, address, value, isText);
         UpdateWorksheetDimension(worksheet, range.EndColumn, range.EndRow + 1);
-        ExtendCategoryTables(worksheetPart, range);
+        ExtendPointTables(worksheetPart, range);
         worksheet.Save();
         writtenCells.Add(key, (value, isText));
     }
 
-    private static void ExtendCategoryTables(WorksheetPart worksheetPart, AddressRange dataRange)
+    private static void ExtendPointTables(WorksheetPart worksheetPart, AddressRange dataRange)
     {
         foreach (var tablePart in worksheetPart.TableDefinitionParts)
         {
@@ -120,7 +120,7 @@ internal sealed partial class Workbook
 
             if (table.TotalsRowCount?.Value > 0)
             {
-                throw new SCException("Adding a category to a worksheet table with a totals row is not supported.");
+                throw new SCException("Appending chart data to a worksheet table with a totals row is not supported.");
             }
 
             table.Reference = $"{ColumnName(range.StartColumn)}{range.StartRow}:{ColumnName(range.EndColumn)}{range.EndRow + 1}";
