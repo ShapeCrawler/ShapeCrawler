@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ShapeCrawler.csproj" />
+    <ProjectReference Include="..\src\ShapeCrawler.csproj" />
   </ItemGroup>
 
   <ItemGroup>

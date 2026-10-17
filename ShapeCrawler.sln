@@ -10,9 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "src\ShapeCrawler.csproj", "{4A633D84-856C-49A3-A76E-59291CF76A6F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{093CE2C5-BA5E-45AE-9D06-7E210EE9644A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests", "tests\ShapeCrawler.Tests\ShapeCrawler.Tests.csproj", "{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests", "ShapeCrawler.Tests\ShapeCrawler.Tests.csproj", "{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Examples", "examples\ShapeCrawler.Examples.csproj", "{8B5769F5-F536-447D-98BF-29957D8B60B1}"
 EndProject
@@ -37,9 +35,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{0D0BC9AD-7B1F-4C6D-B059-1D8C7C87C68C} = {093CE2C5-BA5E-45AE-9D06-7E210EE9644A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3EF7405-B847-4B4B-83E6-A381625353B1}
