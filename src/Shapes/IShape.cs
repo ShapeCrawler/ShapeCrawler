@@ -36,6 +36,10 @@ public interface IShape : IPosition, IShapeGeometry
     /// <summary>
     ///     Gets or sets the shape alternative text.
     /// </summary>
+    /// <remarks>
+    ///     Applies to picture shapes as well. Returns an empty string when no alternative text is set.
+    ///     Set an empty string to clear the alternative text.
+    /// </remarks>
     string AltText { get; set; }
 
     /// <summary>

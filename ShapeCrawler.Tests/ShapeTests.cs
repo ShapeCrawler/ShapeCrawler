@@ -1,12 +1,85 @@
 using System.Text.Json;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ShapeCrawler.Tests.Helpers;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests;
 
 [TestFixture]
 public class ShapeTests : SCTest
 {
+    [TestCase(null, "")]
+    [TestCase("", "")]
+    [TestCase("A mountain lake", "A mountain lake")]
+    public void AltText_Getter_reads_picture_description(string description, string expected)
+    {
+        // Arrange
+        using var original = new Presentation(p => p.Slide());
+        using var image = TestAsset("10 png image.png");
+        original.Slide(1).Shapes.AddPicture(image);
+        using var stream = new MemoryStream();
+        original.Save(stream);
+        stream.Position = 0;
+        using (var document = PresentationDocument.Open(stream, true))
+        {
+            var picture = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Picture>().Single();
+            picture.NonVisualPictureProperties!.NonVisualDrawingProperties!.Description = description;
+        }
+
+        stream.Position = 0;
+        using var presentation = new Presentation(stream);
+        var pictureShape = presentation.Slide(1).Shapes.Single();
+
+        // Act
+        var altText = pictureShape.AltText;
+
+        // Assert
+        altText.Should().Be(expected);
+    }
+
+    [TestCase(null, "A mountain lake")]
+    [TestCase("Old description", "Озеро & горы <sunrise> \"水\"")]
+    [TestCase("Old description", "")]
+    public void AltText_Setter_saves_picture_description(string initialDescription, string description)
+    {
+        // Arrange
+        using var original = new Presentation(p => p.Slide());
+        using var image = TestAsset("10 png image.png");
+        original.Slide(1).Shapes.AddPicture(image);
+        using var source = new MemoryStream();
+        original.Save(source);
+        source.Position = 0;
+        using (var document = PresentationDocument.Open(source, true))
+        {
+            var picture = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Picture>().Single();
+            picture.NonVisualPictureProperties!.NonVisualDrawingProperties!.Description = initialDescription;
+        }
+
+        source.Position = 0;
+        using var presentation = new Presentation(source);
+        var pictureShape = presentation.Slide(1).Shapes.Single();
+
+        // Act
+        pictureShape.AltText = description;
+
+        // Assert
+        pictureShape.AltText.Should().Be(description);
+        using var saved = new MemoryStream();
+        presentation.Save(saved);
+        saved.Position = 0;
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var picture = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Picture>().Single();
+            picture.NonVisualPictureProperties!.NonVisualDrawingProperties!.Description!.Value.Should().Be(description);
+        }
+
+        saved.Position = 0;
+        using var reopened = new Presentation(saved);
+        reopened.Slide(1).Shapes.Single().AltText.Should().Be(description);
+        ValidatePresentation(reopened);
+    }
+
     [Test]
     public void AudioShape_BinaryData_returns_audio_bytes()
     {

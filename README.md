@@ -138,6 +138,19 @@ picture.Image.Update(newImage);
 pres.Save();
 ```
 
+### Read and update picture alternative text
+
+```csharp
+using var pres = new Presentation("presentation.pptx");
+var pictureShape = pres.Slide(1).Shape("Picture 1");
+
+var altText = pictureShape.AltText;
+pictureShape.AltText = "A mountain lake at sunrise";
+pres.Save("with-alt-text.pptx");
+```
+
+`AltText` belongs to the shape and is stored in the picture's `descr` attribute. It returns an empty string when no alternative text is set. Assign an empty string to clear it.
+
 ### Tables
 
 #### Create table
