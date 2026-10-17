@@ -1,9 +1,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
@@ -178,6 +180,35 @@ public class ChartTests : SCTest
 
         // Assert
         chart.SeriesCollection.Count.Should().Be(expectedSeriesCount);
+    }
+
+    [Test]
+    public void SeriesCollection_Add_appends_series_to_template_bar_chart_and_embedded_workbook()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var chart = GetChart(pres.Slide(1).Shape("Bar Chart 1"));
+
+        // Act
+        chart.SeriesCollection.Add("Series 4", 6.1, 7.2, 8.3, 9.4);
+        pres = SaveAndOpenPresentation(pres);
+        chart = GetChart(pres.Slide(1).Shape("Bar Chart 1"));
+
+        // Assert
+        chart.SeriesCollection.Should().HaveCount(4);
+        chart.SeriesCollection[3].Name.Should().Be("Series 4");
+        chart.SeriesCollection[3].Points.Select(point => point.Value).Should().Equal(6.1, 7.2, 8.3, 9.4);
+        using var workbookStream = new MemoryStream(chart.GetWorksheetByteArray());
+        using var workbook = SpreadsheetDocument.Open(workbookStream, false);
+        var workbookCells = workbook.WorkbookPart!.WorksheetParts.Single().Worksheet!.Descendants<X.Cell>()
+            .ToDictionary(cell => cell.CellReference!.Value!);
+        workbookCells["E1"].InlineString!.Text!.Text.Should().Be("Series 4");
+        workbookCells["E2"].CellValue!.Text.Should().Be("6.1");
+        workbookCells["E3"].CellValue!.Text.Should().Be("7.2");
+        workbookCells["E4"].CellValue!.Text.Should().Be("8.3");
+        workbookCells["E5"].CellValue!.Text.Should().Be("9.4");
+        workbook.WorkbookPart.WorksheetParts.Single().TableDefinitionParts.Single().Table!.Reference!.Value.Should().Be("A1:E5");
+        ValidatePresentation(pres);
     }
 
     [Test]
