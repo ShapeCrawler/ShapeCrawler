@@ -14,5 +14,19 @@ internal sealed class LineShape : DrawingShape
         this.Line = new Line(shapeElement, this);
     }
 
+    /// <summary>
+    ///     Gets or sets the geometry, identifying both straight connector presets as a line.
+    /// </summary>
+    public override Geometry GeometryType
+    {
+        get
+        {
+            var geometry = base.GeometryType;
+            return geometry == Geometry.StraightConnector1 ? Geometry.Line : geometry;
+        }
+
+        set => base.GeometryType = value;
+    }
+
     public override ILine? Line { get; }
 }
