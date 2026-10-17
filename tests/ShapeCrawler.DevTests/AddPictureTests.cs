@@ -67,7 +67,34 @@ public class AddPictureTests : SCTest
         addedPictureShape.Width.Should().Be(75);
         ValidatePresentation(pres);
     }
-    
+
+    [Test]
+    public void UpdateSvg_replaces_vector_and_raster_content_of_existing_picture()
+    {
+        // Arrange
+        const string originalSvg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><circle cx=\"50\" cy=\"50\" r=\"45\" fill=\"red\"/></svg>";
+        const string replacementSvg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><circle cx=\"50\" cy=\"50\" r=\"45\" fill=\"blue\"/></svg>";
+        var presentation = new Presentation(p => p.Slide());
+        var shapes = presentation.Slide(1).Shapes;
+        shapes.AddPicture(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(originalSvg)));
+        var shape = shapes.Last();
+        var picture = shape.Picture!;
+        var originalRaster = picture.Image!.AsByteArray();
+        var originalGeometry = (shape.X, shape.Y, shape.Width, shape.Height);
+
+        // Act
+        picture.UpdateSvg(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(replacementSvg)));
+        presentation = SaveAndOpenPresentation(presentation);
+        shape = presentation.Slide(1).Shapes.Last();
+        picture = shape.Picture!;
+
+        // Assert
+        picture.SvgContent.Should().Be(replacementSvg);
+        picture.Image!.AsByteArray().Should().NotEqual(originalRaster);
+        (shape.X, shape.Y, shape.Width, shape.Height).Should().Be(originalGeometry);
+        ValidatePresentation(presentation);
+    }
+
     [Test]
     [Category("issue-883")]
     public void AddPicture_should_not_duplicate_the_image_source_When_the_same_svg_image_is_added_on_two_different_slides()

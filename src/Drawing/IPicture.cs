@@ -5,8 +5,10 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Slides;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -42,6 +44,12 @@ public interface IPicture
     ///     Sends the shape backward in the z-order.
     /// </summary>
     void SendToBack();
+
+    /// <summary>
+    ///     Replaces the SVG content of this picture and its raster fallback.
+    /// </summary>
+    /// <param name="svgStream">The SVG content stream.</param>
+    void UpdateSvg(Stream svgStream);
 }
 
 internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
@@ -109,6 +117,37 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
         parentPShapeTree.RemoveChild(pPicture);
         var pGrpSpPr = parentPShapeTree.GetFirstChild<P.GroupShapeProperties>()!;
         pGrpSpPr.InsertAfterSelf(pPicture);
+    }
+
+    public void UpdateSvg(Stream svgStream)
+    {
+        if (svgStream is null)
+        {
+            throw new ArgumentNullException(nameof(svgStream));
+        }
+
+        var imageContent = new Image(svgStream);
+        if (!imageContent.IsSvg)
+        {
+            throw new SCException("The supplied image is not an SVG graphic.");
+        }
+
+        var openXmlPart = pPicture.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
+        var svgBlip = aBlip.Descendants<SVGBlip>().SingleOrDefault()
+                      ?? throw new SCException("This picture does not contain SVG content.");
+        var oldRasterRelationshipId = aBlip.Embed!.Value!;
+        var oldSvgRelationshipId = svgBlip.Embed!.Value!;
+
+        using var rasterStream = imageContent.GetRasterStream();
+        var newRasterRelationshipId = openXmlPart.AddImagePart(rasterStream, "image/png");
+        var svgContentStream = imageContent.GetOriginalStream();
+        var newSvgRelationshipId = openXmlPart.AddImagePart(svgContentStream, "image/svg+xml");
+
+        aBlip.Embed = newRasterRelationshipId;
+        svgBlip.Embed = newSvgRelationshipId;
+
+        this.DeletePartIfUnused(openXmlPart, oldRasterRelationshipId);
+        this.DeletePartIfUnused(openXmlPart, oldSvgRelationshipId);
     }
 
     public void SetImage(string imagePath)
@@ -215,5 +254,16 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
         using var sReader = new StreamReader(svgStream);
 
         return sReader.ReadToEnd();
+    }
+
+    private void DeletePartIfUnused(OpenXmlPart openXmlPart, string relationshipId)
+    {
+        var root = openXmlPart.RootElement!;
+        var stillUsedByRaster = root.Descendants<A.Blip>().Any(blip => blip.Embed?.Value == relationshipId);
+        var stillUsedBySvg = root.Descendants<SVGBlip>().Any(svgBlip => svgBlip.Embed?.Value == relationshipId);
+        if (!stillUsedByRaster && !stillUsedBySvg)
+        {
+            openXmlPart.DeletePart(relationshipId);
+        }
     }
 }
