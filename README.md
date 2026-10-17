@@ -73,6 +73,17 @@ addedShape.TextBox.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
+### Organize slides into sections
+
+```csharp
+using var pres = new Presentation("presentation.pptx");
+pres.Sections.Add("Introduction", firstSlideNumber: 1);
+var content = pres.Sections.Add("Content", firstSlideNumber: 3);
+pres.Save("with-sections.pptx");
+```
+
+Slide numbers start at 1. Each new section contains slides from its starting slide up to the next section, or the end of the presentation. Adding a section splits the existing section at that slide. When the first section starts after slide 1, earlier slides are placed in a `Default Section`.
+
 ### Read a fill's theme color name
 
 ```csharp
