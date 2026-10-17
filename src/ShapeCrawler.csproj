@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
     <Authors>Adam Shakhabov</Authors>
@@ -22,7 +23,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
     <Nullable>enable</Nullable>
-    <IsTrimmable Condition="'$(TargetFramework)' == 'net10.0'">true</IsTrimmable> 
+    <IsTrimmable>true</IsTrimmable>
     <Copyright>Copyright (c) 2019-2026 Adam Shakhabov</Copyright> 
     <PackageIcon>package icon.jpg</PackageIcon> 
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
@@ -37,14 +38,12 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\ShapeCrawler.xml</DocumentationFile>
-    <TargetFramework>net10.0</TargetFramework>
     <RunAnalyzers>false</RunAnalyzers>
     <NoWarn>$(NoWarn);CS0219</NoWarn>
   </PropertyGroup>  
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
-    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -90,10 +89,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageReference Include="DocumentFormat.OpenXml" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" />
     <PackageReference Include="DocumentFormat.OpenXml.Linq" />
-    <PackageReference Include="PolySharp">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="SkiaSharp" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
     <PackageReference Include="StyleCop.Analyzers">

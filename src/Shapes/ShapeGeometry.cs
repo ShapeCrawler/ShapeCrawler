@@ -213,11 +213,7 @@ internal sealed class ShapeGeometry(P.ShapeProperties pShapeProperties) : IShape
 
         var pattern = "^val (?<value>-?[0-9]+)$";
 
-#if NETSTANDARD2_0
-        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
-#else
         var regex = new Regex(pattern, RegexOptions.NonBacktracking);
-#endif
 
         var match = regex.Match(formula);
         if (!match.Success)

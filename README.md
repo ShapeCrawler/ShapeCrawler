@@ -26,6 +26,8 @@ ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making 
 
 ## 📦 Installation
 
+Requires .NET 10 or later.
+
 ```bash
 dotnet add package ShapeCrawler
 ```

@@ -186,11 +186,7 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
         {
             const string pattern = @$"<{"ctd"}>(.*)<\/{"ctd"}>";
 
-#if NETSTANDARD2_0
-            var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
-#else
             var regex = new Regex(pattern, RegexOptions.NonBacktracking);
-#endif
 
             var elementText = regex.Match(pShapeTreeElement.InnerXml).Groups[1];
             if (elementText.Value.Length == 0)

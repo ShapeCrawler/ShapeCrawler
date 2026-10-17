@@ -64,15 +64,9 @@ internal readonly struct IndentFonts(OpenXmlCompositeElement openXmlCompositeEle
 
     private static int ExtractLevelNumber(string localName)
     {
-#if NETSTANDARD2_0
-        return int.Parse(
-            localName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
-            System.Globalization.CultureInfo.CurrentCulture);
-#else
         var nameSpan = localName.AsSpan();
         var level = nameSpan.Slice(3, 1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
         return int.Parse(level, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture);
-#endif
     }
 
     private static IndentFont CreateIndentFont(A.DefaultRunProperties aDefRPr)
