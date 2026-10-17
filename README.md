@@ -73,6 +73,20 @@ addedShape.TextBox.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
+### Embed Word, Excel, or PowerPoint documents
+
+```csharp
+using var pres = new Presentation(p => p.Slide());
+using var document = File.OpenRead("report.docx");
+using var preview = File.OpenRead("report-preview.png");
+pres.Slide(1).Shapes.AddOleObject(50, 60, 300, 200, document, OleObjectType.WordDocument, preview);
+pres.Save("with-document.pptx");
+```
+
+Use `ExcelWorkbook` for `.xlsx` or `PowerPointPresentation` for `.pptx`. Coordinates and dimensions are in points.
+Supply a preview image to display on the slide; ShapeCrawler embeds the original document without rendering it.
+Both streams are read from their current positions and remain open. Opening or editing the embedded document requires a compatible Office application.
+
 ### Set audio timing
 
 ```csharp

@@ -84,6 +84,9 @@ internal sealed class UserSlideShapeCollection : IUserSlideShapeCollection
 
     public void AddVideo(int x, int y, Stream stream) => this.audioVideoShapes.AddVideo(x, y, stream);
 
+    public void AddOleObject(int x, int y, int width, int height, Stream content, OleObjectType type, Stream previewImage) =>
+        new OleObjectShapeCollection(this.slidePart).Add(x, y, width, height, content, type, previewImage);
+
     public void AddPicture(Stream imageStream) => this.pictureShapes.AddPicture(imageStream);
 
     public void AddPieChart(

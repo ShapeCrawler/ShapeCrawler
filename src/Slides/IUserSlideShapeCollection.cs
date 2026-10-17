@@ -39,6 +39,18 @@ public interface IUserSlideShapeCollection : IEditableShapeCollection
     void AddVideo(int x, int y, Stream stream);
 
     /// <summary>
+    ///     Embeds an Office document with a supplied preview image. Coordinates and dimensions are in points.
+    /// </summary>
+    /// <param name="x">X coordinate in points.</param>
+    /// <param name="y">Y coordinate in points.</param>
+    /// <param name="width">Width in points, greater than zero.</param>
+    /// <param name="height">Height in points, greater than zero.</param>
+    /// <param name="content">Document stream, read from its current position and left open.</param>
+    /// <param name="type">Type matching the supplied Office document.</param>
+    /// <param name="previewImage">Image displayed on the slide, read from its current position and left open.</param>
+    void AddOleObject(int x, int y, int width, int height, Stream content, OleObjectType type, Stream previewImage);
+
+    /// <summary>
     ///     Adds a new shape.
     /// </summary>
     void AddShape(int x, int y, int width, int height);

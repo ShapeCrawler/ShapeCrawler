@@ -17,6 +17,15 @@ internal readonly ref struct SCPShapeTree(P.ShapeTree pShapeTree)
         var existingShapeNames = pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
         var pShapeCopy = openXmlElement.CloneNode(true);
         pShapeCopy.NonVisualDrawingProperties().Id = new UInt32Value(id);
+        if (pShapeCopy is P.GraphicFrame && pShapeCopy.Descendants<P.OleObject>().Any())
+        {
+            // OLE preview pictures have their own drawing IDs within the same slide.
+            foreach (var properties in pShapeCopy.Descendants<P.NonVisualDrawingProperties>().Skip(1))
+            {
+                properties.Id = ++id;
+            }
+        }
+
         pShapeTree.AppendChild(pShapeCopy);
         var copyName = pShapeCopy.NonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
