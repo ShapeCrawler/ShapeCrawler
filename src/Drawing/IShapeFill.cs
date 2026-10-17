@@ -25,6 +25,12 @@ public interface IShapeFill
     public string? Color { get; }
 
     /// <summary>
+    ///     Gets the theme color name of an explicitly defined solid fill, such as "Text 1" or "Accent 2",
+    ///     otherwise <see langword="null"/>. Luminance and opacity adjustments do not change the name.
+    /// </summary>
+    public string? ThemeColorName { get; }
+
+    /// <summary>
     ///     Gets the opacity level of fill color in percentages.
     /// </summary>
     public double Alpha { get; }

@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Colors;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -26,6 +27,9 @@ internal class TableCellFill : IShapeFill
     }
 
     public string? Color => this.GetHexSolidColor();
+
+    public string? ThemeColorName => ColorTranslator.NameFromSchemeColor(
+        this.aTableCellProperties.GetFirstChild<A.SolidFill>()?.SchemeColor);
 
     public double Alpha { get; }
 

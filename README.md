@@ -73,6 +73,18 @@ addedShape.TextBox.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
+### Read a fill's theme color name
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var fill = pres.Slide(1).Shape("Rectangle 1").Fill;
+
+// For example, "Text 1" or "Accent 2"; null for fills without an explicit theme color.
+var themeColorName = fill.ThemeColorName;
+```
+
+The same property is available on a table cell's `Fill`. Brightness and transparency adjustments preserve the theme color name.
+
 ### Update image
 
 ```csharp

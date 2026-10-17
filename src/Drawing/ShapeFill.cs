@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Colors;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -34,6 +35,9 @@ internal sealed class ShapeFill(OpenXmlCompositeElement openXmlCompositeElement)
             return null;
         }
     }
+
+    public string? ThemeColorName => ColorTranslator.NameFromSchemeColor(
+        openXmlCompositeElement.GetFirstChild<A.SolidFill>()?.SchemeColor);
 
     public double Alpha
     {
