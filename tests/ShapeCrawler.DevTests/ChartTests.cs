@@ -1,9 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.DevTests.Helpers;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
@@ -25,6 +26,16 @@ public class ChartTests : SCTest
                ?? (IChart?)shape.BubbleChart
                ?? (IChart?)shape.AreaChart
                ?? throw new InvalidOperationException("The shape doesn't contain a chart.");
+    }
+
+    private static void AddSeriesAndValidate(Presentation presentation, int slideNumber, int shapeId, params double[] values)
+    {
+        var chart = GetChart(presentation.Slide(slideNumber).Shape(shapeId));
+        chart.SeriesCollection.Add("Added Series", values);
+        presentation = SaveAndOpenPresentation(presentation);
+        chart = GetChart(presentation.Slide(slideNumber).Shape(shapeId));
+        chart.SeriesCollection[^1].Name.Should().Be("Added Series");
+        chart.SeriesCollection[^1].Points.Select(point => point.Value).Should().Equal(values);
     }
 
     [Test]
@@ -181,6 +192,62 @@ public class ChartTests : SCTest
     }
 
     [Test]
+    public void SeriesCollection_Add_appends_series_to_common_chart_families()
+    {
+        // Arrange
+        var pres = new Presentation(TestAsset("001 bar chart.pptx"));
+        var chart = GetChart(pres.Slide(1).Shape("Bar Chart 1"));
+
+        // Act
+        chart.SeriesCollection.Add("Series 4", 6.1, 7.2, 8.3, 9.4);
+        pres = SaveAndOpenPresentation(pres);
+        chart = GetChart(pres.Slide(1).Shape("Bar Chart 1"));
+
+        // Assert
+        chart.SeriesCollection.Should().HaveCount(4);
+        chart.SeriesCollection[3].Name.Should().Be("Series 4");
+        chart.SeriesCollection[3].Points.Select(point => point.Value).Should().Equal(6.1, 7.2, 8.3, 9.4);
+        using var workbookStream = new MemoryStream(chart.GetWorksheetByteArray());
+        using var workbook = SpreadsheetDocument.Open(workbookStream, false);
+        var workbookCells = workbook.WorkbookPart!.WorksheetParts.Single().Worksheet!.Descendants<X.Cell>()
+            .ToDictionary(cell => cell.CellReference!.Value!);
+        workbookCells["E1"].InlineString!.Text!.Text.Should().Be("Series 4");
+        workbookCells["E2"].CellValue!.Text.Should().Be("6.1");
+        workbookCells["E3"].CellValue!.Text.Should().Be("7.2");
+        workbookCells["E4"].CellValue!.Text.Should().Be("8.3");
+        workbookCells["E5"].CellValue!.Text.Should().Be("9.4");
+        workbook.WorkbookPart.WorksheetParts.Single().TableDefinitionParts.Single().Table!.Reference!.Value.Should().Be("A1:E5");
+        ValidatePresentation(pres);
+
+        AddSeriesAndValidate(new Presentation(TestAsset("025_chart.pptx")), 1, 7, 5.0, 6.0);
+        AddSeriesAndValidate(new Presentation(TestAsset("025_chart.pptx")), 4, 13, 5.0, 6.0, 7.0, 8.0);
+        AddSeriesAndValidate(new Presentation(TestAsset("024_chart.pptx")), 2, 5, 5.0, 6.0, 7.0);
+
+        var generatedPie = new Presentation(presBuilder =>
+        {
+            presBuilder.Slide(slide =>
+            {
+                slide.PieChartShape(shape =>
+                {
+                    shape.Chart(chartBuilder =>
+                    {
+                        chartBuilder.Name("Generated Pie");
+                        chartBuilder.Series("Series 1", 50, 50);
+                        chartBuilder.Categories("Category 1", "Category 2");
+                    });
+                });
+            });
+        });
+        var generatedPieChart = GetChart(generatedPie.Slide(1).Shapes.First(shape => shape.PieChart != null));
+        generatedPieChart.SeriesCollection.Add("Added Series", 30, 70);
+        generatedPie = SaveAndOpenPresentation(generatedPie);
+        generatedPieChart = GetChart(generatedPie.Slide(1).Shapes.First(shape => shape.PieChart != null));
+        generatedPieChart.SeriesCollection[1].Name.Should().Be("Added Series");
+        generatedPieChart.SeriesCollection[1].Points.Select(point => point.Value).Should().Equal(30, 70);
+        ValidatePresentation(generatedPie);
+    }
+
+    [Test]
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
@@ -234,7 +301,7 @@ public class ChartTests : SCTest
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
     }
 
-    [Test, Ignore("ClosedXML dependency must be removed")]
+    [Test]
     public void Category_Name_Setter_updates_value_of_Excel_cell()
     {
         // Arrange
@@ -246,9 +313,7 @@ public class ChartTests : SCTest
         category.Name = "Category 1_new";
 
         // Assert
-        var mStream = new MemoryStream(lineChart.GetWorksheetByteArray());
-        var workbook = new XLWorkbook(mStream);
-        var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
+        var cellValue = GetWorksheetCellValue<string>(lineChart.GetWorksheetByteArray(), "A2");
         cellValue.Should().BeEquivalentTo("Category 1_new");
     }
 

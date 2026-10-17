@@ -2,11 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "nuget"
-    directories:
-      - "/src"
-      - "/tests/ShapeCrawler.DevTests"
-      - "/tests/ShapeCrawler.CITests"
-      - "/examples"
+    directory: "/"
     schedule:
       interval: "weekly"
     groups:
