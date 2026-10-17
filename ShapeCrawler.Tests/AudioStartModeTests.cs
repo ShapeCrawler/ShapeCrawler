@@ -10,9 +10,13 @@ public class AudioStartModeTests : SCTest
     [Test]
     public void AddAudio_defaults_to_InClickSequence()
     {
+        // Arrange
         using var presentation = new Presentation(p => p.Slide());
+
+        // Act
         presentation.Slide(1).Shapes.AddAudio(300, 100, TestAsset("064 mp3.mp3"));
 
+        // Assert
         using var reopened = SaveAndOpenPresentation(presentation);
 
         reopened.Slide(1).Shapes.Last().Media!.StartMode.Should().Be(AudioStartMode.InClickSequence);
@@ -24,10 +28,14 @@ public class AudioStartModeTests : SCTest
     [TestCase(AudioStartMode.WhenClickedOn)]
     public void StartMode_sets_single_audio_playback_trigger(AudioStartMode mode)
     {
+        // Arrange
         using var presentation = new Presentation(p => p.Slide());
         presentation.Slide(1).Shapes.AddAudio(100, 100, TestAsset("064 mp3.mp3"));
+
+        // Act
         presentation.Slide(1).Shapes.Last().Media!.StartMode = mode;
 
+        // Assert
         using var reopened = SaveAndOpenPresentation(presentation);
         reopened.Slide(1).Shapes.Last().Media!.StartMode.Should().Be(mode);
         ValidatePresentation(reopened);
@@ -54,15 +62,19 @@ public class AudioStartModeTests : SCTest
     [TestCase(AudioStartMode.WhenClickedOn)]
     public void StartMode_round_trips_and_preserves_other_audio(AudioStartMode mode)
     {
+        // Arrange
         using var presentation = new Presentation(p => p.Slide());
         var shapes = presentation.Slide(1).Shapes;
         shapes.AddAudio(100, 100, TestAsset("064 mp3.mp3"));
         shapes.AddAudio(300, 100, TestAsset("071 wav.wav"), AudioType.WAVE);
         var media = shapes.Last().Media!;
+
+        // Act
         media.StartMode = AudioStartMode.WhenClickedOn;
         media.StartMode = AudioStartMode.Automatically;
         media.StartMode = mode;
 
+        // Assert
         using var reopened = SaveAndOpenPresentation(presentation);
 
         reopened.Slide(1).Shapes.Last().Media!.StartMode.Should().Be(mode);
@@ -79,6 +91,7 @@ public class AudioStartModeTests : SCTest
     [Test]
     public void StartMode_reads_and_updates_existing_PowerPoint_timing()
     {
+        // Arrange
         using var presentation = new Presentation(TestAsset("audio-case001.pptx"));
         var media = presentation.Slide(1).Shapes.First(s => s.Media != null).Media!;
         media.StartMode.Should().Be(AudioStartMode.InClickSequence);
@@ -87,8 +100,10 @@ public class AudioStartModeTests : SCTest
             .Descendants<Command>().Single();
         var originalDuration = originalCommand.Descendants<CommonTimeNode>().Single().Duration!.Value;
 
+        // Act
         media.StartMode = AudioStartMode.Automatically;
 
+        // Assert
         using var reopened = SaveAndOpenPresentation(presentation);
         reopened.Slide(1).Shapes.First(s => s.Media != null).Media!.StartMode.Should().Be(AudioStartMode.Automatically);
         ValidatePresentation(reopened);
@@ -100,12 +115,15 @@ public class AudioStartModeTests : SCTest
     [Test]
     public void StartMode_rejects_invalid_value_without_changing_timing()
     {
+        // Arrange
         using var presentation = new Presentation(p => p.Slide());
         presentation.Slide(1).Shapes.AddAudio(100, 100, TestAsset("064 mp3.mp3"));
         var media = presentation.Slide(1).Shapes.Last().Media!;
 
+        // Act
         var act = () => media.StartMode = (AudioStartMode)99;
 
+        // Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
         media.StartMode.Should().Be(AudioStartMode.InClickSequence);
     }
