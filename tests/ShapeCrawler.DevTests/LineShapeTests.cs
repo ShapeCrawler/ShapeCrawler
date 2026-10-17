@@ -6,12 +6,12 @@ namespace ShapeCrawler.DevTests;
 
 public class LineShapeTests : SCTest
 {
-    [TestCase(1)]
-    [TestCase(2)]
-    public void Straight_connectors_from_pptx_have_line_geometry_and_endpoints_in_points(int slideNumber)
+    [TestCase(Geometry.Line)]
+    [TestCase(Geometry.StraightConnector1)]
+    public void Straight_connectors_from_pptx_have_line_geometry_and_endpoints_in_points(Geometry geometry)
     {
         // Arrange
-        var presentation = new Presentation(TestAsset("straight-lines.pptx"));
+        var presentation = new Presentation(p => p.Slide());
         var expectedLines = new[]
         {
             (Name: "Horizontal arrow", Start: new Point(50.25m, 60.5m), End: new Point(150.75m, 60.5m)),
@@ -23,9 +23,25 @@ public class LineShapeTests : SCTest
             (Name: "Reversed diagonal arrow", Start: new Point(500.75m, 300.25m), End: new Point(400.25m, 200.5m)),
             (Name: "Horizontal plain line", Start: new Point(50.25m, 60.5m), End: new Point(150.75m, 60.5m)),
         };
+        var sourceShapes = presentation.Slide(1).Shapes;
+        sourceShapes.AddShape(20, 20, 20, 20, Geometry.Rectangle);
+        foreach (var expected in expectedLines)
+        {
+            var lineType = expected.Name == "Horizontal plain line" ? LineType.Line : LineType.Arrow;
+            sourceShapes.AddLine(0, 0, 0, 0, lineType);
+            var shape = sourceShapes.Last();
+            shape.Name = expected.Name;
+            shape.GeometryType = geometry;
+            shape.Line!.StartPoint = expected.Start;
+            shape.Line.EndPoint = expected.End;
+        }
+
+        using var asset = new MemoryStream();
+        presentation.Save(asset);
 
         // Act
-        var shapes = presentation.Slide(slideNumber).Shapes.ToArray();
+        var reopenedPresentation = new Presentation(asset);
+        var shapes = reopenedPresentation.Slide(1).Shapes.ToArray();
 
         // Assert
         shapes.Should().HaveCount(expectedLines.Length + 1);
@@ -37,9 +53,11 @@ public class LineShapeTests : SCTest
             shape.Line.Should().NotBeNull();
             shape.Line!.StartPoint.Should().Be(expected.Start);
             shape.Line.EndPoint.Should().Be(expected.End);
+            shape.Line.Type.Should().Be(expected.Name == "Horizontal plain line" ? LineType.Line : LineType.Arrow);
         }
 
         ValidatePresentation(presentation);
+        ValidatePresentation(reopenedPresentation);
     }
 
     [Test]
