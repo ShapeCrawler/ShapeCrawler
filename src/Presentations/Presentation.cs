@@ -24,13 +24,14 @@ public sealed class Presentation : IPresentation
     /// <summary>
     ///    Opens presentation from the specified stream.
     /// </summary>
+    /// <exception cref="SCException">The presentation appears to be encrypted or access-restricted.</exception>
     public Presentation(Stream stream)
     {
         this.inputPresStream = stream;
         this.inputPresStream.Position = 0;
         this.inputPresStream.CopyTo(this.presStream);
 
-        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.PresDocument = this.OpenPresentationDocument();
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation!.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
@@ -51,13 +52,14 @@ public sealed class Presentation : IPresentation
     /// <summary>
     ///    Opens presentation from the specified file.
     /// </summary>
+    /// <exception cref="SCException">The presentation appears to be encrypted or access-restricted.</exception>
     public Presentation(string file)
     {
         this.inputPresFile = file;
         using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
         fileStream.CopyTo(this.presStream);
 
-        this.PresDocument = PresentationDocument.Open(this.presStream, true);
+        this.PresDocument = this.OpenPresentationDocument();
         this.slideSize = new SlideSize(this.PresDocument.PresentationPart!.Presentation!.SlideSize!);
         this.MasterSlides = new MasterSlideCollection(this.PresDocument.PresentationPart!.SlideMasterParts);
         this.Sections = new SectionCollection(this.PresDocument);
@@ -261,6 +263,26 @@ public sealed class Presentation : IPresentation
     ///     Releases all resources used by the presentation.
     /// </summary>
     public void Dispose() => this.PresDocument.Dispose();
+
+    private PresentationDocument OpenPresentationDocument()
+    {
+        try
+        {
+            return PresentationDocument.Open(this.presStream, true);
+        }
+        catch (Exception exception) when (
+            exception is FileFormatException or InvalidDataException or OpenXmlPackageException &&
+            OpenXmlPackage.IsEncryptedOfficeFile(this.presStream))
+        {
+            this.presStream.Dispose();
+            throw new SCException(
+                "The presentation cannot be opened because it appears to be encrypted or access-restricted. " +
+                "This may be caused by a sensitivity label, restricted permissions, or password protection. " +
+                "ShapeCrawler cannot decrypt protected presentations. Open the file in PowerPoint with the " +
+                "required permissions and save an unencrypted PPTX copy before opening it with ShapeCrawler.",
+                exception);
+        }
+    }
 
     private void EnsureInitialSlideId()
     {

@@ -37,6 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\089 encrypted.pptx" />
+    <EmbeddedResource Include="Assets\089 encrypted.pptx" />
     <None Remove="Assets\085 fill transparency when saving image.pptx" />
     <None Remove="Assets\audio\audio-case001.pptx" />
     <EmbeddedResource Include="Assets\062_text_spacing.pptx" />
