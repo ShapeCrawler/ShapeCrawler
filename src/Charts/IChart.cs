@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ShapeCrawler.Charts;
+﻿using ShapeCrawler.Charts;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -25,7 +24,7 @@ public interface IChart
     /// <summary>
     ///     Gets category collection. Returns <c>null</c> if the chart type doesn't have categories, e.g., Scatter.
     /// </summary>
-    public IReadOnlyList<ICategory>? Categories { get; }
+    public ICategoryCollection? Categories { get; }
 
     /// <summary>
     ///     Gets X-Axis. Returns <c>null</c> if the chart type doesn't have an X-Axis, e.g., Pie.

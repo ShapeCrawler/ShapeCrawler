@@ -9,7 +9,7 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class Workbook(EmbeddedPackagePart embeddedPackagePart)
+internal sealed partial class Workbook(EmbeddedPackagePart embeddedPackagePart)
 {
     internal Worksheet Sheet(string sheetName) => new(embeddedPackagePart, sheetName);
 

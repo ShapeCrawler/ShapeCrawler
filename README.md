@@ -175,6 +175,22 @@ chart.Categories[0].Name = "Renamed Category";
 pres.Save();
 ```
 
+#### Add Chart Category
+
+```csharp
+var pres = new Presentation("presentation.pptx");
+var chart = pres.Slide(1).Shapes.Shape("Bar Chart 1").BarChart;
+
+// Supply one value for each series, in series collection order.
+chart.Categories!.Add("Q4", 70, 80, 90);
+
+pres.Save();
+```
+
+Single-level text categories are supported in non-combination charts. For charts linked
+to an embedded Excel workbook, category and value ranges must be vertical; the workbook
+and chart caches are updated together.
+
 ### More Examples
 
 **[See More Examples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/examples)**

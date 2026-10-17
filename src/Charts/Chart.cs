@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
@@ -90,7 +89,7 @@ internal sealed class Chart : IBarChart, IColumnChart, ILineChart, IPieChart, IS
 
     public IChartTitle? Title => this.chartTitle.Value;
 
-    public IReadOnlyList<ICategory>? Categories => this.categories;
+    public ICategoryCollection? Categories => this.categories;
 
     public IXAxis? XAxis => this.xAxis;
 
