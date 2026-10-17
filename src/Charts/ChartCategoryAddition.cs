@@ -63,7 +63,7 @@ internal sealed class ChartCategoryAddition(ChartPart chartPart)
             replacements.Add((seriesValues, updatedValues));
         }
 
-        workbook?.AppendCategoryCells(cells);
+        workbook?.AppendPointCells(cells);
         foreach (var (original, updated) in replacements)
         {
             original.Parent!.ReplaceChild(updated, original);
@@ -115,7 +115,7 @@ internal sealed class ChartCategoryAddition(ChartPart chartPart)
         }
 
         var sourceFormula = formula.Text;
-        formula.Text = workbook.ExtendedCategoryFormula(sourceFormula, count);
+        formula.Text = workbook.ExtendedPointFormula(sourceFormula, count);
         cells.Add((sourceFormula, value, isText));
     }
 }

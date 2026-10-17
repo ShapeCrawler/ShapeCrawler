@@ -1,51 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
+/// <summary>
+///     Represents a numeric data collection in a chart series.
+/// </summary>
+/// <param name="chartPart">The chart part owning the series.</param>
+/// <param name="series">The series Open XML element.</param>
+/// <param name="valuesName">The numeric data element name, or null for the series values.</param>
+internal sealed class ChartPoints(ChartPart chartPart, OpenXmlElement series, string? valuesName = null)
+    : IChartPointCollection
 {
-    private readonly List<ChartPoint> chartPoints;
+    /// <inheritdoc />
+    public int Count => this.Points().Count;
 
-    internal ChartPoints(ChartPart chartPart, OpenXmlElement cSerXmlElement)
-    {
-        var numberReference = GetNumberReference(cSerXmlElement);
-        var numberLiteral = GetNumberLiteral(cSerXmlElement);
-        this.chartPoints = new ChartPointData(chartPart).Create(numberReference, numberLiteral);
-    }
+    private OpenXmlCompositeElement? Values => valuesName == null
+        ? (OpenXmlCompositeElement?)series.GetFirstChild<C.Values>() ?? series.GetFirstChild<C.YValues>()
+        : series.ChildElements.OfType<OpenXmlCompositeElement>().FirstOrDefault(element => element.LocalName == valuesName);
 
-    public int Count => this.chartPoints.Count;
+    /// <inheritdoc />
+    public IChartPoint this[int index] => this.Points()[index];
 
-    public IChartPoint this[int index] => this.chartPoints[index];
+    /// <inheritdoc />
+    public void Add(double value) => new ChartPointAddition(chartPart, this.Values).Add(value);
 
-    public IEnumerator<IChartPoint> GetEnumerator() => this.chartPoints.GetEnumerator();
+    /// <inheritdoc />
+    public IEnumerator<IChartPoint> GetEnumerator() => this.Points().GetEnumerator();
 
+    /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private static NumberReference? GetNumberReference(OpenXmlElement cSerXmlElement)
+    private List<ChartPoint> Points()
     {
-        var cVal = cSerXmlElement.GetFirstChild<Values>();
-        if (cVal != null)
-        {
-            return cVal.NumberReference;
-        }
-
-        var cYVal = cSerXmlElement.GetFirstChild<YValues>();
-        return cYVal?.NumberReference;
-    }
-
-    private static NumberLiteral? GetNumberLiteral(OpenXmlElement cSerXmlElement)
-    {
-        var cVal = cSerXmlElement.GetFirstChild<Values>();
-        if (cVal != null)
-        {
-            return cVal.NumberLiteral;
-        }
-
-        var cYVal = cSerXmlElement.GetFirstChild<YValues>();
-        return cYVal?.NumberLiteral;
+        var values = this.Values;
+        return new ChartPointData(chartPart).Create(
+            values?.GetFirstChild<C.NumberReference>(), values?.GetFirstChild<C.NumberLiteral>());
     }
 }
