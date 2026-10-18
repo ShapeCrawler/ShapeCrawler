@@ -11,6 +11,30 @@ namespace ShapeCrawler.Tests;
 public class UpdatedSlideCollectionTests : SCTest
 {
     [Test]
+    public void Add_preserves_slide_advance_settings_independently_of_source()
+    {
+        // Arrange
+        using var source = new Presentation(p => p.Slide());
+        source.Slides[0].Transition.AdvanceOnClick = false;
+        source.Slides[0].Transition.AdvanceAfterTime = 3500;
+        using var destination = new Presentation(p => p.Slide());
+
+        // Act
+        destination.Slides.Add(source.Slides[0]);
+        destination.Slides[1].Transition.AdvanceAfterTime = 7000;
+
+        // Assert
+        source.Slides[0].Transition.AdvanceAfterTime.Should().Be(3500);
+        destination.Slides[0].Transition.AdvanceAfterTime.Should().BeNull();
+        using var saved = new MemoryStream();
+        destination.Save(saved);
+        using var reopened = new Presentation(saved);
+        reopened.Slides[1].Transition.AdvanceOnClick.Should().BeFalse();
+        reopened.Slides[1].Transition.AdvanceAfterTime.Should().Be(7000);
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
     public void Add_assigns_unique_imported_layout_ids_without_rewriting_existing_layout_ids()
     {
         // Arrange

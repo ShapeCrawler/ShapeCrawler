@@ -20,6 +20,8 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
 
     public IUserSlideShapeCollection Shapes => shapes;
 
+    public ISlideTransition Transition => field ??= new SlideTransition(slidePart);
+
     public string Name
     {
         get => slidePart.Slide!.CommonSlideData!.Name?.Value ?? string.Empty;

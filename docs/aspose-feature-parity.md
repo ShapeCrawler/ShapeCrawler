@@ -84,6 +84,75 @@ slide = reopened.Slides[0];
 Console.WriteLine($"[{slide.Name}], {slide.Hidden}, {slide.ShowMasterShapes}");
 ```
 
+## Iteration 2: slide advance settings
+
+Narrow API comparison found no ShapeCrawler equivalent for
+`ISlideShowTransition.AdvanceOnClick`, `AdvanceAfter`, or `AdvanceAfterTime`.
+The new `IUserSlide.Transition` returns `ISlideTransition`:
+
+```csharp
+slide.Transition.AdvanceOnClick = false;
+slide.Transition.AdvanceAfterTime = 5000; // Automatic advance after 5 seconds.
+slide.Transition.AdvanceAfterTime = null; // Disable automatic advance.
+```
+
+`AdvanceAfterTime` is a nullable millisecond count. Assigning a number enables
+the timer; assigning null disables it. Zero enables immediate advance.
+The click setting is independent. Reading the settings does not create XML.
+Changing them retains existing transition effects, speed, and animation data;
+markup-compatibility Choice and Fallback transitions are updated together.
+
+### Reference evidence
+
+The reference version and assembly hash are unchanged from iteration 1.
+REA 6.7.0 was run again with the exact declaring type from the package's API
+documentation:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.SlideShow.SlideShowTransition --json
+```
+
+Evidence `ev_b6e3b13b8e36a906520a0ffd9bb45a73fb13da3a631e28ae94565fcdce9de778`
+again reports unavailable member coverage because of the 64 MiB metadata
+representation budget. No method bodies were recovered. A separate runtime
+probe used the same unmodified evaluation assembly and save/reopen procedure
+as iteration 1; only the transition settings were changed.
+
+| Reference operations on a new slide | Observed `AdvanceOnClick` / `AdvanceAfter` / `AdvanceAfterTime` after reopening | Saved transition attributes |
+| --- | --- | --- |
+| No change | true / false / 0 | none |
+| Set time to 5000 | true / true / 5000 | `advTm="5000"` |
+| Enable `AdvanceAfter` with default time | true / true / 0 | `advTm="0"` |
+| Set time to 5000, then disable `AdvanceAfter` | true / false / 0 | none |
+| Disable click advance | false / false / 0 | `advClick="0"` |
+| Set time to 2147483647 | true / true / 2147483647 | `advTm="2147483647"` |
+
+To reproduce each row, replace the settings in the iteration 1 probe with the
+listed operations on `presentation.Slides[0].SlideShowTransition` and print
+those three properties before saving and after reopening. Read `p:transition`
+in the saved slide XML to inspect the attributes.
+
+Aspose retains a disabled timer's previous value in memory but loses that
+value after save/reopen. ShapeCrawler's nullable API clears the value
+immediately; it does not retain a separate inactive timer.
+
+The reference accepted 2147483648, but Open XML validation rejects that value:
+the SDK's transition-time constraint is at most 2147483647. ShapeCrawler
+therefore throws `ArgumentOutOfRangeException` before modifying XML for larger
+values. The reference also treated `uint.MaxValue` as no timer when saving;
+that sentinel is represented explicitly by null in ShapeCrawler.
+The [Open XML transition documentation](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.transition)
+describes the independent `advClick` and `advTm` attributes and their defaults.
+
+Regression tests in `SlideTransitionTests` cover defaults without XML mutation,
+zero and maximum valid times, disabling, independent flags, saved XML,
+save/reopen, existing effects and animations, schema ordering, both markup
+compatibility branches, and out-of-range inputs. `UpdatedSlideCollectionTests`
+covers importing the settings and editing the imported slide independently.
+Saved presentations are Open XML validated, and `PublicApiTests` continues
+to enforce SDK encapsulation. Effects, speed, sound, and other transition
+options remain outside this iteration's API.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current
