@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Presentations;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -11,6 +13,34 @@ namespace ShapeCrawler;
 /// </summary>
 public interface IPresentationProperties
 {
+    /// <summary>
+    ///     Gets the custom property names in case-insensitive ordinal order.
+    /// </summary>
+    IReadOnlyList<string> CustomPropertyNames { get; }
+
+    /// <summary>
+    ///     Gets or sets a custom property by case-insensitive name. A missing name throws KeyNotFoundException.
+    ///     Values can be string, int, bool, float, double, or DateTime. Floating-point values must be finite.
+    ///     Dates are stored as UTC; unspecified dates are treated as UTC. Other existing value types are preserved
+    ///     but cannot be read through this indexer. Null values are not supported.
+    /// </summary>
+    object this[string name] { get; set; }
+
+    /// <summary>
+    ///     Checks whether a custom property exists, using a case-insensitive name.
+    /// </summary>
+    bool ContainsCustomProperty(string name);
+
+    /// <summary>
+    ///     Removes a custom property by case-insensitive name and returns whether it existed.
+    /// </summary>
+    bool RemoveCustomProperty(string name);
+
+    /// <summary>
+    ///     Removes all custom properties without changing built-in properties.
+    /// </summary>
+    void ClearCustomProperties();
+
     /// <summary>
     ///     Gets or sets the categories.
     /// </summary>
@@ -115,19 +145,37 @@ public interface IPresentationProperties
 internal class PresentationProperties : IPresentationProperties
 {
     private readonly IPackageProperties packageProperties;
+    private readonly CustomProperties customProperties;
 
     private readonly ExtendedFilePropertiesPart? extendedFilePropertiesPart;
 
-    internal PresentationProperties(IPackageProperties packageProperties, ExtendedFilePropertiesPart? extendedFilePropertiesPart)
+    internal PresentationProperties(PresentationDocument document)
     {
-        this.packageProperties = packageProperties;
-        this.extendedFilePropertiesPart = extendedFilePropertiesPart;
+        this.packageProperties = document.CoreFilePropertiesPart is not null
+            ? document.CoreFilePropertiesPart.OpenXmlPackage.PackageProperties
+            : new DefaultPackageProperties();
+        this.extendedFilePropertiesPart = document.ExtendedFilePropertiesPart;
+        this.customProperties = new CustomProperties(document);
 
-        if (extendedFilePropertiesPart is { IsRootElementLoaded: false })
+        if (this.extendedFilePropertiesPart is { IsRootElementLoaded: false })
         {
-            extendedFilePropertiesPart.RootElement?.Reload();
+            this.extendedFilePropertiesPart.RootElement?.Reload();
         }
     }
+
+    public IReadOnlyList<string> CustomPropertyNames => this.customProperties.Names;
+
+    public object this[string name]
+    {
+        get => this.customProperties.Get(name);
+        set => this.customProperties.Set(name, value);
+    }
+
+    public bool ContainsCustomProperty(string name) => this.customProperties.Contains(name);
+
+    public bool RemoveCustomProperty(string name) => this.customProperties.Remove(name);
+
+    public void ClearCustomProperties() => this.customProperties.Clear();
 
     public string? Author
     {
