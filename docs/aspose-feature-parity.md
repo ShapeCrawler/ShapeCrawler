@@ -699,6 +699,106 @@ unsupported-value preservation, and Open XML validation. `PublicApiTests`
 continues to enforce SDK encapsulation. No Aspose production dependency or
 rendering changes are included.
 
+## Iteration 10: literal and regex text highlighting
+
+### Demand and gap check
+
+A user explicitly requested [regex highlighting across a complete presentation](https://forum.aspose.com/t/highlight-and-list-all-the-highlighted-words-in-powerpoint-presentations-in-c/280468),
+including counts/reporting. Another asked about [editing text highlight colors](https://forum.aspose.com/t/working-with-highlight-effect-for-text-portions-in-powerpoint-presentations-in-java/264416).
+The [official .NET search guide](https://docs.aspose.com/slides/net/search-and-replace-text/)
+documents frame-level and presentation-wide literal/regex highlighting. These
+support prioritizing a recurring review/editing workflow; no universal usage
+ranking is claimed.
+
+The existing `IParagraphPortion.TextHighlightColor` edits an entire portion.
+`ReplaceText` changes content and `GetTexts` collects text boxes. None finds
+matches and highlights only those characters, including partial/cross-run
+matches, while retaining their original content and formatting. A source search
+confirmed the absence of `HighlightText`/`HighlightRegex` APIs before this change.
+This is the selected missing capability, not a rendering feature.
+
+### API and scope
+
+`ITextBox` and `IPresentation` now expose:
+
+```csharp
+int count = presentation.HighlightText("Confidential", new Color("FFFF00"), ignoreCase: true);
+int emails = presentation.HighlightRegex(emailRegex, new Color("FFFF00"));
+```
+
+Both return non-overlapping match counts. Literal matching is ordinal and
+case-sensitive by default, consistent with ShapeCrawler's `ReplaceText`; set
+`ignoreCase: true` for case-insensitive matching. Regex matching follows the
+supplied .NET Regex options and timeout, supports RightToLeft, and ignores
+zero-length matches. Adjacent match spans share highlighting segments while
+still counting as separate matches.
+
+Matches can span consecutive ordinary runs. Paragraphs, soft breaks, fields,
+and other non-run nodes are boundaries; fields are not searched. Presentation
+scope covers slide text boxes, nested groups, and table cells through `GetTexts`.
+Notes, masters, layouts, charts, and SmartArt data are excluded from that scope;
+individual accessible text boxes (including notes) can be processed explicitly.
+Callbacks, match-result reporting, and dedicated whole-word options are outside
+this increment; word boundaries can be expressed in the regex.
+
+Runs are split only at selected boundaries; text, font/style properties,
+hyperlinks, paragraph properties, and outside highlights remain intact. Existing
+relationship IDs are reused within the same part. Highlight insertion respects
+schema order, including runs containing hyperlink properties. Finite alpha in
+[0,255] is required. `Color.NoColor` removes direct highlighting from matched
+characters; it does not override an inherited paragraph highlight. Matches that
+would split a Unicode surrogate pair are rejected; adjacent regex matches are
+merged before this check. Matching completes before changing a text box, so a
+regex timeout leaves that box unchanged. A later failure in presentation scope
+can leave earlier boxes updated, as stated in the API documentation.
+
+### REA and behavioral evidence
+
+Reference: Aspose.Slides.NET 24.12.0 net6.0, SHA-256
+`edaaa3005d2a462548fadcb35ffc661e2b752e7ee863c9c515f459ef7e345ca2`.
+REA 6.7.0 was invoked as follows:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.TextFrame --type Aspose.Slides.TextSearchOptions --json
+```
+
+Evidence `ev_df5ea8bfc8cc2a99c227db97a5f228709e7e3ff5724031a9e83cda29ae08d5a4`
+reports unavailable member coverage at the 64 MiB metadata representation
+budget. No method implementation was recovered. The following observations are
+from direct calls to the unmodified evaluation-mode reference and inspection of
+saved XML, with API signatures checked against the package's XML documentation:
+
+Create a text frame with a bold 18-point `a XY` portion and italic
+`Z xyz X12Z tail` portion. Highlight `XYZ` with `CaseSensitive=true`, save, and
+inspect the paragraph: `a `, `XY`, `Z`, and ` xyz X12Z tail` are separate runs,
+with highlight only on XY/Z and the original font properties preserved.
+Default reference highlighting of `xyz` also selects uppercase XYZ, demonstrating
+its case-insensitive default. Regex `X[0-9]+Z` selects only X12Z. Yellow is stored
+as `a:highlight/a:srgbClr` with FFFF00; alpha 128 is stored as `a:alpha val=50196`.
+Reopening reports the expected colors on matched portions. Reference evaluation
+getters truncate long portions; full original text was therefore checked in the
+saved XML, without bypassing evaluation restrictions.
+
+Known differences: ShapeCrawler defaults to case-sensitive literal matching and
+returns a count rather than using a callback. Reference transparent highlighting
+writes an explicit alpha-zero highlight; ShapeCrawler uses the existing ShapeCrawler
+NoColor convention of removing the direct highlight. No byte-identical output or
+complete search/highlighting API parity is claimed.
+
+An interoperability probe created ShapeCrawler text, grouped text, and table
+cells, each with literal, regex, alpha-128, or cleared direct highlighting.
+Aspose opened all **12/12** cases, preserving the complete short text and
+reporting the expected highlight RGBA on matched portions. No slide image was
+generated.
+
+Tests in `TextBoxTests`, `TableCellTextBoxTests`, and `PresentationTests` cover
+partial/cross-run matches, original non-overlapping counts, case matching under
+tr-TR, RightToLeft/empty regex matches, Unicode, field/break boundaries, alpha,
+repeated calls, direct-highlight removal, hyperlink/format preservation, timeout
+without partial text-box mutation, excluded notes/masters, saved/reopened output,
+and Open XML validation. `PublicApiTests` checks SDK encapsulation. No Aspose
+production dependency or renderer implementation changes were added.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current

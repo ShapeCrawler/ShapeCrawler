@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 #pragma warning disable IDE0130
 namespace ShapeCrawler;
@@ -56,6 +57,18 @@ public interface IPresentation : IDisposable
     ///     Does not search notes, masters, layouts, chart data, or SmartArt data parts.
     /// </summary>
     int ReplaceText(string oldText, string newText, bool ignoreCase = false);
+
+    /// <summary>
+    ///     Highlights literal matches in slide text boxes, groups, and table cells and returns their count.
+    ///     Uses ITextBox.HighlightText formatting and matching rules. Excludes notes, masters, layouts, charts, and SmartArt data.
+    /// </summary>
+    int HighlightText(string text, Color color, bool ignoreCase = false);
+
+    /// <summary>
+    ///     Highlights nonempty regex matches in the same scope as HighlightText and returns their count.
+    ///     Uses the supplied regex options/timeout. Earlier text boxes may already be updated if a later search throws.
+    /// </summary>
+    int HighlightRegex(Regex regex, Color color);
 
     /// <summary>
     ///     Replaces exact, case-sensitive DrawingML font family references throughout the presentation,

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using System.Text.RegularExpressions;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Texts;
 using DocumentFormat.OpenXml.Packaging;
@@ -9,6 +10,275 @@ namespace ShapeCrawler.Tests;
 
 public class TextBoxTests : SCTest
 {
+    [Test]
+    public void HighlightText_spans_runs_preserving_text_formatting_and_hyperlinks()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(
+            new A.ParagraphProperties { Level = 1 },
+            new A.Run(new A.RunProperties { Bold = true, FontSize = 1800 }, new A.Text("pre XY")),
+            new A.Run(new A.Text(string.Empty)),
+            new A.Run(new A.RunProperties { Italic = true, FontSize = 2400 }, new A.Text("Z tail"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox!;
+        box.Paragraphs[0].Portions.First().Link.AddFile("https://example.com/report");
+        var before = box.Text;
+
+        // Act
+        var count = box.HighlightText("XYZ", new Color("FFFF00"));
+
+        // Assert
+        count.Should().Be(1);
+        box.Text.Should().Be(before);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var sdk = PresentationDocument.Open(saved, false))
+        {
+            var paragraph = sdk.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Shape>().Last().TextBody!.Elements<A.Paragraph>().Single();
+            var runs = paragraph.Elements<A.Run>().ToArray();
+            runs.Select(run => run.Text!.Text).Should().Equal("pre ", "XY", "", "Z", " tail");
+            runs.Where(run => run.RunProperties?.GetFirstChild<A.Highlight>() is not null)
+                .Select(run => run.Text!.Text).Should().Equal("XY", "Z");
+            runs[0].RunProperties!.Bold!.Value.Should().BeTrue();
+            runs[1].RunProperties!.FontSize!.Value.Should().Be(1800);
+            runs[3].RunProperties!.Italic!.Value.Should().BeTrue();
+            runs[4].RunProperties!.FontSize!.Value.Should().Be(2400);
+            runs[0].RunProperties!.GetFirstChild<A.HyperlinkOnClick>()!.Id!.Value.Should()
+                .Be(runs[1].RunProperties!.GetFirstChild<A.HyperlinkOnClick>()!.Id!.Value);
+            sdk.PresentationPart.SlideParts.Single().HyperlinkRelationships.Should().ContainSingle();
+            paragraph.ParagraphProperties!.Level!.Value.Should().Be(1);
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Last().TextBox.Text.Should().Be(before);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase("aaaa", "aa", 2, "aaaa")]
+    [TestCase("ababa", "aba", 1, "aba")]
+    [TestCase("a <&😀> b", "<&😀>", 1, "<&😀>")]
+    [TestCase("abc", "missing", 0, "")]
+    public void HighlightText_highlights_original_non_overlapping_matches(string original, string query, int expected, string selected)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text(original))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+
+        // Act
+        var count = box.HighlightText(query, new Color("FFFF00"));
+
+        // Assert
+        count.Should().Be(expected);
+        box.Text.Should().Be(original);
+        string.Concat(box.Paragraphs[0].Portions.Where(portion => !portion.TextHighlightColor.IsTransparent).Select(portion => portion.Text))
+            .Should().Be(selected);
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(false, 1, "file")]
+    [TestCase(true, 2, "FILEfile")]
+    [SetCulture("tr-TR")]
+    public void HighlightText_uses_ordinal_case_matching(bool ignoreCase, int expected, string selected)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("FILE file"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+
+        // Act
+        var count = box.HighlightText("file", new Color("FFFF00"), ignoreCase);
+
+        // Assert
+        count.Should().Be(expected);
+        string.Concat(box.Paragraphs[0].Portions.Where(portion => !portion.TextHighlightColor.IsTransparent).Select(portion => portion.Text))
+            .Should().Be(selected);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void HighlightText_does_not_cross_paragraphs_breaks_or_fields(bool regex)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(
+            new A.Paragraph(new A.Run(new A.Text("ab"))), new A.Paragraph(new A.Run(new A.Text("cd"))),
+            new A.Paragraph(new A.Run(new A.Text("ab")), new A.Break(), new A.Run(new A.Text("cd"))),
+            new A.Paragraph(new A.Run(new A.Text("ab")),
+                new A.Field(new A.Text("FIELD")) { Id = "{E7559270-9838-4E40-AB23-A20A96371411}", Type = "slidenum" },
+                new A.Run(new A.Text("cd"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+        var before = box.Text;
+
+        // Act
+        var count = regex ? box.HighlightRegex(new Regex("abcd|FIELD"), Color.Black)
+            : box.HighlightText("abcd", Color.Black) + box.HighlightText("FIELD", Color.Black);
+
+        // Assert
+        count.Should().Be(0);
+        box.Text.Should().Be(before);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var sdk = PresentationDocument.Open(saved, false);
+        sdk.PresentationPart!.SlideParts.Single().Slide.Descendants<A.Highlight>().Should().BeEmpty();
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(RegexOptions.None)]
+    [TestCase(RegexOptions.RightToLeft)]
+    public void HighlightRegex_supports_options_cross_run_matches_and_ignores_empty_matches(RegexOptions options)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(
+            new A.Run(new A.Text("x1")), new A.Run(new A.Text("2 X3 tail"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+        var regex = new Regex(@"x\d+|(?=tail)", options | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+
+        // Act
+        var count = box.HighlightRegex(regex, new Color("FFFF00"));
+
+        // Assert
+        count.Should().Be(2);
+        box.Text.Should().Be("x12 X3 tail");
+        string.Concat(box.Paragraphs[0].Portions.Where(portion => !portion.TextHighlightColor.IsTransparent).Select(portion => portion.Text))
+            .Should().Be("x12X3");
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void HighlightRegex_merges_adjacent_matches_without_breaking_Unicode_surrogate_pairs()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("a😀b"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+
+        // Act
+        var count = box.HighlightRegex(new Regex("."), new Color("FFFF00"));
+
+        // Assert
+        count.Should().Be(4);
+        box.Text.Should().Be("a😀b");
+        box.Paragraphs[0].Portions.Should().ContainSingle();
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void HighlightRegex_rejects_surrogate_splitting_without_mutating_the_text_box()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))),
+            new A.Paragraph(new A.Run(new A.Text("😀"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+        var before = box.Text;
+
+        // Act
+        var highlight = () => box.HighlightRegex(new Regex("abc|\\uD83D"), Color.Black);
+
+        // Assert
+        highlight.Should().Throw<ArgumentException>();
+        box.Text.Should().Be(before);
+        box.Paragraphs[0].Portions[0].TextHighlightColor.IsTransparent.Should().BeTrue();
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void HighlightRegex_timeout_does_not_partially_update_a_text_box()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))),
+            new A.Paragraph(new A.Run(new A.Text(new string('a', 10_000) + "!"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+        var regex = new Regex("abc|(a+)+$", RegexOptions.None, TimeSpan.FromMilliseconds(1));
+
+        // Act
+        var highlight = () => box.HighlightRegex(regex, Color.Black);
+
+        // Assert
+        highlight.Should().Throw<RegexMatchTimeoutException>();
+        box.Paragraphs[0].Portions[0].TextHighlightColor.IsTransparent.Should().BeTrue();
+        box.Paragraphs[0].Text.Should().Be("abc");
+    }
+
+    [Test]
+    public void HighlightText_preserves_outside_highlights_and_can_clear_selected_direct_highlights()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abcde"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+        box.Paragraphs[0].Portions[0].TextHighlightColor = new Color("FF0000");
+
+        // Act
+        var count = box.HighlightText("bcd", Color.NoColor);
+
+        // Assert
+        count.Should().Be(1);
+        var portions = box.Paragraphs[0].Portions.ToArray();
+        portions.Select(portion => portion.Text).Should().Equal("a", "bcd", "e");
+        portions[0].TextHighlightColor.Hex.Should().Be("FF0000");
+        portions[1].TextHighlightColor.IsTransparent.Should().BeTrue();
+        portions[2].TextHighlightColor.Hex.Should().Be("FF0000");
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void HighlightText_round_trips_alpha_and_repeated_calls_do_not_duplicate_highlights()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+        var color = new Color("FFFF00") { Alpha = 128 };
+        box.HighlightText("b", color);
+
+        // Act
+        box.HighlightText("b", color);
+
+        // Assert
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var sdk = PresentationDocument.Open(saved, false))
+        {
+            var highlight = sdk.PresentationPart!.SlideParts.Single().Slide.Descendants<A.Highlight>().Single();
+            highlight.RgbColorModelHex!.GetFirstChild<A.Alpha>()!.Val!.Value.Should().Be(50196);
+        }
+
+        using var reopened = new Presentation(saved);
+        var portions = reopened.Slides[0].Shapes.Last().TextBox.Paragraphs[0].Portions;
+        portions.Should().HaveCount(3);
+        portions[1].TextHighlightColor.Alpha.Should().BeApproximately(128, 0.001f);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    public void HighlightText_rejects_invalid_queries(string? query)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+
+        // Act
+        var highlight = () => box.HighlightText(query!, Color.Black);
+
+        // Assert
+        highlight.Should().Throw<ArgumentException>();
+        box.Paragraphs[0].Portions.Should().ContainSingle();
+        box.Text.Should().Be("abc");
+    }
+
+    [TestCase(float.NaN)]
+    [TestCase(float.PositiveInfinity)]
+    [TestCase(-1)]
+    [TestCase(256)]
+    public void HighlightText_rejects_invalid_alpha_without_mutation(float alpha)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))));
+        var box = pres.Slides[0].Shapes.Last().TextBox;
+
+        // Act
+        var highlight = () => box.HighlightText("b", new Color("FFFF00") { Alpha = alpha });
+
+        // Assert
+        highlight.Should().Throw<ArgumentOutOfRangeException>();
+        box.Paragraphs[0].Portions.Should().ContainSingle();
+    }
+
     [Test]
     public void ReplaceText_matches_across_runs_and_preserves_surrounding_formatting()
     {

@@ -23,7 +23,7 @@ internal static class RunPropertiesExtensions
         var newHighlight = new A.Highlight();
         newHighlight.Append(color.ToRgbColorModelHex());
 
-        arPr.Append(newHighlight);
+        arPr.AddChild(newHighlight, true);
     }
 
     private static A.RgbColorModelHex ToRgbColorModelHex(this Color color)

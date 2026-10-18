@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
@@ -173,6 +174,11 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell) : ITextBox
 
     public int ReplaceText(string oldText, string newText, bool ignoreCase = false) =>
         TextReplacement.Replace(aTableCell.TextBody!, oldText, newText, ignoreCase);
+
+    public int HighlightText(string text, Color color, bool ignoreCase = false) =>
+        TextHighlighting.HighlightText(aTableCell.TextBody!, text, color, ignoreCase);
+
+    public int HighlightRegex(Regex regex, Color color) => TextHighlighting.HighlightRegex(aTableCell.TextBody!, regex, color);
 
     public void SetText(string text)
     {

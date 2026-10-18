@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -233,6 +234,11 @@ internal abstract class TextBox : ITextBox
 
     public int ReplaceText(string oldText, string newText, bool ignoreCase = false) =>
         TextReplacement.Replace(this.textBody, oldText, newText, ignoreCase);
+
+    public int HighlightText(string text, Color color, bool ignoreCase = false) =>
+        TextHighlighting.HighlightText(this.textBody, text, color, ignoreCase);
+
+    public int HighlightRegex(Regex regex, Color color) => TextHighlighting.HighlightRegex(this.textBody, regex, color);
 
     /// <summary>
     ///     Disables text wrapping in the text box.
