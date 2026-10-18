@@ -43,13 +43,13 @@ internal sealed class TextPortionFont(
 
     public bool IsBold
     {
-        get => this.ParseBoldFlag();
+        get => new TextStyleFlags(aText).Bold;
         set => this.UpdateBoldFlag(value);
     }
 
     public bool IsItalic
     {
-        get => this.GetItalicFlag();
+        get => new TextStyleFlags(aText).Italic;
         set => this.SetItalicFlag(value);
     }
 
@@ -154,102 +154,18 @@ internal sealed class TextPortionFont(
         return new ThemeFontScheme(openXmlPart).MinorLatinFont();
     }
 
-    private bool ParseBoldFlag()
-    {
-        var aRunProperties = aText.Parent!.GetFirstChild<A.RunProperties>();
-        if (aRunProperties == null)
-        {
-            return false;
-        }
-
-        if (aRunProperties.Bold is not null && aRunProperties.Bold == true)
-        {
-            return true;
-        }
-
-        bool? isFontBold = new ReferencedFont(new ReferencedFontColor(aText), aText).BoldFlagOrNull();
-        if (isFontBold.HasValue)
-        {
-            return isFontBold.Value;
-        }
-
-        return false;
-    }
-
-    private bool GetItalicFlag()
-    {
-        var aRunPr = aText.Parent!.GetFirstChild<A.RunProperties>();
-        if (aRunPr == null)
-        {
-            return false;
-        }
-
-        if (aRunPr.Italic is not null && aRunPr.Italic == true)
-        {
-            return true;
-        }
-
-        IndentFont phIndentFont = default;
-        if (phIndentFont.IsItalic is not null)
-        {
-            return phIndentFont.IsItalic.Value;
-        }
-
-        return false;
-    }
-
     private void UpdateBoldFlag(bool value)
     {
-        var aRunPr = aText.Parent!.GetFirstChild<A.RunProperties>();
-        if (aRunPr != null)
-        {
-            aRunPr.Bold = new BooleanValue(value);
-        }
-        else
-        {
-            IndentFont phIndentFont = default;
-            if (phIndentFont.IsBold is not null)
-            {
-                phIndentFont.IsBold = new BooleanValue(value);
-            }
-            else
-            {
-                var aEndParaRPr =
-                    aText.Parent.NextSibling<A.EndParagraphRunProperties>();
-                if (aEndParaRPr != null)
-                {
-                    aEndParaRPr.Bold = new BooleanValue(value);
-                }
-                else
-                {
-                    aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
-                    aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
-                }
-            }
-        }
+        var properties = aText.Parent!.GetFirstChild<A.RunProperties>() ??
+            aText.Parent.PrependChild(new A.RunProperties());
+        properties.Bold = value;
     }
 
     private void SetItalicFlag(bool isItalic)
     {
-        var aTextParent = aText.Parent!;
-        var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
-        if (aRunPr != null)
-        {
-            aRunPr.Italic = new BooleanValue(isItalic);
-        }
-        else
-        {
-            var aEndParaRPr = aTextParent.NextSibling<A.EndParagraphRunProperties>();
-            if (aEndParaRPr != null)
-            {
-                aEndParaRPr.Italic = new BooleanValue(isItalic);
-            }
-            else
-            {
-                aRunPr = new A.RunProperties { Italic = new BooleanValue(isItalic) };
-                aTextParent.InsertAt(aRunPr, 0);
-            }
-        }
+        var properties = aText.Parent!.GetFirstChild<A.RunProperties>() ??
+            aText.Parent.PrependChild(new A.RunProperties());
+        properties.Italic = isItalic;
     }
 
     private void UpdateLatinName(string latinFont)
