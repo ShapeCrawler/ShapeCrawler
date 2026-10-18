@@ -2,7 +2,7 @@
 
 ## Scope and delivery
 
-Build out ShapeCrawler's existing experimental `SaveImage` renderer using REA static evidence and direct behavioral comparisons with Aspose.Slides. Each implementation PR must be small enough to investigate, implement, validate and create within 30 minutes. After creating a PR, wait for every check on its current head to pass and fix any failures in that PR. Then wait for the user's explicit approval before starting the next increment.
+Build out ShapeCrawler's existing experimental `SaveImage` renderer using REA static evidence and direct behavioral comparisons with Aspose.Slides. Each implementation PR must be small enough to investigate, implement, validate and create within 40 minutes. After creating a PR, wait for every check on its current head to pass and fix any failures in that PR. Then wait for the user's explicit approval before starting the next increment.
 
 The first increment supports explicit PNG pixel dimensions through stream and file overloads. It scales the canvas before drawing slide shapes, so shapes and text render at the requested resolution. Backgrounds cover the output surface. The existing overloads keep their 96 DPI dimensions and original canvas transform. No Aspose dependency or proprietary implementation code is added to ShapeCrawler.
 
@@ -174,18 +174,51 @@ Automated saved-PPTX tests cover those operations and order differences, neutral
 
 Remaining color work includes explicit hue/saturation/component/gamma operations, other input color models and theme override parts. Transforms on shape fills, picture alpha effects, gradients and background effects are separate work. Pixel equivalence beyond the tested samples is not established.
 
-## Remaining increments
+## Fifth increment: master and layout content
 
-Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split a topic further when needed to stay inside the time limit.
+Export now draws visible non-placeholder master content, then layout content, then slide content. This restores template logos, ordinary text and basic shapes/groups that were previously absent. Each layer resolves image relationships against its owning part. Template placeholders are skipped recursively, while slide-owned placeholders remain visible. Hidden elements are excluded. Rendering preserves the slide, layout and master XML.
 
-1. Theme override parts and remaining color operations/models.
-2. Master/layout drawing order and placeholder visibility.
-3. Additional preset geometry, then custom paths.
-4. Fill and outline variants, including gradients and transparency.
-5. Text layout, font selection and shaping, one discrepancy at a time.
-6. Nested transforms, picture cropping and effects.
-7. Tables, charts and remaining graphic objects, split by feature.
+### Evidence
 
-These are open investigation areas, not established equivalence. Matching a few pixel samples does not prove pixel-identical rendering of arbitrary slides. The full feature remains incomplete until the agreed rendering coverage has been implemented and verified.
+REA complete record `ev_b95b7e86c9a1c0eb59a700a954778caa4e8236832e6ea7d914d9188bec138ca0` covers 86 selected BaseSlide/LayoutSlide methods. It locates `LayoutSlide.get_ShowMasterShapes` at `0x0601f714` (CIL SHA-256 `4ff2f65d09a9ff3014e75e612f8d692d0092a42b282ad83b17cb36c38d9ec525`). Complete renderer record `ev_8a71fdacc19680ec877c57c9fc5c411d7978fe0df2b79d53f124b5f6c12975bd` covers 20 methods of the internal type reached from `Slide.GetThumbnail(Size)` through `0x0601106c`. Its helpers `0x06011076`, `0x06011077` and `0x06011078` access master, layout and slide shape collections respectively. These call edges establish separate layer access; direct execution establishes order and visibility.
+
+The fixture overlaps red master, green layout and blue slide rectangles. Samples at x=10, 30 and 50, y=70 in a 120 by 90 image lie outside the evaluation watermark. All six cases match Aspose 24.12:
+
+| Slide showMasterSp | Layout showMasterSp | Samples in both engines |
+| --- | --- | --- |
+| absent | absent | red, green, blue |
+| false | absent | white, white, blue |
+| absent | false | white, green, blue |
+| false | false | white, white, blue |
+| true | false | white, green, blue |
+| false | true | white, white, blue |
+
+The schema properties are documented for [slides](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.slide.showmastershapes?view=openxml-3.0.1) and [layouts](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.slidelayout.showmastershapes?view=openxml-3.0.1). Seventeen regression cases cover these flags, hidden shapes, plain/nested groups, placeholder filtering, template text and pictures, same-ID image relationships in different parts, and unchanged XML. The full Release suite passes 1334 tests.
+
+Template placeholders with dynamic footer/date/slide-number fields are not evaluated by this increment. Existing unsupported geometry errors remain; arbitrary template graphics are not yet guaranteed to export. No public API or SDK exposure is added.
+
+## Remaining increments and beta priorities
+
+Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split topics to fit the 40-minute creation limit. Wait for every check to pass before requesting approval for the next PR.
+
+The priority is common slide content. A bounded inventory of 98 local test presentations found 224 master and 696 layout non-placeholder top-level entries, supporting the template-content increment; these counts describe this repository's fixtures, not global usage.
+
+1. Common preset geometry, including triangles, diamonds, arrows and chevrons, so ordinary diagrams do not fail export.
+2. Ordinary text and slide placeholder inheritance: wrapping, paragraphs/lists, font selection and cross-platform behavior, one discrepancy at a time.
+3. PNG/JPEG pictures: cropping, rotation, flipping and transparency, plus nested transforms.
+4. Basic tables: fills, borders and merged cells; then common chart types, each in a separate bounded increment.
+5. Additional fills/outlines and gradients where representative slides require them.
+6. Theme override parts, rarer color operations, custom paths, advanced effects and remaining graphic objects.
+
+| Content | Current coverage and beta work |
+| --- | --- |
+| Backgrounds | Inheritance, selected theme styles and solid-color transforms tested; gradients/effects remain partial. |
+| Master/layout graphics | Visible ordinary text, pictures, basic shapes and groups now included; dynamic placeholder fields remain open. |
+| Shapes | Existing basic geometry works; broader common presets and custom geometry need coverage. |
+| Text | Existing drawing retained; inherited formatting, layout and font fidelity need representative validation. |
+| Pictures | Existing image drawing retained; crop/transform/alpha fidelity needs representative validation. |
+| Tables and charts | Existing rendering is partial. Chart drawing covers pie/bar paths; other chart types can produce placeholder rectangles. Full chart support is not established. |
+
+Before beta, curate representative fixtures for the declared supported content, validate them on Windows and Linux, preserve source XML, and remove silent placeholder output for types claimed as supported. These are readiness goals, not a claim that the renderer is beta-ready now. Matching selected pixel samples does not establish pixel-identical rendering of arbitrary slides.
 
 Sources: [REA](https://github.com/morluto/rea), [managed-code inspection](https://github.com/morluto/rea/blob/main/docs/managed-code-analysis.md), [process capture host support](https://github.com/morluto/rea/blob/main/docs/process-capture.md), and the XML API documentation shipped with the reference NuGet package.

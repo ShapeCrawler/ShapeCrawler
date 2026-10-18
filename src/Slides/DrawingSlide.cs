@@ -62,6 +62,7 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
 
         new SlideBackground(this.GetSdkSlidePart()).Render(canvas);
         canvas.Scale(scaleX, scaleY);
+        new SlideTemplate(this.GetSdkSlidePart()).Render(canvas);
         shapes.Render(canvas);
 
         using var image = surface.Snapshot();
