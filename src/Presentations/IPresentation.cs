@@ -58,6 +58,16 @@ public interface IPresentation : IDisposable
     int ReplaceText(string oldText, string newText, bool ignoreCase = false);
 
     /// <summary>
+    ///     Replaces exact, case-sensitive DrawingML font family references throughout the presentation,
+    ///     including themes, masters, layouts, notes, charts, and SmartArt. Other formatting is preserved.
+    ///     Theme references such as +mn-lt continue to inherit from the updated theme.
+    ///     Does not change embedded font binaries, embedded documents, or text in images.
+    /// </summary>
+    /// <param name="oldName">Nonempty source font family name.</param>
+    /// <param name="newName">Nonempty replacement font family name.</param>
+    void ReplaceFont(string oldName, string newName);
+
+    /// <summary>
     ///     Saves presentation.
     /// </summary>
     void Save();

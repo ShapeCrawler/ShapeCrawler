@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
+using ShapeCrawler.Fonts;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
 using ShapeCrawler.Texts;
@@ -150,6 +151,9 @@ public sealed class Presentation : IPresentation
         TextReplacement.Validate(oldText, newText);
         return this.Slides.Sum(slide => slide.GetTexts().Sum(textBox => textBox.ReplaceText(oldText, newText, ignoreCase)));
     }
+
+    /// <inheritdoc />
+    public void ReplaceFont(string oldName, string newName) => new FontReplacement(this.PresDocument).Replace(oldName, newName);
 
     /// <summary>
     ///     Starts a fluent creation of a new presentation.

@@ -522,6 +522,89 @@ text/picture imports. Tests inspect saved packages, reopen them, and validate
 Open XML. The public SDK encapsulation guard remains intact. Aspose is not a
 production dependency.
 
+## Iteration 8: presentation-wide font family replacement
+
+### Demand research before gap selection
+
+The research sample prioritized recurring automation workflows, excluding
+rendering. It is evidence of demand, not a usage census or a claim that any
+feature is universally the most popular. Existing equivalents were checked
+before selecting the gap:
+
+| Candidate | Demand evidence | Current ShapeCrawler equivalent / decision |
+| --- | --- | --- |
+| Extract text for processing/search | [User request for whole-presentation extraction](https://forum.aspose.com/t/extract-text-from-ppt-and-pptx/97463) and [later extraction questions](https://forum.aspose.com/t/challenges-in-extracting-text-from-slides-in-java-dealing-with-split-lines/283445) | `IUserSlide.GetTexts()` exposes slide/group/table text and can be iterated across `Slides`; skip this existing workflow. |
+| Replace images in a template | [User request to replace one picture independently](https://forum.aspose.com/t/aspose-slides-for-net-replaces-all-images-in-a-presentation-instead-of-just-one/168484) | `IImage.Update(Stream)` exists; skip. |
+| Replace a font family throughout a deck | [Explicit request to standardize all text fonts](https://forum.aspose.com/t/how-to-change-the-font-of-all-the-text-in-the-ppt-to-another-desired-font/166308), [another font replacement use case](https://forum.aspose.com/t/incorrect-font-rendering-and-boxed-characters-after-xlsx-pdf-pptx-conversion-in-java/329147), and [official .NET replacement API](https://docs.aspose.com/slides/net/font-replacement/) | Individual portion/theme setters exist, but no global replacement API covers all related parts. Selected gap. |
+
+### API and behavior
+
+`IPresentation.ReplaceFont(oldName, newName)` replaces complete, ordinal,
+case-sensitive DrawingML typeface references. It traverses related parts once,
+including themes, masters, layouts, notes, charts, SmartArt, groups, and table
+text. Latin, East Asian, complex-script, symbol, bullet, and supplemental theme
+font slots are included. Existing theme aliases remain aliases; changing their
+theme definition updates inherited typography without materializing local fonts.
+Text and other formatting are preserved. Null/blank names are rejected before
+mutation; equal source/destination names and absent source families are no-ops.
+
+The scope is serialized DrawingML references, not platform font fallback,
+font-file embedding/subsetting, VML, or font references inside embedded Office
+documents or pictures. Embedded binaries and font metadata are not renamed.
+No rendering implementation or Aspose production dependency was added.
+
+### REA investigation and behavioral evidence
+
+The reference remains Aspose.Slides.NET 24.12.0, net6.0 assembly, SHA-256
+`edaaa3005d2a462548fadcb35ffc661e2b752e7ee863c9c515f459ef7e345ca2`.
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.FontsManager --json
+```
+
+Evidence `ev_6b30cdd152d070ddd4290df79651966b7a772f10204be7acabd5885a0df5845c`
+reports unavailable member coverage at the 64 MiB metadata representation
+budget. A REA `decompile` attempt for `Aspose.Slides.FontsManager.ReplaceFont`
+reported no available provider for the managed target. A REA `capture-process`
+attempt for the compiled probe reported that native Windows PTY capture is
+unsupported. Consequently, REA did not recover this method's implementation.
+The following are direct observations from an unmodified evaluation-mode
+reference, not decompiled implementation claims:
+
+| Source requested for replacement with Verdana | Observed saved/reopened result |
+| --- | --- |
+| Arial | Arial became Verdana; arial and Arial Narrow remained unchanged. |
+| arial | Only the lowercase family became Verdana. |
+| Absent | Existing family references remained unchanged. |
+
+To reproduce, create rectangles with explicit Latin, East Asian, complex-script,
+and symbol fonts set to `Arial`, `arial`, `Arial Narrow`, and `+mn-lt`; add an
+Arial table and notes text; save, set the theme's Latin families to Arial in the
+PPTX, and reopen. Call `FontsManager.ReplaceFont(new FontData(source), new
+FontData("Verdana"))`, save again, inspect DrawingML typeface attributes, and
+reopen. The exact matches changed in those run slots, table/notes text, and theme
+Latin slots; theme aliases remained symbolic. Evaluation restrictions remained
+intact and no image rendering was invoked.
+
+The reference probe retained some Arial supplemental script mappings. This
+implementation deliberately also updates exact matches in those mappings so
+that the family replacement covers explicitly authored script-specific theme
+fonts. Byte-identical Aspose output is not claimed.
+
+An interoperability probe created a ShapeCrawler deck, replaced Arial with
+Verdana, and opened it in Aspose: ordinary text, two grouped children, table
+text, notes Latin text, and an inherited major-theme font all read correctly
+(**6/6**). The first four cases also verified effective East Asian fonts; notes
+were checked for their explicitly authored Latin reference, not Aspose's implicit
+East Asian fallback.
+
+Tests in `PresentationTests` cover those workflows, complete-name matching,
+case sensitivity, absent/same-name families, invalid input, script/symbol/bullet
+fonts, supplemental maps, inherited aliases, and saved/reopened packages.
+Chart/table/group fixtures also include SmartArt and notes, validate Open XML,
+and verify byte preservation of binary parts. `PublicApiTests` checks that the
+new API exposes no SDK types.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current
