@@ -130,6 +130,19 @@ internal sealed class GroupShape : DrawingShape
         canvas.Restore();
     }
 
+    internal override void RenderTemplate(SKCanvas canvas)
+    {
+        if (this.IsTemplatePlaceholder)
+        {
+            return;
+        }
+
+        canvas.Save();
+        this.ApplyRotation(canvas);
+        this.RenderGroupedShapes(canvas, true);
+        canvas.Restore();
+    }
+
     private void ApplyRotation(SKCanvas canvas)
     {
         const double epsilon = 1e-6;
@@ -148,7 +161,7 @@ internal sealed class GroupShape : DrawingShape
         );
     }
 
-    private void RenderGroupedShapes(SKCanvas canvas)
+    private void RenderGroupedShapes(SKCanvas canvas, bool template = false)
     {
         foreach (var shape in this.GroupedShapes)
         {
@@ -159,7 +172,14 @@ internal sealed class GroupShape : DrawingShape
 
             if (shape is DrawingShape internalShape)
             {
-                internalShape.Render(canvas);
+                if (template)
+                {
+                    internalShape.RenderTemplate(canvas);
+                }
+                else
+                {
+                    internalShape.Render(canvas);
+                }
             }
         }
     }

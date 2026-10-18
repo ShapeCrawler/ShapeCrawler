@@ -55,6 +55,18 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
         }
     }
 
+    protected bool IsTemplatePlaceholder => this.PShapeTreeElement.Elements<OpenXmlCompositeElement>()
+        .SelectMany(element => element.Elements<P.ApplicationNonVisualDrawingProperties>())
+        .Any(properties => properties.GetFirstChild<P.PlaceholderShape>() is not null);
+
+    internal virtual void RenderTemplate(SKCanvas canvas)
+    {
+        if (!this.IsTemplatePlaceholder)
+        {
+            this.Render(canvas);
+        }
+    }
+
     protected string? ResolveSchemeColor(string schemeColorName)
     {
         var shapeColorScheme = new ShapeColorScheme(this.PShapeTreeElement);
