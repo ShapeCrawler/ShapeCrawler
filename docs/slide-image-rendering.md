@@ -107,7 +107,7 @@ Background rendering now has a dedicated internal `SlideBackground` implementati
 
 The reference assembly SHA-256 was rechecked and matches the first increment. The existing complete REA record `ev_074f1609013728212508c337d013f2c470402d541d7654a1a0ad90ddd42282e1` was reused rather than decoding the same type again. Method `0x060019af` (CIL SHA-256 `9079eb1ec85b225fdd0dbe47a5666848a17eeee2ca8215f90a9f811ef7b30319`) calls `IThemeable.CreateThemeEffective`, `IThemeEffectiveData.get_FormatScheme` and `IFillFormatCollectionEffectiveData.get_Item`. Its decoded CIL includes one subtraction and a constant one. This supports tracing style lookup; the original static record alone does not establish every index or color-map rule.
 
-Direct execution revealed a difference from the documented OOXML rules for indices 1–999. The user explicitly chose OOXML behavior for this reconstruction. The [BackgroundStyleReference documentation](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.backgroundstylereference?view=openxml-3.0.1) specifies: 0 and 1000 mean no background; 1–999 select `fillStyleLst`; 1001 and above select `bgFillStyleLst`, starting at the first entry. This implementation follows those rules, with a white fallback for missing entries.
+Direct execution revealed a difference from the documented OOXML rules for indices 1â€“999. The user explicitly chose OOXML behavior for this reconstruction. The [BackgroundStyleReference documentation](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.backgroundstylereference?view=openxml-3.0.1) specifies: 0 and 1000 mean no background; 1â€“999 select `fillStyleLst`; 1001 and above select `bgFillStyleLst`, starting at the first entry. This implementation follows those rules, with a white fallback for missing entries.
 
 The fixture sets the ordinary fill styles to red, `phClr`, blue; background fill styles to `phClr`, green, `accent3`; and the reference color to `CC00CC`. A slide with the explicit reference is rendered at 120 by 90 pixels; sample `(100, 80)` lies outside the evaluation watermark:
 
@@ -197,13 +197,29 @@ The schema properties are documented for [slides](https://learn.microsoft.com/en
 
 Template placeholders with dynamic footer/date/slide-number fields are not evaluated by this increment. Existing unsupported geometry errors remain; arbitrary template graphics are not yet guaranteed to export. No public API or SDK exposure is added.
 
+## Sixth increment: common polygon and arrow presets
+
+Seventeen additional geometries now render instead of raising the unsupported-geometry error: triangle, right triangle, diamond, parallelogram, trapezoid, pentagon, hexagon, octagon, plus, chevron, home plate, right/left/up/down arrows, left-right arrow and up-down arrow. They use closed paths with the existing solid-fill and outline color resolution, fill opacity, shape rotation and horizontal/vertical reflection. The public API is unchanged.
+
+`PresetShapePath` computes coordinates from the DrawingML preset definitions, including shortest-side-dependent offsets and literal `val` adjustments. Triangle apex position, polygon insets, chevron depth, and arrow shaft/head dimensions honor their prescribed bounds. Pentagon/hexagon scale guides retain their default values unless supplied. This is a selected preset implementation, not a general DrawingML formula interpreter. It does not add custom paths, stars, curved arrows or flowchart-specific presets.
+
+### Static and runtime evidence
+
+The same Aspose.Slides 24.12 assembly and isolated REA decoder configuration were reused. Complete record `ev_84c5e3b05aca7ef82f59ae1764d63323d45ead05c21833c9978c174a4e565e0f` covers 24 `GeometryShape` methods, including `get_ShapeType` (`0x0601ed81`), `get_Adjustments` (`0x0601ed83`) and `GetGeometryPaths` (`0x0601ed79`, CIL SHA-256 `f077ed7284e755bd1754cc4550427cda7028c0a165fb549485e8b3134a2c3174`). The latter dispatches to `0x060143ee` in its internal geometry implementation. Following that exact call edge produced complete record `ev_dd438ab137c096e945a623fee49e23a313a4fb613c3263ce9a5aa9e2d682ecf6`, covering 35 methods. The dispatch body has CIL SHA-256 `b2471b800dc7e2b9ef93ea7676d7133eb20869e2212a6d03e7a55a58e98a5596`; it accesses geometry paths and applies coordinate conversion using 12700 units per point. These records locate the geometry/adjustment boundary; they do not independently establish preset vertex formulas.
+
+The coordinate rules come from DrawingML, as described by the [OOXML DrawingML primer](https://download.microsoft.com/download/e/1/4/e14fb96f-83b8-4a2a-84db-7fa8acbe061a/Office%20Open%20XML%20Part%203%20-%20Primer.pdf) and the [preset definition XML distributed by Apache POI](https://github.com/apache/poi/blob/trunk/poi/src/main/resources/org/apache/poi/sl/draw/geom/presetShapeDefinitions.xml). No proprietary implementation code is copied.
+
+Direct execution compares 17 presets in six variants each: 180 by 60, 60 by 60, 60 by 80 points, modified adjustments, both reflections, and 90-degree rotation. The adjusted variant supplies `adj=35000`, `adj1=25000`, `adj2=30000` where those guides apply. Each red shape has no outline and is placed at (50, 200) on a 300 by 300 point slide, exported to 300 by 300 pixels. Across 102 fixtures, 407001 stable interior/exterior samples agree with Aspose; antialiased edges and the evaluation-watermark region are excluded. This establishes the sampled solid geometry, not pixel-identical rasterization.
+
+The regression suite retains 45 reference sample positions per fixture, marking positions near reference edges as excluded. All 1444 Release tests pass locally, including 110 new cases and the public API checks. Additional tests cover adjustment clamping, no fill, solid outlines, alpha, explicit output scaling, unchanged slide XML, and continued errors for unsupported presets. Text still uses the existing text-box layout; preset-specific text inset regions, advanced fills and outline dash/join variants remain separate work.
+
 ## Remaining increments and beta priorities
 
 Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split topics to fit the 40-minute creation limit. Wait for every check to pass before requesting approval for the next PR.
 
 The priority is common slide content. A bounded inventory of 98 local test presentations found 224 master and 696 layout non-placeholder top-level entries, supporting the template-content increment; these counts describe this repository's fixtures, not global usage.
 
-1. Common preset geometry, including triangles, diamonds, arrows and chevrons, so ordinary diagrams do not fail export.
+1. Validate remaining frequently used geometry against representative beta fixtures; the 17 polygon/straight-arrow presets above are now supported. Add flowchart presets or stars in a separate increment when that corpus requires them.
 2. Ordinary text and slide placeholder inheritance: wrapping, paragraphs/lists, font selection and cross-platform behavior, one discrepancy at a time.
 3. PNG/JPEG pictures: cropping, rotation, flipping and transparency, plus nested transforms.
 4. Basic tables: fills, borders and merged cells; then common chart types, each in a separate bounded increment.
@@ -214,7 +230,7 @@ The priority is common slide content. A bounded inventory of 98 local test prese
 | --- | --- |
 | Backgrounds | Inheritance, selected theme styles and solid-color transforms tested; gradients/effects remain partial. |
 | Master/layout graphics | Visible ordinary text, pictures, basic shapes and groups now included; dynamic placeholder fields remain open. |
-| Shapes | Existing basic geometry works; broader common presets and custom geometry need coverage. |
+| Shapes | Basic geometry plus 17 polygon/straight-arrow presets are tested; other presets, custom geometry and advanced styling remain open. |
 | Text | Existing drawing retained; inherited formatting, layout and font fidelity need representative validation. |
 | Pictures | Existing image drawing retained; crop/transform/alpha fidelity needs representative validation. |
 | Tables and charts | Existing rendering is partial. Chart drawing covers pie/bar paths; other chart types can produce placeholder rectangles. Full chart support is not established. |

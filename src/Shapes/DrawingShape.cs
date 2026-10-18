@@ -51,7 +51,8 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
                 this.RenderEllipse(canvas);
                 break;
             default:
-                throw new SCException("Unsupported shape geometry type.");
+                this.RenderPreset(canvas);
+                break;
         }
     }
 
@@ -243,6 +244,52 @@ internal class DrawingShape(Position position, ShapeSize shapeSize, ShapeId shap
 
         this.RenderFill(canvas, rect, cornerRadius);
         this.RenderOutline(canvas, rect, cornerRadius);
+
+        canvas.Restore();
+    }
+
+    private void RenderPreset(SKCanvas canvas)
+    {
+        var width = (float)new Points(this.Width).AsPixels();
+        var height = (float)new Points(this.Height).AsPixels();
+        if (width <= 0 || height <= 0)
+        {
+            return;
+        }
+
+        var properties = this.PShapeTreeElement.GetFirstChild<P.ShapeProperties>();
+        using var path = new PresetShapePath(properties?.GetFirstChild<A.PresetGeometry>(), width, height)
+            .Create(this.GeometryType);
+        canvas.Save();
+        this.ApplyRotation(canvas);
+        canvas.Translate((float)new Points(this.X).AsPixels(), (float)new Points(this.Y).AsPixels());
+        var flipH = properties?.Transform2D?.HorizontalFlip?.Value == true;
+        var flipV = properties?.Transform2D?.VerticalFlip?.Value == true;
+        canvas.Translate(flipH ? width : 0, flipV ? height : 0);
+        canvas.Scale(flipH ? -1 : 1, flipV ? -1 : 1);
+        var fill = this.GetShapeFillColor();
+        if (fill is not null)
+        {
+            var alpha = this.Fill is { Alpha: < 100.0 }
+                ? (byte)(255 * this.Fill.Alpha / 100.0) : fill.Value.Alpha;
+            using var paint = new SKPaint
+            {
+                Color = fill.Value.WithAlpha(alpha), Style = SKPaintStyle.Fill, IsAntialias = true
+            };
+            canvas.DrawPath(path, paint);
+        }
+
+        var outline = this.GetShapeOutlineColor();
+        var strokeWidth = this.GetShapeOutlineWidth();
+        if (outline is not null && strokeWidth > 0)
+        {
+            using var paint = new SKPaint
+            {
+                Color = outline.Value, Style = SKPaintStyle.Stroke, StrokeWidth = (float)strokeWidth,
+                IsAntialias = true
+            };
+            canvas.DrawPath(path, paint);
+        }
 
         canvas.Restore();
     }
