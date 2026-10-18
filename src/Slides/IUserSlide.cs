@@ -25,6 +25,11 @@ public interface IUserSlide
     bool ShowMasterShapes { get; set; }
 
     /// <summary>
+    ///     Gets the slide show advance settings.
+    /// </summary>
+    ISlideTransition Transition { get; }
+
+    /// <summary>
     ///     Gets or sets custom data. Returns <see langword="null"/> if the custom data is not presented.
     /// </summary>
     string? CustomData { get; set; }
