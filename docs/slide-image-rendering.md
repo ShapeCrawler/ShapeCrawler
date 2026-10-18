@@ -2,7 +2,7 @@
 
 ## Scope and delivery
 
-Build out ShapeCrawler's existing experimental `SaveImage` renderer using REA static evidence and direct behavioral comparisons with Aspose.Slides. Each implementation PR must be small enough to investigate, implement, validate and create within 30 minutes. After each PR, wait for the user's explicit approval before starting the next.
+Build out ShapeCrawler's existing experimental `SaveImage` renderer using REA static evidence and direct behavioral comparisons with Aspose.Slides. Each implementation PR must be small enough to investigate, implement, validate and create within 30 minutes. After creating a PR, wait for every check on its current head to pass and fix any failures in that PR. Then wait for the user's explicit approval before starting the next increment.
 
 The first increment supports explicit PNG pixel dimensions through stream and file overloads. It scales the canvas before drawing slide shapes, so shapes and text render at the requested resolution. Backgrounds cover the output surface. The existing overloads keep their 96 DPI dimensions and original canvas transform. No Aspose dependency or proprietary implementation code is added to ShapeCrawler.
 
@@ -64,11 +64,46 @@ ShapeCrawler's automated regression tests reproduce the dimensions and sample po
 
 The different default pixel densities are intentional compatibility behavior: Aspose's observed scale-one output uses one pixel per point; ShapeCrawler's existing default uses 96 pixels per inch. Explicit pixel dimensions provide a common comparison surface.
 
+## Second increment: inherited backgrounds
+
+When the slide has no background element, export now uses its layout's background, or its master's background when the layout also has none. A present background stops the search: an explicit `NoFill` renders white instead of revealing the parent's background. Direct RGB fills, direct supported scheme colors such as `accent1`, and picture backgrounds use the same rendering paths as slide-owned fills. Image relationships are resolved in the part that owns the background.
+
+Rendering reads the existing background elements directly. It no longer calls the editable `IUserSlide.Fill` getter, which can insert slide background properties and thereby override an inherited background. The setter/getter contract of `Fill` is unchanged; this increment only makes image export read the existing background hierarchy without modifying it.
+
+### REA evidence
+
+The reference assembly and isolated 256 MiB REA decoder configuration are the same as in the first increment. New records:
+
+- `ev_254e64fae2b3e0dca6679882d2e22be685caf840c5cbe0cc47197148f8282a05`: complete selected-type inspection of the 23 declared methods of `Aspose.Slides.Background`.
+- `Background.GetEffective`, token `0x0601da92`, delegates to `0x0601da9a`. That method caches an object constructed by `0x060019a4` and invokes the effective-data update through member reference `0x0a003bde`.
+- `ev_074f1609013728212508c337d013f2c470402d541d7654a1a0ad90ddd42282e1`: complete inspection of the 13 declared methods of that effective-data object's type. Its declaring type name is obfuscated: `"\u0002\u0010\u001b\u001a"` (JSON escaping). Select the exact `target_declaring_type` reported for constructor `0x060019a4` rather than guessing a readable class name.
+- Effective-data method `0x060019ad` calls `LayoutSlide.get_MasterSlide` (`0x0601f709`), `BaseSlide.get_Background` (`0x0601db1b`) and `Background`'s cached effective-data method (`0x0601da9a`). Method `0x060019ae` reads the background's type, fill format, style color and style index. These are observed CIL relationships; the runtime fixtures below establish the tested precedence and output colors.
+
+### Behavioral comparison and regression coverage
+
+Fixtures start from a saved ShapeCrawler PPTX. In test/probe code, the Open XML SDK removes existing slide, layout and master backgrounds and inserts the scenario's background properties. Both engines open the same resulting PPTX and export at 120 by 90 pixels. Sample `(118, 88)`, outside the reference evaluation watermark:
+
+| Slide background | Layout background | Master background | Aspose output | ShapeCrawler before | ShapeCrawler after |
+| --- | --- | --- | --- | --- | --- |
+| absent | absent | absent | white | white | white |
+| absent | absent | blue | blue | white | blue |
+| absent | green | blue | green | white | green |
+| red | green | blue | red | red | red |
+| `NoFill` | green | blue | white | white | white |
+| absent | absent | `NoFill` | white | white | white |
+| absent | absent | `accent1` | `4472C4` | white | `4472C4` |
+
+Automated regressions also check layout `NoFill`, image backgrounds owned by a layout or master, and unchanged slide/layout/master XML after exporting. The picture fixture deliberately assigns the same image relationship ID to different pictures in the slide and the background-owning part, to detect resolution against the wrong part. Fixture image generation does not require fonts.
+
+A direct picture comparison used a 32 by 16 pixel PNG with red and blue halves, attached to the layout or master with a different slide-owned image under the same relationship ID. Both engines select the correct image: samples `(20, 80)` and `(100, 80)` in the 120 by 90 output are red and blue. There is a separate residual difference in image-edge resampling: with a 2 by 1 source, Aspose mixes colors at the edges while the current Skia path samples solid colors; even the larger source has a pale border in the Aspose output. This increment preserves existing image sampling and does not claim pixel equivalence at image edges.
+
+This does not yet implement `p:bgRef` theme background-style lookup, theme color-map overrides, gradients, alpha compositing or background effects. An unsupported explicit background still uses the renderer's white fallback and does not inherit a different background. These remain separate increments.
+
 ## Remaining increments
 
 Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split a topic further when needed to stay inside the time limit.
 
-1. Inherited slide backgrounds and theme-color resolution.
+1. Theme background-style references and color-map resolution.
 2. Master/layout drawing order and placeholder visibility.
 3. Additional preset geometry, then custom paths.
 4. Fill and outline variants, including gradients and transparency.

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Units;
 using SkiaSharp;
 
@@ -74,9 +75,9 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
         }
     }
 
-    private SKColor GetSkColor()
+    private static SKColor GetSkColor(IShapeFill fill)
     {
-        var hex = this.Fill.Color!.TrimStart('#');
+        var hex = fill.Color!.TrimStart('#');
 
         // Validate hex length before parsing.
         if (hex.Length != 6 && hex.Length != 8)
@@ -89,12 +90,12 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
 
     private void RenderBackground(SKCanvas canvas)
     {
-        var slideFill = this.Fill;
+        var slideFill = this.GetBackgroundFill();
         switch (slideFill)
         {
             case { Type: FillType.Solid, Color: not null }:
                 {
-                    var skColor = this.GetSkColor();
+                    var skColor = GetSkColor(slideFill);
                     canvas.Clear(skColor);
                     break;
                 }
@@ -114,5 +115,16 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
                 canvas.Clear(SKColors.White);
                 break;
         }
+    }
+
+    private IShapeFill? GetBackgroundFill()
+    {
+        var slidePart = this.GetSdkSlidePart();
+        var layoutPart = slidePart.SlideLayoutPart;
+        var background = slidePart.Slide?.CommonSlideData?.Background
+                         ?? layoutPart?.SlideLayout?.CommonSlideData?.Background
+                         ?? layoutPart?.SlideMasterPart?.SlideMaster?.CommonSlideData?.Background;
+
+        return background?.BackgroundProperties is { } properties ? new ShapeFill(properties) : null;
     }
 }

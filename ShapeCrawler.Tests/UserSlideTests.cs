@@ -1,8 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ImageMagick;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Helpers;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -394,6 +398,107 @@ public class UserSlideTests : SCTest
 
         // Assert
         stream.Length.Should().BeGreaterThan(0);
+    }
+
+    [TestCase(null, null, "0000FF", "0000FF")]
+    [TestCase(null, "008000", "0000FF", "008000")]
+    [TestCase("FF0000", "008000", "0000FF", "FF0000")]
+    [TestCase(null, null, null, "FFFFFF")]
+    [TestCase("none", "008000", "0000FF", "FFFFFF")]
+    [TestCase(null, "none", "0000FF", "FFFFFF")]
+    [TestCase(null, null, "none", "FFFFFF")]
+    [TestCase(null, null, "accent1", "4472C4")]
+    public void SaveImage_resolves_background_inheritance(
+        string? slideColor, string? layoutColor, string? masterColor, string expectedColor)
+    {
+        // Arrange
+        using var pres = PresentationWithBackgrounds(slide =>
+        {
+            SetBackground(slide.Slide.CommonSlideData!, slideColor);
+            SetBackground(slide.SlideLayoutPart!.SlideLayout.CommonSlideData!, layoutColor);
+            SetBackground(slide.SlideLayoutPart.SlideMasterPart!.SlideMaster.CommonSlideData!, masterColor);
+        });
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream, 120, 90);
+
+        // Assert
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        var expected = SkiaSharp.SKColor.Parse(expectedColor);
+        bitmap.GetPixel(2, 2).Should().Be(expected);
+        bitmap.GetPixel(118, 88).Should().Be(expected);
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SaveImage_renders_picture_background_from_its_owning_part(bool masterBackground)
+    {
+        // Arrange
+        using var sourceBitmap = new SkiaSharp.SKBitmap(2, 1);
+        sourceBitmap.SetPixel(0, 0, SkiaSharp.SKColors.Red);
+        sourceBitmap.SetPixel(1, 0, SkiaSharp.SKColors.Blue);
+        using var sourceImage = SkiaSharp.SKImage.FromBitmap(sourceBitmap);
+        using var png = sourceImage.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
+        using var pres = PresentationWithBackgrounds(slide =>
+        {
+            var layout = slide.SlideLayoutPart!;
+            var master = layout.SlideMasterPart!;
+            // Both parts deliberately use the same relationship ID for different images.
+            using var otherImage = new MagickImage(MagickColors.Green, 2, 1);
+            using var otherPng = new MemoryStream(otherImage.ToByteArray(MagickFormat.Png));
+            var part = masterBackground
+                ? master.AddImagePart(ImagePartType.Png, "backgroundImage")
+                : layout.AddImagePart(ImagePartType.Png, "backgroundImage");
+            using var imageStream = new MemoryStream(png.ToArray());
+            part.FeedData(imageStream);
+            slide.AddImagePart(ImagePartType.Png, "backgroundImage").FeedData(otherPng);
+            var data = masterBackground ? master.SlideMaster.CommonSlideData! : layout.SlideLayout.CommonSlideData!;
+            data.InsertAt(new P.Background(new P.BackgroundProperties(
+                new A.BlipFill(new A.Blip { Embed = "backgroundImage" }, new A.Stretch(new A.FillRectangle())))), 0);
+        });
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream, 240, 45);
+
+        // Assert
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        bitmap.GetPixel(2, 2).Should().Be(SkiaSharp.SKColors.Red);
+        bitmap.GetPixel(237, 42).Should().Be(SkiaSharp.SKColors.Blue);
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SaveImage_preserves_slide_layout_and_master_background_xml(bool inheritedBackground)
+    {
+        // Arrange
+        using var pres = PresentationWithBackgrounds(slide =>
+        {
+            if (inheritedBackground)
+            {
+                SetBackground(slide.SlideLayoutPart!.SlideLayout.CommonSlideData!, "008000");
+            }
+        });
+        using var before = SaveAndOpenPresentationAsSdk(pres);
+        var originalSlide = before.PresentationPart!.SlideParts.Single();
+        var slideXml = originalSlide.Slide.OuterXml;
+        var layoutXml = originalSlide.SlideLayoutPart!.SlideLayout.OuterXml;
+        var masterXml = originalSlide.SlideLayoutPart.SlideMasterPart!.SlideMaster.OuterXml;
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream);
+
+        // Assert
+        using var after = SaveAndOpenPresentationAsSdk(pres);
+        var savedSlide = after.PresentationPart!.SlideParts.Single();
+        savedSlide.Slide.OuterXml.Should().Be(slideXml);
+        savedSlide.SlideLayoutPart!.SlideLayout.OuterXml.Should().Be(layoutXml);
+        savedSlide.SlideLayoutPart.SlideMasterPart!.SlideMaster.OuterXml.Should().Be(masterXml);
+        ValidatePresentation(pres);
     }
 
     [TestCase(240, 45)]
@@ -798,5 +903,39 @@ public class UserSlideTests : SCTest
         //centerPixel.Alpha.Should().BeInRange(50, 60, "Alpha component should indicate 50% transparency");
         // For now, ensuring test placeholder does not fail the suite.
         centerPixel.Alpha.Should().Be(255, "Alpha component is 255 because background is white");
+    }
+    private static Presentation PresentationWithBackgrounds(Action<SlidePart> configure)
+    {
+        using var source = new Presentation(p => p.Slide());
+        using var stream = new MemoryStream();
+        source.Save(stream);
+        stream.Position = 0;
+        using (var document = PresentationDocument.Open(stream, true))
+        {
+            var slide = document.PresentationPart!.SlideParts.Single();
+            slide.Slide.CommonSlideData!.Background?.Remove();
+            slide.SlideLayoutPart!.SlideLayout.CommonSlideData!.Background?.Remove();
+            slide.SlideLayoutPart.SlideMasterPart!.SlideMaster.CommonSlideData!.Background?.Remove();
+            configure(slide);
+        }
+
+        stream.Position = 0;
+        return new Presentation(stream);
+    }
+
+    private static void SetBackground(P.CommonSlideData data, string? color)
+    {
+        if (color is null)
+        {
+            return;
+        }
+
+        OpenXmlElement fill = color switch
+        {
+            "none" => new A.NoFill(),
+            "accent1" => new A.SolidFill(new A.SchemeColor { Val = A.SchemeColorValues.Accent1 }),
+            _ => new A.SolidFill(new A.RgbColorModelHex { Val = color })
+        };
+        data.InsertAt(new P.Background(new P.BackgroundProperties(fill)), 0);
     }
 }
