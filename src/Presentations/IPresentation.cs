@@ -51,6 +51,13 @@ public interface IPresentation : IDisposable
     IUserSlide Slide(int number);
 
     /// <summary>
+    ///     Replaces literal text in slide text boxes, groups, and table cells and returns the match count.
+    ///     Uses ordinal matching, case-sensitive by default, with the formatting rules of ITextBox.ReplaceText.
+    ///     Does not search notes, masters, layouts, chart data, or SmartArt data parts.
+    /// </summary>
+    int ReplaceText(string oldText, string newText, bool ignoreCase = false);
+
+    /// <summary>
     ///     Saves presentation.
     /// </summary>
     void Save();

@@ -19,6 +19,72 @@ public class PresentationTests : SCTest
 {
     private readonly Fixtures fixtures = new();
 
+    [Test]
+    public void ReplaceText_updates_slides_groups_and_tables_without_changing_notes()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTextBox(0, 0, 300, 100, "{{name}}");
+        slide.Shapes.AddTextBox(0, 100, 150, 100, "Group {{name}}");
+        var first = slide.Shapes.Last();
+        slide.Shapes.AddTextBox(150, 100, 150, 100, "Group {{name}}");
+        var second = slide.Shapes.Last();
+        slide.Shapes.Group([first, second]);
+        slide.Shapes.AddTable(0, 200, 1, 1);
+        slide.Shapes.Last().Table.Rows[0].Cells[0].TextBox.SetText("Table {{name}}");
+        slide.AddNotes(["Notes {{name}}"]);
+        pres.Slides.Add(1);
+        pres.Slides[1].Shapes.AddTextBox(0, 0, 300, 100, "Slide 2 {{name}}");
+
+        // Act
+        var count = pres.ReplaceText("{{name}}", "Alice");
+
+        // Assert
+        count.Should().Be(5);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var reopened = new Presentation(saved);
+        var texts = reopened.Slides.SelectMany(item => item.GetTexts()).Select(textBox => textBox.Text).ToArray();
+        texts.Should().Contain("Alice");
+        texts.Count(text => text == "Group Alice").Should().Be(2);
+        texts.Should().Contain("Table Alice");
+        texts.Should().Contain("Slide 2 Alice");
+        texts.Should().NotContain(text => text.Contains("{{name}}", StringComparison.Ordinal));
+        reopened.Slides[0].Notes!.Text.Should().Contain("Notes {{name}}");
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
+    public void ReplaceText_supports_case_insensitive_template_tokens()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        pres.Slides[0].Shapes.AddTextBox(0, 0, 300, 100, "{{Name}} {{NAME}}");
+
+        // Act
+        var count = pres.ReplaceText("{{name}}", "Alice", ignoreCase: true);
+
+        // Assert
+        count.Should().Be(2);
+        pres.Slides[0].Shapes.Last().TextBox!.Text.Should().Be("Alice Alice");
+    }
+
+    [TestCase(null, "X")]
+    [TestCase("", "X")]
+    [TestCase("a", null)]
+    public void ReplaceText_validates_arguments_even_when_presentation_has_no_slides(string? oldText, string? newText)
+    {
+        // Arrange
+        using var pres = new Presentation();
+
+        // Act
+        var replace = () => pres.ReplaceText(oldText!, newText!);
+
+        // Assert
+        replace.Should().Throw<ArgumentException>();
+    }
+
     [TestCase(false, "test password")]
     [TestCase(true, "test password")]
     [TestCase(false, "Пароль 🔒 日本語")]

@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Presentations;
 using ShapeCrawler.Slides;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 #pragma warning disable IDE0130
@@ -142,6 +143,13 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public IPresentationProperties Properties { get; }
+
+    /// <inheritdoc />
+    public int ReplaceText(string oldText, string newText, bool ignoreCase = false)
+    {
+        TextReplacement.Validate(oldText, newText);
+        return this.Slides.Sum(slide => slide.GetTexts().Sum(textBox => textBox.ReplaceText(oldText, newText, ignoreCase)));
+    }
 
     /// <summary>
     ///     Starts a fluent creation of a new presentation.
