@@ -213,6 +213,31 @@ Direct execution compares 17 presets in six variants each: 180 by 60, 60 by 60, 
 
 The regression suite retains 45 reference sample positions per fixture, marking positions near reference edges as excluded. All 1444 Release tests pass locally, including 110 new cases and the public API checks. Additional tests cover adjustment clamping, no fill, solid outlines, alpha, explicit output scaling, unchanged slide XML, and continued errors for unsupported presets. Text still uses the existing text-box layout; preset-specific text inset regions, advanced fills and outline dash/join variants remain separate work.
 
+## Seventh increment: inherited bold and italic text
+
+Ordinary text and slide placeholders now resolve bold and italic independently through run properties, the current paragraph's default run properties, the current list level, the matching layout placeholder's list level, the master placeholder's list level, the relevant master text style and presentation defaults. An absent attribute continues down the chain; explicit false overrides inherited true. Slide-to-layout matching uses the placeholder index, including the default index zero. Object placeholders use body formatting at the master; centered titles use title formatting.
+
+The existing renderer already selects normal/bold/italic/bold-italic Skia font styles from these getters. Correcting effective flags therefore fixes both text measurement and drawing. This increment does not change font-size/color/family inheritance, text wrapping, bullet layout, complex-script shaping or font availability. Setters now create/update properties on the selected run, rather than changing paragraph-end formatting when the run has no properties. No public API or Open XML SDK exposure is added.
+
+### Evidence and verification
+
+REA complete record `ev_fe435b60acf16b43e8815fac296062ff925473ff584f24d129be411009dbd6a0` covers 30 `Aspose.Slides.PortionFormat` methods. `GetEffective`, token `0x0601fde1`, CIL SHA-256 `c39b26a2c62b29a8aab4b529cc4060b702dca6624c45f3c84efb128957d5058f`, calls the internal effective-format accessor `0x0601fdeb`. Complete record `ev_3e64e19ea6283f2327f72eb5b5e89db80972d0e9983de1c528d6949865eb278b` covers 72 `BasePortionFormat` methods and identifies separate bold/italic getters: `0x0601dabe` (CIL SHA-256 `1476ca68566c116ffa2423168e91fd883965ce6fbd6ee18f86e0af7f02ccf6a1`) and `0x0601dac0` (`1f0bcb3123b25a583c7921158eed5a867bf86697a221a8262a7067fd104f06fc`). The reference assembly and temporary decoder configuration are unchanged. These records identify the property/effective-format boundary; direct execution establishes the tested inheritance results.
+
+The [DrawingML default run properties](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.defaultrunproperties?view=openxml-3.0.1) carry the bold and italic attributes. The probe reads [Aspose's effective portion format](https://reference.aspose.com/slides/net/aspose.slides/portionformat/geteffective/) on saved PPTX fixtures and compares both flags with ShapeCrawler. All 24 cases agree after the change:
+
+| Cases | Effective bold / italic |
+| --- | --- |
+| Current paragraph, local level, layout level, master placeholder level, master body/title style, presentation defaults | true / true |
+| Missing run properties with layout defaults; level-two layout defaults; layout matched by index despite different type | true / true |
+| Explicit run false; explicit paragraph false; mixed local/run false overrides | false / false |
+| Unset flags in a local level with an unrelated font-size property | continue to layout, true / true |
+| Paragraph-end properties with false, while local list level is true | true / true |
+| Plain text; template sample-paragraph properties alone; unrelated local level; ordinary text with only master OtherStyle | false / false in these fixtures |
+
+A local `defPPr`-only fixture also returns false in both engines. This PR deliberately implements level-specific list inheritance; it does not claim a complete general-purpose text style cascade or define all default-paragraph interactions.
+
+All 1487 Release tests pass locally, including 43 new cases and the public API checks. Regressions also compare inherited rendering with the same explicitly applied bold/italic flags on the same host, avoiding font-specific snapshots across platforms. They assert visible glyphs and identical pixels, unchanged slide/layout/master/presentation XML, separate per-attribute fallback, default/mismatched placeholder indices, local styles on ordinary template text, and isolated setter round trips. This establishes style selection, not pixel equivalence with Aspose's text layout or rasterization.
+
 ## Remaining increments and beta priorities
 
 Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split topics to fit the 40-minute creation limit. Wait for every check to pass before requesting approval for the next PR.
@@ -220,7 +245,7 @@ Select one bounded behavior per approved PR. Investigate it with a small fixture
 The priority is common slide content. A bounded inventory of 98 local test presentations found 224 master and 696 layout non-placeholder top-level entries, supporting the template-content increment; these counts describe this repository's fixtures, not global usage.
 
 1. Validate remaining frequently used geometry against representative beta fixtures; the 17 polygon/straight-arrow presets above are now supported. Add flowchart presets or stars in a separate increment when that corpus requires them.
-2. Ordinary text and slide placeholder inheritance: wrapping, paragraphs/lists, font selection and cross-platform behavior, one discrepancy at a time.
+2. Ordinary text and slide placeholder inheritance: bold/italic flags are now covered; font-size/color/family inheritance, wrapping, paragraphs/lists and cross-platform behavior still need representative validation.
 3. PNG/JPEG pictures: cropping, rotation, flipping and transparency, plus nested transforms.
 4. Basic tables: fills, borders and merged cells; then common chart types, each in a separate bounded increment.
 5. Additional fills/outlines and gradients where representative slides require them.
@@ -231,7 +256,7 @@ The priority is common slide content. A bounded inventory of 98 local test prese
 | Backgrounds | Inheritance, selected theme styles and solid-color transforms tested; gradients/effects remain partial. |
 | Master/layout graphics | Visible ordinary text, pictures, basic shapes and groups now included; dynamic placeholder fields remain open. |
 | Shapes | Basic geometry plus 17 polygon/straight-arrow presets are tested; other presets, custom geometry and advanced styling remain open. |
-| Text | Existing drawing retained; inherited formatting, layout and font fidelity need representative validation. |
+| Text | Bold/italic inheritance and explicit overrides are tested; other inherited formatting, layout and font fidelity remain partial. |
 | Pictures | Existing image drawing retained; crop/transform/alpha fidelity needs representative validation. |
 | Tables and charts | Existing rendering is partial. Chart drawing covers pie/bar paths; other chart types can produce placeholder rectangles. Full chart support is not established. |
 

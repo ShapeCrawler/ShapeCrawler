@@ -15,17 +15,6 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         return fontColor.ColorHexOrNull();
     }
 
-    internal bool? BoldFlagOrNull()
-    {
-        var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
-        if (openXmlPart is SlidePart)
-        {
-            return this.SlideFontBoldFlagOrNull();
-        }
-
-        return null;
-    }
-
     internal decimal? SizeOrNull()
     {
         var openXmlPart = aText.Ancestors<OpenXmlPartRootElement>().First().OpenXmlPart!;
@@ -130,60 +119,6 @@ internal sealed class ReferencedFont(ReferencedFontColor fontColor, A.Text aText
         var referencedPShape = new SCPShapeTree(slideOrLayoutPShapeTree).ReferencedPShapeOrNull(pPlaceholderShape);
 
         return referencedPShape;
-    }
-
-    private bool? SlideFontBoldFlagOrNull()
-    {
-        var aParagraph = aText.Ancestors<A.Paragraph>().First();
-        var indentLevel = new SCAParagraph(aParagraph).GetIndentLevel();
-        var slidePShape = aText.Ancestors<P.Shape>().FirstOrDefault();
-        if (slidePShape == null)
-        {
-            return null;
-        }
-
-        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>();
-        if (slidePh == null)
-        {
-            return null;
-        }
-
-        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOrNull(slidePShape);
-        if (refLayoutPShapeOfSlide == null)
-        {
-            var refMasterPShape = this.ReferencedMasterPShapeOrNull(slidePShape);
-            if (refMasterPShape?.TextBody?.ListStyle == null)
-            {
-                return null;
-            }
-
-            var fonts = new IndentFonts(refMasterPShape.TextBody.ListStyle);
-
-            return fonts.BoldFlagOrNull(indentLevel);
-        }
-
-        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
-        var layoutIndentColorType = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentColorType.HasValue)
-        {
-            return layoutIndentColorType.Value.IsBold;
-        }
-
-        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNull(refLayoutPShapeOfSlide);
-        if (refMasterPShapeOfLayout == null)
-        {
-            return null;
-        }
-
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
-        var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
-        if (masterOfLayoutIndentColorType.HasValue)
-        {
-            return masterOfLayoutIndentColorType.Value.IsBold;
-        }
-
-        return null;
     }
 
     private int? MasterFontSizeOrNull(P.Shape refLayoutPShapeOfSlide, int indentLevel)
