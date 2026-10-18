@@ -109,6 +109,8 @@ internal sealed class GroupShape : DrawingShape
             var rotation = aTransformGroup.Rotation?.Value ?? 0;
             return rotation / 60_000d;
         }
+
+        set => base.Rotation = value;
     }
 
     public bool HasOutline => true;

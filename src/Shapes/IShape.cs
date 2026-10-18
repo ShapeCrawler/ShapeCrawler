@@ -49,9 +49,9 @@ public interface IShape : IPosition, IShapeGeometry
     IHyperlink Link { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the shape is hidden.
+    ///     Gets or sets a value indicating whether the shape is hidden.
     /// </summary>
-    bool Hidden { get; }
+    bool Hidden { get; set; }
 
     /// <summary>
     ///     Gets the placeholder type. Returns <see langword="null"/> if the shape is not a placeholder.
@@ -144,9 +144,11 @@ public interface IShape : IPosition, IShapeGeometry
     ISmartArt? SmartArt { get; }
 
     /// <summary>
-    ///     Gets the rotation of the shape in degrees.
+    ///     Gets or sets clockwise rotation in degrees. Assigned finite angles are normalized
+    ///     to [0, 360) and rounded to the nearest 1/60000 degree, with midpoint ties away from zero.
+    ///     Rotation does not change the shape's position, size, or flip flags.
     /// </summary>
-    double Rotation { get; }
+    double Rotation { get; set; }
 
     /// <summary>
     ///     Gets XPath of the underlying Open XML element.
