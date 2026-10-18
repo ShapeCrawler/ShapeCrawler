@@ -431,8 +431,14 @@ public class UserSlideTests : SCTest
     public void SaveImage_fills_requested_image_size_with_picture_background(int width, int height)
     {
         // Arrange
-        var image = TestImage();
-        using var pres = new Presentation(p => p.Slide(s => s.ImageBackground(image)));
+        using var sourceBitmap = new SkiaSharp.SKBitmap(2, 2);
+        sourceBitmap.SetPixel(0, 0, SkiaSharp.SKColors.Red);
+        sourceBitmap.SetPixel(1, 0, SkiaSharp.SKColors.Green);
+        sourceBitmap.SetPixel(0, 1, SkiaSharp.SKColors.Blue);
+        sourceBitmap.SetPixel(1, 1, SkiaSharp.SKColors.Yellow);
+        using var sourceImage = SkiaSharp.SKImage.FromBitmap(sourceBitmap);
+        using var image = sourceImage.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
+        using var pres = new Presentation(p => p.Slide(s => s.ImageBackground(image.ToArray())));
         using var stream = new MemoryStream();
 
         // Act
@@ -442,17 +448,10 @@ public class UserSlideTests : SCTest
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
         bitmap.Width.Should().Be(width);
         bitmap.Height.Should().Be(height);
-        foreach (var x in new[] { 1, width - 2 })
-        {
-            foreach (var y in new[] { 1, height - 2 })
-            {
-                var pixel = bitmap.GetPixel(x, y);
-                pixel.Red.Should().BeInRange(240, 250);
-                pixel.Green.Should().BeInRange(195, 205);
-                pixel.Blue.Should().BeInRange(163, 173);
-                pixel.Alpha.Should().Be(255);
-            }
-        }
+        bitmap.GetPixel(1, 1).Should().Be(SkiaSharp.SKColors.Red);
+        bitmap.GetPixel(width - 2, 1).Should().Be(SkiaSharp.SKColors.Green);
+        bitmap.GetPixel(1, height - 2).Should().Be(SkiaSharp.SKColors.Blue);
+        bitmap.GetPixel(width - 2, height - 2).Should().Be(SkiaSharp.SKColors.Yellow);
     }
 
     [TestCase(0, 100, "width")]
