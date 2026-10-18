@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Units;
 using SkiaSharp;
 
@@ -61,7 +60,7 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
 
         var canvas = surface.Canvas;
 
-        this.RenderBackground(canvas);
+        new SlideBackground(this.GetSdkSlidePart()).Render(canvas);
         canvas.Scale(scaleX, scaleY);
         shapes.Render(canvas);
 
@@ -75,56 +74,4 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
         }
     }
 
-    private static SKColor GetSkColor(IShapeFill fill)
-    {
-        var hex = fill.Color!.TrimStart('#');
-
-        // Validate hex length before parsing.
-        if (hex.Length != 6 && hex.Length != 8)
-        {
-            return SKColors.White; // used by the PowerPoint application as the default background color
-        }
-
-        return new Color(hex).AsSkColor();
-    }
-
-    private void RenderBackground(SKCanvas canvas)
-    {
-        var slideFill = this.GetBackgroundFill();
-        switch (slideFill)
-        {
-            case { Type: FillType.Solid, Color: not null }:
-                {
-                    var skColor = GetSkColor(slideFill);
-                    canvas.Clear(skColor);
-                    break;
-                }
-
-            case { Type: FillType.Picture, Picture: not null }:
-                {
-                    var bytes = slideFill.Picture.AsByteArray();
-                    using var stream = new MemoryStream(bytes);
-                    using var bitmap = SKBitmap.Decode(stream);
-                    var destRect = new SKRect(0, 0, canvas.DeviceClipBounds.Width, canvas.DeviceClipBounds.Height);
-                    canvas.DrawBitmap(bitmap, destRect, SKSamplingOptions.Default);
-                    break;
-                }
-
-            default:
-                // Default to white for unsupported backgrounds.
-                canvas.Clear(SKColors.White);
-                break;
-        }
-    }
-
-    private IShapeFill? GetBackgroundFill()
-    {
-        var slidePart = this.GetSdkSlidePart();
-        var layoutPart = slidePart.SlideLayoutPart;
-        var background = slidePart.Slide?.CommonSlideData?.Background
-                         ?? layoutPart?.SlideLayout?.CommonSlideData?.Background
-                         ?? layoutPart?.SlideMasterPart?.SlideMaster?.CommonSlideData?.Background;
-
-        return background?.BackgroundProperties is { } properties ? new ShapeFill(properties) : null;
-    }
 }
