@@ -6,6 +6,8 @@ using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Packaging;
+using A = DocumentFormat.OpenXml.Drawing;
 using Fixture;
 using FluentAssertions;
 using NUnit.Framework;
@@ -18,6 +20,239 @@ namespace ShapeCrawler.Tests;
 public class PresentationTests : SCTest
 {
     private readonly Fixtures fixtures = new();
+
+    [Test]
+    public void ReplaceFont_updates_group_table_and_notes_fonts_without_changing_text_or_formatting()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTextBox(10, 20, 100, 50, "First");
+        var first = slide.Shapes.Last();
+        slide.Shapes.AddTextBox(110, 20, 100, 50, "Second");
+        slide.Shapes.Group([first, slide.Shapes.Last()]);
+        slide.Shapes.AddTable(0, 100, 1, 1);
+        slide.Shapes.Last().Table[0, 0].TextBox.SetText("Cell");
+        slide.AddNotes(["Notes"]);
+        var boxes = slide.GetTexts().Append(slide.Notes!).ToArray();
+        foreach (var box in boxes)
+        {
+            var font = box.Paragraphs[0].Portions[0].Font;
+            font.LatinName = "Arial";
+            font.EastAsianName = "Arial";
+            font.IsBold = true;
+            font.Size = 18;
+        }
+
+        var texts = boxes.Select(box => box.Text).ToArray();
+
+        // Act
+        pres.ReplaceFont("Arial", "Verdana");
+
+        // Assert
+        boxes.Select(box => box.Text).Should().Equal(texts);
+        foreach (var box in boxes)
+        {
+            var font = box.Paragraphs[0].Portions[0].Font;
+            font.LatinName.Should().Be("Verdana");
+            font.EastAsianName.Should().Be("Verdana");
+            font.IsBold.Should().BeTrue();
+            font.Size.Should().Be(18);
+        }
+
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].GetTexts().Append(reopened.Slides[0].Notes!).Select(box => box.Text).Should().Equal(texts);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase("024_chart.pptx")]
+    [TestCase("009_table.pptx")]
+    [TestCase("autoshape-grouping.pptx")]
+    public void ReplaceFont_updates_all_DrawingML_font_slots_and_preserves_package_content(string asset)
+    {
+        // Arrange
+        using var source = new Presentation(TestAsset(asset));
+        source.Slides[0].AddNotes(["Notes"]);
+        source.Slides[0].Shapes.AddSmartArt(20, 20, 200, 100, SmartArtType.BasicBlockList);
+        using var input = new MemoryStream();
+        source.Save(input);
+        var oldName = "Replacement Test Font";
+        var expectedCount = 0;
+        using (var sdk = PresentationDocument.Open(input, true))
+        {
+            foreach (var part in FontTestParts(sdk))
+            {
+                if (part.RootElement is not { } root)
+                {
+                    continue;
+                }
+
+                foreach (var element in root.Descendants().Where(element => element.NamespaceUri == "http://schemas.openxmlformats.org/drawingml/2006/main"))
+                {
+                    if (!element.GetAttributes().Any(attribute => attribute.LocalName == "typeface"))
+                    {
+                        continue;
+                    }
+
+                    element.SetAttribute(new DocumentFormat.OpenXml.OpenXmlAttribute("typeface", string.Empty, oldName));
+                    expectedCount++;
+                }
+            }
+        }
+
+        var binariesBefore = FontTestBinaryParts(input);
+        using var pres = new Presentation(input);
+
+        // Act
+        pres.ReplaceFont(oldName, "Verdana");
+
+        // Assert
+        expectedCount.Should().BeGreaterThan(10);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var sdk = PresentationDocument.Open(saved, false))
+        {
+            var names = FontTestParts(sdk).Where(part => part.RootElement is not null)
+                .SelectMany(part => part.RootElement!.Descendants())
+                .Where(element => element.NamespaceUri == "http://schemas.openxmlformats.org/drawingml/2006/main")
+                .SelectMany(element => element.GetAttributes().Where(attribute => attribute.LocalName == "typeface"))
+                .Select(attribute => attribute.Value).ToArray();
+            names.Should().NotContain(oldName);
+            names.Count(name => name == "Verdana").Should().Be(expectedCount);
+        }
+
+        FontTestBinaryParts(saved).Should().BeEquivalentTo(binariesBefore);
+        using var reopened = new Presentation(saved);
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
+    public void ReplaceFont_updates_theme_and_script_fonts_without_materializing_theme_references()
+    {
+        // Arrange
+        using var source = new Presentation(p => p.Slide());
+        source.Slides[0].Shapes.AddTextBox(0, 0, 100, 50, "Text");
+        source.Slides[0].Shapes.Last().TextBox.Paragraphs[0].Portions[0].Font.LatinName = "+mj-lt";
+        using var input = new MemoryStream();
+        source.Save(input);
+        using (var sdk = PresentationDocument.Open(input, true))
+        {
+            var part = sdk.PresentationPart!.SlideParts.Single();
+            var properties = part.Slide.Descendants<A.RunProperties>().Last();
+            properties.AddChild(new A.ComplexScriptFont { Typeface = "Arial", CharacterSet = 1 }, true);
+            properties.AddChild(new A.SymbolFont { Typeface = "Arial" }, true);
+            var paragraph = part.Slide.Descendants<A.Paragraph>().Last();
+            paragraph.ParagraphProperties ??= new A.ParagraphProperties();
+            paragraph.ParagraphProperties.AddChild(new A.BulletFont { Typeface = "Arial" }, true);
+            paragraph.ParagraphProperties.AddChild(new A.CharacterBullet { Char = "•" }, true);
+            var major = part.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FontScheme!.MajorFont!;
+            major.LatinFont!.Typeface = "Arial";
+            major.Elements<A.SupplementalFont>().First().Typeface = "Arial";
+        }
+
+        using var pres = new Presentation(input);
+        var font = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0].Portions[0].Font;
+        var originalName = font.LatinName;
+
+        // Act
+        pres.ReplaceFont("Arial", "Verdana");
+
+        // Assert
+        originalName.Should().Be("Arial");
+        font.LatinName.Should().Be("Verdana");
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var result = PresentationDocument.Open(saved, false);
+        var slide = result.PresentationPart!.SlideParts.Single().Slide;
+        slide.Descendants<A.LatinFont>().Last().Typeface!.Value.Should().Be("+mj-lt");
+        slide.Descendants<A.ComplexScriptFont>().Last().Typeface!.Value.Should().Be("Verdana");
+        slide.Descendants<A.ComplexScriptFont>().Last().CharacterSet!.Value.Should().Be(1);
+        slide.Descendants<A.SymbolFont>().Last().Typeface!.Value.Should().Be("Verdana");
+        slide.Descendants<A.BulletFont>().Last().Typeface!.Value.Should().Be("Verdana");
+        var theme = result.PresentationPart.SlideMasterParts.First().ThemePart!.Theme;
+        theme.Descendants<A.SupplementalFont>().First().Typeface!.Value.Should().Be("Verdana");
+        ValidatePresentation(pres);
+    }
+
+    [TestCase("Arial", "Verdana", "Verdana", "arial", "Arial Narrow")]
+    [TestCase("arial", "Verdana", "Arial", "Verdana", "Arial Narrow")]
+    [TestCase("Absent", "Verdana", "Arial", "arial", "Arial Narrow")]
+    [TestCase("Arial", "Arial", "Arial", "arial", "Arial Narrow")]
+    public void ReplaceFont_matches_complete_names_case_sensitively(string oldName, string newName, string first, string second, string third)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        foreach (var name in new[] { "Arial", "arial", "Arial Narrow" })
+        {
+            pres.Slides[0].Shapes.AddTextBox(0, 0, 100, 50, name);
+            pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0].Portions[0].Font.LatinName = name;
+        }
+
+        // Act
+        pres.ReplaceFont(oldName, newName);
+
+        // Assert
+        pres.Slides[0].GetTexts().Select(box => box.Paragraphs[0].Portions[0].Font.LatinName)
+            .Should().Equal(first, second, third);
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(null, "Verdana")]
+    [TestCase("", "Verdana")]
+    [TestCase(" ", "Verdana")]
+    [TestCase("Arial", null)]
+    [TestCase("Arial", "")]
+    [TestCase("Arial", " ")]
+    public void ReplaceFont_rejects_invalid_names_before_mutation(string oldName, string newName)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        pres.Slides[0].Shapes.AddTextBox(0, 0, 100, 50, "Text");
+        var font = pres.Slides[0].Shapes.Last().TextBox.Paragraphs[0].Portions[0].Font;
+        font.LatinName = "Arial";
+
+        // Act
+        var replace = () => pres.ReplaceFont(oldName, newName);
+
+        // Assert
+        replace.Should().Throw<ArgumentException>();
+        font.LatinName.Should().Be("Arial");
+    }
+
+    private static IEnumerable<OpenXmlPart> FontTestParts(OpenXmlPartContainer container)
+    {
+        var visited = new HashSet<OpenXmlPart>();
+        var pending = new Queue<OpenXmlPart>(container.Parts.Select(item => item.OpenXmlPart));
+        while (pending.TryDequeue(out var part))
+        {
+            if (!visited.Add(part))
+            {
+                continue;
+            }
+
+            yield return part;
+            foreach (var child in part.Parts)
+            {
+                pending.Enqueue(child.OpenXmlPart);
+            }
+        }
+    }
+
+    private static Dictionary<string, byte[]> FontTestBinaryParts(Stream stream)
+    {
+        stream.Position = 0;
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Read, true);
+        return archive.Entries.Where(entry => !entry.FullName.EndsWith(".xml", StringComparison.Ordinal)
+            && !entry.FullName.EndsWith(".rels", StringComparison.Ordinal)).ToDictionary(entry => entry.FullName, entry =>
+        {
+            using var bytes = new MemoryStream();
+            using var content = entry.Open();
+            content.CopyTo(bytes);
+            return bytes.ToArray();
+        });
+    }
 
     [Test]
     public void ReplaceText_updates_slides_groups_and_tables_without_changing_notes()
