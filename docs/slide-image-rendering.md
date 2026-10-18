@@ -2,7 +2,7 @@
 
 ## Scope and delivery
 
-Build out ShapeCrawler's existing experimental `SaveImageTo` renderer using REA static evidence and direct behavioral comparisons with Aspose.Slides. Each implementation PR must be small enough to investigate, implement, validate and create within 30 minutes. After each PR, wait for the user's explicit approval before starting the next.
+Build out ShapeCrawler's existing experimental `SaveImage` renderer using REA static evidence and direct behavioral comparisons with Aspose.Slides. Each implementation PR must be small enough to investigate, implement, validate and create within 30 minutes. After each PR, wait for the user's explicit approval before starting the next.
 
 The first increment supports explicit PNG pixel dimensions through stream and file overloads. It scales the canvas before drawing slide shapes, so shapes and text render at the requested resolution. Backgrounds cover the output surface. The existing overloads keep their 96 DPI dimensions and original canvas transform. No Aspose dependency or proprietary implementation code is added to ShapeCrawler.
 
@@ -56,7 +56,7 @@ For a slide of 120 by 90 points:
 | `GetImage(new Size(45, 240))` | 45 by 240 |
 | `GetImage(new Size(41, 37))` | 41 by 37 |
 
-The comparison fixture is created with ShapeCrawler: 120 by 90 points, red slide background, blue rectangle at `(30, 20)` with size `(60, 40)`. Save it as PPTX and load that same file into Aspose. For each requested size, save the Aspose `GetImage(Size)` result as PNG and compare it with ShapeCrawler `SaveImageTo(file, width, height)`.
+The comparison fixture is created with ShapeCrawler: 120 by 90 points, red slide background, blue rectangle at `(30, 20)` with size `(60, 40)`. Save it as PPTX and load that same file into Aspose. For each requested size, save the Aspose `GetImage(Size)` result as PNG and compare it with ShapeCrawler `SaveImage(file, width, height)`.
 
 Both engines produced the requested dimensions and red pixels at normalized positions `(1/8, 1/2)`, `(7/8, 1/2)`, `(1/2, 1/10)`, `(1/2, 9/10)`. At 240 by 45 and 120 by 90 both produced a blue center pixel. Aspose's evaluation watermark visibly covers the rectangle and changes the center pixels in the other two outputs; those pixels do not establish a renderer mismatch or an equivalence claim. No watermark removal or license bypass was performed.
 

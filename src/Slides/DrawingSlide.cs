@@ -11,14 +11,14 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
     : UserSlide(layoutSlide, shapes, slidePart)
 {
     /// <inheritdoc/>
-    public override void SaveImageTo(string file)
+    public override void SaveImage(string file)
     {
         using var fileStream = File.Create(file);
-        this.SaveImageTo(fileStream);
+        this.SaveImage(fileStream);
     }
 
     /// <inheritdoc/>
-    public override void SaveImageTo(Stream stream)
+    public override void SaveImage(Stream stream)
     {
         var presPart = ((PresentationDocument)this.GetSdkSlidePart().OpenXmlPackage).PresentationPart!;
         var pSlideSize = presPart.Presentation!.SlideSize!;
@@ -29,17 +29,17 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
     }
 
     /// <inheritdoc/>
-    public override void SaveImageTo(string file, int width, int height)
+    public override void SaveImage(string file, int width, int height)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
         using var fileStream = File.Create(file);
-        this.SaveImageTo(fileStream, width, height);
+        this.SaveImage(fileStream, width, height);
     }
 
     /// <inheritdoc/>
-    public override void SaveImageTo(Stream stream, int width, int height)
+    public override void SaveImage(Stream stream, int width, int height)
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);

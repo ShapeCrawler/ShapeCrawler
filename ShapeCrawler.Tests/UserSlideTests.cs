@@ -382,7 +382,7 @@ public class UserSlideTests : SCTest
     }
 
     [Test]
-    public void SaveImageTo_saves_slide_image()
+    public void SaveImage_saves_slide_image()
     {
         // Arrange
         var pres = new Presentation(p => { p.Slide(); });
@@ -390,7 +390,7 @@ public class UserSlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        slide.SaveImageTo(stream);
+        slide.SaveImage(stream);
 
         // Assert
         stream.Length.Should().BeGreaterThan(0);
@@ -399,7 +399,7 @@ public class UserSlideTests : SCTest
     [TestCase(240, 45)]
     [TestCase(45, 240)]
     [TestCase(41, 37)]
-    public void SaveImageTo_uses_requested_pixel_dimensions_and_scales_shapes(int width, int height)
+    public void SaveImage_uses_requested_pixel_dimensions_and_scales_shapes(int width, int height)
     {
         // Arrange
         using var pres = new Presentation(p => p.Slide(s => s.SolidBackground("FF0000")));
@@ -411,7 +411,7 @@ public class UserSlideTests : SCTest
         using var stream = new MemoryStream();
 
         // Act
-        slide.SaveImageTo(stream, width, height);
+        slide.SaveImage(stream, width, height);
 
         // Assert
         stream.CanWrite.Should().BeTrue();
@@ -428,7 +428,7 @@ public class UserSlideTests : SCTest
 
     [TestCase(80, 40)]
     [TestCase(1600, 900)]
-    public void SaveImageTo_fills_requested_image_size_with_picture_background(int width, int height)
+    public void SaveImage_fills_requested_image_size_with_picture_background(int width, int height)
     {
         // Arrange
         var image = TestImage();
@@ -436,7 +436,7 @@ public class UserSlideTests : SCTest
         using var stream = new MemoryStream();
 
         // Act
-        pres.Slide(1).SaveImageTo(stream, width, height);
+        pres.Slide(1).SaveImage(stream, width, height);
 
         // Assert
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
@@ -459,14 +459,14 @@ public class UserSlideTests : SCTest
     [TestCase(-1, 100, "width")]
     [TestCase(100, 0, "height")]
     [TestCase(100, -1, "height")]
-    public void SaveImageTo_rejects_nonpositive_dimensions(int width, int height, string parameter)
+    public void SaveImage_rejects_nonpositive_dimensions(int width, int height, string parameter)
     {
         // Arrange
         using var pres = new Presentation(p => p.Slide());
         using var stream = new MemoryStream();
 
         // Act
-        var act = () => pres.Slide(1).SaveImageTo(stream, width, height);
+        var act = () => pres.Slide(1).SaveImage(stream, width, height);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>().WithParameterName(parameter);
@@ -474,7 +474,7 @@ public class UserSlideTests : SCTest
     }
 
     [Test]
-    public void SaveImageTo_saves_requested_dimensions_to_file()
+    public void SaveImage_saves_requested_dimensions_to_file()
     {
         // Arrange
         using var pres = new Presentation(p => p.Slide());
@@ -482,7 +482,7 @@ public class UserSlideTests : SCTest
         try
         {
             // Act
-            pres.Slide(1).SaveImageTo(file, 240, 45);
+            pres.Slide(1).SaveImage(file, 240, 45);
 
             // Assert
             using var bitmap = SkiaSharp.SKBitmap.Decode(file);
@@ -496,7 +496,7 @@ public class UserSlideTests : SCTest
     }
 
     [Test]
-    public void SaveImageTo_invalid_file_dimensions_preserve_existing_file()
+    public void SaveImage_invalid_file_dimensions_preserve_existing_file()
     {
         // Arrange
         using var pres = new Presentation(p => p.Slide());
@@ -505,7 +505,7 @@ public class UserSlideTests : SCTest
         try
         {
             // Act
-            var act = () => pres.Slide(1).SaveImageTo(file, 0, 45);
+            var act = () => pres.Slide(1).SaveImage(file, 0, 45);
 
             // Assert
             act.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("width");
@@ -518,7 +518,7 @@ public class UserSlideTests : SCTest
     }
 
     [Test]
-    public void SaveImageTo_saves_slide_image_with_solid_background()
+    public void SaveImage_saves_slide_image_with_solid_background()
     {
         // Arrange
         var pres = new Presentation(p => { p.Slide(s => { s.SolidBackground("FF0000"); }); });
@@ -526,7 +526,7 @@ public class UserSlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        slide.SaveImageTo(stream);
+        slide.SaveImage(stream);
 
         // Assert
         stream.Position = 0;
@@ -541,7 +541,7 @@ public class UserSlideTests : SCTest
     [Platform(Exclude = "Linux",
         Reason =
             "ImageMagick.MagickTypeErrorException : UnableToReadFont `Arial' @ error/annotate.c/RenderFreetype/1658")]
-    public void SaveImageTo_saves_slide_image_with_image_background()
+    public void SaveImage_saves_slide_image_with_image_background()
     {
         // Arrange
         var image = TestImage();
@@ -550,7 +550,7 @@ public class UserSlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        slide.SaveImageTo(stream);
+        slide.SaveImage(stream);
 
         // Assert
         stream.Position = 0;
@@ -565,9 +565,9 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux", Reason = "System.InvalidOperationException : Sequence contains no elements")]
-    public void SaveImageTo_saves_slide_image_with_text_box()
+    public void SaveImage_saves_slide_image_with_text_box()
     {
-        // ARRANGE
+        // Arrange
         var pres = new Presentation(pres =>
         {
             pres.Slide(slide =>
@@ -585,10 +585,11 @@ public class UserSlideTests : SCTest
         var slide = pres.Slide(1);
         using var stream = new MemoryStream();
 
-        // ACT
-        slide.SaveImageTo(stream);
+        // Act
+        slide.SaveImage(stream);
 
-        // ASSERT - verify the text box's background rectangle is rendered at position (50, 50) with accent1 color (4472C4)
+        // Assert
+        // Verify the background rectangle at position (50, 50) with accent1 color (4472C4).
         stream.Position = 0;
         using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
 
@@ -619,7 +620,7 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Linux and macOS")]
-    public Task SaveImageTo_saves_slide_with_bulleted_list()
+    public Task SaveImage_saves_slide_with_bulleted_list()
     {
         // Arrange
         var pres = new Presentation(pres =>
@@ -639,7 +640,7 @@ public class UserSlideTests : SCTest
         using var stream = new MemoryStream();
 
         // Act
-        pres.Slide(1).SaveImageTo(stream);
+        pres.Slide(1).SaveImage(stream);
 
         // Assert
         ValidatePresentation(pres);
@@ -649,8 +650,9 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "Test fails on Linux and macOS")]
-    public Task SaveImageTo_draws_Text_shapes()
+    public Task SaveImage_draws_Text_shapes()
     {
+        // Arrange
         var pres = new Presentation(pres =>
         {
             pres.Slide(slide =>
@@ -685,7 +687,7 @@ public class UserSlideTests : SCTest
         using var stream = new MemoryStream();
 
         // Act
-        pres.Slide(1).SaveImageTo(stream);
+        pres.Slide(1).SaveImage(stream);
 
         // Assert
         var imageBytes = stream.ToArray();
@@ -694,7 +696,7 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "diff(0.17881351277633012) > threshold(0.005)")]
-    public Task SaveImageTo_draws_Table_Shapes()
+    public Task SaveImage_draws_Table_Shapes()
     {
         // Arrange
         var pres = new Presentation(pres =>
@@ -720,7 +722,7 @@ public class UserSlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        pres.Slide(1).SaveImageTo(stream);
+        pres.Slide(1).SaveImage(stream);
 
         // Assert
         return Verify(stream.ToArray(), "png");
@@ -728,8 +730,9 @@ public class UserSlideTests : SCTest
 
     [Test]
     [Platform(Exclude = "Linux,MacOSX", Reason = "diff(0.1123369852499511) > threshold(0.005).")]
-    public Task SaveImageTo_draws_Charts()
+    public Task SaveImage_draws_Charts()
     {
+        // Arrange
         var pres = new Presentation(pres =>
         {
             pres.Slide(slide =>
@@ -749,7 +752,7 @@ public class UserSlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        pres.Slide(1).SaveImageTo(stream);
+        pres.Slide(1).SaveImage(stream);
 
         // Assert
         return Verify(stream.ToArray(), "png");
@@ -758,13 +761,18 @@ public class UserSlideTests : SCTest
     [Test, Explicit("Used for developer debugging")]
     public void Debug()
     {
+        // Arrange
         var pres = new Presentation(@"c:\Repo\ShapeCrawler\.context\input.pptx");
 
-        pres.Slide(1).SaveImageTo(@"c:\Repo\ShapeCrawler\.context\output.png");
+        // Act
+        pres.Slide(1).SaveImage(@"c:\Repo\ShapeCrawler\.context\output.png");
+
+        // Assert
+        File.Exists(@"c:\Repo\ShapeCrawler\.context\output.png").Should().BeTrue();
     }
 
     [Test]
-    public void SaveImageTo_saves_slide_image_with_transparent_shape()
+    public void SaveImage_saves_slide_image_with_transparent_shape()
     {
         // Arrange
         var pres = new Presentation(TestAsset("085 fill transparency when saving image.pptx"));
@@ -772,7 +780,7 @@ public class UserSlideTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        slide.SaveImageTo(stream);
+        slide.SaveImage(stream);
 
         // Assert
         var centerPixel = new SkiaSharp.SKColor();

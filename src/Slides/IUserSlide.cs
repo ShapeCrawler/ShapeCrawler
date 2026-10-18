@@ -90,13 +90,13 @@ public interface IUserSlide
     ///     Saves the slide image to the specified stream.
     /// </summary>
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
-    void SaveImageTo(Stream stream);
+    void SaveImage(Stream stream);
 
     /// <summary>
     ///     Saves the slide image to the specified file.
     /// </summary>
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
-    void SaveImageTo(string file);
+    void SaveImage(string file);
 
     /// <summary>
     ///     Saves the slide as a PNG image with the specified pixel dimensions to the stream.
@@ -106,7 +106,7 @@ public interface IUserSlide
     /// <param name="width">Positive image width in pixels.</param>
     /// <param name="height">Positive image height in pixels.</param>
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
-    void SaveImageTo(Stream stream, int width, int height);
+    void SaveImage(Stream stream, int width, int height);
 
     /// <summary>
     ///     Saves the slide as a PNG image with the specified pixel dimensions to the file.
@@ -116,7 +116,7 @@ public interface IUserSlide
     /// <param name="width">Positive image width in pixels.</param>
     /// <param name="height">Positive image height in pixels.</param>
     [Experimental("EXP001", Message = "This slide image generation API is experimental.")]
-    void SaveImageTo(string file, int width, int height);
+    void SaveImage(string file, int width, int height);
 
     /// <summary>
     ///     Gets the first shape in the slide.

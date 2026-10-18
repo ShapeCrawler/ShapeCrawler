@@ -165,9 +165,9 @@ pres.Save("with-workbook.pptx");
 ```csharp
 using var pres = new Presentation("presentation.pptx");
 #pragma warning disable EXP001 // Slide image generation is experimental.
-pres.Slide(1).SaveImageTo("thumbnail.png", width: 320, height: 180);
+pres.Slide(1).SaveImage("thumbnail.png", width: 320, height: 180);
 using var image = new MemoryStream();
-pres.Slide(1).SaveImageTo(image, width: 1280, height: 720);
+pres.Slide(1).SaveImage(image, width: 1280, height: 720);
 #pragma warning restore EXP001
 ```
 
