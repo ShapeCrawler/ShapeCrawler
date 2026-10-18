@@ -97,13 +97,47 @@ Automated regressions also check layout `NoFill`, image backgrounds owned by a l
 
 A direct picture comparison used a 32 by 16 pixel PNG with red and blue halves, attached to the layout or master with a different slide-owned image under the same relationship ID. Both engines select the correct image: samples `(20, 80)` and `(100, 80)` in the 120 by 90 output are red and blue. There is a separate residual difference in image-edge resampling: with a 2 by 1 source, Aspose mixes colors at the edges while the current Skia path samples solid colors; even the larger source has a pale border in the Aspose output. This increment preserves existing image sampling and does not claim pixel equivalence at image edges.
 
-This does not yet implement `p:bgRef` theme background-style lookup, theme color-map overrides, gradients, alpha compositing or background effects. An unsupported explicit background still uses the renderer's white fallback and does not inherit a different background. These remain separate increments.
+The second increment left theme background-style lookup, color-map overrides, gradients, alpha compositing and background effects open. Unsupported explicit backgrounds use the renderer's white fallback and do not inherit a different background. The next increment addresses style lookup and color maps below.
+
+## Third increment: theme background styles and color maps
+
+Background rendering now has a dedicated internal `SlideBackground` implementation. It resolves `p:bgRef` against the master theme's style matrix, substitutes the reference color for `phClr`, and resolves scheme colors through the effective slide/layout/master color map. Solid RGB and system fallback colors are supported. Picture styles retain their theme-part image relationships. Export still leaves the slide, layout, master and theme XML unchanged.
+
+### Evidence and the specification decision
+
+The reference assembly SHA-256 was rechecked and matches the first increment. The existing complete REA record `ev_074f1609013728212508c337d013f2c470402d541d7654a1a0ad90ddd42282e1` was reused rather than decoding the same type again. Method `0x060019af` (CIL SHA-256 `9079eb1ec85b225fdd0dbe47a5666848a17eeee2ca8215f90a9f811ef7b30319`) calls `IThemeable.CreateThemeEffective`, `IThemeEffectiveData.get_FormatScheme` and `IFillFormatCollectionEffectiveData.get_Item`. Its decoded CIL includes one subtraction and a constant one. This supports tracing style lookup; the original static record alone does not establish every index or color-map rule.
+
+Direct execution revealed a difference from the documented OOXML rules for indices 1–999. The user explicitly chose OOXML behavior for this reconstruction. The [BackgroundStyleReference documentation](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.backgroundstylereference?view=openxml-3.0.1) specifies: 0 and 1000 mean no background; 1–999 select `fillStyleLst`; 1001 and above select `bgFillStyleLst`, starting at the first entry. This implementation follows those rules, with a white fallback for missing entries.
+
+The fixture sets the ordinary fill styles to red, `phClr`, blue; background fill styles to `phClr`, green, `accent3`; and the reference color to `CC00CC`. A slide with the explicit reference is rendered at 120 by 90 pixels; sample `(100, 80)` lies outside the evaluation watermark:
+
+| Index | Aspose 24.12 | ShapeCrawler after | Basis |
+| --- | --- | --- | --- |
+| 0 or 1000 | white | white | no background |
+| 1 | `CC00CC` | red | ordinary fill style 1, per OOXML |
+| 2 | green | `CC00CC` | ordinary fill style 2, per OOXML |
+| 3 | `778899` | blue | ordinary fill style 3, per OOXML |
+| 1001 | `CC00CC` | `CC00CC` | background style 1 with placeholder substitution |
+| 1002 | green | green | background style 2 |
+| 1003 | `778899` | `778899` | background style 3 with theme color |
+
+All nonwhite cases in this table rendered white before this increment. The differences in the first three positive indices are intentional and are covered by tests using different ordinary and background style lists.
+
+### Color maps
+
+The map fixture assigns `bg1` to `accent1` (`112233`) in the master, `accent2` (`445566`) in the layout override, and `accent3` (`778899`) in the slide override. Both engines use the layout override when no slide override is present, and the slide override when present. This also applies when the background is inherited from a layout or master and when the reference color supplies `bg1` through `phClr`.
+
+With explicit slide `a:masterClrMapping`, Aspose still uses the layout override in the tested fixture. ShapeCrawler uses the master's `112233`, following the documented [MasterColorMapping rule](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.mastercolormapping?view=openxml-3.0.1). This is a second recorded specification/reference difference. A layout that itself selects master mapping also resolves to `112233` in both engines.
+
+New regressions check ordinary/background style indices, no-background and missing-index behavior, inherited references, placeholder substitution, map precedence, theme-owned pictures, and XML preservation. Existing image rendering and public API checks remain in place. No public SDK objects or new public APIs are introduced.
+
+Theme override parts, color transforms (including tint, shade, luminance and alpha), gradients and effects remain open. The master theme is the current style/color source. The previously recorded picture edge-resampling difference remains unchanged.
 
 ## Remaining increments
 
 Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split a topic further when needed to stay inside the time limit.
 
-1. Theme background-style references and color-map resolution.
+1. Theme override parts and remaining color transforms.
 2. Master/layout drawing order and placeholder visibility.
 3. Additional preset geometry, then custom paths.
 4. Fill and outline variants, including gradients and transparency.
