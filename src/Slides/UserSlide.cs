@@ -165,10 +165,16 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
         => this.Shapes.Shape<T>(name);
 
     /// <inheritdoc/>
-    public abstract void SaveImageTo(string file);
+    public abstract void SaveImage(string file);
 
     /// <inheritdoc/>
-    public abstract void SaveImageTo(Stream stream);
+    public abstract void SaveImage(Stream stream);
+
+    /// <inheritdoc/>
+    public abstract void SaveImage(Stream stream, int width, int height);
+
+    /// <inheritdoc/>
+    public abstract void SaveImage(string file, int width, int height);
 
     public T First<T>() => (T)this.Shapes.First(shape => shape is T);
 

@@ -160,6 +160,19 @@ pres.Slide(1).Shapes.AddOleObject(50, 60, 300, 200, workbook, OleObjectType.Exce
 pres.Save("with-workbook.pptx");
 ```
 
+### Export a slide image
+
+```csharp
+using var pres = new Presentation("presentation.pptx");
+#pragma warning disable EXP001 // Slide image generation is experimental.
+pres.Slide(1).SaveImage("thumbnail.png", width: 320, height: 180);
+using var image = new MemoryStream();
+pres.Slide(1).SaveImage(image, width: 1280, height: 720);
+#pragma warning restore EXP001
+```
+
+The dimensions are pixels. The slide stretches to fill the requested PNG, so use the slide's aspect ratio to avoid distortion. The stream remains open and is rewound when seekable. Existing overloads without dimensions retain their 96 DPI output. Rendering support is experimental; see the [investigation and staged implementation plan](docs/slide-image-rendering.md).
+
 ### Set audio timing
 
 ```csharp
