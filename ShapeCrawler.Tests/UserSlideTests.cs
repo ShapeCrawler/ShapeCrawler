@@ -19,6 +19,150 @@ namespace ShapeCrawler.Tests;
 public class UserSlideTests : SCTest
 {
     [Test]
+    public void Name_returns_empty_string_when_attribute_is_absent()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        using var stream = new MemoryStream();
+        pres.Save(stream);
+        using (var document = PresentationDocument.Open(stream, true))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.CommonSlideData!.Name = null;
+        }
+
+        using var reopened = new Presentation(stream);
+
+        // Act
+        var name = reopened.Slides[0].Name;
+
+        // Assert
+        name.Should().BeEmpty();
+    }
+
+    [TestCase("Quarterly review")]
+    [TestCase("Обзор & <2026>")]
+    [TestCase("")]
+    public void Name_round_trips_through_common_slide_data(string name)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        pres.Slides[0].Name = "Previous name";
+
+        // Act
+        pres.Slides[0].Name = name;
+
+        // Assert
+        pres.Slides[0].Name.Should().Be(name);
+        using var stream = new MemoryStream();
+        pres.Save(stream);
+        using (var document = PresentationDocument.Open(stream, false))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.CommonSlideData!.Name!.Value.Should().Be(name);
+        }
+
+        using var reopened = new Presentation(stream);
+        reopened.Slides[0].Name.Should().Be(name);
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
+    public void Name_rejects_null_without_changing_existing_name()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Name = "Original";
+
+        // Act
+        var setName = () => slide.Name = null!;
+
+        // Assert
+        setName.Should().Throw<ArgumentNullException>();
+        slide.Name.Should().Be("Original");
+    }
+
+    [Test]
+    public void ShowMasterShapes_defaults_to_true_when_attribute_is_absent()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        using var stream = new MemoryStream();
+        pres.Save(stream);
+        using (var document = PresentationDocument.Open(stream, true))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.ShowMasterShapes = null;
+        }
+
+        using var reopened = new Presentation(stream);
+
+        // Act
+        var showMasterShapes = reopened.Slides[0].ShowMasterShapes;
+
+        // Assert
+        showMasterShapes.Should().BeTrue();
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ShowMasterShapes_round_trips_without_affecting_visibility(bool showMasterShapes)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Hide();
+        slide.ShowMasterShapes = !showMasterShapes;
+
+        // Act
+        slide.ShowMasterShapes = showMasterShapes;
+
+        // Assert
+        slide.ShowMasterShapes.Should().Be(showMasterShapes);
+        using var stream = new MemoryStream();
+        pres.Save(stream);
+        using (var document = PresentationDocument.Open(stream, false))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.ShowMasterShapes!.Value.Should().Be(showMasterShapes);
+        }
+
+        using var reopened = new Presentation(stream);
+        reopened.Slides[0].ShowMasterShapes.Should().Be(showMasterShapes);
+        reopened.Slides[0].Hidden().Should().BeTrue();
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Show_includes_slide_in_show_and_survives_reopening(bool initiallyHidden)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.ShowMasterShapes = false;
+        if (initiallyHidden)
+        {
+            slide.Hide();
+        }
+
+        // Act
+        slide.Show();
+        slide.Show();
+
+        // Assert
+        slide.Hidden().Should().BeFalse();
+        using var stream = new MemoryStream();
+        pres.Save(stream);
+        using (var document = PresentationDocument.Open(stream, false))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.Show!.Value.Should().BeTrue();
+        }
+
+        using var reopened = new Presentation(stream);
+        reopened.Slides[0].Hidden().Should().BeFalse();
+        reopened.Slides[0].ShowMasterShapes.Should().BeFalse();
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange

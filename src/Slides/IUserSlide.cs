@@ -14,6 +14,17 @@ namespace ShapeCrawler;
 public interface IUserSlide
 {
     /// <summary>
+    ///     Gets or sets the slide name. Returns an empty string when no name is assigned.
+    /// </summary>
+    string Name { get; set; }
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether shapes from the master slide are shown.
+    ///     The default is <see langword="true"/>.
+    /// </summary>
+    bool ShowMasterShapes { get; set; }
+
+    /// <summary>
     ///     Gets or sets custom data. Returns <see langword="null"/> if the custom data is not presented.
     /// </summary>
     string? CustomData { get; set; }
@@ -52,6 +63,11 @@ public interface IUserSlide
     ///     Hides slide.
     /// </summary>
     void Hide();
+
+    /// <summary>
+    ///     Includes the slide in the slide show, reversing <see cref="Hide"/>.
+    /// </summary>
+    void Show();
 
     /// <summary>
     ///     Gets a value indicating whether the slide is hidden.

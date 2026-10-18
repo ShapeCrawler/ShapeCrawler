@@ -20,6 +20,22 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
 
     public IUserSlideShapeCollection Shapes => shapes;
 
+    public string Name
+    {
+        get => slidePart.Slide!.CommonSlideData!.Name?.Value ?? string.Empty;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            slidePart.Slide!.CommonSlideData!.Name = value;
+        }
+    }
+
+    public bool ShowMasterShapes
+    {
+        get => slidePart.Slide!.ShowMasterShapes?.Value ?? true;
+        set => slidePart.Slide!.ShowMasterShapes = value;
+    }
+
     public int Number
     {
         get
@@ -142,6 +158,8 @@ internal abstract class UserSlide(ILayoutSlide layoutSlide, UserSlideShapeCollec
     }
 
     public bool Hidden() => slidePart.Slide!.Show is not null && !slidePart.Slide!.Show.Value;
+
+    public void Show() => slidePart.Slide!.Show = true;
 
     public void Hide()
     {
