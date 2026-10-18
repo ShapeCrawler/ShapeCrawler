@@ -245,6 +245,86 @@ Regression coverage extends `SlideTransitionTests` and
 `UpdatedSlideCollectionTests`, with saved-PPTX inspection, save/reopen,
 schema validation, import independence, and `PublicApiTests` encapsulation.
 
+## Iteration 4: orientation, wheel spokes, and black-screen options
+
+The narrow comparison identified missing equivalents for
+`IOrientationTransition.Direction`, `ISplitTransition.Orientation`,
+`IWheelTransition.Spokes`, and `IOptionalBlackTransition.FromBlack`.
+They are now exposed through the existing `ISlideTransition`:
+
+```csharp
+slide.Transition.Type = SlideTransitionType.Split;
+slide.Transition.Orientation = SlideTransitionOrientation.Vertical;
+slide.Transition.Type = SlideTransitionType.Wheel;
+slide.Transition.WheelSpokes = 8;
+slide.Transition.Type = SlideTransitionType.Fade;
+slide.Transition.FromBlack = true;
+```
+
+| ShapeCrawler property | Applicable effects | Saved attribute | Missing-attribute default |
+| --- | --- | --- | --- |
+| `Orientation` | Blinds, Checker, Comb, RandomBar | `dir="horz"` or `dir="vert"` | Horizontal |
+| `Orientation` | Split | `orient="horz"` or `orient="vert"` | Horizontal |
+| `WheelSpokes` | Wheel | `spokes` (unsigned integer) | 4 |
+| `FromBlack` | Fade, Cut | `thruBlk` (boolean) | false |
+
+Getters do not create attributes. These settings leave type, speed, explicit
+custom duration, advance timing, sounds, and other effect parameters intact.
+All Choice/Fallback branches must support the requested parameter; otherwise
+getters and setters throw `InvalidOperationException`. Setters validate the
+complete branch set before making any changes. An invalid orientation enum
+throws `ArgumentOutOfRangeException` without mutation. Set the applicable Type
+before accessing an effect-specific property.
+
+### Reference evidence and compatibility
+
+The reference assembly and SHA-256 remain those recorded in iteration 1.
+REA 6.7.0 was invoked with these declaring interfaces:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.SlideShow.IWheelTransition --type Aspose.Slides.SlideShow.IOptionalBlackTransition --type Aspose.Slides.SlideShow.IOrientationTransition --type Aspose.Slides.SlideShow.ISplitTransition --json
+```
+
+Evidence `ev_92e1ab4ba3729522d417c055e8af433156be5b01fdda94ce7a3737e2d8a840b1`
+reports unavailable member coverage at the same 64 MiB metadata budget. No
+method-body findings are inferred. Package API documentation identified the
+properties; an unmodified evaluation-mode runtime probe saved each parameter
+value, inspected all descendant `p:transition` elements, and reopened with Aspose.
+
+Observed reference cases:
+
+- Horizontal and Vertical survived save/reopen for each of the five oriented
+  effects. Split used `orient`; the other four used `dir`. Aspose omitted the
+  orientation attribute for Horizontal and wrote `vert` for Vertical.
+- Both boolean states survived for Fade and Cut. True wrote `thruBlk="1"`;
+  false omitted the attribute.
+- Wheel values 0, 1, 2, 3, 4, 5, and 8 survived. Four was serialized without
+  a `spokes` attribute and reopened as 4. Aspose accepted 5 as well as the
+  commonly used spoke counts.
+
+Fresh Aspose Blinds/RandomBar/Split objects initially chose Vertical, and
+fresh Wheel chose 0. ShapeCrawler continues to use the schema defaults
+documented in iteration 3: Horizontal and four spokes. Explicit values are
+interoperable; the two libraries' fresh-effect defaults are not claimed to be
+identical. The [Microsoft wheel documentation](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.wheeltransition)
+defines `spokes` as an unsigned integer, with examples for 1, 2, 3, 4, and 8.
+
+A separate compatibility probe generated ShapeCrawler files and loaded them
+with Aspose, checking the corresponding `SlideShowTransition.Value` interface
+and the retained 5000 ms advance timer. All **22 cases** passed: ten orientation
+cases (five effects times two orientations), four black-screen cases (two
+effects times two booleans), and eight spoke counts (0, 1, 2, 3, 4, 5, 8,
+and `uint.MaxValue`). Use the iteration 3 compatibility loop with the inputs
+above; inspect `IOrientationTransition.Direction` or `ISplitTransition.Orientation`,
+`IOptionalBlackTransition.FromBlack`, and `IWheelTransition.Spokes` respectively.
+
+Regression coverage in `SlideTransitionTests` checks saved XML, defaults without
+mutation, save/reopen, schema validity, parameter applicability, invalid enums,
+compatible Choice/Fallback updates, rejection before partial branch updates,
+and preservation of duration and sound. `UpdatedSlideCollectionTests` verifies
+imported wheel options and source independence. Rendering remains excluded;
+no images, playback comparisons, or production Aspose dependency are involved.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current

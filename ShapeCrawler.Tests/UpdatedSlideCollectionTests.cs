@@ -11,6 +11,29 @@ namespace ShapeCrawler.Tests;
 public class UpdatedSlideCollectionTests : SCTest
 {
     [Test]
+    public void Add_preserves_wheel_options_and_edits_imported_slide_independently()
+    {
+        // Arrange
+        using var source = new Presentation(p => p.Slide());
+        source.Slides[0].Transition.Type = SlideTransitionType.Wheel;
+        source.Slides[0].Transition.WheelSpokes = 8;
+        using var destination = new Presentation(p => p.Slide());
+
+        // Act
+        destination.Slides.Add(source.Slides[0]);
+        destination.Slides[1].Transition.WheelSpokes = 3;
+
+        // Assert
+        source.Slides[0].Transition.WheelSpokes.Should().Be(8);
+        using var saved = new MemoryStream();
+        destination.Save(saved);
+        using var reopened = new Presentation(saved);
+        reopened.Slides[1].Transition.Type.Should().Be(SlideTransitionType.Wheel);
+        reopened.Slides[1].Transition.WheelSpokes.Should().Be(3);
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
     public void Add_preserves_slide_advance_settings_independently_of_source()
     {
         // Arrange

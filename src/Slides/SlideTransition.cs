@@ -76,6 +76,64 @@ internal sealed class SlideTransition(SlidePart slidePart) : ISlideTransition
         }
     }
 
+    public SlideTransitionOrientation Orientation
+    {
+        get
+        {
+            var effect = this.OrientedEffects()[0];
+            var direction = effect is P.SplitTransition split
+                ? split.Orientation?.Value
+                : ((P.OrientationTransitionType)effect).Direction?.Value;
+            return direction == P.DirectionValues.Vertical
+                ? SlideTransitionOrientation.Vertical
+                : SlideTransitionOrientation.Horizontal;
+        }
+        set
+        {
+            if (!Enum.IsDefined(value))
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            var direction = value == SlideTransitionOrientation.Vertical ? P.DirectionValues.Vertical : P.DirectionValues.Horizontal;
+            foreach (var effect in this.OrientedEffects())
+            {
+                if (effect is P.SplitTransition split)
+                {
+                    split.Orientation = direction;
+                }
+                else
+                {
+                    ((P.OrientationTransitionType)effect).Direction = direction;
+                }
+            }
+        }
+    }
+
+    public uint WheelSpokes
+    {
+        get => ((P.WheelTransition)this.ApplicableEffects(nameof(this.WheelSpokes), SlideTransitionType.Wheel)[0]).Spokes?.Value ?? 4U;
+        set
+        {
+            foreach (var effect in this.ApplicableEffects(nameof(this.WheelSpokes), SlideTransitionType.Wheel))
+            {
+                ((P.WheelTransition)effect).Spokes = value;
+            }
+        }
+    }
+
+    public bool FromBlack
+    {
+        get => ((P.OptionalBlackTransitionType)this.ApplicableEffects(nameof(this.FromBlack), SlideTransitionType.Fade, SlideTransitionType.Cut)[0]).ThroughBlack?.Value ?? false;
+        set
+        {
+            foreach (var effect in this.ApplicableEffects(nameof(this.FromBlack), SlideTransitionType.Fade, SlideTransitionType.Cut))
+            {
+                ((P.OptionalBlackTransitionType)effect).ThroughBlack = value;
+            }
+        }
+    }
+
     public bool AdvanceOnClick
     {
         get => this.Transitions().FirstOrDefault()?.AdvanceOnClick?.Value ?? true;
@@ -182,6 +240,21 @@ internal sealed class SlideTransition(SlidePart slidePart) : ISlideTransition
         SlideTransitionType.Zoom => new P.ZoomTransition(),
         _ => null
     };
+
+    private OpenXmlElement[] OrientedEffects() => this.ApplicableEffects(nameof(this.Orientation),
+        SlideTransitionType.Blinds, SlideTransitionType.Checker, SlideTransitionType.Comb,
+        SlideTransitionType.RandomBar, SlideTransitionType.Split);
+
+    private OpenXmlElement[] ApplicableEffects(string property, params SlideTransitionType[] types)
+    {
+        var transitions = this.Transitions().ToArray();
+        if (transitions.Length == 0 || transitions.Any(transition => !types.Contains(EffectType(transition))))
+        {
+            throw new InvalidOperationException($"{property} is not available for the current effect in every transition branch.");
+        }
+
+        return [.. transitions.Select(transition => Effects(transition).Single())];
+    }
 
     private IEnumerable<P.Transition> Transitions() => slidePart.Slide!.Descendants<P.Transition>();
 
