@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Assets;
 using ShapeCrawler.Fonts;
@@ -139,6 +140,21 @@ public sealed class Presentation : IPresentation
 
     /// <inheritdoc />
     public void ReplaceFont(string oldName, string newName) => new FontReplacement(this.PresDocument).Replace(oldName, newName);
+
+    /// <inheritdoc />
+    public int HighlightText(string text, Color color, bool ignoreCase = false)
+    {
+        TextHighlighting.Validate(text, color);
+        return this.Slides.Sum(slide => slide.GetTexts().Sum(box => box.HighlightText(text, color, ignoreCase)));
+    }
+
+    /// <inheritdoc />
+    public int HighlightRegex(Regex regex, Color color)
+    {
+        ArgumentNullException.ThrowIfNull(regex);
+        TextHighlighting.ValidateColor(color);
+        return this.Slides.Sum(slide => slide.GetTexts().Sum(box => box.HighlightRegex(regex, color)));
+    }
 
     /// <summary>
     ///     Starts a fluent creation of a new presentation.

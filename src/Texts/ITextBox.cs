@@ -4,6 +4,7 @@
 namespace ShapeCrawler;
 
 using ShapeCrawler.Texts;
+using System.Text.RegularExpressions;
 #pragma warning restore IDE0130
 
 /// <summary>
@@ -79,6 +80,19 @@ public interface ITextBox
     ///     Newlines in the replacement become soft line breaks. Returns the number of replacements.
     /// </summary>
     int ReplaceText(string oldText, string newText, bool ignoreCase = false);
+
+    /// <summary>
+    ///     Highlights non-overlapping literal matches and returns their count, preserving text and other formatting.
+    ///     Uses ordinal matching, case-sensitive by default. Matches can span runs, but not paragraphs, breaks, or fields.
+    ///     Color.NoColor removes direct highlight on matched text. Fields are not searched.
+    /// </summary>
+    int HighlightText(string text, Color color, bool ignoreCase = false);
+
+    /// <summary>
+    ///     Highlights nonempty matches using the supplied regex and its options/timeout; returns the match count.
+    ///     Uses the same scope and formatting rules as HighlightText. A match cannot split a Unicode surrogate pair.
+    /// </summary>
+    int HighlightRegex(Regex regex, Color color);
 
     /// <summary>
     ///     Sets Markdown text.

@@ -5,6 +5,7 @@ using System.Text;
 using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -20,6 +21,64 @@ namespace ShapeCrawler.Tests;
 public class PresentationTests : SCTest
 {
     private readonly Fixtures fixtures = new();
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void HighlightText_and_HighlightRegex_process_slides_groups_tables_but_exclude_notes_and_masters(bool regex)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTextBox(0, 0, 100, 50, "a TAG b");
+        slide.Shapes.AddTextBox(0, 50, 100, 50, "a TAG b");
+        var first = slide.Shapes.Last();
+        slide.Shapes.AddTextBox(100, 50, 100, 50, "a TAG b");
+        slide.Shapes.Group([first, slide.Shapes.Last()]);
+        slide.Shapes.AddTable(0, 100, 1, 1);
+        slide.Shapes.Last().Table[0, 0].TextBox.SetText("a TAG b");
+        slide.AddNotes(["TAG"]);
+        var masterBox = pres.MasterSlides[0].Shapes.First().TextBox;
+        masterBox.AutofitType = AutofitType.None;
+        masterBox.SetText("TAG");
+        pres.Slides.Add(1);
+        pres.Slides[1].Shapes.AddTextBox(0, 0, 100, 50, "a TAG b");
+        var before = pres.Slides.SelectMany(item => item.GetTexts()).Select(box => box.Text).ToArray();
+
+        // Act
+        var count = regex ? pres.HighlightRegex(new Regex(@"\bTAG\b"), new Color("FFFF00"))
+            : pres.HighlightText("TAG", new Color("FFFF00"));
+
+        // Assert
+        count.Should().Be(5);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var reopened = new Presentation(saved);
+        var boxes = reopened.Slides.SelectMany(item => item.GetTexts()).ToArray();
+        boxes.Select(box => box.Text).Should().Equal(before);
+        boxes.SelectMany(box => box.Paragraphs).SelectMany(paragraph => paragraph.Portions)
+            .Where(portion => !portion.TextHighlightColor.IsTransparent).Select(portion => portion.Text)
+            .Should().Equal("TAG", "TAG", "TAG", "TAG", "TAG");
+        reopened.Slides[0].Notes!.Paragraphs[0].Portions[0].TextHighlightColor.IsTransparent.Should().BeTrue();
+        reopened.MasterSlides[0].Shapes.First().TextBox.Paragraphs[0].Portions[0].TextHighlightColor.IsTransparent.Should().BeTrue();
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
+    public void Highlighting_validates_arguments_even_when_the_presentation_has_no_text_boxes()
+    {
+        // Arrange
+        using var pres = new Presentation();
+
+        // Act
+        var literal = () => pres.HighlightText(string.Empty, Color.Black);
+        var regex = () => pres.HighlightRegex(null!, Color.Black);
+        var color = () => pres.HighlightRegex(new Regex("x"), new Color("FFFF00") { Alpha = -1 });
+
+        // Assert
+        literal.Should().Throw<ArgumentException>();
+        regex.Should().Throw<ArgumentNullException>();
+        color.Should().Throw<ArgumentOutOfRangeException>();
+    }
 
     [Test]
     public void ReplaceFont_updates_group_table_and_notes_fonts_without_changing_text_or_formatting()
