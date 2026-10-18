@@ -11,6 +11,7 @@
     <PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="15.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="NUnit" Version="5.0.0" />
+    <PackageVersion Include="OpenMcdf" Version="3.3.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.15.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.3.1" />
     <PackageVersion Include="SkiaSharp" Version="4.153.1" />

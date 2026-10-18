@@ -219,6 +219,34 @@ public sealed class Presentation : IPresentation
     }
 
     /// <inheritdoc />
+    public void Save(Stream stream, string password)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        PresentationEncryption.ValidatePassword(password);
+        if (!stream.CanWrite)
+        {
+            throw new ArgumentException("The destination stream must be writable.", nameof(stream));
+        }
+
+        using var package = new MemoryStream();
+        this.Save(package);
+        package.Position = 0;
+        PresentationEncryption.Save(package, stream, password);
+    }
+
+    /// <inheritdoc />
+    public void Save(string file, string password)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(file);
+        PresentationEncryption.ValidatePassword(password);
+        using var encrypted = new MemoryStream();
+        this.Save(encrypted, password);
+        using var destination = new FileStream(file, FileMode.Create, FileAccess.Write);
+        encrypted.Position = 0;
+        encrypted.CopyTo(destination);
+    }
+
+    /// <inheritdoc />
     public string AsMarkdown()
     {
         var markdown = new StringBuilder();

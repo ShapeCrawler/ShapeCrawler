@@ -2,18 +2,182 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text;
+using System.Buffers.Binary;
+using System.Security.Cryptography;
+using System.Xml.Linq;
 using DocumentFormat.OpenXml.Presentation;
 using Fixture;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Presentations;
+using OpenMcdf;
 
 namespace ShapeCrawler.Tests;
 
 public class PresentationTests : SCTest
 {
     private readonly Fixtures fixtures = new();
+
+    [TestCase(false, "test password")]
+    [TestCase(true, "test password")]
+    [TestCase(false, "Пароль 🔒 日本語")]
+    [TestCase(true, "Пароль 🔒 日本語")]
+    public void Save_encrypts_the_entire_presentation(bool toFile, string password)
+    {
+        // Arrange
+        using var source = TestAsset("009_table.pptx");
+        var originalBytes = source.ToArray();
+        using IPresentation presentation = new Presentation(source);
+        presentation.SlideWidth = 777;
+        using var destination = new MemoryStream();
+        var file = Path.Combine(TestContext.CurrentContext.WorkDirectory, $"{Guid.NewGuid()}.pptx");
+        try
+        {
+            // Act
+            if (toFile)
+            {
+                presentation.Save(file, password);
+            }
+            else
+            {
+                presentation.Save(destination, password);
+            }
+
+            // Assert
+            var encryptedBytes = toFile ? File.ReadAllBytes(file) : destination.ToArray();
+            using var encrypted = new MemoryStream(encryptedBytes);
+            DocumentFormat.OpenXml.Packaging.OpenXmlPackage.IsEncryptedOfficeFile(encrypted).Should().BeTrue();
+            using var decrypted = DecryptPresentation(encryptedBytes, password);
+            using var reopened = new Presentation(decrypted);
+            reopened.SlideWidth.Should().Be(777);
+            reopened.Slides.Count.Should().Be(presentation.Slides.Count);
+            using var sdk = DocumentFormat.OpenXml.Packaging.PresentationDocument.Open(decrypted, false);
+            sdk.PresentationPart!.SlideParts.Should().HaveCount(presentation.Slides.Count);
+            source.ToArray().Should().Equal(originalBytes);
+            destination.CanWrite.Should().BeTrue();
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
+    [Test]
+    public void Save_uses_fresh_random_keys_and_rejects_the_wrong_password()
+    {
+        // Arrange
+        using var presentation = new Presentation();
+        using var first = new MemoryStream();
+        using var second = new MemoryStream();
+
+        // Act
+        presentation.Save(first, "correct password");
+        presentation.Save(second, "correct password");
+
+        // Assert
+        first.ToArray().Should().NotEqual(second.ToArray());
+        Action decrypt = () => DecryptPresentation(first.ToArray(), "wrong password").Dispose();
+        decrypt.Should().Throw<CryptographicException>();
+        Action openWithoutPassword = () => new Presentation(first).Dispose();
+        openWithoutPassword.Should().Throw<SCException>();
+    }
+
+    [TestCase(1)]
+    [TestCase(255)]
+    public void Save_accepts_password_length_boundaries(int length)
+    {
+        // Arrange
+        using var presentation = new Presentation(p => p.Slide());
+        using var destination = new MemoryStream();
+        var password = new string('a', length);
+
+        // Act
+        presentation.Save(destination, password);
+
+        // Assert
+        using var decrypted = DecryptPresentation(destination.ToArray(), password);
+        using var reopened = new Presentation(decrypted);
+        reopened.Slides.Should().ContainSingle();
+    }
+
+    [Test]
+    public void Save_can_export_plain_pptx_after_encrypting()
+    {
+        // Arrange
+        using var presentation = new Presentation(p => p.Slide());
+        using var encrypted = new MemoryStream();
+        using var plain = new MemoryStream();
+
+        // Act
+        presentation.Save(encrypted, "password");
+        presentation.SlideWidth = 888;
+        presentation.Save(plain);
+
+        // Assert
+        using var reopened = new Presentation(plain);
+        reopened.SlideWidth.Should().Be(888);
+        using var decrypted = DecryptPresentation(encrypted.ToArray(), "password");
+        using var earlier = new Presentation(decrypted);
+        earlier.SlideWidth.Should().NotBe(888);
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("too long")]
+    public void Save_rejects_invalid_password_without_changing_the_destination(string password)
+    {
+        // Arrange
+        using var presentation = new Presentation();
+        using var destination = new MemoryStream(new byte[] { 1, 2, 3 });
+        var file = Path.Combine(TestContext.CurrentContext.WorkDirectory, $"{Guid.NewGuid()}.pptx");
+        File.WriteAllBytes(file, new byte[] { 1, 2, 3 });
+        if (password == "too long")
+        {
+            password = new string('a', 256);
+        }
+
+        try
+        {
+            // Act
+            Action saveStream = () => presentation.Save(destination, password);
+            Action saveFile = () => presentation.Save(file, password);
+
+            // Assert
+            saveStream.Should().Throw<ArgumentException>();
+            saveFile.Should().Throw<ArgumentException>();
+            destination.ToArray().Should().Equal(1, 2, 3);
+            File.ReadAllBytes(file).Should().Equal(1, 2, 3);
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
+    [Test]
+    public void Save_replaces_existing_stream_content_and_validates_destinations()
+    {
+        // Arrange
+        using var presentation = new Presentation(p => p.Slide());
+        using var destination = new MemoryStream();
+        destination.SetLength(1024 * 1024);
+        destination.Position = 123;
+        using var readOnly = new MemoryStream(new byte[1], writable: false);
+
+        // Act
+        presentation.Save(destination, "password");
+        Action saveReadOnly = () => presentation.Save(readOnly, "password");
+        Action saveNull = () => presentation.Save((Stream)null!, "password");
+
+        // Assert
+        destination.Length.Should().BeLessThan(1024 * 1024);
+        using var decrypted = DecryptPresentation(destination.ToArray(), "password");
+        using var reopened = new Presentation(decrypted);
+        reopened.Slides.Should().ContainSingle();
+        saveReadOnly.Should().Throw<ArgumentException>();
+        saveNull.Should().Throw<ArgumentNullException>();
+    }
 
     [TestCase(false)]
     [TestCase(true)]
@@ -1023,5 +1187,72 @@ public class PresentationTests : SCTest
 
         // Assert
         accessUnavailableSlide.Should().Throw<Exception>();
+    }
+
+    private static MemoryStream DecryptPresentation(byte[] bytes, string password)
+    {
+        using var container = new MemoryStream(bytes);
+        using var root = RootStorage.Open(container);
+        using var info = root.OpenStream("EncryptionInfo");
+        using var reader = new BinaryReader(info);
+        reader.ReadUInt16().Should().Be(4);
+        reader.ReadUInt16().Should().Be(4);
+        reader.ReadUInt32().Should().Be(64);
+        var xml = XDocument.Load(info);
+        var keyData = xml.Descendants().Single(x => x.Name.LocalName == "keyData");
+        var passwordData = xml.Descendants().Single(x => x.Name.LocalName == "encryptedKey");
+        keyData.Attribute("keyBits")!.Value.Should().Be("256");
+        keyData.Attribute("hashAlgorithm")!.Value.Should().Be("SHA512");
+        var salt = Convert.FromBase64String(passwordData.Attribute("saltValue")!.Value);
+        byte[] Hash(byte[] first, byte[] second) => SHA512.HashData(first.Concat(second).ToArray());
+        byte[] Value(XElement element, string name) => Convert.FromBase64String(element.Attribute(name)!.Value);
+        byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            using var aes = Aes.Create();
+            aes.Key = key;
+            return aes.DecryptCbc(data, iv, PaddingMode.None);
+        }
+
+        var hash = Hash(salt, Encoding.Unicode.GetBytes(password));
+        for (var i = 0; i < int.Parse(passwordData.Attribute("spinCount")!.Value, CultureInfo.InvariantCulture); i++)
+        {
+            var counter = new byte[4];
+            BinaryPrimitives.WriteInt32LittleEndian(counter, i);
+            hash = Hash(counter, hash);
+        }
+
+        byte[] PasswordValue(string attribute, string block) => Decrypt(
+            Value(passwordData, attribute), Hash(hash, Convert.FromHexString(block))[..32], salt);
+        var verifier = PasswordValue("encryptedVerifierHashInput", "FEA7D2763B4B9E79");
+        var expectedHash = PasswordValue("encryptedVerifierHashValue", "D7AA0F6D3061344E");
+        if (!CryptographicOperations.FixedTimeEquals(SHA512.HashData(verifier), expectedHash))
+        {
+            throw new CryptographicException("Invalid password.");
+        }
+
+        var key = PasswordValue("encryptedKeyValue", "146E0BE7ABACD0D6");
+        var dataSalt = Value(keyData, "saltValue");
+        using var payload = root.OpenStream("EncryptedPackage");
+        using var encryptedBytes = new MemoryStream();
+        payload.CopyTo(encryptedBytes);
+        var encrypted = encryptedBytes.ToArray();
+        var integrity = xml.Descendants().Single(x => x.Name.LocalName == "dataIntegrity");
+        var hmacKey = Decrypt(Value(integrity, "encryptedHmacKey"), key,
+            Hash(dataSalt, Convert.FromHexString("5FB2AD010CB9E1F6"))[..16]);
+        var hmacValue = Decrypt(Value(integrity, "encryptedHmacValue"), key,
+            Hash(dataSalt, Convert.FromHexString("A0677F02B22C8433"))[..16]);
+        HMACSHA512.HashData(hmacKey, encrypted).Should().Equal(hmacValue);
+        var size = BinaryPrimitives.ReadInt64LittleEndian(encrypted);
+        var result = new MemoryStream();
+        for (var offset = 8; offset < encrypted.Length; offset += 4096)
+        {
+            var block = new byte[4];
+            BinaryPrimitives.WriteInt32LittleEndian(block, (offset - 8) / 4096);
+            var decrypted = Decrypt(encrypted[offset..Math.Min(offset + 4096, encrypted.Length)], key, Hash(dataSalt, block)[..16]);
+            result.Write(decrypted, 0, (int)Math.Min(decrypted.Length, size - result.Length));
+        }
+
+        result.Position = 0;
+        return result;
     }
 }

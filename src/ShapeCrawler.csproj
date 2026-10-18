@@ -90,6 +90,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" />
     <PackageReference Include="Markdig" />
+    <PackageReference Include="OpenMcdf" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" />
     <PackageReference Include="DocumentFormat.OpenXml.Linq" />
     <PackageReference Include="SkiaSharp" />

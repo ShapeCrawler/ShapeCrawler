@@ -76,6 +76,24 @@ addedShape.TextBox.SetText("Hello World!");
 pres.Save("output.pptx");
 ```
 
+### Password encryption
+
+Encrypt an entire presentation with a password required to open it in PowerPoint:
+
+```csharp
+using var pres = new Presentation("input.pptx");
+pres.Save("protected.pptx", "your password");
+
+using var output = new MemoryStream();
+pres.Save(output, "your password"); // The output stream remains open.
+```
+
+These overloads use Office Agile encryption (AES-256, SHA-512, 100,000 password
+hash iterations). Passwords must contain 1 to 255 characters. Encryption applies
+to the whole file; individual slides cannot be encrypted separately. Opening
+encrypted presentations with ShapeCrawler is not supported; decrypt them in
+PowerPoint before editing. Ordinary `Save` overloads produce unencrypted PPTX files.
+
 ### Add Markdown as editable text
 
 ```csharp

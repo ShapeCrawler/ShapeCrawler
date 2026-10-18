@@ -66,6 +66,22 @@ public interface IPresentation : IDisposable
     public void Save(string file);
 
     /// <summary>
+    ///     Saves a password-encrypted presentation to the specified stream, leaving it open.
+    ///     Uses Office Agile encryption with AES-256 and SHA-512.
+    /// </summary>
+    /// <param name="stream">The writable destination stream.</param>
+    /// <param name="password">The password required to open the entire presentation (1 to 255 characters).</param>
+    void Save(Stream stream, string password);
+
+    /// <summary>
+    ///     Saves a password-encrypted presentation to the specified file.
+    ///     Uses Office Agile encryption with AES-256 and SHA-512.
+    /// </summary>
+    /// <param name="file">The destination file.</param>
+    /// <param name="password">The password required to open the entire presentation (1 to 255 characters).</param>
+    void Save(string file, string password);
+
+    /// <summary>
     ///     Returns the presentation as a string in Markdown format.
     /// </summary>
     public string AsMarkdown();
