@@ -1,14 +1,10 @@
 # Changelog  
 
-## Unreleased
+## Version 0.82.0 - 2026-10-18
 
-- Reduced memory use of both `Slides.Add` import overloads by removing the whole-source presentation clone ([#1311](https://github.com/ShapeCrawler/ShapeCrawler/issues/1311)). Stopped rewriting existing slide masters on every append. Added constrained-memory stress coverage and documented remaining architecture and memory limits.
-
-- Added `IUserSlideShapeCollection.AddOleObject()` to embed Word, Excel, and PowerPoint documents on slides with a preview image ([#623](https://github.com/ShapeCrawler/ShapeCrawler/issues/623), [#646](https://github.com/ShapeCrawler/ShapeCrawler/issues/646)).
-
-- Added `IMedia.StartMode` to read and set audio playback to In Click Sequence, Automatically, or When Clicked On ([#581](https://github.com/ShapeCrawler/ShapeCrawler/issues/581)).
-
-- Breaking: removed `IShape.SdkOpenXmlElement`, `IPresentation.GetSdkPresentationDocument()`, and `IUserSlide.GetSdkPresentationPart()` to keep SDK elements and packages internal. For independent XML inspection, save the presentation with `Save(Stream)` and open that PPTX with the Open XML SDK.
+🍀Added `IUserSlideShapeCollection.AddOleObject()` to embed Word, Excel, and PowerPoint documents on slides with a preview image ([#623](https://github.com/ShapeCrawler/ShapeCrawler/issues/623), [#646](https://github.com/ShapeCrawler/ShapeCrawler/issues/646))  
+🍀Added `IMedia.StartMode` to read and set audio playback to In Click Sequence, Automatically, or When Clicked On ([#581](https://github.com/ShapeCrawler/ShapeCrawler/issues/581))  
+🐞Reduced memory use of both `Slides.Add` import overloads by removing the whole-source presentation clone ([#1311](https://github.com/ShapeCrawler/ShapeCrawler/issues/1311))  
 
 ## Version 0.81.0 - 2026-10-17
 🍀Added `ISeriesCollection.Add()` to add series to bar/column, line, pie/doughnut, scatter, and area charts [#490](https://github.com/ShapeCrawler/ShapeCrawler/issues/490)  

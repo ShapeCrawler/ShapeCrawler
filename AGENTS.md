@@ -1,5 +1,10 @@
 # Project instructions
 
+## Temporary files
+
+- Store temporary files created by Codex, including build/test logs, diagnostic output, scratch scripts, and intermediate artifacts, under `C:\temp` (prefer a task-specific subfolder), not in the repository.
+- Create the temporary directory when needed. Keep only intended project deliverables in the repository.
+
 ## Encapsulation
 
 - Keep Open XML SDK elements, parts, and packages internal. Do not expose them through public interfaces, constructors, methods, properties, or fields, including collection and generic wrappers.
