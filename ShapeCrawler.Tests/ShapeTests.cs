@@ -9,6 +9,124 @@ namespace ShapeCrawler.Tests;
 [TestFixture]
 public class ShapeTests : SCTest
 {
+    [TestCase("text")]
+    [TestCase("picture")]
+    [TestCase("table")]
+    [TestCase("group")]
+    public void Link_AddFile_round_trips_whole_shape_hyperlinks(string kind)
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation(kind);
+        var shape = pres.Slides[0].Shapes.Last();
+        var id = shape.Id;
+
+        // Act
+        shape.Link.AddFile("https://example.com/report?q=1&lang=en");
+
+        // Assert
+        shape.Link.File.Should().Be("https://example.com/report?q=1&lang=en");
+        shape.Link.SlideNumber.Should().BeNull();
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var part = document.PresentationPart!.SlideParts.Single();
+            var properties = part.Slide.Descendants<P.NonVisualDrawingProperties>().Single(item => item.Id!.Value == id &&
+                item.GetFirstChild<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>() != null);
+            var click = properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>()!;
+            click.Action.Should().BeNull();
+            part.HyperlinkRelationships.Single(item => item.Id == click.Id!.Value).Uri.ToString()
+                .Should().Be("https://example.com/report?q=1&lang=en");
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Last().Link.File.Should().Be("https://example.com/report?q=1&lang=en");
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(1)]
+    [TestCase(2)]
+    public void Link_AddSlideNumber_round_trips_internal_and_self_links(int target)
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation("text");
+        pres.Slides.Add(1);
+        var shape = pres.Slides[0].Shapes.Last();
+
+        // Act
+        shape.Link.AddSlideNumber(target);
+
+        // Assert
+        shape.Link.File.Should().BeNull();
+        shape.Link.SlideNumber.Should().Be(target);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var part = document.PresentationPart!.SlideParts.Single(item => item.Slide.Descendants<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>().Any());
+            var click = part.Slide.Descendants<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>().Single();
+            click.Action!.Value.Should().Be("ppaction://hlinksldjump");
+            var slideId = document.PresentationPart.Presentation.SlideIdList!.Elements<P.SlideId>().ElementAt(target - 1);
+            part.GetPartById(click.Id!).Should().BeSameAs(document.PresentationPart.GetPartById(slideId.RelationshipId!));
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Last().Link.SlideNumber.Should().Be(target);
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
+    public void Link_getters_do_not_create_hyperlink_XML()
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation("text");
+        var shape = pres.Slides[0].Shapes.Last();
+
+        // Act
+        var file = shape.Link.File;
+        var slide = shape.Link.SlideNumber;
+
+        // Assert
+        file.Should().BeNull();
+        slide.Should().BeNull();
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var document = PresentationDocument.Open(saved, false);
+        var part = document.PresentationPart!.SlideParts.Single();
+        part.Slide.Descendants<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>().Should().BeEmpty();
+        part.HyperlinkRelationships.Should().BeEmpty();
+    }
+
+    private static Presentation LinkedShapePresentation(string kind)
+    {
+        var pres = new Presentation(p => p.Slide());
+        var shapes = pres.Slides[0].Shapes;
+        switch (kind)
+        {
+            case "picture":
+                using (var image = TestAsset("10 png image.png"))
+                {
+                    shapes.AddPicture(image);
+                }
+
+                break;
+            case "table":
+                shapes.AddTable(0, 0, 1, 1);
+                break;
+            case "group":
+                shapes.AddTextBox(0, 0, 100, 50, "A");
+                var first = shapes.Last();
+                shapes.AddTextBox(100, 0, 100, 50, "B");
+                shapes.Group([first, shapes.Last()]);
+                break;
+            default:
+                shapes.AddTextBox(0, 0, 100, 50, "Button");
+                break;
+        }
+
+        return pres;
+    }
+
     [TestCase(null, "")]
     [TestCase("", "")]
     [TestCase("A mountain lake", "A mountain lake")]

@@ -69,6 +69,8 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
         set => pShapeTreeElement.NonVisualDrawingProperties().Description = new StringValue(value);
     }
 
+    public IHyperlink Link => new Hyperlink(pShapeTreeElement.NonVisualDrawingProperties());
+
     public bool Hidden
     {
         get
