@@ -10,6 +10,50 @@ public partial class UserSlideShapeCollectionTests
 {
     [TestCase(false)]
     [TestCase(true)]
+    public void Add_copies_rotation_and_visibility_independently_of_source(bool picture)
+    {
+        // Arrange
+        using var source = new Presentation(p => p.Slide());
+        var shapes = source.Slides[0].Shapes;
+        if (picture)
+        {
+            using var image = TestAsset("10 png image.png");
+            shapes.AddPicture(image);
+        }
+        else
+        {
+            shapes.AddTextBox(0, 0, 100, 50, "Text");
+        }
+
+        var original = shapes.Last();
+        original.Rotation = -45;
+        original.Hidden = true;
+        using var destination = new Presentation(p => p.Slide());
+
+        // Act
+        destination.Slides[0].Shapes.Add(original);
+
+        // Assert
+        using var saved = new MemoryStream();
+        destination.Save(saved);
+        using var reopened = new Presentation(saved);
+        var copy = reopened.Slides[0].Shapes.Last();
+        copy.Rotation.Should().Be(315);
+        copy.Hidden.Should().BeTrue();
+        ValidatePresentation(reopened);
+
+        // Act
+        copy.Rotation = 90;
+        copy.Hidden = false;
+
+        // Assert
+        original.Rotation.Should().Be(315);
+        original.Hidden.Should().BeTrue();
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
     public void Add_copies_shape_click_hyperlinks_independently_of_source(bool picture)
     {
         // Arrange

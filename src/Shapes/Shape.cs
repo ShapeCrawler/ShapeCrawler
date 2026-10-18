@@ -78,6 +78,8 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
             var parsedHiddenValue = pShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue is true;
         }
+
+        set => pShapeTreeElement.NonVisualDrawingProperties().Hidden = value;
     }
 
     public PlaceholderType? PlaceholderType
@@ -300,6 +302,8 @@ internal abstract class Shape(Position position, ShapeSize shapeSize, ShapeId sh
 
             return pSpPr.Transform2D.Rotation.Value / 60_000d;
         }
+
+        set => new ShapeRotation(pShapeTreeElement).Set(value);
     }
 
     public bool Removable => false;

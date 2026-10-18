@@ -1,14 +1,203 @@
 using System.Text.Json;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ShapeCrawler.Tests.Helpers;
 using P = DocumentFormat.OpenXml.Presentation;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tests;
 
 [TestFixture]
 public class ShapeTests : SCTest
 {
+    [TestCase("text")]
+    [TestCase("picture")]
+    [TestCase("table")]
+    [TestCase("group")]
+    [TestCase("line")]
+    public void Rotation_setter_round_trips_without_changing_shape_geometry(string kind)
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation(kind);
+        var shape = pres.Slides[0].Shapes.Last();
+        shape.Name = "Edited";
+        var geometry = (shape.X, shape.Y, shape.Width, shape.Height);
+
+        // Act
+        shape.Rotation = 37.5;
+
+        // Assert
+        shape.Rotation.Should().Be(37.5);
+        (shape.X, shape.Y, shape.Width, shape.Height).Should().Be(geometry);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var properties = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.NonVisualDrawingProperties>()
+                .Single(item => item.Name?.Value == "Edited");
+            var element = properties.Parent!.Parent!;
+            OpenXmlCompositeElement? transform = element switch
+            {
+                P.GraphicFrame frame => frame.Transform,
+                P.GroupShape group => group.GroupShapeProperties!.TransformGroup,
+                _ => element.GetFirstChild<P.ShapeProperties>()!.Transform2D
+            };
+            transform!.GetAttribute("rot", string.Empty).Value.Should().Be("2250000");
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Shape("Edited").Rotation.Should().Be(37.5);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(-450, 270)]
+    [TestCase(-45, 315)]
+    [TestCase(0, 0)]
+    [TestCase(360, 0)]
+    [TestCase(405, 45)]
+    [TestCase(720, 0)]
+    [TestCase(33.333333333, 33.333333333)]
+    [TestCase(359.999999999, 0)]
+    public void Rotation_normalizes_angles_and_rounds_to_Open_XML_units(double angle, double expected)
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation("text");
+        var shape = pres.Slides[0].Shapes.Last();
+
+        // Act
+        shape.Rotation = angle;
+
+        // Assert
+        shape.Rotation.Should().BeApproximately(expected, 0.0000001);
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(double.NaN)]
+    [TestCase(double.PositiveInfinity)]
+    [TestCase(double.NegativeInfinity)]
+    public void Rotation_rejects_nonfinite_values_without_changing_transform(double angle)
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation("text");
+        var shape = pres.Slides[0].Shapes.Last();
+        shape.Rotation = 45;
+
+        // Act
+        var setRotation = () => shape.Rotation = angle;
+
+        // Assert
+        setRotation.Should().Throw<ArgumentOutOfRangeException>();
+        shape.Rotation.Should().Be(45);
+    }
+
+    [TestCase("text", false)]
+    [TestCase("text", true)]
+    [TestCase("picture", false)]
+    [TestCase("picture", true)]
+    [TestCase("table", false)]
+    [TestCase("table", true)]
+    [TestCase("group", false)]
+    [TestCase("group", true)]
+    [TestCase("line", false)]
+    [TestCase("line", true)]
+    public void Hidden_setter_round_trips_and_keeps_the_shape_in_the_collection(string kind, bool hidden)
+    {
+        // Arrange
+        using var pres = LinkedShapePresentation(kind);
+        var shape = pres.Slides[0].Shapes.Last();
+        shape.Name = "Edited";
+        var count = pres.Slides[0].Shapes.Count;
+        shape.Hidden = !hidden;
+
+        // Act
+        shape.Hidden = hidden;
+
+        // Assert
+        shape.Hidden.Should().Be(hidden);
+        pres.Slides[0].Shapes.Count.Should().Be(count);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.NonVisualDrawingProperties>()
+                .Single(item => item.Name?.Value == "Edited").Hidden!.Value.Should().Be(hidden);
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Shape("Edited").Hidden.Should().Be(hidden);
+        reopened.Slides[0].Shapes.Count.Should().Be(count);
+        ValidatePresentation(reopened);
+    }
+
+    [Test]
+    public void Rotation_preserves_flip_flags_and_other_transform_attributes()
+    {
+        // Arrange
+        using var source = LinkedShapePresentation("text");
+        using var stream = new MemoryStream();
+        source.Save(stream);
+        using (var document = PresentationDocument.Open(stream, true))
+        {
+            var transform = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Shape>().Last().ShapeProperties!.Transform2D!;
+            transform.HorizontalFlip = true;
+            transform.VerticalFlip = true;
+        }
+
+        using var pres = new Presentation(stream);
+
+        // Act
+        pres.Slides[0].Shapes.Last().Rotation = 90;
+
+        // Assert
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var result = PresentationDocument.Open(saved, false);
+        var updated = result.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Shape>().Last().ShapeProperties!.Transform2D!;
+        updated.HorizontalFlip!.Value.Should().BeTrue();
+        updated.VerticalFlip!.Value.Should().BeTrue();
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Rotation_on_inherited_placeholder_materializes_local_transform_without_modifying_layout()
+    {
+        // Arrange
+        using var source = new Presentation();
+        source.Slides.Add(source.MasterSlides[0].SlideLayout("Title and Content").Number);
+        using var stream = new MemoryStream();
+        source.Save(stream);
+        string layoutBefore;
+        string masterBefore;
+        using (var document = PresentationDocument.Open(stream, true))
+        {
+            var part = document.PresentationPart!.SlideParts.First();
+            var title = part.Slide.Descendants<P.Shape>().First(item => item.NonVisualShapeProperties!
+                .ApplicationNonVisualDrawingProperties!.GetFirstChild<P.PlaceholderShape>()?.Type?.Value == P.PlaceholderValues.Title);
+            title.ShapeProperties!.Transform2D?.Remove();
+            layoutBefore = part.SlideLayoutPart!.SlideLayout.OuterXml;
+            masterBefore = part.SlideLayoutPart.SlideMasterPart!.SlideMaster.OuterXml;
+        }
+
+        using var pres = new Presentation(stream);
+        var shape = pres.Slides[0].Shapes.First(item => item.PlaceholderType == PlaceholderType.Title);
+        var geometry = (shape.X, shape.Y, shape.Width, shape.Height);
+
+        // Act
+        shape.Rotation = 30;
+
+        // Assert
+        (shape.X, shape.Y, shape.Width, shape.Height).Should().Be(geometry);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var result = PresentationDocument.Open(saved, false);
+        var savedPart = result.PresentationPart!.SlideParts.First();
+        savedPart.SlideLayoutPart!.SlideLayout.OuterXml.Should().Be(layoutBefore);
+        savedPart.SlideLayoutPart.SlideMasterPart!.SlideMaster.OuterXml.Should().Be(masterBefore);
+        shape.Rotation.Should().Be(30);
+        ValidatePresentation(pres);
+    }
+
     [TestCase("text")]
     [TestCase("picture")]
     [TestCase("table")]
@@ -103,6 +292,9 @@ public class ShapeTests : SCTest
         var shapes = pres.Slides[0].Shapes;
         switch (kind)
         {
+            case "line":
+                shapes.AddLine(100, 100, 0, 0);
+                break;
             case "picture":
                 using (var image = TestAsset("10 png image.png"))
                 {

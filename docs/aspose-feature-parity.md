@@ -480,6 +480,48 @@ invalid input, replacement in both directions, target-slide retention, and
 independent text/picture copies. Existing text-link checks and `PublicApiTests`
 also pass. Rendering code is unchanged and no Aspose dependency was added.
 
+## Iteration 7: editable shape rotation and visibility
+
+Basic template editing and slide composition now support setting `IShape.Rotation`
+and `IShape.Hidden`. Existing read APIs remain available. Rotation is normalized
+to [0, 360) and rounded to the nearest Open XML angular unit (1/60000 degree).
+Coordinates, sizes, and flip flags are preserved. For placeholders without a
+local transform, the inherited transform is cloned locally before changing the
+angle; shared layouts and masters remain unchanged. Visibility uses the shape's
+nonvisual hidden flag. Rendering code is unchanged.
+
+The reference version and SHA-256 remain those recorded in iteration 1. REA
+6.7.0 was invoked with `inspect-managed-members $assembly --type Aspose.Slides.Shape --json`.
+Evidence `ev_da10cfe512f2af123fbd66f783c701497bc1c0f342d95d374d908487c89d4d7a`
+reports unavailable coverage at the 64 MiB metadata budget. No method bodies
+were recovered. Public reference XML documentation and an unmodified Aspose
+evaluation-mode probe supplied the following behavioral evidence:
+
+| Assigned rotation | Reference rotation after save/reopen | Stored `rot` |
+| --- | --- | --- |
+| -450 | 270 | 16200000 |
+| -45 | 315 | 18900000 |
+| 0, 360, 720 | 0 | omitted |
+| 405 | 45 | 2700000 |
+| 33.333332 (float) | 33.333332 | 2000000 |
+
+For each angle the probe set `Hidden` first to true and then to false or true,
+saved a rectangle, inspected `a:xfrm/@rot` and `p:cNvPr/@hidden`, and reopened
+the file. Hidden true was stored as 1; false was omitted. Both values survived
+reopening. Aspose converts NaN/infinity to zero; ShapeCrawler deliberately
+rejects nonfinite angles with `ArgumentOutOfRangeException` before mutation.
+
+A second probe created text, picture, table, group, and line shapes using
+ShapeCrawler, assigned -45 degrees and each visibility value, and opened the
+saved files with Aspose. All **10/10** cases read back as 315 degrees with the
+expected hidden flag. This verifies serialized metadata, not visual rendering.
+
+Regression tests cover those shape kinds, normalization, precision, invalid
+angles, inherited placeholder geometry, flip preservation, and independent
+text/picture imports. Tests inspect saved packages, reopen them, and validate
+Open XML. The public SDK encapsulation guard remains intact. Aspose is not a
+production dependency.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current
