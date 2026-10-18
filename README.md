@@ -10,9 +10,7 @@
 
 <h3 align="center"> 
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?color=orange)](https://makeapullrequest.com)
 ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange)
-[![GitHub Help Wanted issues](https://img.shields.io/github/issues/ShapeCrawler/ShapeCrawler/help%20wanted?style=flat&logo=github&logoColor=b545d1&label=%22Help%20Wanted%22%20issues)](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 
 </h3>
 
@@ -25,11 +23,6 @@ ShapeCrawler provides a clean, intuitive API on top of the Open XML SDK, making 
 ---
 
 ## 📦 Installation
-
-Requires .NET 10 or later.
-
-For large slide imports, use a 64-bit process. Source and destination packages
-remain in memory; see [slide import memory limits and regression tests](tests/slide-import-memory.md).
 
 ```bash
 dotnet add package ShapeCrawler
