@@ -171,6 +171,9 @@ internal sealed class TableCellTextBox(A.TableCell aTableCell) : ITextBox
         throw new NotImplementedException();
     }
 
+    public int ReplaceText(string oldText, string newText, bool ignoreCase = false) =>
+        TextReplacement.Replace(aTableCell.TextBody!, oldText, newText, ignoreCase);
+
     public void SetText(string text)
     {
         var textLines = SplitLines(text);

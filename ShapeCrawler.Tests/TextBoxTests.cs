@@ -1,11 +1,192 @@
 using FluentAssertions;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Texts;
+using DocumentFormat.OpenXml.Packaging;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests;
 
 public class TextBoxTests : SCTest
 {
+    [Test]
+    public void ReplaceText_matches_across_runs_and_preserves_surrounding_formatting()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(
+            new A.ParagraphProperties { Level = 1 },
+            new A.Run(new A.RunProperties { Bold = true, FontSize = 1800 }, new A.Text("pre XY")),
+            new A.Run(new A.RunProperties { Italic = true, FontSize = 2400 }, new A.Text("Z tail"))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var count = textBox.ReplaceText("XYZ", "Q");
+
+        // Assert
+        count.Should().Be(1);
+        textBox.Text.Should().Be("pre Q tail");
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var paragraph = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Shape>().Last().TextBody!.Elements<A.Paragraph>().Single();
+            paragraph.ParagraphProperties!.Level!.Value.Should().Be(1);
+            var runs = paragraph.Elements<A.Run>().ToArray();
+            runs[0].Text!.Text.Should().Be("pre Q");
+            runs[0].RunProperties!.Bold!.Value.Should().BeTrue();
+            runs[0].RunProperties.FontSize!.Value.Should().Be(1800);
+            runs[1].Text!.Text.Should().Be(" tail");
+            runs[1].RunProperties!.Italic!.Value.Should().BeTrue();
+            runs[1].RunProperties.FontSize!.Value.Should().Be(2400);
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Last().TextBox!.Text.Should().Be("pre Q tail");
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase("aaaa", "aa", "a", 2, "aa")]
+    [TestCase("aaaa", "aa", "aaa", 2, "aaaaaa")]
+    [TestCase("ababa ba", "ba", "X", 3, "aXX X")]
+    [TestCase("aaa", "a", "", 3, "")]
+    [TestCase("abc", "missing", "X", 0, "abc")]
+    [TestCase("aXYz", "XY", "XY!", 1, "aXY!z")]
+    [TestCase("aXYz", "XY", "  <&😀>  ", 1, "a  <&😀>  z")]
+    public void ReplaceText_replaces_original_non_overlapping_matches(string original, string oldText, string newText, int expectedCount, string expected)
+    {
+        // Arrange
+        var middle = original.Length / 2;
+        using var pres = ReplacementPresentation(new A.Paragraph(
+            new A.Run(new A.Text(original[..middle])), new A.Run(new A.Text(string.Empty)),
+            new A.Run(new A.Text(original[middle..]))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var count = textBox.ReplaceText(oldText, newText);
+
+        // Assert
+        count.Should().Be(expectedCount);
+        textBox.Text.Should().Be(expected);
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(false, 1, "FILE X")]
+    [TestCase(true, 2, "X X")]
+    [SetCulture("tr-TR")]
+    public void ReplaceText_uses_ordinal_case_matching(bool ignoreCase, int expectedCount, string expected)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("FILE file"))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var count = textBox.ReplaceText("file", "X", ignoreCase);
+
+        // Assert
+        count.Should().Be(expectedCount);
+        textBox.Text.Should().Be(expected);
+    }
+
+    [Test]
+    public void ReplaceText_inserts_soft_breaks_for_multiline_values()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(
+            new A.Run(new A.RunProperties { Bold = true }, new A.Text("aXYz"))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var count = textBox.ReplaceText("XY", "Q\r\nR\nS\rT");
+
+        // Assert
+        count.Should().Be(1);
+        textBox.Text.Should().Be(string.Join(Environment.NewLine, "aQ", "R", "S", "Tz"));
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var body = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Shape>().Last().TextBody!;
+            body.Elements<A.Paragraph>().Should().HaveCount(1);
+            body.Descendants<A.Break>().Should().HaveCount(3);
+            body.Descendants<A.Run>().Should().OnlyContain(run => run.RunProperties!.Bold!.Value);
+        }
+
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void ReplaceText_does_not_cross_paragraphs_breaks_or_fields()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(
+            new A.Paragraph(new A.Run(new A.Text("ab"))),
+            new A.Paragraph(new A.Run(new A.Text("cd"))),
+            new A.Paragraph(new A.Run(new A.Text("ab")), new A.Break(), new A.Run(new A.Text("cd"))),
+            new A.Paragraph(new A.Run(new A.Text("ab")),
+                new A.Field(new A.Text("FIELD")) { Id = "{E7559270-9838-4E40-AB23-A20A96371411}", Type = "slidenum" },
+                new A.Run(new A.Text("cd"))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var count = textBox.ReplaceText("abcd", "X") + textBox.ReplaceText("FIELD", "X");
+
+        // Assert
+        count.Should().Be(0);
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var document = PresentationDocument.Open(saved, false);
+        document.PresentationPart!.SlideParts.Single().Slide.Descendants<A.Field>().Single().InnerText.Should().Be("FIELD");
+        ValidatePresentation(pres);
+    }
+
+    [TestCase(null, "X")]
+    [TestCase("", "X")]
+    [TestCase("a", null)]
+    public void ReplaceText_rejects_invalid_arguments_without_mutation(string? oldText, string? newText)
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var replace = () => textBox.ReplaceText(oldText!, newText!);
+
+        // Assert
+        replace.Should().Throw<ArgumentException>();
+        textBox.Text.Should().Be("abc");
+    }
+
+    [Test]
+    public void ReplaceText_rejects_invalid_XML_characters_before_mutation()
+    {
+        // Arrange
+        using var pres = ReplacementPresentation(new A.Paragraph(new A.Run(new A.Text("abc"))));
+        var textBox = pres.Slides[0].Shapes.Last().TextBox!;
+
+        // Act
+        var replace = () => textBox.ReplaceText("a", "\0");
+
+        // Assert
+        replace.Should().Throw<System.Xml.XmlException>();
+        textBox.Text.Should().Be("abc");
+    }
+
+    private static Presentation ReplacementPresentation(params A.Paragraph[] paragraphs)
+    {
+        using var source = new Presentation(p => p.Slide());
+        source.Slides[0].Shapes.AddTextBox(0, 0, 300, 100, string.Empty);
+        using var saved = new MemoryStream();
+        source.Save(saved);
+        using (var document = PresentationDocument.Open(saved, true))
+        {
+            var body = document.PresentationPart!.SlideParts.Single().Slide.Descendants<P.Shape>().Last().TextBody!;
+            body.RemoveAllChildren<A.Paragraph>();
+            body.Append(paragraphs);
+        }
+
+        return new Presentation(saved);
+    }
+
     [Test]
     public void Text_Getter_returns_text_of_table_Cell()
     {

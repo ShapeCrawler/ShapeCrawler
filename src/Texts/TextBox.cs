@@ -231,6 +231,9 @@ internal abstract class TextBox : ITextBox
         textContent.ApplyTo();
     }
 
+    public int ReplaceText(string oldText, string newText, bool ignoreCase = false) =>
+        TextReplacement.Replace(this.textBody, oldText, newText, ignoreCase);
+
     /// <summary>
     ///     Disables text wrapping in the text box.
     /// </summary>

@@ -10,6 +10,7 @@ comparison, not a claim of complete Aspose.Slides compatibility.
   and local validation. Check all PR checks after publishing.
 - Stop after each PR and wait for the maintainer's approval before the next one.
 - Exclude slide-to-image rendering; it is being developed separately.
+- Prioritize common editing and template workflows over additional specialized features.
 - Preserve ShapeCrawler's API conventions and keep Open XML SDK types internal.
 - Record the reference version, observations, limitations, and regression tests.
   Do not copy proprietary implementation code or add an Aspose runtime dependency.
@@ -324,6 +325,87 @@ compatible Choice/Fallback updates, rejection before partial branch updates,
 and preservation of duration and sound. `UpdatedSlideCollectionTests` verifies
 imported wheel options and source independence. Rendering remains excluded;
 no images, playback comparisons, or production Aspose dependency are involved.
+
+## Iteration 5: template text replacement
+
+The maintainer requested prioritizing frequently used library workflows.
+This iteration therefore moves from specialized transition settings to
+presentation-wide template substitution. `IParagraph.ReplaceText` already
+exists; the missing capabilities were text-box and presentation-level
+replacement with run-spanning matching, counts, and optional case folding.
+The existing paragraph API's behavior is unchanged.
+
+```csharp
+int count = presentation.ReplaceText("{{customer}}", "Alice");
+textBox.ReplaceText("{{city}}", "Berlin", ignoreCase: true);
+tableCell.TextBox.ReplaceText("{{address}}", "Main Street 1\nBerlin");
+```
+
+`IPresentation.ReplaceText` searches slide text boxes, nested groups, and table
+cells using the existing `GetTexts` traversal. `ITextBox.ReplaceText` also
+works on an explicitly accessed notes text box. The bulk operation excludes
+notes, masters/layouts, chart data, and SmartArt data parts. Regex matching,
+whole-word matching, and result callbacks are deferred.
+
+The contract is literal, ordinal, non-overlapping matching against the original
+text. Case-sensitive matching is the default; `ignoreCase: true` uses
+OrdinalIgnoreCase. Matching spans consecutive text runs but stops at paragraph
+boundaries, soft breaks, fields, or other non-run content. Each replacement
+inherits the first matched run's properties. Prefix and suffix formatting,
+paragraph properties, hyperlinks, font sizes, and shape geometry are retained.
+The operation does not refit text or resize shapes/rows. Empty replacement
+deletes matches. Replacement text containing the search text is inserted once,
+without recursively replacing newly inserted content.
+
+Replacement CRLF, LF, and CR line endings become soft breaks inside the same
+paragraph. Null arguments, an empty search string, or replacement characters
+that are invalid in XML are rejected before mutation. The returned integer
+counts replacements, rather than text boxes changed.
+
+### Reference evidence and limits
+
+The reference version and assembly hash are unchanged from iteration 1.
+REA 6.7.0 was invoked for `Aspose.Slides.TextFrame` and
+`Aspose.Slides.TextSearchOptions`:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.TextFrame --type Aspose.Slides.TextSearchOptions --json
+```
+
+Evidence `ev_df5ea8bfc8cc2a99c227db97a5f228709e7e3ff5724031a9e83cda29ae08d5a4`
+reports unavailable member coverage at the 64 MiB metadata budget. No proprietary
+method bodies were recovered. The package's API documentation identifies
+`TextFrame.ReplaceText` and `Presentation.ReplaceText` with search options.
+
+An unmodified Aspose evaluation-mode probe used two portions: bold `aX` and
+italic `Yz`, and searched for `XY` with CaseSensitive explicitly enabled.
+The short inputs avoid evaluation-mode truncation observed with longer inputs.
+
+| Replacement | Reference text after replacement | Formatting observation |
+| --- | --- | --- |
+| `Q` | `aQz` | Prefix/replacement bold; suffix italic |
+| empty | `az` | Prefix bold; suffix italic |
+| `XY!` | `aXY!z` | Original match replaced once |
+| `Q\nR` | `aQ\nRz` in one paragraph | Replacement bold; suffix italic |
+
+The default Aspose `TextSearchOptions.CaseSensitive` was false. ShapeCrawler
+deliberately follows the case-sensitive default of ordinary .NET literal
+replacement; callers opt into ignoring case. Aspose can split the prefix and
+replacement into separate portions; ShapeCrawler can retain them in the same
+run when the formatting is identical. Exact XML/portion identity is not claimed.
+
+A separate interoperability probe saved the four ShapeCrawler results above,
+opened them in Aspose, and checked text plus bold prefix and italic suffix.
+All four passed, including the soft-break representation of the multiline value.
+No evaluation restrictions were bypassed. No slide images were generated or
+rendering implementation changed, and Aspose is not a project dependency.
+
+Regression tests are in `TextBoxTests`, `TableCellTextBoxTests`, and
+`PresentationTests`, with SDK inspection of saved files, schema validation,
+save/reopen, mixed formatting, original-match counting, empty and multiline
+values, ordinal case matching under Turkish culture, field/break boundaries,
+invalid arguments, groups, tables, and multiple slides. `PublicApiTests`
+continues to enforce SDK encapsulation.
 
 ## Candidate areas for later inventory
 

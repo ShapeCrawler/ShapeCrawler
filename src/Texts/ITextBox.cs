@@ -72,6 +72,15 @@ public interface ITextBox
     public void SetText(string text);
 
     /// <summary>
+    ///     Replaces literal, non-overlapping matches, including matches split across text runs.
+    ///     Matching is ordinal and case-sensitive unless ignoreCase is true.
+    ///     Matches do not cross paragraphs, line breaks, or fields. Replacement text inherits
+    ///     the first matched run's formatting; other text, font sizes, and geometry are retained.
+    ///     Newlines in the replacement become soft line breaks. Returns the number of replacements.
+    /// </summary>
+    int ReplaceText(string oldText, string newText, bool ignoreCase = false);
+
+    /// <summary>
     ///     Sets Markdown text.
     /// </summary>
     public void SetMarkdownText(string text);
