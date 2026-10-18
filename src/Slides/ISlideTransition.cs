@@ -21,6 +21,26 @@ public interface ISlideTransition
     SlideTransitionSpeed Speed { get; set; }
 
     /// <summary>
+    ///     Gets or sets orientation for Blinds, Checker, Comb, RandomBar, and Split.
+    ///     The default when the attribute is absent is horizontal.
+    ///     Throws <see cref="System.InvalidOperationException"/> for other effects or incompatible fallback branches.
+    /// </summary>
+    SlideTransitionOrientation Orientation { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the number of spokes for the Wheel effect. The schema default is 4.
+    ///     Throws <see cref="System.InvalidOperationException"/> for other effects or incompatible fallback branches.
+    /// </summary>
+    uint WheelSpokes { get; set; }
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether Fade or Cut transitions use a black screen.
+    ///     The default is <see langword="false"/>.
+    ///     Throws <see cref="System.InvalidOperationException"/> for other effects or incompatible fallback branches.
+    /// </summary>
+    bool FromBlack { get; set; }
+
+    /// <summary>
     ///     Gets or sets a value indicating whether a mouse click advances the slide.
     ///     The default is <see langword="true"/>.
     /// </summary>

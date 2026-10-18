@@ -442,6 +442,286 @@ public class SlideTransitionTests : SCTest
         ValidatePresentation(pres);
     }
 
+    [TestCase(SlideTransitionType.Blinds, SlideTransitionOrientation.Horizontal)]
+    [TestCase(SlideTransitionType.Blinds, SlideTransitionOrientation.Vertical)]
+    [TestCase(SlideTransitionType.Checker, SlideTransitionOrientation.Horizontal)]
+    [TestCase(SlideTransitionType.Checker, SlideTransitionOrientation.Vertical)]
+    [TestCase(SlideTransitionType.Comb, SlideTransitionOrientation.Horizontal)]
+    [TestCase(SlideTransitionType.Comb, SlideTransitionOrientation.Vertical)]
+    [TestCase(SlideTransitionType.RandomBar, SlideTransitionOrientation.Horizontal)]
+    [TestCase(SlideTransitionType.RandomBar, SlideTransitionOrientation.Vertical)]
+    [TestCase(SlideTransitionType.Split, SlideTransitionOrientation.Horizontal)]
+    [TestCase(SlideTransitionType.Split, SlideTransitionOrientation.Vertical)]
+    public void Orientation_round_trips_without_changing_other_settings(SlideTransitionType type, SlideTransitionOrientation orientation)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var transition = pres.Slides[0].Transition;
+        transition.Type = type;
+        transition.Speed = SlideTransitionSpeed.Slow;
+        transition.AdvanceAfterTime = 5000;
+        transition.Orientation = orientation == SlideTransitionOrientation.Horizontal
+            ? SlideTransitionOrientation.Vertical : SlideTransitionOrientation.Horizontal;
+
+        // Act
+        transition.Orientation = orientation;
+
+        // Assert
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var effect = document.PresentationPart!.SlideParts.Single().Slide.Transition!.FirstChild!;
+            effect.GetAttribute(type == SlideTransitionType.Split ? "orient" : "dir", string.Empty).Value
+                .Should().Be(orientation == SlideTransitionOrientation.Horizontal ? "horz" : "vert");
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Transition.Orientation.Should().Be(orientation);
+        reopened.Slides[0].Transition.Type.Should().Be(type);
+        reopened.Slides[0].Transition.Speed.Should().Be(SlideTransitionSpeed.Slow);
+        reopened.Slides[0].Transition.AdvanceAfterTime.Should().Be(5000);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(0U)]
+    [TestCase(1U)]
+    [TestCase(2U)]
+    [TestCase(3U)]
+    [TestCase(4U)]
+    [TestCase(5U)]
+    [TestCase(8U)]
+    [TestCase(uint.MaxValue)]
+    public void WheelSpokes_round_trips_unsigned_values(uint spokes)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var transition = pres.Slides[0].Transition;
+        transition.Type = SlideTransitionType.Wheel;
+        transition.AdvanceAfterTime = 5000;
+
+        // Act
+        transition.WheelSpokes = spokes;
+
+        // Assert
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            document.PresentationPart!.SlideParts.Single().Slide.Transition!
+                .GetFirstChild<P.WheelTransition>()!.Spokes!.Value.Should().Be(spokes);
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Transition.WheelSpokes.Should().Be(spokes);
+        reopened.Slides[0].Transition.AdvanceAfterTime.Should().Be(5000);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(SlideTransitionType.Fade, false)]
+    [TestCase(SlideTransitionType.Fade, true)]
+    [TestCase(SlideTransitionType.Cut, false)]
+    [TestCase(SlideTransitionType.Cut, true)]
+    public void FromBlack_round_trips_for_fade_and_cut(SlideTransitionType type, bool fromBlack)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var transition = pres.Slides[0].Transition;
+        transition.Type = type;
+        transition.FromBlack = !fromBlack;
+        transition.AdvanceAfterTime = 5000;
+
+        // Act
+        transition.FromBlack = fromBlack;
+
+        // Assert
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            ((P.OptionalBlackTransitionType)document.PresentationPart!.SlideParts.Single().Slide.Transition!.FirstChild!)
+                .ThroughBlack!.Value.Should().Be(fromBlack);
+        }
+
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Transition.FromBlack.Should().Be(fromBlack);
+        reopened.Slides[0].Transition.Type.Should().Be(type);
+        reopened.Slides[0].Transition.AdvanceAfterTime.Should().Be(5000);
+        ValidatePresentation(reopened);
+    }
+
+    [TestCase(SlideTransitionType.Blinds)]
+    [TestCase(SlideTransitionType.Checker)]
+    [TestCase(SlideTransitionType.Comb)]
+    [TestCase(SlideTransitionType.RandomBar)]
+    [TestCase(SlideTransitionType.Split)]
+    [TestCase(SlideTransitionType.Fade)]
+    [TestCase(SlideTransitionType.Cut)]
+    [TestCase(SlideTransitionType.Wheel)]
+    public void Effect_option_defaults_do_not_write_attributes(SlideTransitionType type)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var transition = pres.Slides[0].Transition;
+        transition.Type = type;
+
+        // Act
+        var value = type switch
+        {
+            SlideTransitionType.Wheel => transition.WheelSpokes.ToString(),
+            SlideTransitionType.Fade or SlideTransitionType.Cut => transition.FromBlack.ToString(),
+            _ => transition.Orientation.ToString()
+        };
+
+        // Assert
+        value.Should().Be(type switch
+        {
+            SlideTransitionType.Wheel => "4",
+            SlideTransitionType.Fade or SlideTransitionType.Cut => "False",
+            _ => "Horizontal"
+        });
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var document = PresentationDocument.Open(saved, false);
+        document.PresentationPart!.SlideParts.Single().Slide.Transition!.FirstChild!.GetAttributes().Should().BeEmpty();
+    }
+
+    [TestCase(SlideTransitionType.None)]
+    [TestCase(SlideTransitionType.Push)]
+    public void Effect_options_reject_inapplicable_effects_without_mutation(SlideTransitionType type)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var transition = pres.Slides[0].Transition;
+        transition.Type = type;
+        using var before = new MemoryStream();
+        pres.Save(before);
+        using var original = PresentationDocument.Open(before, false);
+        var originalXml = original.PresentationPart!.SlideParts.Single().Slide.OuterXml;
+
+        // Act
+        var getOrientation = () => transition.Orientation;
+        var setOrientation = () => transition.Orientation = SlideTransitionOrientation.Vertical;
+        var getSpokes = () => transition.WheelSpokes;
+        var setSpokes = () => transition.WheelSpokes = 8;
+        var getBlack = () => transition.FromBlack;
+        var setBlack = () => transition.FromBlack = true;
+
+        // Assert
+        getOrientation.Should().Throw<InvalidOperationException>();
+        setOrientation.Should().Throw<InvalidOperationException>();
+        getSpokes.Should().Throw<InvalidOperationException>();
+        setSpokes.Should().Throw<InvalidOperationException>();
+        getBlack.Should().Throw<InvalidOperationException>();
+        setBlack.Should().Throw<InvalidOperationException>();
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var document = PresentationDocument.Open(saved, false);
+        document.PresentationPart!.SlideParts.Single().Slide.OuterXml.Should().Be(originalXml);
+    }
+
+    [Test]
+    public void Orientation_rejects_invalid_values_without_changing_existing_orientation()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var transition = pres.Slides[0].Transition;
+        transition.Type = SlideTransitionType.Split;
+        transition.Orientation = SlideTransitionOrientation.Vertical;
+
+        // Act
+        var setOrientation = () => transition.Orientation = (SlideTransitionOrientation)999;
+
+        // Assert
+        setOrientation.Should().Throw<ArgumentOutOfRangeException>();
+        transition.Orientation.Should().Be(SlideTransitionOrientation.Vertical);
+    }
+
+    [TestCase(SlideTransitionType.Wheel, "wheel", "spokes", "8")]
+    [TestCase(SlideTransitionType.Split, "split", "orient", "vert")]
+    [TestCase(SlideTransitionType.Fade, "fade", "thruBlk", "1")]
+    public void Effect_options_update_all_branches_and_preserve_duration_and_sound(
+        SlideTransitionType type, string elementName, string attributeName, string expected)
+    {
+        // Arrange
+        var xml = $"""
+            <mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+                xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">
+              <mc:Choice Requires="p14"><p:transition advTm="5000" p14:dur="700"><p:{elementName}/><p:sndAc><p:endSnd/></p:sndAc></p:transition></mc:Choice>
+              <mc:Fallback><p:transition advTm="5000"><p:{elementName}/><p:sndAc><p:endSnd/></p:sndAc></p:transition></mc:Fallback>
+            </mc:AlternateContent>
+            """;
+        using var source = SlideXml(slide => slide.AppendChild(new AlternateContent(xml)));
+        using var pres = new Presentation(source);
+        var transition = pres.Slides[0].Transition;
+
+        // Act
+        switch (type)
+        {
+            case SlideTransitionType.Wheel:
+                transition.WheelSpokes = 8;
+                break;
+            case SlideTransitionType.Split:
+                transition.Orientation = SlideTransitionOrientation.Vertical;
+                break;
+            default:
+                transition.FromBlack = true;
+                break;
+        }
+
+        // Assert
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using (var document = PresentationDocument.Open(saved, false))
+        {
+            var slide = document.PresentationPart!.SlideParts.Single().Slide;
+            slide.Elements<P.Transition>().Should().BeEmpty();
+            var branches = slide.Descendants<P.Transition>().ToArray();
+            branches.Should().HaveCount(2);
+            foreach (var branch in branches)
+            {
+                branch.FirstChild!.GetAttribute(attributeName, string.Empty).Value.Should().Be(expected);
+                branch.AdvanceAfterTime!.Value.Should().Be("5000");
+                branch.GetFirstChild<P.SoundAction>().Should().NotBeNull();
+            }
+
+            branches[0].GetAttributes().Should().Contain(attribute => attribute.LocalName == "dur" && attribute.Value == "700");
+        }
+
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Effect_options_reject_incompatible_fallback_before_editing_choice()
+    {
+        // Arrange
+        const string xml = """
+            <mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+                xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">
+              <mc:Choice Requires="p14"><p:transition><p:wheel spokes="8"/></p:transition></mc:Choice>
+              <mc:Fallback><p:transition><p:fade/></p:transition></mc:Fallback>
+            </mc:AlternateContent>
+            """;
+        using var source = SlideXml(slide => slide.AppendChild(new AlternateContent(xml)));
+        using var pres = new Presentation(source);
+        using var original = PresentationDocument.Open(source, false);
+        var before = original.PresentationPart!.SlideParts.Single().Slide.OuterXml;
+
+        // Act
+        var getSpokes = () => pres.Slides[0].Transition.WheelSpokes;
+        var setSpokes = () => pres.Slides[0].Transition.WheelSpokes = 3;
+
+        // Assert
+        getSpokes.Should().Throw<InvalidOperationException>();
+        setSpokes.Should().Throw<InvalidOperationException>();
+        using var saved = new MemoryStream();
+        pres.Save(saved);
+        using var document = PresentationDocument.Open(saved, false);
+        document.PresentationPart!.SlideParts.Single().Slide.OuterXml.Should().Be(before);
+    }
+
     private static MemoryStream SlideXml(Action<P.Slide> edit)
     {
         using var pres = new Presentation(p => p.Slide());
