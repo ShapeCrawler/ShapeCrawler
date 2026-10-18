@@ -22,7 +22,9 @@ internal sealed class SlideBackground(SlidePart slidePart)
         switch (fill)
         {
             case A.SolidFill solid:
-                canvas.Clear(this.ResolveColor(solid.FirstChild, reference?.FirstChild) ?? SKColors.White);
+                var color = this.ResolveColor(solid.FirstChild, reference?.FirstChild)?.AsSkColor() ?? SKColors.White;
+                canvas.Clear(SKColors.White);
+                canvas.DrawColor(color, SKBlendMode.SrcOver);
                 break;
             case A.BlipFill { Blip: { Embed: not null } blip }:
                 using (var bitmap = SKBitmap.Decode(new SlidePictureImage(blip).AsByteArray()))
@@ -44,10 +46,10 @@ internal sealed class SlideBackground(SlidePart slidePart)
         }
     }
 
-    private static SKColor? ParseColor(string? hex)
+    private static DrawingColor? ParseColor(string? hex)
     {
         hex = hex?.TrimStart('#');
-        return hex?.Length is 6 or 8 ? new Color(hex).AsSkColor() : null;
+        return hex?.Length is 6 or 8 ? new DrawingColor(new Color(hex).AsSkColor()) : null;
     }
 
     private OpenXmlElement? StyleFill(P.BackgroundStyleReference? reference)
@@ -64,7 +66,14 @@ internal sealed class SlideBackground(SlidePart slidePart)
         return styles is not null && offset < styles.ChildElements.Count ? styles.ChildElements[(int)offset] : null;
     }
 
-    private SKColor? ResolveColor(OpenXmlElement? color, OpenXmlElement? placeholder)
+    private DrawingColor? ResolveColor(OpenXmlElement? color, OpenXmlElement? placeholder)
+    {
+        var resolved = this.ResolveBaseColor(color, placeholder);
+        resolved?.ApplyTransforms(color);
+        return resolved;
+    }
+
+    private DrawingColor? ResolveBaseColor(OpenXmlElement? color, OpenXmlElement? placeholder)
     {
         switch (color)
         {
@@ -82,8 +91,7 @@ internal sealed class SlideBackground(SlidePart slidePart)
                 var entry = colors?.ChildElements.FirstOrDefault(element => element.LocalName == name);
                 return entry?.FirstChild switch
                 {
-                    A.RgbColorModelHex rgb => ParseColor(rgb.Val?.Value),
-                    A.SystemColor system => ParseColor(system.LastColor?.Value),
+                    A.RgbColorModelHex or A.SystemColor => this.ResolveColor(entry.FirstChild, null),
                     _ => null
                 };
             default:
