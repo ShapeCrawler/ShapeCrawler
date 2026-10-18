@@ -131,13 +131,54 @@ With explicit slide `a:masterClrMapping`, Aspose still uses the layout override 
 
 New regressions check ordinary/background style indices, no-background and missing-index behavior, inherited references, placeholder substitution, map precedence, theme-owned pictures, and XML preservation. Existing image rendering and public API checks remain in place. No public SDK objects or new public APIs are introduced.
 
-Theme override parts, color transforms (including tint, shade, luminance and alpha), gradients and effects remain open. The master theme is the current style/color source. The previously recorded picture edge-resampling difference remains unchanged.
+The third increment left theme override parts, color transforms, gradients and effects open. The master theme is the current style/color source. The next increment addresses selected color transforms below; the picture edge-resampling difference remains unchanged.
+
+## Fourth increment: background color transforms
+
+Solid backgrounds now apply `tint`, `shade`, `lumMod`, `lumOff`, `alpha`, `alphaMod` and `alphaOff` in XML order. This covers slide-owned and inherited RGB/system/theme colors, plus the reference color and `phClr` in theme styles. Reference-color transforms run before transforms on the style's placeholder color. Internal `DrawingColor` retains floating-point channels through the chain, then quantizes once for Skia output. No public API changes are needed.
+
+Tint and shade operate on linear sRGB channels, with the standard piecewise sRGB transfer functions used to decode and encode. Luminance changes preserve HSL hue/saturation; neutral colors remain neutral. Luminance and alpha are clamped after each applicable operation. Solid background alpha is composited over white for image export, matching the reference's PNG output rather than emitting a transparent solid background.
+
+### Static evidence
+
+The reference is the same Aspose.Slides 24.12.0 assembly and isolated REA 6.7.0 decoder configuration used above:
+
+- `ev_ee25f1e64fc3f2649c0ea06185e934de320c14c79e3e2ba0a3bb16d9fbda427c`: complete selected-type inspection of 73 declared `Aspose.Slides.ColorFormat` methods. `get_ColorTransform`, token `0x0601e408`, calls the related internal method `0x06002643`.
+- `ev_7c3b2e5272bdee7b7320c7a6bac4f9af3f488a118c244ee9b8b9940d10594c5a`: complete inspection of that internal type's 62 declared methods. Method `0x06002643` returns field `0x04000d5c`; the type also contains indexed `IColorOperationCollection.get_Item` and collection count calls. This locates operation storage/access but does not, by itself, prove the numerical transform algorithm.
+
+The implementation math was derived from the color model and corroborated by direct execution. It does not copy proprietary implementation code. Documentation describes [tint](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.tint?view=openxml-3.0.1), [shade](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.shade?view=openxml-3.0.1), and [luminance modulation](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.luminancemodulation?view=openxml-3.0.1); the [DrawingML primer](https://download.microsoft.com/download/e/1/4/e14fb96f-83b8-4a2a-84db-7fa8acbe061a/Office%20Open%20XML%20Part%203%20-%20Primer.pdf) also describes luminance/alpha transforms and their limits.
+
+### Runtime results
+
+The probe starts with color `4080C0`, writes the transforms through the Open XML SDK, then opens the same PPTX in both engines. It records Aspose's effective color separately from exported pixels: for example, 50% alpha has effective ARGB `804080C0`, but the PNG sample is opaque `9FBFDF` after white compositing. At `(100, 80)` in 120 by 90 output, outside the evaluation watermark, both engines now produce:
+
+| Operations, in order | PNG RGB |
+| --- | --- |
+| shade 50% | `2C5C8C` |
+| tint 50% | `C0CDE2` |
+| luminance modulation 50% | `204060` |
+| luminance offset +25% | `A0C0E0` |
+| luminance modulation 80%, offset +20% | `6699CD` |
+| luminance offset +20%, modulation 80% | `578FC8` |
+| alpha 50% | `9FBFDF` |
+| alpha 0% | `FFFFFF` |
+| alpha 100% | `4080C0` |
+| alpha 80%, alpha modulation 50% | `B3CCE6` |
+| alpha 25%, alpha offset +25% | `9FBFDF` |
+| tint 50%, shade 50% | `8C96A6` |
+| shade 50%, tint 50% | `BEC4D0` |
+
+The scheme-color luminance fixture also yields `6699CD`. A reference color with tint 50% followed by placeholder shade 50% yields `8C96A6`. All 15 runtime comparison cases match at the selected sample; before this increment all returned unmodified `4080C0` from ShapeCrawler (the alpha-100% case is an unchanged control).
+
+Automated saved-PPTX tests cover those operations and order differences, neutral black/white/gray colors, clamping, inherited/system/scheme colors, placeholder composition, and unchanged XML containing transforms. Fixtures do not depend on fonts.
+
+Remaining color work includes explicit hue/saturation/component/gamma operations, other input color models and theme override parts. Transforms on shape fills, picture alpha effects, gradients and background effects are separate work. Pixel equivalence beyond the tested samples is not established.
 
 ## Remaining increments
 
 Select one bounded behavior per approved PR. Investigate it with a small fixture before implementation, retain artifact identities and relevant REA calls, and add saved-output or pixel regression tests. Split a topic further when needed to stay inside the time limit.
 
-1. Theme override parts and remaining color transforms.
+1. Theme override parts and remaining color operations/models.
 2. Master/layout drawing order and placeholder visibility.
 3. Additional preset geometry, then custom paths.
 4. Fill and outline variants, including gradients and transparency.

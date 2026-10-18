@@ -10,6 +10,131 @@ namespace ShapeCrawler.Tests;
 
 public class SlideBackgroundTests : SCTest
 {
+    [TestCase("shade", "2C5C8C")]
+    [TestCase("tint", "C0CDE2")]
+    [TestCase("lum-mod", "204060")]
+    [TestCase("lum-off", "A0C0E0")]
+    [TestCase("lum-mod-off", "6699CD")]
+    [TestCase("lum-off-mod", "578FC8")]
+    [TestCase("alpha-half", "9FBFDF")]
+    [TestCase("alpha-zero", "FFFFFF")]
+    [TestCase("alpha-full", "4080C0")]
+    [TestCase("alpha-mod", "B3CCE6")]
+    [TestCase("alpha-off", "9FBFDF")]
+    [TestCase("tint-shade", "8C96A6")]
+    [TestCase("shade-tint", "BEC4D0")]
+    [TestCase("lum-white", "FFFFFF")]
+    [TestCase("lum-black", "000000")]
+    [TestCase("alpha-clamp-full", "4080C0")]
+    [TestCase("alpha-clamp-zero", "FFFFFF")]
+    [TestCase("shade-zero", "000000")]
+    [TestCase("tint-zero", "FFFFFF")]
+    public void Render_applies_background_color_transforms_in_order(string operation, string expectedColor)
+    {
+        // Arrange
+        using var pres = ThemeBackgroundPresentation(slide =>
+        {
+            var color = new A.RgbColorModelHex { Val = "4080C0" };
+            color.Append(Transforms(operation));
+            slide.Slide.CommonSlideData!.InsertAt(new P.Background(new P.BackgroundProperties(new A.SolidFill(color))), 0);
+        });
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream, 120, 90);
+
+        // Assert
+        using var bitmap = SKBitmap.Decode(stream);
+        bitmap.GetPixel(100, 80).Should().Be(SKColor.Parse(expectedColor));
+        ValidatePresentation(pres);
+    }
+
+    [TestCase("000000", "lum-off", "404040")]
+    [TestCase("FFFFFF", "lum-mod", "808080")]
+    [TestCase("808080", "lum-off", "C0C0C0")]
+    public void Render_preserves_neutral_colors_during_luminance_transforms(
+        string originalColor, string operation, string expectedColor)
+    {
+        // Arrange
+        using var pres = ThemeBackgroundPresentation(slide =>
+        {
+            var color = new A.RgbColorModelHex { Val = originalColor };
+            color.Append(Transforms(operation));
+            slide.Slide.CommonSlideData!.InsertAt(new P.Background(new P.BackgroundProperties(new A.SolidFill(color))), 0);
+        });
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream, 120, 90);
+
+        // Assert
+        using var bitmap = SKBitmap.Decode(stream);
+        bitmap.GetPixel(100, 80).Should().Be(SKColor.Parse(expectedColor));
+        ValidatePresentation(pres);
+    }
+
+    [TestCase("scheme")]
+    [TestCase("system")]
+    [TestCase("inherited")]
+    public void Render_transforms_resolved_scheme_system_and_inherited_backgrounds(string source)
+    {
+        // Arrange
+        using var pres = ThemeBackgroundPresentation(slide =>
+        {
+            var master = slide.SlideLayoutPart!.SlideMasterPart!;
+            var accent = master.ThemePart!.Theme.ThemeElements!.ColorScheme!.GetFirstChild<A.Accent1Color>()!;
+            accent.RemoveAllChildren();
+            accent.Append(new A.RgbColorModelHex { Val = "4080C0" });
+            OpenXmlElement color = source switch
+            {
+                "scheme" => new A.SchemeColor { Val = A.SchemeColorValues.Accent1 },
+                "system" => new A.SystemColor { Val = A.SystemColorValues.WindowText, LastColor = "4080C0" },
+                _ => new A.RgbColorModelHex { Val = "4080C0" }
+            };
+            color.Append(Transforms("lum-mod-off"));
+            var data = source == "inherited" ? master.SlideMaster.CommonSlideData! : slide.Slide.CommonSlideData!;
+            data.Background?.Remove();
+            data.InsertAt(new P.Background(new P.BackgroundProperties(new A.SolidFill(color))), 0);
+        });
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream, 120, 90);
+
+        // Assert
+        using var bitmap = SKBitmap.Decode(stream);
+        bitmap.GetPixel(100, 80).Should().Be(SKColor.Parse("6699CD"));
+        ValidatePresentation(pres);
+    }
+
+    [Test]
+    public void Render_applies_reference_color_transforms_before_placeholder_transforms()
+    {
+        // Arrange
+        using var pres = ThemeBackgroundPresentation(slide =>
+        {
+            var styles = slide.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FormatScheme!.BackgroundFillStyleList!;
+            styles.ChildElements[0].Remove();
+            styles.InsertAt(new A.SolidFill(new A.SchemeColor(new A.Shade { Val = 50000 })
+            {
+                Val = A.SchemeColorValues.PhColor
+            }), 0);
+            SetStyle(slide.Slide.CommonSlideData!, 1001, new A.RgbColorModelHex(new A.Tint { Val = 50000 })
+            {
+                Val = "4080C0"
+            });
+        });
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImage(stream, 120, 90);
+
+        // Assert
+        using var bitmap = SKBitmap.Decode(stream);
+        bitmap.GetPixel(100, 80).Should().Be(SKColor.Parse("8C96A6"));
+        ValidatePresentation(pres);
+    }
+
     [TestCase(0, "FFFFFF")]
     [TestCase(1, "FF0000")]
     [TestCase(2, "CC00CC")]
@@ -144,7 +269,10 @@ public class SlideBackgroundTests : SCTest
         using var pres = ThemeBackgroundPresentation(slide =>
         {
             SetColorMaps(slide, "slide");
-            SetStyle(slide.Slide.CommonSlideData!, 1001, new A.SchemeColor { Val = A.SchemeColorValues.Background1 });
+            SetStyle(slide.Slide.CommonSlideData!, 1001, new A.SchemeColor(new A.Tint { Val = 50000 })
+            {
+                Val = A.SchemeColorValues.Background1
+            });
         });
         using var before = SaveAndOpenPresentationAsSdk(pres);
         var original = BackgroundXml(before);
@@ -158,6 +286,30 @@ public class SlideBackgroundTests : SCTest
         BackgroundXml(after).Should().Equal(original);
         ValidatePresentation(pres);
     }
+
+    private static OpenXmlElement[] Transforms(string operation) => operation switch
+    {
+        "shade" => [new A.Shade { Val = 50000 }],
+        "tint" => [new A.Tint { Val = 50000 }],
+        "lum-mod" => [new A.LuminanceModulation { Val = 50000 }],
+        "lum-off" => [new A.LuminanceOffset { Val = 25000 }],
+        "lum-mod-off" => [new A.LuminanceModulation { Val = 80000 }, new A.LuminanceOffset { Val = 20000 }],
+        "lum-off-mod" => [new A.LuminanceOffset { Val = 20000 }, new A.LuminanceModulation { Val = 80000 }],
+        "alpha-half" => [new A.Alpha { Val = 50000 }],
+        "alpha-zero" => [new A.Alpha { Val = 0 }],
+        "alpha-full" => [new A.Alpha { Val = 100000 }],
+        "alpha-mod" => [new A.Alpha { Val = 80000 }, new A.AlphaModulation { Val = 50000 }],
+        "alpha-off" => [new A.Alpha { Val = 25000 }, new A.AlphaOffset { Val = 25000 }],
+        "tint-shade" => [new A.Tint { Val = 50000 }, new A.Shade { Val = 50000 }],
+        "shade-tint" => [new A.Shade { Val = 50000 }, new A.Tint { Val = 50000 }],
+        "lum-white" => [new A.LuminanceModulation { Val = 200000 }],
+        "lum-black" => [new A.LuminanceOffset { Val = -100000 }],
+        "alpha-clamp-full" => [new A.Alpha { Val = 80000 }, new A.AlphaModulation { Val = 200000 }],
+        "alpha-clamp-zero" => [new A.Alpha { Val = 25000 }, new A.AlphaOffset { Val = -50000 }],
+        "shade-zero" => [new A.Shade { Val = 0 }],
+        "tint-zero" => [new A.Tint { Val = 0 }],
+        _ => throw new ArgumentOutOfRangeException(nameof(operation))
+    };
 
     private static string[] BackgroundXml(PresentationDocument document)
     {
