@@ -17,20 +17,26 @@ public class UpdatedSlideCollectionTests : SCTest
         using var source = new Presentation(p => p.Slide());
         source.Slides[0].Transition.AdvanceOnClick = false;
         source.Slides[0].Transition.AdvanceAfterTime = 3500;
+        source.Slides[0].Transition.Type = SlideTransitionType.Fade;
+        source.Slides[0].Transition.Speed = SlideTransitionSpeed.Slow;
         using var destination = new Presentation(p => p.Slide());
 
         // Act
         destination.Slides.Add(source.Slides[0]);
         destination.Slides[1].Transition.AdvanceAfterTime = 7000;
+        destination.Slides[1].Transition.Type = SlideTransitionType.Wipe;
 
         // Assert
         source.Slides[0].Transition.AdvanceAfterTime.Should().Be(3500);
+        source.Slides[0].Transition.Type.Should().Be(SlideTransitionType.Fade);
         destination.Slides[0].Transition.AdvanceAfterTime.Should().BeNull();
         using var saved = new MemoryStream();
         destination.Save(saved);
         using var reopened = new Presentation(saved);
         reopened.Slides[1].Transition.AdvanceOnClick.Should().BeFalse();
         reopened.Slides[1].Transition.AdvanceAfterTime.Should().Be(7000);
+        reopened.Slides[1].Transition.Type.Should().Be(SlideTransitionType.Wipe);
+        reopened.Slides[1].Transition.Speed.Should().Be(SlideTransitionSpeed.Slow);
         ValidatePresentation(reopened);
     }
 

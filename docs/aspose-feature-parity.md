@@ -153,6 +153,98 @@ Saved presentations are Open XML validated, and `PublicApiTests` continues
 to enforce SDK encapsulation. Effects, speed, sound, and other transition
 options remain outside this iteration's API.
 
+## Iteration 3: standard transition effects and speed
+
+The narrow comparison found no ShapeCrawler equivalents for
+`ISlideShowTransition.Type` and `Speed`. They are now available as
+`IUserSlide.Transition.Type` and `Speed`, using ShapeCrawler-owned enums:
+
+```csharp
+slide.Transition.Type = SlideTransitionType.Fade;
+slide.Transition.Speed = SlideTransitionSpeed.Slow;
+slide.Transition.Type = SlideTransitionType.None; // Remove the effect.
+```
+
+The supported standard effects are Blinds, Checker, Circle, Comb, Cover, Cut,
+Diamond, Dissolve, Fade, Newsflash, Plus, Pull, Push, Random, RandomBar, Split,
+Strips, Wedge, Wheel, Wipe, and Zoom. The speeds are Fast, Medium, and Slow.
+The defaults are None and Fast. Reading absent settings creates no XML.
+
+Changing the type preserves click/timer settings, sound actions, extension
+lists, and animation XML. Assigning the same type preserves existing effect
+parameters, including direction and wheel spokes. Assigning a different type
+creates it with its **schema defaults**, which can differ from Aspose's chosen
+defaults (for example, direction or wheel spokes). Direction and other
+effect-specific parameter APIs are deferred.
+
+Newer effects outside the standard set return `SlideTransitionType.Unsupported`
+and remain intact when changing speed or advance settings. This read-only
+sentinel and invalid enum values cannot be assigned. An explicitly selected
+supported type, including None, replaces an existing unsupported effect.
+Type and speed updates apply to both Choice and Fallback transition branches.
+
+### Reference evidence and differences
+
+The reference assembly and hash remain the same as iteration 1. REA 6.7.0 was
+invoked for the enum declarations:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.SlideShow.TransitionType --type Aspose.Slides.SlideShow.TransitionSpeed --json
+```
+
+Evidence `ev_83155d41387bd43dddb939bc1380e8e37c4096348d1a0bfc5f61a8264dbfcd07`
+again reports unavailable member coverage at the 64 MiB metadata budget.
+No implementation was recovered from that result. Public API documentation
+and an unmodified Aspose evaluation-mode probe supplied the observable behavior.
+
+The probe iterated over the 21 effects and None, set Slow plus a 5000 ms timer,
+saved each presentation, inspected **all descendant** `p:transition` elements,
+and reopened it with Aspose. All 22 type identities, speeds, and timers survived.
+Separate Fast/Medium/Slow save/reopen cases all preserved speed. The initial
+state was None/Fast. Effect element names matched the standard names, including
+`randomBar` and `newsflash`.
+
+Aspose writes some standard effects inside markup-compatibility Choice/Fallback
+branches, with `p14:dur` in the Choice transition. For example, Fade/Slow was
+saved with `spd="slow"` and `p14:dur="700"`. The
+[Microsoft transition example](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-pptx/99b95b35-568a-4652-9cba-df3d1175952f)
+explains how that extension expresses an explicit duration in milliseconds.
+ShapeCrawler does not reproduce Aspose's per-effect duration table: assigning
+Speed clears explicit `p14:dur` so the standard speed setting applies. Changing
+the effect also clears that override; retaining the same effect preserves it.
+This API does not yet expose arbitrary transition duration.
+
+An additional compatibility probe generated **66** ShapeCrawler presentations
+(22 type states times 3 speeds), each with a 5000 ms timer, and loaded them in
+Aspose. Every type, speed, and timer matched. To reproduce, use a temporary
+console project referencing ShapeCrawler and Aspose.Slides.NET 24.12.0:
+
+```csharp
+foreach (var type in Enum.GetValues<ShapeCrawler.SlideTransitionType>()
+             .Where(type => type != ShapeCrawler.SlideTransitionType.Unsupported))
+foreach (var speed in Enum.GetValues<ShapeCrawler.SlideTransitionSpeed>())
+{
+    using var source = new ShapeCrawler.Presentation(p => p.Slide());
+    source.Slides[0].Transition.Type = type;
+    source.Slides[0].Transition.Speed = speed;
+    source.Slides[0].Transition.AdvanceAfterTime = 5000;
+    using var stream = new MemoryStream();
+    source.Save(stream);
+    using var reference = new Aspose.Slides.Presentation(stream);
+    var result = reference.Slides[0].SlideShowTransition;
+    if (result.Type.ToString() != type.ToString() ||
+        result.Speed.ToString() != speed.ToString() || result.AdvanceAfterTime != 5000)
+        throw new Exception("Transition compatibility mismatch");
+}
+```
+
+This verifies serialized type/speed identity and timing interoperability, not
+pixel-identical visual playback. No slide images were generated. No Aspose
+dependency or proprietary implementation was added to ShapeCrawler.
+Regression coverage extends `SlideTransitionTests` and
+`UpdatedSlideCollectionTests`, with saved-PPTX inspection, save/reopen,
+schema validation, import independence, and `PublicApiTests` encapsulation.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current
