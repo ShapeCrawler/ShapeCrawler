@@ -43,6 +43,12 @@ public interface IShape : IPosition, IShapeGeometry
     string AltText { get; set; }
 
     /// <summary>
+    ///     Gets the click hyperlink for the entire shape, including pictures and groups.
+    ///     The returned editor can add, inspect, or remove a link independently of text-run links.
+    /// </summary>
+    IHyperlink Link { get; }
+
+    /// <summary>
     ///     Gets a value indicating whether the shape is hidden.
     /// </summary>
     bool Hidden { get; }

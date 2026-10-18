@@ -187,6 +187,8 @@ internal sealed class Picture(P.Picture pPicture, A.Blip aBlip) : IPicture
         // Update the copied shape with the correct relationship ID
         var copyElement = pShapeTree.Elements<P.Picture>().Last();
         copyElement.Descendants<A.Blip>().First().Embed = targetImagePartRId;
+        new ShapeRelationships(sourceOpenXmlPart, targetOpenXmlPart)
+            .CopyTo(copyElement.NonVisualPictureProperties!.NonVisualDrawingProperties!);
     }
 
     /// <summary>

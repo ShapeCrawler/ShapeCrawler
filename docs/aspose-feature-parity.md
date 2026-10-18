@@ -407,6 +407,79 @@ values, ordinal case matching under Turkish culture, field/break boundaries,
 invalid arguments, groups, tables, and multiple slides. `PublicApiTests`
 continues to enforce SDK encapsulation.
 
+## Iteration 6: whole-shape click hyperlinks
+
+Clickable buttons, pictures, and slide navigation are common editing workflows.
+ShapeCrawler already exposed hyperlinks on text portions but lacked a click-link
+editor for the entire shape. The new `IShape.Link` reuses `IHyperlink`:
+
+```csharp
+shape.Link.AddFile("https://example.com/report");
+pictureShape.Link.AddSlideNumber(2); // One-based index in the same presentation.
+shape.Link.Remove();
+```
+
+This counterpart to Aspose's shape `HyperlinkClick`/`HyperlinkManager` works on
+text shapes, pictures, tables, and groups through their nonvisual properties.
+`IHyperlink.Remove` also works on existing text-portion links. Whole-shape links
+and text links are independent. Reading the editor and its absent-link getters
+does not create a hyperlink element or relationship.
+
+External/file addresses use hyperlink relationships. Internal navigation uses
+a slide-part relationship with `ppaction://hlinksldjump`, supports self-links,
+and reports the target's current number after reordering. `File` returns null
+for an internal link, and `SlideNumber` returns null for an external link.
+Invalid slide numbers, empty addresses, and malformed URIs are rejected before
+changing the current link. Internal-link creation is scoped to regular slides.
+
+Replacing/removing a click link reclaims unused hyperlink relationships but
+retains relationships still used elsewhere in that part, including by text or
+mouse-over links. URL fragments remain distinct targets (`#one` is not `#two`).
+Target slide parts are never deleted by unlinking. Repeated
+removal is harmless. Text and formatting remain intact. Picture copying now
+copies relationships from the cloned nonvisual properties too; the existing
+image-byte copy behavior is preserved.
+
+### Reference evidence and compatibility
+
+The reference version and assembly SHA-256 remain those recorded in iteration 1.
+REA 6.7.0 was invoked for the reference managers:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.HyperlinkManager --type Aspose.Slides.Hyperlink --json
+```
+
+Evidence `ev_51f18dc3c8b85a8ba4d3927e38a48e96abb7fad3bf314181445af9b791dd0f77`
+again reports unavailable member coverage at the 64 MiB metadata budget. No
+method bodies were recovered. Public API documentation and an unmodified
+evaluation-mode Aspose probe supplied behavioral evidence:
+
+| Reference operation on a rectangle | Saved shape XML | After save/reopen |
+| --- | --- | --- |
+| `HyperlinkManager.SetExternalHyperlinkClick(url)` | `p:cNvPr/a:hlinkClick` with relationship ID and no action | `HyperlinkClick.ExternalUrl` matched the URL |
+| `HyperlinkManager.SetInternalHyperlinkClick(secondSlide)` | Same element with `action="ppaction://hlinksldjump"` | `HyperlinkClick.TargetSlide` was the second slide |
+| `HyperlinkManager.RemoveHyperlinkClick()` after adding a URL | No click hyperlink element | `HyperlinkClick` was null |
+
+To reproduce, create an Aspose presentation with two slides and a rectangle on
+the first, run each manager operation, save as PPTX, inspect the first slide's
+`p:cNvPr/a:hlinkClick`, and reopen to read `HyperlinkClick`. The probe used
+`https://example.com/report` and left evaluation restrictions intact.
+
+A separate probe created six ShapeCrawler presentations: text shape and picture,
+each with an external URL, an internal link to slide 2, or a removed click link.
+Aspose opened every file and reported the expected ExternalUrl, TargetSlide,
+or null respectively (**6/6 passed**). These verify hyperlink serialization and
+target resolution, not mouse interaction in PowerPoint. Hover-link authoring,
+tooltips, and other action kinds are outside this increment.
+
+Regression tests in `ShapeTests`, `HyperlinkTests`, and
+`UserSlideShapeCollectionTests` inspect saved XML/relationships, reopen files,
+and Open XML validate them. They cover applicable shape kinds, external/internal
+and self-links, reordering, shared relationships, mouse-over preservation,
+invalid input, replacement in both directions, target-slide retention, and
+independent text/picture copies. Existing text-link checks and `PublicApiTests`
+also pass. Rendering code is unchanged and no Aspose dependency was added.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current

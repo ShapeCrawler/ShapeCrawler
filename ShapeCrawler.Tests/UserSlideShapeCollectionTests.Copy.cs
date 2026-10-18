@@ -8,6 +8,46 @@ namespace ShapeCrawler.Tests;
 
 public partial class UserSlideShapeCollectionTests
 {
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Add_copies_shape_click_hyperlinks_independently_of_source(bool picture)
+    {
+        // Arrange
+        using var source = new Presentation(p => p.Slide());
+        var sourceShapes = source.Slides[0].Shapes;
+        if (picture)
+        {
+            using var image = TestAsset("10 png image.png");
+            sourceShapes.AddPicture(image);
+        }
+        else
+        {
+            sourceShapes.AddTextBox(0, 0, 100, 50, "Button");
+        }
+
+        var original = sourceShapes.Last();
+        original.Link.AddFile("https://example.com/report");
+        using var destination = new Presentation(p => p.Slide());
+
+        // Act
+        destination.Slides[0].Shapes.Add(original);
+
+        // Assert
+        using var saved = new MemoryStream();
+        destination.Save(saved);
+        using var reopened = new Presentation(saved);
+        reopened.Slides[0].Shapes.Last().Link.File.Should().Be("https://example.com/report");
+        ValidatePresentation(reopened);
+
+        // Act
+        reopened.Slides[0].Shapes.Last().Link.Remove();
+
+        // Assert
+        original.Link.File.Should().Be("https://example.com/report");
+        reopened.Slides[0].Shapes.Last().Link.File.Should().BeNull();
+        ValidatePresentation(reopened);
+    }
+
     [TestCase(AudioType.MP3, 0)]
     [TestCase(AudioType.MP3, 1)]
     [TestCase(AudioType.MP3, 2)]
