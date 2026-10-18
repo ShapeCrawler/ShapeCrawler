@@ -396,6 +396,127 @@ public class UserSlideTests : SCTest
         stream.Length.Should().BeGreaterThan(0);
     }
 
+    [TestCase(240, 45)]
+    [TestCase(45, 240)]
+    [TestCase(41, 37)]
+    public void SaveImageTo_uses_requested_pixel_dimensions_and_scales_shapes(int width, int height)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide(s => s.SolidBackground("FF0000")));
+        pres.SlideWidth = 120;
+        pres.SlideHeight = 90;
+        var slide = pres.Slide(1);
+        slide.Shapes.AddShape(30, 20, 60, 40);
+        slide.Shapes.Last().Fill.SetColor("0000FF");
+        using var stream = new MemoryStream();
+
+        // Act
+        slide.SaveImageTo(stream, width, height);
+
+        // Assert
+        stream.CanWrite.Should().BeTrue();
+        stream.Position.Should().Be(0);
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        bitmap.Width.Should().Be(width);
+        bitmap.Height.Should().Be(height);
+        bitmap.GetPixel(width / 2, height / 2).Should().Be(SkiaSharp.SKColors.Blue);
+        bitmap.GetPixel(width / 8, height / 2).Should().Be(SkiaSharp.SKColors.Red);
+        bitmap.GetPixel(width * 7 / 8, height / 2).Should().Be(SkiaSharp.SKColors.Red);
+        bitmap.GetPixel(width / 2, height / 10).Should().Be(SkiaSharp.SKColors.Red);
+        bitmap.GetPixel(width / 2, height * 9 / 10).Should().Be(SkiaSharp.SKColors.Red);
+    }
+
+    [TestCase(80, 40)]
+    [TestCase(1600, 900)]
+    public void SaveImageTo_fills_requested_image_size_with_picture_background(int width, int height)
+    {
+        // Arrange
+        var image = TestImage();
+        using var pres = new Presentation(p => p.Slide(s => s.ImageBackground(image)));
+        using var stream = new MemoryStream();
+
+        // Act
+        pres.Slide(1).SaveImageTo(stream, width, height);
+
+        // Assert
+        using var bitmap = SkiaSharp.SKBitmap.Decode(stream);
+        bitmap.Width.Should().Be(width);
+        bitmap.Height.Should().Be(height);
+        foreach (var x in new[] { 1, width - 2 })
+        {
+            foreach (var y in new[] { 1, height - 2 })
+            {
+                var pixel = bitmap.GetPixel(x, y);
+                pixel.Red.Should().BeInRange(240, 250);
+                pixel.Green.Should().BeInRange(195, 205);
+                pixel.Blue.Should().BeInRange(163, 173);
+                pixel.Alpha.Should().Be(255);
+            }
+        }
+    }
+
+    [TestCase(0, 100, "width")]
+    [TestCase(-1, 100, "width")]
+    [TestCase(100, 0, "height")]
+    [TestCase(100, -1, "height")]
+    public void SaveImageTo_rejects_nonpositive_dimensions(int width, int height, string parameter)
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        using var stream = new MemoryStream();
+
+        // Act
+        var act = () => pres.Slide(1).SaveImageTo(stream, width, height);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>().WithParameterName(parameter);
+        stream.Length.Should().Be(0);
+    }
+
+    [Test]
+    public void SaveImageTo_saves_requested_dimensions_to_file()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var file = Path.Combine(Path.GetTempPath(), $"shapecrawler-{Guid.NewGuid():N}.png");
+        try
+        {
+            // Act
+            pres.Slide(1).SaveImageTo(file, 240, 45);
+
+            // Assert
+            using var bitmap = SkiaSharp.SKBitmap.Decode(file);
+            bitmap.Width.Should().Be(240);
+            bitmap.Height.Should().Be(45);
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
+    [Test]
+    public void SaveImageTo_invalid_file_dimensions_preserve_existing_file()
+    {
+        // Arrange
+        using var pres = new Presentation(p => p.Slide());
+        var file = Path.Combine(Path.GetTempPath(), $"shapecrawler-{Guid.NewGuid():N}.png");
+        File.WriteAllText(file, "existing content");
+        try
+        {
+            // Act
+            var act = () => pres.Slide(1).SaveImageTo(file, 0, 45);
+
+            // Assert
+            act.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("width");
+            File.ReadAllText(file).Should().Be("existing content");
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
     [Test]
     public void SaveImageTo_saves_slide_image_with_solid_background()
     {

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Units;
@@ -24,10 +25,43 @@ internal sealed class DrawingSlide(ILayoutSlide layoutSlide, UserSlideShapeColle
         var width = new Emus(pSlideSize.Cx!.Value).AsPixels();
         var height = new Emus(pSlideSize.Cy!.Value).AsPixels();
 
-        using var surface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
+        this.RenderImage(stream, (int)width, (int)height, 1, 1);
+    }
+
+    /// <inheritdoc/>
+    public override void SaveImageTo(string file, int width, int height)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+
+        using var fileStream = File.Create(file);
+        this.SaveImageTo(fileStream, width, height);
+    }
+
+    /// <inheritdoc/>
+    public override void SaveImageTo(Stream stream, int width, int height)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+
+        var presPart = ((PresentationDocument)this.GetSdkSlidePart().OpenXmlPackage).PresentationPart!;
+        var pSlideSize = presPart.Presentation!.SlideSize!;
+        var slideWidth = new Emus(pSlideSize.Cx!.Value).AsPixels();
+        var slideHeight = new Emus(pSlideSize.Cy!.Value).AsPixels();
+
+        this.RenderImage(stream, width, height, (float)(width / slideWidth), (float)(height / slideHeight));
+    }
+
+    private void RenderImage(Stream stream, int width, int height, float scaleX, float scaleY)
+    {
+        using var surface = SKSurface.Create(new SKImageInfo(width, height))
+            ?? throw new SCException("Unable to allocate the slide image at the requested pixel dimensions.");
+
         var canvas = surface.Canvas;
 
         this.RenderBackground(canvas);
+        canvas.Scale(scaleX, scaleY);
         shapes.Render(canvas);
 
         using var image = surface.Snapshot();
