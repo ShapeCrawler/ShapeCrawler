@@ -605,6 +605,100 @@ Chart/table/group fixtures also include SmartArt and notes, validate Open XML,
 and verify byte preservation of binary parts. `PublicApiTests` checks that the
 new API exposes no SDK types.
 
+## Iteration 9: custom document properties
+
+### Demand and gap check
+
+Custom metadata is a recurring reading/editing/creation workflow: users asked for
+[an API to add custom presentation properties](https://forum.aspose.com/t/api-to-add-custom-property/86872),
+[consistent custom-property CRUD across Office libraries](https://forum.aspose.com/t/why-the-api-diff-between-slides-amp-words-cells-wrt-to-customproperties/91555),
+and [metadata updates in a cloud download workflow](https://forum.aspose.com/t/save-word-excel-ppt-file-without-changing-last-modified-date-user/179214).
+The [official .NET properties guide](https://docs.aspose.com/slides/net/presentation-properties/)
+provides custom name/value authoring and enumeration. These are demand signals,
+not a complete usage ranking.
+
+The current API already exposes built-in `IPresentationProperties` fields and
+slide-level `IUserSlide.CustomData`. Neither provides document-level custom
+property name/value access. A source search found no custom-property API; this
+is the selected missing capability. Rendering is outside the research scope.
+
+### API and serialization
+
+```csharp
+presentation.Properties["ReviewedBy"] = "Alice";
+presentation.Properties["Version"] = 2;
+var reviewer = (string)presentation.Properties["reviewedby"];
+var names = presentation.Properties.CustomPropertyNames;
+var exists = presentation.Properties.ContainsCustomProperty("Version");
+var removed = presentation.Properties.RemoveCustomProperty("Version");
+presentation.Properties.ClearCustomProperties();
+```
+
+The indexer supports string, int, bool, finite float/double, and DateTime.
+Names use ordinal case-insensitive matching; original spelling survives an
+update and names are returned in case-insensitive ordinal order. Empty and
+whitespace names are supported, as in the reference. A missing indexer read
+throws `KeyNotFoundException`; removing a missing property returns false.
+Clearing is idempotent and leaves built-in properties intact.
+
+Properties are stored in `docProps/custom.xml` with the standard format ID,
+unique IDs starting at 2, and `lpwstr`, `i4`, `bool`, `r4`, `r8`, or `filetime`
+variants. Existing IDs and unrelated properties are preserved when a value's
+type changes. Reads do not create a part; the first successful write creates it.
+Removal/clear deletes an empty custom-property part, and adding again works
+through the same properties object. Null/unsupported values and invalid XML
+characters are rejected before mutation. Existing unsupported variants are
+preserved during unrelated edits and can be listed/removed; reading their value
+throws `NotSupportedException`. Legacy `lpstr` and `bstr` strings are also read.
+
+Dates are stored and returned as UTC. Unspecified dates are treated as UTC;
+local dates are converted to UTC. The reference probe relabeled local wall-clock
+times as UTC instead, so this conversion is a deliberate difference. The
+reference also renumbered property IDs when saving; this implementation preserves
+existing IDs. Byte-identical reference output is not claimed.
+
+### REA investigation and reference observations
+
+REA 6.7.0 member inspection targeted `Aspose.Slides.DocumentProperties` in both
+assemblies from Aspose.Slides.NET 24.12.0:
+
+```powershell
+npx --yes rea-agents@6.7.0 inspect-managed-members $assembly --type Aspose.Slides.DocumentProperties --json
+```
+
+| Artifact | SHA-256 | Evidence |
+| --- | --- | --- |
+| net6.0 (also used by runtime probes) | `edaaa3005d2a462548fadcb35ffc661e2b752e7ee863c9c515f459ef7e345ca2` | `ev_7343392944608ca17d0b4b41ae719045c743f7b9811f23f52f5847ce11c939bb` |
+| netstandard2.0 | `004750d1968ccc1a05a9a6985293a11c42a923e8f9b51bf46ff545cded7a541e` | `ev_d48fa8e9cfa7f1e307aedc386bef671834c299934a2b52ea7e6b6bc53f6c8585` |
+
+Both report unavailable member coverage at the 64 MiB metadata representation
+budget. REA recovered no method bodies; behavioral observations below come from
+direct calls to the unmodified evaluation-mode reference and inspection of its
+saved PPTX, supplemented by the reference package's XML API documentation.
+
+To reproduce, create an Aspose presentation and set document properties to a
+string containing `&` and `<`, positive/negative integers, true/false, 1.25f,
+1.23456789012345d, and a UTC DateTime. Read their runtime types, save, inspect
+`docProps/custom.xml`, reopen, and read again. The six types survived with the
+variants listed above. Int64, decimal, and null assignments threw
+`PptxEditException`. Write `Key`, `key`, and `KEY`: they update one property while
+retaining the original name. Remove with `KEY`, then repeat removal of a missing
+name: no exception occurs. `ClearCustomProperties()` yields a count of zero.
+Empty/whitespace names survive save/reopen. Evaluation restrictions were retained
+and no slide image generation was invoked.
+
+An interoperability probe verified the six supported types in both directions:
+ShapeCrawler-created files opened in Aspose, and Aspose-created files opened in
+ShapeCrawler (**12/12 typed checks passed**). Cross-library update, case-insensitive
+removal, clear, and built-in title preservation also passed.
+
+`PresentationPropertiesTests` covers typed save/reopen under de-DE culture,
+XML escaping, names/case matching, type changes, unique/stable IDs, missing
+properties, idempotent removal/clear, UTC dates, rejection without mutation,
+unsupported-value preservation, and Open XML validation. `PublicApiTests`
+continues to enforce SDK encapsulation. No Aspose production dependency or
+rendering changes are included.
+
 ## Candidate areas for later inventory
 
 These areas still require member-by-member comparison against the current
